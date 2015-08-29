@@ -1,8 +1,8 @@
 package inotify
 
-/* Flags for the parameter of inotify_init1.  */
 const (
-	/* These are, oddly, 24-bit numbers */
+	// Flags for the parameter of InotifyInit1().
+	// These, oddly, appear to be 24-bit numbers.
 	IN_CLOEXEC  uint32 = 02000000
 	IN_NONBLOCK uint32 = 00004000
 )
@@ -10,38 +10,38 @@ const (
 type Mask uint32
 
 const (
-	/* Supported events suitable for MASK parameter of INOTIFY_ADD_WATCH.  */
-	IN_ACCESS        Mask = 0x00000001 /* File was accessed.  */
-	IN_MODIFY        Mask = 0x00000002 /* File was modified.  */
-	IN_ATTRIB        Mask = 0x00000004 /* Metadata changed.  */
-	IN_CLOSE_WRITE   Mask = 0x00000008 /* Writtable file was closed.  */
-	IN_CLOSE_NOWRITE Mask = 0x00000010 /* Unwrittable file closed.  */
-	IN_OPEN          Mask = 0x00000020 /* File was opened.  */
-	IN_MOVED_FROM    Mask = 0x00000040 /* File was moved from X.  */
-	IN_MOVED_TO      Mask = 0x00000080 /* File was moved to Y.  */
-	IN_CREATE        Mask = 0x00000100 /* Subfile was created.  */
-	IN_DELETE        Mask = 0x00000200 /* Subfile was deleted.  */
-	IN_DELETE_SELF   Mask = 0x00000400 /* Self was deleted.  */
-	IN_MOVE_SELF     Mask = 0x00000800 /* Self was moved.  */
+	// Supported events suitable for the `mask` parameter of Inotify.AddWatch().
+	IN_ACCESS        Mask = (1<< 0) // File was accessed.
+	IN_MODIFY        Mask = (1<< 1) // File was modified.
+	IN_ATTRIB        Mask = (1<< 2) // Metadata changed.
+	IN_CLOSE_WRITE   Mask = (1<< 3) // Writtable file was closed.
+	IN_CLOSE_NOWRITE Mask = (1<< 4) // Unwrittable file closed.
+	IN_OPEN          Mask = (1<< 5) // File was opened.
+	IN_MOVED_FROM    Mask = (1<< 6) // File was moved from X.
+	IN_MOVED_TO      Mask = (1<< 7) // File was moved to Y.
+	IN_CREATE        Mask = (1<< 8) // Subfile was created.
+	IN_DELETE        Mask = (1<< 9) // Subfile was deleted.
+	IN_DELETE_SELF   Mask = (1<<10) // Self was deleted.
+	IN_MOVE_SELF     Mask = (1<<11) // Self was moved.
 
-	/* Events sent by the kernel.  */
-	IN_UNMOUNT       Mask = 0x00002000 /* Backing fs was unmounted.  */
-	IN_Q_OVERFLOW    Mask = 0x00004000 /* Event queued overflowed.  */
-	IN_IGNORED       Mask = 0x00008000 /* File was ignored.  */
+	// Events that appear in output without subscribing to them.
+	IN_UNMOUNT       Mask = (1<<13) // Backing fs was unmounted.
+	IN_Q_OVERFLOW    Mask = (1<<14) // Event queued overflowed.
+	IN_IGNORED       Mask = (1<<15) // File was ignored (expect no more events).
 
-	/* Special flags.  */
-	IN_ONLYDIR       Mask = 0x01000000 /* Only watch the path if it is a directory.  */
-	IN_DONT_FOLLOW   Mask = 0x02000000 /* Do not follow a sym link.  */
-	IN_EXCL_UNLINK   Mask = 0x04000000 /* Exclude events on unlinked objects.  */
-	IN_MASK_ADD      Mask = 0x20000000 /* Add to the mask of an already existing watch.  */
-	IN_ISDIR         Mask = 0x40000000 /* Event occurred against dir.  */
-	IN_ONESHOT       Mask = 0x80000000 /* Only send event once.  */
+	// Special flags that you may pass to Inotify.AddWatch()...
+	// except for IN_ISDIR, which is a flag that is set on output events.
+	IN_ONLYDIR       Mask = (1<<24) // Only watch the path if it is a directory.
+	IN_DONT_FOLLOW   Mask = (1<<25) // Do not follow a sym link.
+	IN_EXCL_UNLINK   Mask = (1<<26) // Exclude events on unlinked objects.
+	IN_MASK_ADD      Mask = (1<<29) // Add to the mask of an already existing watch.
+	IN_ISDIR         Mask = (1<<30) // Event occurred against dir.
+	IN_ONESHOT       Mask = (1<<31) // Only send event once.
 
-	/* Convenience macros */
-	IN_CLOSE      Mask = (IN_CLOSE_WRITE | IN_CLOSE_NOWRITE) /* Close.  */
-	IN_MOVE       Mask = (IN_MOVED_FROM | IN_MOVED_TO)       /* Moves.  */
-	IN_ALL_EVENTS Mask = 0x00000FFF                          /* All events which a program can wait on.  */
-
+	// Convenience macros */
+	IN_CLOSE      Mask = (IN_CLOSE_WRITE | IN_CLOSE_NOWRITE) // Close.
+	IN_MOVE       Mask = (IN_MOVED_FROM | IN_MOVED_TO)       // Moves.
+	IN_ALL_EVENTS Mask = 0x00000FFF                          // All events which a program can wait on.
 )
 
 var in_bits [32]string = [32]string{
