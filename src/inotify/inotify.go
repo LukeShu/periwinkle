@@ -29,7 +29,7 @@ func InotifyInit() (*Inotify, error) {
 		fd:       Cint(fd),
 		isClosed: false,
 	}
-	o.buff = o.fullbuff[:]
+	o.buff = o.fullbuff[:0]
 	return &o, err
 }
 
@@ -39,7 +39,7 @@ func InotifyInit1(flags Cint) (*Inotify, error) {
 		fd:       Cint(fd),
 		isClosed: false,
 	}
-	o.buff = o.fullbuff[:]
+	o.buff = o.fullbuff[:0]
 	return &o, err
 }
 
@@ -65,30 +65,33 @@ func (o *Inotify) Close() error {
 	return sysclose(o.fd)
 }
 
-func (o *Inotify) Read() (*Event, error) {
+func (o *Inotify) Read() (Event, error) {
 	if len(o.buff) == 0 {
 		if o.isClosed {
-			return nil, InotifyAlreadyClosedError
+			return Event{Wd: -1}, InotifyAlreadyClosedError
 		}
+
 		len, err := sysread(o.fd, o.buff)
 		if len == 0 {
-			return nil, o.Close()
+			return Event{Wd: -1}, o.Close()
 		} else if len <= 0 {
-			return nil, err
+			return Event{Wd: -1}, err
 		}
 		o.buff = o.fullbuff[0:len]
 	}
+
 	raw := (*syscall.InotifyEvent)(unsafe.Pointer(&o.buff[0]))
-	var ret Event
-	ret.Wd = Cint(raw.Wd)
-	ret.Mask = Mask(raw.Mask)
-	ret.Cookie = raw.Cookie
-	ret.Name = nil
+	ret := Event{
+		Wd:     Cint(raw.Wd),
+		Mask:   Mask(raw.Mask),
+		Cookie: raw.Cookie,
+		Name:   nil,
+	}
 	if raw.Len > 0 {
 		bytes := (*[syscall.NAME_MAX]byte)(unsafe.Pointer(&o.buff[syscall.SizeofInotifyEvent]))
 		name := string(bytes[:raw.Len-1])
 		ret.Name = &name
 	}
 	o.buff = o.buff[0 : syscall.SizeofInotifyEvent+raw.Len]
-	return &ret, nil
+	return ret, nil
 }
