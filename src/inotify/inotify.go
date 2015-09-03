@@ -70,7 +70,6 @@ func (o *Inotify) Read() (Event, error) {
 		if o.isClosed {
 			return Event{Wd: -1}, InotifyAlreadyClosedError
 		}
-
 		len, err := sysread(o.fd, o.buff)
 		if len == 0 {
 			return Event{Wd: -1}, o.Close()
