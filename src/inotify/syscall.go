@@ -8,6 +8,13 @@ import (
 
 type Cint C.int
 
+func pathError(op string, path string, err error) error {
+	if err == nil {
+		return nil
+	}
+	return &os.PathError{Op: op, Path: path, Err: err}
+}
+
 /* Create and initialize inotify instance.  */
 func inotify_init() (Cint, error) {
 	fd, errno := syscall.InotifyInit()
@@ -24,7 +31,7 @@ func inotify_init1(flags Cint) (Cint, error) {
    events specified by MASK.  */
 func inotify_add_watch(fd Cint, name string, mask uint32) (Cint, error) {
 	wd, errno := syscall.InotifyAddWatch(int(fd), name, mask)
-	return Cint(wd), os.NewSyscallError("inotify_add_watch", errno)
+	return Cint(wd), pathError("inotify_add_watch", name, errno)
 }
 
 /* Remove the watch specified by WD from the inotify instance FD.  */
