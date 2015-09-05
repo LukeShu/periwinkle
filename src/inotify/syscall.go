@@ -1,14 +1,11 @@
 package inotify
 
 import (
-	"C"
 	"os"
 	"syscall"
 )
 
-type Cint C.int
-
-func pathError(op string, path string, err error) error {
+func newPathError(op string, path string, err error) error {
 	if err == nil {
 		return nil
 	}
@@ -16,26 +13,26 @@ func pathError(op string, path string, err error) error {
 }
 
 /* Create and initialize inotify instance.  */
-func inotify_init() (Cint, error) {
+func inotify_init() (Fd, error) {
 	fd, errno := syscall.InotifyInit()
-	return Cint(fd), os.NewSyscallError("inotify_init", errno)
+	return Fd(fd), os.NewSyscallError("inotify_init", errno)
 }
 
 /* Create and initialize inotify instance.  */
-func inotify_init1(flags Cint) (Cint, error) {
-	fd, errno := syscall.InotifyInit1(int(flags))
-	return Cint(fd), os.NewSyscallError("inotify_init1", errno)
+func inotify_init1(flags int) (Fd, error) {
+	fd, errno := syscall.InotifyInit1(flags)
+	return Fd(fd), os.NewSyscallError("inotify_init1", errno)
 }
 
 /* Add watch of object NAME to inotify instance FD.  Notify about
    events specified by MASK.  */
-func inotify_add_watch(fd Cint, name string, mask uint32) (Cint, error) {
-	wd, errno := syscall.InotifyAddWatch(int(fd), name, mask)
-	return Cint(wd), pathError("inotify_add_watch", name, errno)
+func inotify_add_watch(fd Fd, name string, mask Mask) (Wd, error) {
+	wd, errno := syscall.InotifyAddWatch(int(fd), name, uint32(mask))
+	return Wd(wd), newPathError("inotify_add_watch", name, errno)
 }
 
 /* Remove the watch specified by WD from the inotify instance FD.  */
-func inotify_rm_watch(fd Cint, wd Cint) error {
+func inotify_rm_watch(fd Fd, wd Wd) error {
 	success, errno := syscall.InotifyRmWatch(int(fd), uint32(wd))
 	switch success {
 	case -1:
@@ -52,11 +49,11 @@ func inotify_rm_watch(fd Cint, wd Cint) error {
 	panic("should never happen")
 }
 
-func sysclose(fd Cint) error {
+func sysclose(fd Fd) error {
 	return os.NewSyscallError("close", syscall.Close(int(fd)))
 }
 
-func sysread(fd Cint, p []byte) (Cint, error) {
+func sysread(fd Fd, p []byte) (int, error) {
 	n, err := syscall.Read(int(fd), p)
-	return Cint(n), os.NewSyscallError("read", err)
+	return n, os.NewSyscallError("read", err)
 }

@@ -1,5 +1,7 @@
 package inotify
 
+import "sync/atomic"
+
 const (
 	// Flags for the parameter of InotifyInit1().
 	// These, oddly, appear to be 24-bit numbers.
@@ -7,8 +9,19 @@ const (
 	IN_NONBLOCK uint32 = 00004000
 )
 
-type Mask uint32
+// Logically, Fd and Wd should be 'int', not 'int64', to match the OS.
+// But, because there's no 'sync/atomic.SwapInt', we cast up to int64.
+type Wd int64
+type Fd int64
 
+func swapFd(addr *Fd, new Fd) (old Fd) {
+	return Fd(atomic.SwapInt64((*int64)(addr), int64(new)))
+}
+func loadFd(addr *Fd) Fd {
+	return Fd(atomic.LoadInt64((*int64)(addr)))
+}
+
+type Mask uint32
 const (
 	// Supported events suitable for the `mask` parameter of Inotify.AddWatch().
 	IN_ACCESS        Mask = (1<< 0) // File was accessed.
