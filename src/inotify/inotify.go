@@ -8,6 +8,7 @@ import (
 
 type Inotify struct {
 	fd       Fd
+	fdLock   sync.RWMutex
 
 	fullbuff [4096]byte
 	buff     []byte
@@ -40,15 +41,22 @@ func InotifyInit1(flags int) (*Inotify, error) {
 }
 
 func (o *Inotify) AddWatch(path string, mask Mask) (Wd, error) {
-	return inotify_add_watch(loadFd(&o.fd), path, mask)
+	o.fdLock.RLock()
+	defer o.fdLock.RUnlock()
+	return inotify_add_watch(o.fd, path, mask)
 }
 
 func (o *Inotify) RmWatch(wd Wd) error {
-	return inotify_rm_watch(loadFd(&o.fd), wd)
+	o.fdLock.RLock()
+	defer o.fdLock.RUnlock()
+	return inotify_rm_watch(o.fd, wd)
 }
 
 func (o *Inotify) Close() error {
-	return sysclose(swapFd(&o.fd, -1))
+	o.fdLock.Lock()
+	defer o.fdLock.Unlock()
+	defer func() { o.fd = -1; }()
+	return sysclose(o.fd)
 }
 
 func (o *Inotify) Read() (Event, error) {
@@ -56,7 +64,9 @@ func (o *Inotify) Read() (Event, error) {
 	defer o.buffLock.Unlock()
 
 	if len(o.buff) == 0 {
-		len, err := sysread(loadFd(&o.fd), o.buff)
+		o.fdLock.RLock()
+		len, err := sysread(o.fd, o.fullbuff[:])
+		o.fdLock.RUnlock()
 		if len == 0 {
 			return Event{Wd: -1}, o.Close()
 		} else if len < 0 {
