@@ -3,8 +3,8 @@ package inotify
 const (
 	// Flags for the parameter of InotifyInit1().
 	// These, oddly, appear to be 24-bit numbers.
-	IN_CLOEXEC  uint32 = 02000000
-	IN_NONBLOCK uint32 = 00004000
+	IN_CLOEXEC  int = 02000000
+	IN_NONBLOCK int = 00004000
 )
 
 type Fd int
