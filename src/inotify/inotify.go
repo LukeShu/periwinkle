@@ -1,16 +1,15 @@
 package inotify
 
 import (
+	"sync"
 	"syscall"
 	"unsafe"
-	"sync"
 )
 
 type Inotify struct {
 	fd       Fd
 	fdLock   sync.RWMutex
-
-	fullbuff [4096]byte
+	buffFull [4096]byte
 	buff     []byte
 	buffLock sync.Mutex
 }
@@ -27,7 +26,7 @@ func InotifyInit() (*Inotify, error) {
 	o := Inotify{
 		fd: fd,
 	}
-	o.buff = o.fullbuff[:0]
+	o.buff = o.buffFull[:0]
 	return &o, err
 }
 
@@ -36,7 +35,7 @@ func InotifyInit1(flags int) (*Inotify, error) {
 	o := Inotify{
 		fd: fd,
 	}
-	o.buff = o.fullbuff[:0]
+	o.buff = o.buffFull[:0]
 	return &o, err
 }
 
@@ -55,7 +54,7 @@ func (o *Inotify) RmWatch(wd Wd) error {
 func (o *Inotify) Close() error {
 	o.fdLock.Lock()
 	defer o.fdLock.Unlock()
-	defer func() { o.fd = -1; }()
+	defer func() { o.fd = -1 }()
 	return sysclose(o.fd)
 }
 
@@ -65,14 +64,14 @@ func (o *Inotify) Read() (Event, error) {
 
 	if len(o.buff) == 0 {
 		o.fdLock.RLock()
-		len, err := sysread(o.fd, o.fullbuff[:])
+		len, err := sysread(o.fd, o.buffFull[:])
 		o.fdLock.RUnlock()
 		if len == 0 {
 			return Event{Wd: -1}, o.Close()
 		} else if len < 0 {
 			return Event{Wd: -1}, err
 		}
-		o.buff = o.fullbuff[0:len]
+		o.buff = o.buffFull[0:len]
 	}
 
 	raw := (*syscall.InotifyEvent)(unsafe.Pointer(&o.buff[0]))

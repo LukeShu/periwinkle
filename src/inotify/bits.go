@@ -11,6 +11,7 @@ type Fd int
 type Wd int
 
 type Mask uint32
+
 const (
 	// Supported events suitable for the `mask` parameter of Inotify.AddWatch().
 	IN_ACCESS        Mask = (1<< 0) // File was accessed.
