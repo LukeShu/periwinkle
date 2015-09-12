@@ -7,10 +7,8 @@ const (
 	IN_NONBLOCK uint32 = 00004000
 )
 
-// Logically, Fd and Wd should be 'int', not 'int64', to match the OS.
-// But, because there's no 'sync/atomic.SwapInt', we cast up to int64.
-type Fd int64
-type Wd int64
+type Fd int
+type Wd int
 
 type Mask uint32
 const (
