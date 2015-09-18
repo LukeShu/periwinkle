@@ -1,3 +1,24 @@
+// Copyright (C) 2015 Luke Shumaker
+//
+// Many of the comments in this file are taken from the GNU libc
+// header file <sys/inotify.h>
+//
+// Copyright (C) 2005-2015 Free Software Foundation, Inc.
+//
+// The GNU C Library is free software; you can redistribute it and/or
+// modify it under the terms of the GNU Lesser General Public
+// License as published by the Free Software Foundation; either
+// version 2.1 of the License, or (at your option) any later version.
+//
+// The GNU C Library is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// Lesser General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public
+// License along with the GNU C Library; if not, see
+// <http://www.gnu.org/licenses/>.
+
 package inotify
 
 const (
@@ -7,39 +28,39 @@ const (
 	IN_NONBLOCK int = 00004000
 )
 
-type Fd int
-type Wd int
+type file int // File Descriptor
+type Wd int   // Watch Descriptor
 
 type Mask uint32
 
 const (
 	// Supported events suitable for the `mask` parameter of Inotify.AddWatch().
-	IN_ACCESS        Mask = (1<< 0) // File was accessed.
-	IN_MODIFY        Mask = (1<< 1) // File was modified.
-	IN_ATTRIB        Mask = (1<< 2) // Metadata changed.
-	IN_CLOSE_WRITE   Mask = (1<< 3) // Writtable file was closed.
-	IN_CLOSE_NOWRITE Mask = (1<< 4) // Unwrittable file closed.
-	IN_OPEN          Mask = (1<< 5) // File was opened.
-	IN_MOVED_FROM    Mask = (1<< 6) // File was moved from X.
-	IN_MOVED_TO      Mask = (1<< 7) // File was moved to Y.
-	IN_CREATE        Mask = (1<< 8) // Subfile was created.
-	IN_DELETE        Mask = (1<< 9) // Subfile was deleted.
-	IN_DELETE_SELF   Mask = (1<<10) // Self was deleted.
-	IN_MOVE_SELF     Mask = (1<<11) // Self was moved.
+	IN_ACCESS        Mask = (1 << 0)  // File was accessed.
+	IN_MODIFY        Mask = (1 << 1)  // File was modified.
+	IN_ATTRIB        Mask = (1 << 2)  // Metadata changed.
+	IN_CLOSE_WRITE   Mask = (1 << 3)  // Writtable file was closed.
+	IN_CLOSE_NOWRITE Mask = (1 << 4)  // Unwrittable file closed.
+	IN_OPEN          Mask = (1 << 5)  // File was opened.
+	IN_MOVED_FROM    Mask = (1 << 6)  // File was moved from X.
+	IN_MOVED_TO      Mask = (1 << 7)  // File was moved to Y.
+	IN_CREATE        Mask = (1 << 8)  // Subfile was created.
+	IN_DELETE        Mask = (1 << 9)  // Subfile was deleted.
+	IN_DELETE_SELF   Mask = (1 << 10) // Self was deleted.
+	IN_MOVE_SELF     Mask = (1 << 11) // Self was moved.
 
 	// Events that appear in output without subscribing to them.
-	IN_UNMOUNT       Mask = (1<<13) // Backing fs was unmounted.
-	IN_Q_OVERFLOW    Mask = (1<<14) // Event queued overflowed.
-	IN_IGNORED       Mask = (1<<15) // File was ignored (expect no more events).
+	IN_UNMOUNT    Mask = (1 << 13) // Backing fs was unmounted.
+	IN_Q_OVERFLOW Mask = (1 << 14) // Event queued overflowed.
+	IN_IGNORED    Mask = (1 << 15) // File was ignored (expect no more events).
 
 	// Special flags that you may pass to Inotify.AddWatch()...
 	// except for IN_ISDIR, which is a flag that is set on output events.
-	IN_ONLYDIR       Mask = (1<<24) // Only watch the path if it is a directory.
-	IN_DONT_FOLLOW   Mask = (1<<25) // Do not follow a sym link.
-	IN_EXCL_UNLINK   Mask = (1<<26) // Exclude events on unlinked objects.
-	IN_MASK_ADD      Mask = (1<<29) // Add to the mask of an already existing watch.
-	IN_ISDIR         Mask = (1<<30) // Event occurred against dir.
-	IN_ONESHOT       Mask = (1<<31) // Only send event once.
+	IN_ONLYDIR     Mask = (1 << 24) // Only watch the path if it is a directory.
+	IN_DONT_FOLLOW Mask = (1 << 25) // Do not follow a sym link.
+	IN_EXCL_UNLINK Mask = (1 << 26) // Exclude events on unlinked objects.
+	IN_MASK_ADD    Mask = (1 << 29) // Add to the mask of an already existing watch.
+	IN_ISDIR       Mask = (1 << 30) // Event occurred against dir.
+	IN_ONESHOT     Mask = (1 << 31) // Only send event once.
 
 	// Convenience macros */
 	IN_CLOSE      Mask = (IN_CLOSE_WRITE | IN_CLOSE_NOWRITE) // Close.
