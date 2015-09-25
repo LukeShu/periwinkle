@@ -17,7 +17,8 @@ func handle(maildir md.Maildir) {
 		if err != nil {
 			continue
 		}
-		// TODO: do stuff with cur
+		// TODO: Add data about `cur` to the RDBMS, and add it
+		// to the outgoing queue as nescessary.
 		cur.SetInfo("foo")
 	}
 }
