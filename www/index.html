@@ -15,7 +15,33 @@
 </head>
 <body>
 
-	<div ng-view></div>
+	<div ng-app="periwinkleApp"><md-content>
+		
+		<md-toolbar><div class="md-toolbar-tools">
+			<md-button ng-if="$scope.show_settings" class="md-icon-button" aria-label="Settings">
+				<md-icon md-svg-icon="img/icons/menu.svg"></md-icon>
+			</md-button>
+			
+			<h2 id="title">
+				<span>{{ $scope.title }}</span>
+			</h2>
+			
+			<!-- central gap -->
+			<span flex=""></span>
+			
+			<span ng-repeat="b in $scope.toolbar_buttons">
+				<md-button class="md-icon-button" ng-attr-aria-label="{{ b.label }">
+					<md-icon ng-attr-md-svg-icon="{{ b.img_src }}"></md-icon>
+				</md-button>
+			</span>
+			<md-button ng-ig="$scope.expand_menu" class="md-icon-button" aria-label="More">
+				<md-icon md-svg-icon="img/icons/more_vert.svg"></md-icon>
+			</md-button>
+		</div></md-toolbar>
+		
+		<div ng-view></div>
+	
+	</md-content></div>
 
 </body>
 </html>
