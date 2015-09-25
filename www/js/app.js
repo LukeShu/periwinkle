@@ -1,7 +1,14 @@
 var periwinkleApp = angular.module('periwinkleApp', [
 	'ngRoute',
-	'periwinkleControllers'
+	'periwinkleControllers',
+	'ngMaterial'
 ]);
+
+periwinkleApp.config(function($mdThemingProvider){
+	$mdThemingProvider.theme('default')
+		.primaryPalette('deep-purple')
+		.accentPalette('cyan');
+});
 
 periwinkleApp.config(['$routeProvider',
 	function($routeProvider) {
