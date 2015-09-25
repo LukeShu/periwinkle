@@ -30,7 +30,7 @@ periwinkleApp.config(['$routeProvider',
 			controller:		'SettingsController'
 		}).
 		otherwise({
-			redirectTo:	'/login'
+			//redirectTo:	'/login'
 		})
 	}
-]});
+]);
