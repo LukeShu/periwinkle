@@ -28,13 +28,15 @@ gosrc = $(shell find -L src -name '.*' -prune -o \( -type f \( $(foreach e,$(goe
 # Iterate over external dependencies, and create a rule to download it
 $(foreach d,$(deps),$(eval src/$d: $(NET); GOPATH='$(topdir)' go get -d -u $d))
 
+all: bin
+.PHONY: all
+
 # The rule to build the Go code.  The first line nukes the built files
 # if there is a discrepancy between Make and Go's internal
 # dependency tracker.
-all: $(gosrc) $(deps) $(addprefix .var.,$(cgo_variables))
-	@true $(foreach f,$(filter .var.%,$^), && test $@ -nt $f ) || rm -rf -- bin pkg
+bin pkg: $(gosrc) $(deps) $(addprefix .var.,$(cgo_variables))
+	@true $(foreach f,$(filter-out .var.%,$^), && test $@ -nt $f ) || rm -rf -- bin pkg
 	GOPATH='$(topdir)' go install $(packages)
-.PHONY: all
 
 # Rule to nuke everything
 clean:
@@ -45,7 +47,7 @@ clean:
 # so that if you change them in a way that would cause something to be
 # rebuilt, then Make knows.
 .var.%: FORCE
-	 printf '%s' '$($*)' > .tmp$@ && { cmp -s .tmp$@ $@ && rm -f -- .tmp$@ || mv -Tf .tmp$@ $@; } || { rm -f -- .tmp$@; false; }
+	@printf '%s' '$($*)' > .tmp$@ && { cmp -s .tmp$@ $@ && rm -f -- .tmp$@ || mv -Tf .tmp$@ $@; } || { rm -f -- .tmp$@; false; }
 
 # Boilerplate
 .SECONDARY:
