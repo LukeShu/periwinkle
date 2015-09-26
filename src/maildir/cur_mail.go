@@ -4,26 +4,26 @@
 package maildir
 
 import (
+	"fmt"
 	"io"
 	"os"
-	"fmt"
+	"path/filepath"
 	"strings"
 	"syscall"
-	"path/filepath"
 )
 
 type CurMail struct {
-	md Maildir
+	md   Maildir
 	uniq Unique
 	info string
 }
 
 func (m *CurMail) path() string {
-	return string(m.md)+"/cur/"+string(m.uniq)+":"+m.info
+	return string(m.md) + "/cur/" + string(m.uniq) + ":" + m.info
 }
 
 func (md Maildir) Open(u Unique) (mail CurMail, err error) {
-	matches, err := filepath.Glob(string(md)+"/cur/"+string(u)+":*")
+	matches, err := filepath.Glob(string(md) + "/cur/" + string(u) + ":*")
 	if err != nil {
 		return
 	}
@@ -60,7 +60,7 @@ func (m *CurMail) SetInfo(info string) error {
 	}
 	return err
 }
-	
+
 func (m *CurMail) Delete() error {
 	return syscall.Unlink(m.path())
 }

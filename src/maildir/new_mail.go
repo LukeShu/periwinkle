@@ -15,6 +15,7 @@ import (
 )
 
 var num_deliveries = big.NewInt(0)
+
 func newUnique() Unique {
 	now := time.Now()
 
@@ -33,7 +34,7 @@ func newUnique() Unique {
 		delivery_id += fmt.Sprintf("R%x", random_data)
 	}
 	// delivery_id += fmt.Sprintf("I%x", inode) // inodes are hard in go
-	delivery_id += fmt.Sprintf("M%d", (now.UnixNano() / 1000) - (now.Unix() * 1000000))
+	delivery_id += fmt.Sprintf("M%d", (now.UnixNano()/1000)-(now.Unix()*1000000))
 	delivery_id += fmt.Sprintf("P%d", os.Getpid())
 	delivery_id += fmt.Sprintf("Q%v", num_deliveries)
 	num_deliveries.Add(big.NewInt(1), num_deliveries)
@@ -42,9 +43,9 @@ func newUnique() Unique {
 }
 
 type mailWriter struct {
-	md Maildir
+	md     Maildir
 	unique Unique
-	file *os.File
+	file   *os.File
 }
 
 func (w *mailWriter) Close() error {
@@ -55,7 +56,7 @@ func (w *mailWriter) Close() error {
 	err = os.Link(string(w.md)+"/tmp/"+string(w.unique),
 	              string(w.md)+"/new/"+string(w.unique))
 end:
-	syscall.Unlink(string(w.md)+"/tmp/"+string(w.unique))
+	syscall.Unlink(string(w.md) + "/tmp/" + string(w.unique))
 	return err
 }
 
@@ -65,14 +66,14 @@ func (w *mailWriter) Write(p []byte) (n int, err error) {
 
 func (md Maildir) NewMail() io.WriteCloser {
 	unique := newUnique()
-	file, err := os.OpenFile(string(md)+"/tmp/"+string(unique), os.O_WRONLY | os.O_CREATE, 0666)
+	file, err := os.OpenFile(string(md)+"/tmp/"+string(unique), os.O_WRONLY|os.O_CREATE, 0666)
 	if err != nil {
 		return nil
 	}
 	ret := &mailWriter{
-		md: md,
+		md:     md,
 		unique: newUnique(),
-		file: file,
+		file:   file,
 	}
 	go func() {
 		time.Sleep(24 * time.Hour)

@@ -6,14 +6,14 @@ package maildir
 // + b u i l d !linux
 
 import (
-	"time"
 	"cfg"
+	"time"
 )
 
 func Main() {
 	md := cfg.IncomingMail
 	for {
-		time.Sleep(time.Second/5)
+		time.Sleep(time.Second / 5)
 		handle(md)
 	}
 }
