@@ -14,19 +14,19 @@ periwinkleApp.config(['$routeProvider',
 	function($routeProvider) {
 		$routeProvider.
 		when('/login', {
-			templateUrl:	'templates/login.html',
+			templateUrl:	'src/login/login.html',
 			controller:		'LoginController'
 		}).
 		when('/dashboard', {
-			templateUrl:	'templates/dashboard.html',
+			templateUrl:	'src/dashboard/dashboard.html',
 			controller:		'DashboardController'
 		}).
 		when('/messaages/:groupid', {
-			templateURL:	'templates/messages.html',
+			templateURL:	'src/messages/messages.html',
 			controller:		'MessaagesController'
 		}).
 		when('/settings', {
-			templateUrl:	'templates/settings.html',
+			templateUrl:	'src/settings/settings.html',
 			controller:		'SettingsController'
 		}).
 		otherwise({
