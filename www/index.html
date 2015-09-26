@@ -5,6 +5,7 @@
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.5/angular.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.5/angular-animate.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.5/angular-aria.min.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.5/angular-cookies.js"></script>
     <!-- Angular Material -->
     <script src="https://ajax.googleapis.com/ajax/libs/angular_material/0.11.0/angular-material.min.js"></script>
 	<link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/angular_material/0.11.0/angular-material.min.css"/>
@@ -16,38 +17,24 @@
 	<script src="src/controllers.js"></script>
 	<link rel="stylesheet" href="assets/app.css"/>
 	<!-- All modules -->
+	<script src="src/login/Login.js"></script>
+	<script src="src/login/LoginController.js"></script>
 	
 	<meta name="viewport" content="initial-scale=1" />
+	<meta name="theme-color" content="#673AB7">
 </head>
-<body ng-app="periwinkleApp" ng-init="toolbar.title = 'Title';">
-	<!-- side bar -->
-
-	<!-- toolbar -->
-	<md-toolbar><div class="md-toolbar-tools">
-		<md-button ng-if="toolbar.show_settings" class="md-icon-button" aria-label="Settings">
-			<md-icon md-svg-icon="img/icons/menu.svg"></md-icon>
-		</md-button>
-		
-		<h2 id="title">
-			<span>{{ toolbar.title }}</span>
-		</h2>
-		
-		<!-- central gap -->
-		<span flex=""></span>
-		
-		<span ng-repeat="b in toolbar.buttons">
-			<md-button class="md-icon-button" ng-attr-aria-label="{{ b.label }">
-				<md-icon ng-attr-md-svg-icon="{{ b.img_src }}"></md-icon>
-			</md-button>
-		</span>
-		<md-button ng-if="toolbar.expand_menu" class="md-icon-button" aria-label="More">
-			<md-icon md-svg-icon="img/icons/more_vert.svg"></md-icon>
-		</md-button>
-	</div></md-toolbar>
-	
+<body ng-app="periwinkleApp" ng-init="toolbar.title = 'Title is shit'; toolbar.exists = true; sidenav.exists = true;">
+	<!-- head -->
+	<div ng-include="'src/head.html'"></div>	
 	<!-- body -->
 	<md-content class="md-padding">
 	<div ng-view></div>
 	</md-content>
+	
+	<!-- Warning for no-js users -->
+	<div ng-if="false" style="border-color: black; border-width: .5mm; margin-left: auto; margin-right: auto; margin-top: 5em; padding: 1em; text-align: center;">
+		<p>This site requires javascript to funciton.  <br/>Please enable it to proceed.</p>
+	<div>
+	
 </body>
 </html>
