@@ -110,6 +110,9 @@ is returned.
 		the `login` and `password` do not match a user, an HTTP 401
 		("Unauthorized") response is returned.
 
+		A `DELETE` request ends the current session (if there is one),
+		and returns an HTTP 204 ("No Content") response.
+
 	* `/s/%{identifier}` [`GET`]
 
 		The `/s/` directory is for shortened URLs; a `GET` request to
