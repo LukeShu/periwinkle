@@ -5,7 +5,7 @@ NET ?= NET
 packages = listener
 
 # set deps to be a list of import strings of external packages we need to import
-deps =
+deps = github.com/go-sql-driver/mysql
 
 
 default: all
@@ -34,7 +34,7 @@ all: bin
 # The rule to build the Go code.  The first line nukes the built files
 # if there is a discrepancy between Make and Go's internal
 # dependency tracker.
-bin pkg: $(gosrc) $(deps) $(addprefix .var.,$(cgo_variables))
+bin pkg: $(gosrc) $(addprefix src/,$(deps)) $(addprefix .var.,$(cgo_variables))
 	@true $(foreach f,$(filter-out .var.%,$^), && test $@ -nt $f ) || rm -rf -- bin pkg
 	GOPATH='$(topdir)' go install $(packages)
 
