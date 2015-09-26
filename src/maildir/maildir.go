@@ -5,9 +5,9 @@ package maildir
 
 import (
 	"os"
-	"time"
 	"strings"
 	"syscall"
+	"time"
 )
 
 type Maildir string
@@ -16,7 +16,7 @@ type Unique string
 
 func (md Maildir) Clean() error {
 	// TODO: remove files in `md+"/tmp/"` not accessed in 36 hours
-	dir, err := os.Open(string(md)+"/tmp")
+	dir, err := os.Open(string(md) + "/tmp")
 	if err != nil {
 		return err
 	}
@@ -32,7 +32,7 @@ func (md Maildir) Clean() error {
 		// atime/mtime/ctime.
 		atime := time.Now()
 		if time.Since(atime) > (36 * time.Hour) {
-			path := string(md)+"/tmp/"+fileinfo.Name()
+			path := string(md) + "/tmp/" + fileinfo.Name()
 			err1 := syscall.Unlink(path)
 			if err1 != nil {
 				err = &os.PathError{Op: "unlink", Path: path, Err: err1}
@@ -43,7 +43,7 @@ func (md Maildir) Clean() error {
 }
 
 func (md Maildir) ListNew() (mails []Unique, err error) {
-	dir, err := os.Open(string(md)+"/new")
+	dir, err := os.Open(string(md) + "/new")
 	if err != nil {
 		return
 	}
@@ -59,7 +59,7 @@ func (md Maildir) ListNew() (mails []Unique, err error) {
 }
 
 func (md Maildir) ListCur() (mails []CurMail, err error) {
-	dir, err := os.Open(string(md)+"/cur")
+	dir, err := os.Open(string(md) + "/cur")
 	if err != nil {
 		return
 	}
