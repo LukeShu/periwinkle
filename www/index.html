@@ -16,51 +16,22 @@
 	<script src="src/controllers.js"></script>
 	<link rel="stylesheet" href="assets/app.css"/>
 	<!-- All modules -->
+	<script src="src/login/login_controller.js"></script>
 	
 	<meta name="viewport" content="initial-scale=1" />
 </head>
-<body ng-app="periwinkleApp" ng-init="toolbar.title = 'Title is shit'; toolbar.exists = true; sidenav.exists = false; sidenav.items = [];">
-	<!-- side bar -->
-	<md-sidenav class="site-sidenav md-sidenav-left" md-component-id="left" md-is-locked-open="$mdMedia('get-sm')" ng-if="sidenav.exists">
-		<md-toolbar>
-			<!-- sidenav toolbar (should be like on android) -->
-		</md-toolbar>
-		
-		<md-lisit>
-			<md-list-item ng-repeat="sni in sidenav.items">
-				<md-button ng-click="sni.click()" ng-class="{'selected' : it === sidenav.selected}">
-					<md-icon md-svg-icon="{{sni.icon}}"></md-icon>
-				</md-button>
-			</md-list-item>
-		</md-lisit>
-	</md-sidenav>
-	
-	<!-- toolbar -->
-	<md-toolbar ng-if="toolbar.exists" class="md-toolbar-tools">
-		<md-button ng-if="sidenav.exists" class="md-icon-button" aria-label="Settings">
-			<md-icon md-svg-icon="img/icons/menu.svg"></md-icon>
-		</md-button>
-		
-		<h2 id="title">
-			<span>{{ toolbar.title }}</span>
-		</h2>
-		
-		<!-- central gap -->
-		<span flex=""></span>
-		
-		<span ng-repeat="b in toolbar.buttons">
-			<md-button class="md-icon-button" ng-attr-aria-label="{{ b.label }">
-				<md-icon ng-attr-md-svg-icon="{{ b.img_src }}"></md-icon>
-			</md-button>
-		</span>
-		<md-button ng-if="expand_menu.exists" class="md-icon-button" aria-label="More">
-			<md-icon md-svg-icon="img/icons/more_vert.svg"></md-icon>
-		</md-button>
-	</div></md-toolbar>
-	
+<body ng-app="periwinkleApp" ng-init="toolbar.title = 'Title is shit'; toolbar.exists = true; sidenav.exists = true;">
+	<!-- head -->
+	<div ng-include="'src/head.html'"></div>	
 	<!-- body -->
 	<md-content class="md-padding">
 	<div ng-view></div>
 	</md-content>
+	
+	<!-- Warning for no-js users -->
+	<div ng-show="false" style="border-color: black; border-width: .5mm; margin-left: auto; margin-right: auto; margin-top: 5em; padding: 1em; text-align: center;">
+		<p>This site requires javascript to funciton.  <br/>Please enable it to proceed.</p>
+	<div>
+	
 </body>
 </html>
