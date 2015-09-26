@@ -1,7 +1,8 @@
 var periwinkleApp = angular.module('periwinkleApp', [
 	'ngRoute',
 	'periwinkleControllers',
-	'ngMaterial'
+	'ngMaterial',
+	'ngCookies'
 ]);
 
 periwinkleApp.config(function($mdThemingProvider){
