@@ -1,4 +1,4 @@
-(function(){
+﻿(function(){
   angular
 		.module('login')
 		.controller('LoginController', ['$cookies', '$http', '$scope', LoginController]); 
@@ -6,6 +6,7 @@
 	function LoginController($cookies, $http, $scope) {
 		this.username = '';
 		this.password = '';
+		
 		var sessionID = $cookies.get("sessionID");
 		if(sessionID !== undefined) {
 			//show loading spinner
@@ -19,6 +20,10 @@
 		
 		function login() {
 			//http login api call
+		}
+		
+		function signup() {
+			
 		}
 	}
 })();
