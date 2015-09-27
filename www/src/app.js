@@ -11,7 +11,7 @@
 	periwinkleApp.config(function($mdThemingProvider){
 		$mdThemingProvider.theme('default')
 			.primaryPalette('deep-purple')
-			.accentPalette('cyan');
+			.accentPalette('teal');
 	});
 
 	periwinkleApp.config(['$routeProvider', '$locationProvider',
