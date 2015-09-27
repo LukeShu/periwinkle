@@ -14,7 +14,7 @@
 	<script src= "http://ajax.googleapis.com/ajax/libs/angularjs/1.4.5/angular-route.min.js"></script>
 	<!-- Periwinkle imcludes -->
 	<script src="src/app.js"></script>
-	<script src="src/controllers.js"></script>
+	<script src="src/controller.js"></script>
 	<link rel="stylesheet" href="assets/app.css"/>
 	<!-- All modules -->
 	<script src="src/login/Login.js"></script>
@@ -23,7 +23,7 @@
 	<meta name="viewport" content="initial-scale=1" />
 	<meta name="theme-color" content="#673AB7">
 </head>
-<body ng-app="periwinkleApp" ng-init="toolbar.title = 'Title is shit'; toolbar.exists = true; sidenav.exists = true;">
+<body ng-app="periwinkleApp" ng-controller="PeriwinkleController">
 	<!-- head -->
 	<div ng-include="'src/head.html'"></div>	
 	<!-- body -->

@@ -27,11 +27,11 @@
 	<span flex=""></span>
 	
 	<span ng-repeat="b in toolbar.buttons">
-		<md-button class="md-icon-button" ng-attr-aria-label="{{ b.label }">
-			<md-icon ng-attr-md-svg-icon="{{ b.img_src }}"></md-icon>
+		<md-button class="md-icon-button" ng-attr-aria-label="{{ b.label }}" ng-click="toolbar.onclick($index)">
+			<md-icon md-svg-icon="{{ b.img_src }}"></md-icon>
 		</md-button>
 	</span>
-	<md-button ng-if="expand_menu.exists" class="md-icon-button" aria-label="More">
+	<md-button ng-if="expandMenu.exists" class="md-icon-button" aria-label="More">
 		<md-icon md-svg-icon="assets/svg/more_vert.svg"></md-icon>
 	</md-button>
 </div></md-toolbar>
