@@ -13,7 +13,9 @@
 			};
 			$scope.toolbar = {
 				exists: true,
-				title: ''
+				title: '',
+				buttons: [],
+				onclick: function(){}
 			};
 			$scope.expandMenu = {
 				exists: false

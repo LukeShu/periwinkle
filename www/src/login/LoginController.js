@@ -49,6 +49,8 @@
 		
 		this.togleSignup = function () {
 			self.isSignup = !self.isSignup;
+			self.username = '';
+			self.password = '';
 			if(self.isSignup) {
 				$scope.toolbar.title = 'Sign Up';
 			} else {
