@@ -60,7 +60,7 @@ func getUserByUserId(user_id int)(*User, error){
 	}
 }
 
-func getUserByAddress(address int)(*User, error){
+func getUserByAddress(address string)(*User, error){
 	var user User
 	err := con.QueryRow("select * from users where address=?",address).Scan(&user)
 	switch {
