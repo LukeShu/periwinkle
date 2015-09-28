@@ -6,7 +6,7 @@ import _ "github.com/go-sql-driver/mysql"
 
 type User struct{
 	id int
-	userId int
+	user_id int
 	name string
 	medium int
 	address string
@@ -29,8 +29,48 @@ func getUserById(id int) (*User, error) {
 }
 
 // grab User object by name
-func getUserByName(){}
+func getUserByName(name string)(*User, error){
+	var user User
+	err := con.QueryRow("select * from users where name=?",name).Scan(&user)
+	switch {
+		case err == sql.ErrNoRows:
+			//user does not exist
+			return nil, nil
+		case err != nil:
+			//error talking to the DB
+			return nil, err
+		default:
+			return &user, nil
+	}
+}
 
 // grab User by user_id
-func getUserByUserId(){}
+func getUserByUserId(user_id int)(*User, error){
+	var user User
+	err := con.QueryRow("select * from users where user_id=?",user_id).Scan(&user)
+	switch {
+		case err == sql.ErrNoRows:
+			//user does not exist
+			return nil, nil
+		case err != nil:
+			//error talking to the DB
+			return nil, err
+		default:
+			return &user, nil
+	}
+}
 
+func getUserByAddress(address int)(*User, error){
+	var user User
+	err := con.QueryRow("select * from users where address=?",address).Scan(&user)
+	switch {
+		case err == sql.ErrNoRows:
+			//user does not exist
+			return nil, nil
+		case err != nil:
+			//error talking to the DB
+			return nil, err
+		default:
+			return &user, nil
+	}
+}
