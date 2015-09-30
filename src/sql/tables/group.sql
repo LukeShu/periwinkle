@@ -1,0 +1,1 @@
+create table `group` (`id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT, `name` VARCHAR(50) NOT NULL, PRIMARY KEY (`id`)) ENGINE=MyISAM;
