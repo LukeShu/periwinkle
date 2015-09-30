@@ -1,0 +1,2 @@
+create table `medium` (`id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT, 
+	PRIMARY KEY (`id`)) ENGINE=MyISAM;
