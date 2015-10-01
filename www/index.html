@@ -1,5 +1,5 @@
 ﻿<!DOCTYPE html>
-<html>
+<html ng-app="periwinkleApp" ng-controller="PeriwinkleController">
 <head>
 	<!-- Angular Material Dependencies -->
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.5/angular.min.js"></script>
@@ -27,8 +27,9 @@
 	
 	<meta name="viewport" content="initial-scale=1" />
 	<meta name="theme-color" content="#673AB7">
+	<title ng-bind="'Periwinkle &mdash; ' + ( toolbar.title | translate )">Periwinkle</title>
 </head>
-<body ng-app="periwinkleApp" ng-controller="PeriwinkleController">
+<body>
 	<!-- head -->
 	<div ng-include="'src/head.html'"></div>	
 	<!-- body -->

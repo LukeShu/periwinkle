@@ -15,7 +15,7 @@
 		self.password = '';
 		self.isSignup = false;
 		//prep the toolbar
-		$scope.toolbar.title = 'Login';
+		$scope.toolbar.title = 'LOGIN';
 		/*$scope.toolbar.buttons = [{
 			label: "Signup",
 			img_src: "assets/svg/phone.svg",
@@ -52,9 +52,9 @@
 			self.username = '';
 			self.password = '';
 			if(self.isSignup) {
-				$scope.toolbar.title = 'Sign Up';
+				$scope.toolbar.title = 'SIGNUP.SIGNUP';
 			} else {
-				$scope.toolbar.title = 'Login';
+				$scope.toolbar.title = 'LOGIN';
 			}
 		}
 	}
