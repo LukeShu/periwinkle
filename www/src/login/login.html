@@ -3,28 +3,28 @@
 		<md-card-content>
 			<div layout="column">
 				<md-input-container>
-					<label>Username</label>
+					<label>{{ "USERNAME" | translate }}</label>
 					<input ng-model="login.username" type="email"></input>
 				</md-input-container>
 				<md-input-container>
-					<label>Password</label>
+					<label>{{ "PASSWORD" | translate }}</label>
 					<input ng-model="login.password" type="password"></input>
 				</md-input-container>
 			</div>
 		</md-card-content>
 		<div layout="row" layout-align="end center">
 			<md-button class="md-button md-primary" aria-label="Sign Up" ng-click="login.login()">
-				Login
+				{{ "LOGIN" | translate }}
 			</md-button>
 		</div>
 	</md-card>
 	
 	<md-card style="max-width: 25em; margin-left: auto; margin-right: auto;" layout="row" layout-align="space-between center">
 		<md-card-content>
-			<p>Not a user yet?</p>
+			<p>{{ "SIGNUP.NOT_A_USER" | translate }}</p>
 		</md-card-content>
 		<md-button class="md-button md-primary" aria-label="Sign Up" ng-click="login.togleSignup()">
-			Sign Up
+			{{ "SIGNUP.SIGNUP" | translate }}
 		</md-button>
 	</md-card>
 </div>
@@ -34,28 +34,28 @@
 		<md-card-content>
 			<div layout="column">
 				<md-input-container>
-					<label>Username</label>
+					<label>{{ "USERNAME" | translate }}</label>
 					<input ng-model="login.username" type="email"></input>
 				</md-input-container>
 				<md-input-container>
-					<label>Password</label>
+					<label>{{ "PASSWORD" | translate }}</label>
 					<input ng-model="login.password" type="password"></input>
 				</md-input-container>
 			</div>
 		</md-card-content>
 		<div layout="row" layout-align="end center">
 			<md-button class="md-button md-primary" aria-label="Sign Up" ng-click="login.signup()">
-				Sign Up
+				{{ "SIGNUP.SIGNUP" | translate }}
 			</md-button>
 		</div>
 	</md-card>
 	
 	<md-card style="max-width: 25em; margin-left: auto; margin-right: auto;"  layout="row" layout-align="space-between center">
 		<md-card-content>
-			<p>Already a member?</p>
+			<p>{{ "SIGNUP.ALREADY_MEMBER" | translate }}</p>
 		</md-card-content>
 		<md-button class="md-button md-primary" aria-label="Sign Up" ng-click="login.togleSignup()">
-			Login
+			{{ "LOGIN" | translate }}
 		</md-button>
 	</md-card>
 </div>

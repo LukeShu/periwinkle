@@ -3,6 +3,7 @@
 		'ngRoute',
 		'ngMaterial',
 		'ngCookies',
+		'pascalprecht.translate',
 		//periwinkle modules
 		'periwinkle',
 		'login'
@@ -13,6 +14,13 @@
 			.primaryPalette('deep-purple')
 			.accentPalette('teal');
 	});
+	
+	periwinkleApp.config(['$translateProvider', function($translateProvider) {
+		$translateProvider
+			.translations('en', localised.en)
+			.translations('it', localised.it)
+			.preferredLanguage('it');
+	}]);
 
 	periwinkleApp.config(['$routeProvider', '$locationProvider',
 		function($routeProvider, $locationProvider) {

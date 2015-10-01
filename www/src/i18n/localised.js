@@ -1,0 +1,4 @@
+var localised = {
+	en: {},
+	it: {}
+}
