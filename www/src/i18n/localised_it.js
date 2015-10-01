@@ -4,7 +4,7 @@ localised.it = {
 	LOGIN:		"Accedi",
 	SIGNUP: {
 		SIGNUP:			"Inscriviti",
-		NOT_A_USER:		"Non sei un utente ",
+		NOT_A_USER:		"Non sei un utente?",
 		ALREADY_USER:	"Sei già un utente?"
 	}
 };
