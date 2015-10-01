@@ -1,7 +1,8 @@
 localised.it = {
-	USERNAME:	"Nome utente",
-	PASSWORD:	"Password",
-	LOGIN:		"Accedi",
+	USERNAME_EMAIL:	"Nome utente o email",
+	USERNAME:		"Nome utente",
+	PASSWORD:		"Password",
+	LOGIN:			"Accedi",
 	SIGNUP: {
 		SIGNUP:			"Inscriviti",
 		NOT_A_USER:		"Non sei un utente?",

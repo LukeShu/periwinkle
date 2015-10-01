@@ -18,8 +18,9 @@
 	periwinkleApp.config(['$translateProvider', function($translateProvider) {
 		$translateProvider
 			.translations('en', localised.en)
-			.translations('it', localised.it)
-			.preferredLanguage('it');
+			.translations('it', localised.it);
+		$translateProvider.fallbackLanguage('en');
+		$translateProvider.use(lang);
 	}]);
 
 	periwinkleApp.config(['$routeProvider', '$locationProvider',
