@@ -49,6 +49,10 @@ func (md Maildir) Acknowledge(u Unique) (mail CurMail, err error) {
 	return
 }
 
+func (m *CurMail) GetUnique() Unique {
+	return m.uniq
+}
+
 func (m *CurMail) GetInfo() string {
 	return m.info
 }
