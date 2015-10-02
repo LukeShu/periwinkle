@@ -1,27 +1,30 @@
 // Copyright 2015 Luke Shumaker
 // Copyright 2015 Zhandos Suleimenov
 
+// +build linux
+
 package maildir
 
-// +build ignore
-/*
 import (
 	"inotify"
+	"inotify/inutil"
 	"cfg"
 )
 
-func Main() {
+func Main() error {
 	md := cfg.IncomingMail
-	in := inotify.InotifyInit()
-	in.AddWatch(string(md)+"/new", inotify.IN_ADD)
+	in, err := inutil.WatcherInit()
+	if err != nil {
+		return err
+	}
+	defer in.Close();
+	in.AddWatch(string(md)+"/new", inotify.IN_CREATE | inotify.IN_MOVED_TO)
 	for {
 		select {
-		case event := <-in.Event:
+		case _ = <-in.Events:
 			handle(md)
-		case err := <-in.Error:
-			in.Close()
-			return
+		case err := <-in.Errors:
+			return err
 		}
 	}
 }
-*/

@@ -1,16 +1,16 @@
 // Copyright 2015 Luke Shumaker
 // Copyright 2015 Zhandos Suleimenov
 
-package maildir
+// +build !linux
 
-// + b u i l d !linux
+package maildir
 
 import (
 	"cfg"
 	"time"
 )
 
-func Main() {
+func Main() error {
 	md := cfg.IncomingMail
 	for {
 		time.Sleep(time.Second / 5)
