@@ -1,3 +1,4 @@
+//COPYRIGHT Davis Webb & Guntas Grewal
 import "database/sql"
 import _ "github.com/go-sql-driver/mysql"
 import "golang.org/x/crypto/bcrypt"
@@ -33,8 +34,9 @@ func checkPassword(password string){
 
 func createUser(UserName string, hash string){
 	// send user and digested password to DB
-
-	
+	err := con.Exec("insert into USERS values (?:?)",
+		UserName, hash)
+	return err
 }
 
 
