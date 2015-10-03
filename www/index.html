@@ -6,6 +6,7 @@
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.5/angular-animate.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.5/angular-aria.min.js"></script>
 	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.5/angular-cookies.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.5/angular-messages.js"></script>
     <!-- Angular Material -->
     <script src="https://ajax.googleapis.com/ajax/libs/angular_material/0.11.0/angular-material.min.js"></script>
 	<link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/angular_material/0.11.0/angular-material.min.css"/>
@@ -14,6 +15,7 @@
 	<script src= "http://ajax.googleapis.com/ajax/libs/angularjs/1.4.5/angular-route.min.js"></script>
 	<!-- Angular Translate -->
 	<script src="src/libs/angular-translate.min.js"></script>
+	<script src="src/libs/angular-validation-match.js"></script>
 	<script src="src/i18n/localised.js"></script>
 	<script src="src/i18n/localised_en.js"></script>
 	<script src="src/i18n/localised_it.js"></script>
@@ -34,7 +36,8 @@
 	<div ng-include="'src/head.html'"></div>	
 	<!-- body -->
 	<md-content class="md-padding">
-	<div ng-view></div>
+		<div ng-view></div>
+		<div ng-include="'src/loader.html'"></div>
 	</md-content>
 	
 	<!-- Warning for no-js users -->

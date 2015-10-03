@@ -1,9 +1,9 @@
 ﻿(function(){
   angular
 		.module('login')
-		.controller('LoginController', ['$cookies', '$http', '$scope', LoginController]); 
+		.controller('LoginController', ['$cookies', '$http', '$scope', '$interval', LoginController]); 
 
-	function LoginController($cookies, $http, $scope) {
+	function LoginController($cookies, $http, $scope, $interval) {
 		//gives us an anchor to the outer object from within sub objects or functions
 		var self = this;
 		//clears the toolbar and such so we can set it up for this view
@@ -13,6 +13,9 @@
 		//set up public fields
 		self.username = '';
 		self.password = '';
+		self.email = "";
+		self.comfirmEmail = "t.walters1101@gmail.com";
+		self.confirmPassword = "";
 		self.isSignup = false;
 		//prep the toolbar
 		$scope.toolbar.title = 'LOGIN';
@@ -41,10 +44,15 @@
 		//public functions
 		this.login = function() {
 			//http login api call
+			$scope.loading.is = true;
+			$interval(function() {
+				$scope.loading.is = false;
+			}, 5000, 1);
 		}
 		
 		this.signup = function() {
 			//http signup api call
+			alert(self.username);
 		}
 		
 		this.togleSignup = function () {

@@ -2,8 +2,10 @@
 	var periwinkleApp = angular.module('periwinkleApp', [
 		'ngRoute',
 		'ngMaterial',
+		'ngMessages',
 		'ngCookies',
 		'pascalprecht.translate',
+		'validation.match',
 		//periwinkle modules
 		'periwinkle',
 		'login'
