@@ -13,6 +13,9 @@
 		//set up public fields
 		self.username = '';
 		self.password = '';
+		self.email = "";
+		self.comfirmEmail = "t.walters1101@gmail.com";
+		self.confirmPassword = "";
 		self.isSignup = false;
 		//prep the toolbar
 		$scope.toolbar.title = 'LOGIN';
@@ -41,10 +44,13 @@
 		//public functions
 		this.login = function() {
 			//http login api call
+			alert(self.username);
+			alert(self.password);
 		}
 		
 		this.signup = function() {
 			//http signup api call
+			alert(self.username);
 		}
 		
 		this.togleSignup = function () {

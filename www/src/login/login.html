@@ -1,16 +1,24 @@
 <div ng-if="!login.isSignup">
 	<md-card id="login" style="max-width: 25em; margin-left: auto; margin-right: auto;">
 		<md-card-content>
+			<form name="loginForm">
 			<div layout="column">
 				<md-input-container>
 					<label>{{ "USERNAME_EMAIL" | translate }}</label>
-					<input ng-model="login.username" type="email"></input>
+					<input ng-model="login.username" type="email" name="username" required></input>
+					<div ng-messages="loginForm.username.$error" role="alert" ng-if="loginForm.username.$dirty">
+						<div ng-message="required">This field is required.</div>
+					</div>
 				</md-input-container>
 				<md-input-container>
 					<label>{{ "PASSWORD" | translate }}</label>
-					<input ng-model="login.password" type="password"></input>
+					<input ng-model="login.password" name="password" type="password" required></input>
+					<div ng-messages="loginForm.password.$error" role="alert" ng-if="loginForm.password.$dirty">
+						<div ng-message="required">This field is required.</div>
+					</div>
 				</md-input-container>
 			</div>
+			</form>
 		</md-card-content>
 		<div layout="row" layout-align="end center">
 			<md-button class="md-button md-primary" aria-label="Sign Up" ng-click="login.login()">
@@ -32,16 +40,36 @@
 <div ng-if="login.isSignup">
 	<md-card id="login" style="max-width: 25em; margin-left: auto; margin-right: auto;">
 		<md-card-content>
-			<div layout="column">
+			<form name="signupForm"><div layout="column">
 				<md-input-container>
 					<label>{{ "USERNAME" | translate }}</label>
-					<input ng-model="login.username" type="email"></input>
+					<input ng-model="login.username" required></input>
+				</md-input-container>
+				<md-input-container>
+					<label>{{ "EMAIL" | translate }}</label>
+					<input ng-model="login.email" name="email" type="email" required></input>
+				</md-input-container>
+				<md-input-container>
+					<label>{{ "SIGNUP.CONFIRM_EMAIL" | translate }}</label>
+					<input ng-model="login.confirmEmail" name="confirm_email" type="email" data-match="signupForm.email" required></input>
+					<div ng-messages="signupForm.confirm_email.$error" role="alert" ng-if="signupForm.confirm_email.$dirty">
+							<div ng-message="required">This is required.</div>
+							<div ng-message="match">Your email addresses do not match.</div>
+					</div>
 				</md-input-container>
 				<md-input-container>
 					<label>{{ "PASSWORD" | translate }}</label>
 					<input ng-model="login.password" type="password"></input>
 				</md-input-container>
-			</div>
+				<md-input-container>
+					<label>{{ "SIGNUP.CONFIRM_PASSWORD" | translate }}</label>
+					<input ng-model="login.confirmPassword" name="confirm_password" data-match="signupForm.password" type="password" required></input>
+					<div ng-messages="signupForm.confirm_password.$error" role="alert" ng-if="signupForm.confirm_password.$dirty">
+							<div ng-message="required">This is required.</div>
+							<div ng-message="compareTo">Your passwords do not match.</div>
+					</div>
+				</md-input-container>
+			</div></form>
 		</md-card-content>
 		<div layout="row" layout-align="end center">
 			<md-button class="md-button md-primary" aria-label="Sign Up" ng-click="login.signup()">
