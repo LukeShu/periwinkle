@@ -20,6 +20,9 @@
 			$scope.expandMenu = {
 				exists: false
 			};
+			$scope.loading = {
+				is:	false
+			};
 		}
 		$scope.resetHeader = resetHeader;
 	}
