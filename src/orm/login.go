@@ -1,14 +1,18 @@
+// Copyright 2015 Davis Webb
+// Copyright 2015 Guntas Grewal
+
 import "database/sql"
 import _ "github.com/go-sql-driver/mysql"
 import "golang.org/x/crypto/bcrypt"
 
 cost Int = 8;
 
-/* 
+/*
+
 If you want to run a simple server on localhost:8000 and 
 you have python:
 
-python -m SimpleHTTPServer 
+python -m SimpleHTTPServer
 
 */
 
