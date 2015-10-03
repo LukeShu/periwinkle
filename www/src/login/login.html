@@ -7,14 +7,14 @@
 					<label>{{ "USERNAME_EMAIL" | translate }}</label>
 					<input ng-model="login.username" type="email" name="username" required></input>
 					<div ng-messages="loginForm.username.$error" role="alert" ng-if="loginForm.username.$dirty">
-						<div ng-message="required">This field is required.</div>
+						<div ng-message="required">{{ "REQUIRED_FIELD" | translate }}</div>
 					</div>
 				</md-input-container>
 				<md-input-container>
 					<label>{{ "PASSWORD" | translate }}</label>
 					<input ng-model="login.password" name="password" type="password" required></input>
 					<div ng-messages="loginForm.password.$error" role="alert" ng-if="loginForm.password.$dirty">
-						<div ng-message="required">This field is required.</div>
+						<div ng-message="required">{{ "REQUIRED_FIELD" | translate }}</div>
 					</div>
 				</md-input-container>
 			</div>
@@ -53,8 +53,8 @@
 					<label>{{ "SIGNUP.CONFIRM_EMAIL" | translate }}</label>
 					<input ng-model="login.confirmEmail" name="confirm_email" type="email" data-match="signupForm.email" required></input>
 					<div ng-messages="signupForm.confirm_email.$error" role="alert" ng-if="signupForm.confirm_email.$dirty">
-							<div ng-message="required">This is required.</div>
-							<div ng-message="match">Your email addresses do not match.</div>
+							<div ng-message="required">{{ "REQUIRED_FIELD" | translate }}</div>
+							<div ng-message="match">{{ "SIGNUP.CONFIRM_EMAIL_NO_MATCH" | translate }}</div>
 					</div>
 				</md-input-container>
 				<md-input-container>
@@ -65,8 +65,8 @@
 					<label>{{ "SIGNUP.CONFIRM_PASSWORD" | translate }}</label>
 					<input ng-model="login.confirmPassword" name="confirm_password" data-match="signupForm.password" type="password" required></input>
 					<div ng-messages="signupForm.confirm_password.$error" role="alert" ng-if="signupForm.confirm_password.$dirty">
-							<div ng-message="required">This is required.</div>
-							<div ng-message="compareTo">Your passwords do not match.</div>
+							<div ng-message="required">{{ "REQUIRED_FIELD" | translate }}</div>
+							<div ng-message="match">{{ "SIGNUP.CONFIRM_PASSWORD_NO_MATCH" | translate }}</div>
 					</div>
 				</md-input-container>
 			</div></form>
