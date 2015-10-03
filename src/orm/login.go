@@ -37,8 +37,9 @@ func checkPassword(password string){
 
 func createUser(UserName string, hash string){
 	// send user and digested password to DB
-
-	
+	err := con.Exec("insert into USERS values (?:?)",
+		UserName, hash)
+	return err
 }
 
 
