@@ -1,6 +1,6 @@
 // Copyright 2015 Luke Shumaker
 
-package orm
+package store
 
 import "database/sql"
 

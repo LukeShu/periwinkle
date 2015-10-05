@@ -1,7 +1,7 @@
 // Copyright 2015 Mark Pundman
 // Copyright 2015 Luke Shumaker
 
-package sql
+package store
 
 import (
 	"database/sql"

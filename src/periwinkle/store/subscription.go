@@ -1,7 +1,7 @@
 // Copyright 2015 Davis Webb
 // Copyright 2015 Luke Shumaker
 
-package orm
+package store
 
 type Subscription struct {
 	id         int
