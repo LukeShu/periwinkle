@@ -1,7 +1,7 @@
 // Copyright 2015 Davis Webb
+// Copyright 2015 Luke Shumaker
 
-import "database/sql"
-import _ "github.com/go-sql-driver/mysql"
+package orm
 
 type Subscription struct{
 	id int

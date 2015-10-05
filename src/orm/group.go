@@ -1,15 +1,16 @@
 // Copyright 2015 Davis Webb
+// Copyright 2015 Luke Shumaker
+
+package orm
 
 import "database/sql"
-import _ "github.com/go-sql-driver/mysql"
 
 type Group struct{
 	id int
 	name string
 }
 
-// get group by its id
-func getGroupById(id int)(*Group, error){
+func getGroupById(con DB, id int)(*Group, error) {
 	var group Group
 	err := con.QueryRow("select * from groups where id=?",id).Scan(&group)
 	switch {
@@ -24,8 +25,7 @@ func getGroupById(id int)(*Group, error){
 	}
 }
 
-// get group by the groups name
-func getGroupByName(name string)(*Group, error){
+func GetGroupByName(con DB, name string)(*Group, error){
 	var group Group
 	err := con.QueryRow("select * from groups where name=?",name).Scan(&group)
 	switch {

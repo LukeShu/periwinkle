@@ -1,7 +1,9 @@
 // Copyright 2015 Davis Webb
+// Copyright 2015 Luke Shumaker
+
+package orm
 
 import "database/sql"
-import _ "github.com/go-sql-driver/mysql"
 
 type GroupAddr struct{
 	id int
@@ -10,7 +12,7 @@ type GroupAddr struct{
 	address string
 }
 
-func getGroupAddressById(id int)(*GroupAddr, error){
+func getGroupAddressById(con DB, id int)(*GroupAddr, error){
 	var g_addr GroupAddr
 	err := con.QueryRow("select * from group_addresses where id=?",id).Scan(&g_addr)
 	switch {
@@ -25,6 +27,10 @@ func getGroupAddressById(id int)(*GroupAddr, error){
 	}
 }
 
-func getGroupAddressByGroupId(group_id int)(*GroupAddr, error){}
+func getGroupAddressByGroupId(con DB, group_id int)(*GroupAddr, error) {
+	panic("not implemented")
+}
 
-func getGroupAddressByAddress(address string)(*GroupAddr, error){}
+func getGroupAddressByAddress(con DB, address string)(*GroupAddr, error) {
+	panic("not implemented")
+}

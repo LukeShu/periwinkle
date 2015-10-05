@@ -1,23 +1,26 @@
 // Copyright 2015 Davis Webb
+// Copyright 2015 Luke Shumaker
+
+package orm
 
 import "database/sql"
-import _ "github.com/go-sql-driver/mysql"
 
 type Medium struct{
-	id int
+	Id string
 }
 
-func getMediumById(id int)(*Medium, error){
+func GetMedium(con DB, id string)(*Medium, error){
 	var med Medium
-	err := con.QueryRow("select * from group_addresses where id=?",id).Scan(&med)
+	err := con.QueryRow("SELECT * FROM group_addresses WHERE id=?",id).Scan(&med)
 	switch {
-		case err == sql.ErrNoRows:
-			// group does not exist
-			return nil, nil
-		case err != nil:
-			// error talking to the DB
-			return nil, err
-		default:
-			return &med, nil
+	case err == sql.ErrNoRows:
+		// group does not exist
+		return nil, nil
+	case err != nil:
+		// error talking to the DB
+		return nil, err
+	default:
+		// all ok
+		return &med, nil
 	}
 }
