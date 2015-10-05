@@ -3,51 +3,51 @@ digraph "relational-model-diagram" {
 	node [shape=none];
 	subgraph cluster_rdbms {
 		label="RDBMS (SQL)"
-		user [label=<<TABLE>
-			<TR><TD PORT="_"><B>user</B></TD></TR>
+		users [label=<<TABLE>
+			<TR><TD PORT="_"><B>users</B></TD></TR>
 			<TR><TD ALIGN="LEFT" PORT="id">id</TD></TR>
 			<TR><TD ALIGN="LEFT" PORT="login">login</TD></TR>
 			<TR><TD ALIGN="LEFT" PORT="password">password</TD></TR>
 			</TABLE>>];
-		user_address [label=<<TABLE>
-			<TR><TD PORT="_"><B>user_address</B></TD></TR>
+		user_addresses [label=<<TABLE>
+			<TR><TD PORT="_"><B>user_addresses</B></TD></TR>
 			<TR><TD ALIGN="LEFT" PORT="id">id</TD></TR>
 			<TR><TD ALIGN="LEFT" PORT="user_id">user_id</TD></TR>
 			<TR><TD ALIGN="LEFT" PORT="medium_id">medium_id</TD></TR>
 			<TR><TD ALIGN="LEFT" PORT="address (string)">address (string)</TD></TR>
 			</TABLE>>];
-		group_address [label=<<TABLE>
-			<TR><TD PORT="_"><B>group_address</B></TD></TR>
+		group_addresses [label=<<TABLE>
+			<TR><TD PORT="_"><B>group_addresses</B></TD></TR>
 			<TR><TD ALIGN="LEFT" PORT="id">id</TD></TR>
 			<TR><TD ALIGN="LEFT" PORT="group_id">group_id</TD></TR>
 			<TR><TD ALIGN="LEFT" PORT="medium_id">medium_id</TD></TR>
 			<TR><TD ALIGN="LEFT" PORT="address (string)">address (string)</TD></TR>
 			</TABLE>>];
-		medium [label=<<TABLE>
-			<TR><TD PORT="_"><B>medium</B></TD></TR>
+		mediums [label=<<TABLE>
+			<TR><TD PORT="_"><B>mediums</B></TD></TR>
 			<TR><TD ALIGN="LEFT" PORT="id">id</TD></TR>
 			</TABLE>>];
-		group [label=<<TABLE>
-			<TR><TD PORT="_"><B>group</B></TD></TR>
+		groups [label=<<TABLE>
+			<TR><TD PORT="_"><B>groups</B></TD></TR>
 			<TR><TD ALIGN="LEFT" PORT="id">id</TD></TR>
 			<TR><TD ALIGN="LEFT" PORT="name">name</TD></TR>
 			</TABLE>>];
-		message [label=<<TABLE>
-			<TR><TD PORT="_"><B>message</B></TD></TR>
+		messages [label=<<TABLE>
+			<TR><TD PORT="_"><B>messages</B></TD></TR>
 			<TR><TD ALIGN="LEFT" PORT="id">id</TD></TR>
 			<TR><TD ALIGN="LEFT" PORT="group_id">group_id</TD></TR>
 			<TR><TD ALIGN="LEFT" PORT="filename">filename</TD></TR>
 			<TR><TD ALIGN="LEFT" PORT="&lt;cached fields&gt;">&lt;cached fields&gt;</TD></TR>
 			</TABLE>>];
-		subscription [label=<<TABLE>
-			<TR><TD PORT="_"><B>subscription</B></TD></TR>
+		subscriptions [label=<<TABLE>
+			<TR><TD PORT="_"><B>subscriptions</B></TD></TR>
 			<TR><TD ALIGN="LEFT" PORT="id">id</TD></TR>
 			<TR><TD ALIGN="LEFT" PORT="address_id">address_id</TD></TR>
 			<TR><TD ALIGN="LEFT" PORT="group_id">group_id</TD></TR>
 			</TABLE>>];
 
-		session [label=<<TABLE>
-			<TR><TD PORT="_"><B>session</B></TD></TR>
+		sessions [label=<<TABLE>
+			<TR><TD PORT="_"><B>sessions</B></TD></TR>
 			<TR><TD ALIGN="LEFT" PORT="id">id</TD></TR>
 			<TR><TD ALIGN="LEFT" PORT="user_id">user_id</TD></TR>
 			<TR><TD ALIGN="LEFT" PORT="last_used">last_used</TD></TR>
@@ -55,15 +55,15 @@ digraph "relational-model-diagram" {
 	}
 	Maildir [shape=rect];
 
-	user:id -> user_address:user_id [dir=back];
-	medium:id -> group_address:medium_id [dir=back];
-	subscription:group_id -> group:id;
-	user_address:id -> subscription:address_id [dir=back];
+	users:id -> user_addresses:user_id [dir=back];
+	mediums:id -> group_addresses:medium_id [dir=back];
+	subscriptions:group_id -> groups:id;
+	user_addresses:id -> subscriptions:address_id [dir=back];
 
-	session:user_id -> user:id;
-	user_address:medium_id -> medium:id;
-	group_address:group_id -> group:id;
-	group:id -> message:group_id [dir=back];
+	sessions:user_id -> users:id;
+	user_addresses:medium_id -> mediums:id;
+	group_addresses:group_id -> groups:id;
+	groups:id -> messages:group_id [dir=back];
 
-	message:filename -> Maildir;
+	messages:filename -> Maildir;
 }
