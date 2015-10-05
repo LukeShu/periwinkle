@@ -15,9 +15,9 @@ type Request struct {
 }
 
 type Response struct {
-	Status  int16
+	status  int16
 	Headers http.Header
-	Entity  NetEntity
+	entity  NetEntity
 }
 
 type Encoder func(out io.Writer) error

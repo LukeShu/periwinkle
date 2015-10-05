@@ -47,7 +47,7 @@ func route(entity Entity, req Request, method string, upath string) Response {
 			ret = req.statusMethodNotAllowed(methods2string(methods))
 		}
 		if callmethod == "OPTIONS" {
-			ret.Status = 200
+			ret.status = 200
 			ret.Headers.Set("Allow", methods2string(methods))
 		}
 	} else {
@@ -107,8 +107,8 @@ func Route(prefix string, entity Entity, req Request, method string, u *url.URL)
 		res.Headers.Set("Location", u2.String())
 	}
 	// figure out the content type of the response
-	if res.Entity != nil && res.Headers.Get("Content-Type") == "" {
-		encoders := res.Entity.Encoders()
+	if res.entity != nil && res.Headers.Get("Content-Type") == "" {
+		encoders := res.entity.Encoders()
 		mimetypes := encoders2mimelist(encoders)
 		accept := req.Headers.Get("Accept")
 		if len(encoders) > 1 && accept == "" {
@@ -128,11 +128,11 @@ func Route(prefix string, entity Entity, req Request, method string, u *url.URL)
 }
 
 func (r Response) WriteEntity(w io.Writer) error {
-	if r.Entity == nil {
+	if r.entity == nil {
 		return nil
 	}
 	mimetype := strings.SplitN(r.Headers.Get("Content-Type"), ";", 2)[0]
-	return r.Entity.Encoders()[mimetype](w)
+	return r.entity.Encoders()[mimetype](w)
 }
 
 func ReadEntity(w io.Reader, mimetype string, entity interface{}) {

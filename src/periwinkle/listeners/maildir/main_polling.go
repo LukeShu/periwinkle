@@ -6,7 +6,7 @@
 package maildir
 
 import (
-	"cfg"
+	"periwinkle/cfg"
 	"time"
 )
 

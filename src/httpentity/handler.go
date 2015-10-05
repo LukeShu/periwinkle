@@ -32,6 +32,6 @@ func (h netHttpHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	for k, v := range res.Headers {
 		w.Header().Set(k, strings.Join(v, ", "))
 	}
-	w.WriteHeader(int(res.Status))
+	w.WriteHeader(int(res.status))
 	res.WriteEntity(w)
 }

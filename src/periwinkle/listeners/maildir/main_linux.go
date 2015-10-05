@@ -6,9 +6,9 @@
 package maildir
 
 import (
-	"cfg"
 	"inotify"
 	"inotify/inutil"
+	"periwinkle/cfg"
 )
 
 func Main() error {

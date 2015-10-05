@@ -3,9 +3,9 @@
 package main
 
 import (
-	//"listeners/twilio"
-	"listeners/maildir"
-	//"listeners/web"
+	//"periwinkle/listeners/twilio"
+	"periwinkle/listeners/maildir"
+	//"periwinkle/listeners/web"
 	"sync"
 )
 

@@ -1,14 +1,19 @@
+// Copyright 2015 Mark Pundman
+// Copyright 2015 Luke Shumaker
+
 package sql
 
-import "os"
-import "fmt"
-import "database/sql"
-import _ "github.com/go-sql-driver/mysql"
+import (
+	"database/sql"
+	"fmt"
+	_ "github.com/go-sql-driver/mysql"
+	"os"
+)
 
 //  Make sure to call "defer db.Close()" after db is returned
-func getConnection() *db {
-	db_user = os.Getenv("DBUSERNAME")
-	db_pass = os.Getenv("DBPASSWORD")
+func getConnection() *sql.DB {
+	db_user := os.Getenv("DBUSERNAME")
+	db_pass := os.Getenv("DBPASSWORD")
 	// @/test is the current database we are using which is the test database
 	db, err := sql.Open("mariadb", fmt.Sprint(db_user, ":", db_pass, "@/test"))
 
@@ -24,7 +29,6 @@ func getConnection() *db {
 }
 
 func main() {
-	db = getConnection()
+	db := getConnection()
 	defer db.Close()
-
 }

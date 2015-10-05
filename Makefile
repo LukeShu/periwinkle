@@ -2,7 +2,7 @@
 NET ?= NET
 
 # packages is the list of packages that we actually wrote and need built
-packages = listener
+packages = $(sort $(shell cd src && find periwinkle/ -name '*.go' -printf '%h\n'))
 
 # set deps to be a list of import strings of external packages we need to import
 deps += bitbucket.org/ww/goautoneg
@@ -37,7 +37,7 @@ all: bin
 # The rule to build the Go code.  The first line nukes the built files
 # if there is a discrepancy between Make and Go's internal
 # dependency tracker.
-bin pkg: $(gosrc) $(addprefix src/,$(deps)) $(addprefix .var.,$(cgo_variables) packages)
+bin pkg: $(gosrc) $(addprefix src/,$(deps)) $(addprefix .var.,$(cgo_variables))
 	@true $(foreach f,$(filter-out .var.%,$^), && test $@ -nt $f ) || rm -rf -- bin pkg
 	GOPATH='$(topdir)' go install $(packages)
 

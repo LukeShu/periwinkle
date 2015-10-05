@@ -21,9 +21,9 @@ func (s netString) write(w io.Writer) error {
 
 func (req Request) StatusOK(entity NetEntity) Response {
 	return Response{
-		Status:  200,
+		status:  200,
 		Headers: http.Header{},
-		Entity:  entity,
+		entity:  entity,
 	}
 }
 
@@ -39,9 +39,9 @@ func (req Request) StatusCreated(parent Entity, child_name string) Response {
 	response := handler(req)
 	response.Headers.Set("Location", url.QueryEscape(child_name))
 	return Response{
-		Status:  201,
+		status:  201,
 		Headers: response.Headers,
-		Entity:  response.Entity,
+		entity:  response.entity,
 	}
 }
 
@@ -51,42 +51,42 @@ func (req Request) statusMultipleChoices(u *url.URL, mimetypes []string) Respons
 
 func (req Request) StatusMoved(url *url.URL) Response {
 	return Response{
-		Status: 301,
+		status: 301,
 		Headers: http.Header{
 			"Location":     {url.String()},
 			"Content-Type": {"text/plain; charset=utf-8"},
 		},
-		Entity: netString("301: Moved"),
+		entity: netString("301: Moved"),
 	}
 }
 
 func (req Request) StatusFound(url *url.URL) Response {
 	return Response{
-		Status: 302,
+		status: 302,
 		Headers: http.Header{
 			"Location":     {url.String()},
 			"Content-Type": {"text/plain; charset=utf-8"},
 		},
-		Entity: netString("302: Found"),
+		entity: netString("302: Found"),
 	}
 }
 
 func (req Request) statusNotFound() Response {
 	return Response{
-		Status:  404,
+		status:  404,
 		Headers: http.Header{"Content-Type": {"text/plain; charset=utf-8"}},
-		Entity:  netString("404 Not Found"),
+		entity:  netString("404 Not Found"),
 	}
 }
 
 func (req Request) statusMethodNotAllowed(methods string) Response {
 	return Response{
-		Status: 405,
+		status: 405,
 		Headers: http.Header{
 			"Allow":        {methods},
 			"Content-Type": {"text/plain; charset=utf-8"},
 		},
-		Entity: netString("405 Method Not Allowed"),
+		entity: netString("405 Method Not Allowed"),
 	}
 }
 
@@ -96,8 +96,8 @@ func (req Request) statusNotAcceptable(url *url.URL, mimetypes []string) Respons
 
 func (req Request) statusInternalServerError() Response {
 	return Response{
-		Status:  500,
+		status:  500,
 		Headers: http.Header{"Content-Type": {"text/plain; charset=utf-8"}},
-		Entity:  netString("500 Internal Server Error"),
+		entity:  netString("500 Internal Server Error"),
 	}
 }
