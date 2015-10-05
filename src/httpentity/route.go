@@ -96,8 +96,12 @@ func Route(prefix string, entity Entity, req Request, method string, u *url.URL)
 		u2, _ := u.Parse(l)
 		res.Headers.Set("Location", u2.String())
 		if res.status == 201 {
-			list := res.entity.(netJson).body.([]string)
-			res.entity = extensions2json(u2, list)
+			ilist := []interface{}(res.entity.(netList))
+			slist := make([]string, len(ilist))
+			for i, iface := range ilist {
+				slist[i] = iface.(string)
+			}
+			res.entity = extensions2net(u2, slist)
 		}
 	}
 	// figure out the content type of the response

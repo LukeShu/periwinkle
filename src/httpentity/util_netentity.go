@@ -5,29 +5,53 @@ package httpentity
 import (
 	"io"
 	"encoding/json"
+	"fmt"
 )
 
 type netString string
 
 func (s netString) Encoders() map[string]Encoder {
-	return map[string]Encoder{"text/plain": s.write}
+	return map[string]Encoder{
+		"text/plain": s.text,
+		"application/json": s.json,
+	}
 }
 
-func (s netString) write(w io.Writer) error {
+func (s netString) text(w io.Writer) error {
 	_, err := w.Write([]byte(s))
 	return err
 }
 
-type netJson struct{
-	body interface{}
+func (s netString) json(w io.Writer) (err error) {
+	bytes, err := json.Marshal(s)
+	if err != nil {
+		return
+	}
+	_, err = w.Write(bytes)
+	return
 }
 
-func (j netJson) Encoders() map[string]Encoder {
-	return map[string]Encoder{"application/json": j.write}
+type netList []interface{}
+
+func (l netList) Encoders() map[string]Encoder {
+	return map[string]Encoder{
+		"text/plain": l.text,
+		"application/json": l.json,
+	}
 }
 
-func (j netJson) write(w io.Writer) (err error) {
-	bytes, err := json.Marshal(j.body)
+func (l netList) text(w io.Writer) error {
+	for _, line := range l {
+		_, err := fmt.Fprintln(w, line)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (l netList) json(w io.Writer) (err error) {
+	bytes, err := json.Marshal(l)
 	if err != nil {
 		return
 	}

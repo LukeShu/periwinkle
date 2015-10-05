@@ -18,7 +18,7 @@ func encoders2mimetypes(encoders map[string]Encoder) []string {
 	return list
 }
 
-func mimetypes2json(u *url.URL, mimetypes []string) NetEntity {
+func mimetypes2net(u *url.URL, mimetypes []string) NetEntity {
 	u, _ = u.Parse("") // dup
 	u.Path = strings.TrimSuffix(u.Path, "/")
 	locations := make([]string, len(mimetypes))
@@ -28,10 +28,10 @@ func mimetypes2json(u *url.URL, mimetypes []string) NetEntity {
 		u2.Path += exts[0]
 		locations[i] = u2.String()
 	}
-	return netJson{locations}
+	return netList{locations}
 }
 
-func extensions2json(u *url.URL, extensions []string) NetEntity {
+func extensions2net(u *url.URL, extensions []string) NetEntity {
 	u, _ = u.Parse("") // dup
 	u.Path = strings.TrimSuffix(u.Path, "/")
 	locations := make([]string, len(extensions))
@@ -40,5 +40,5 @@ func extensions2json(u *url.URL, extensions []string) NetEntity {
 		u2.Path += extension
 		locations[i] = u2.String()
 	}
-	return netJson{locations}
+	return netList{locations}
 }
