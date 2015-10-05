@@ -32,11 +32,13 @@ func GetGroupByName(con DB, name string) *Group {
 	}
 }
 
-func NewGroup(name string) *Group {
-	g := &Group{
-		Name: name,
+func NewGroup(con DB, name string) *Group {
+	g := &Group{Name: name}
+	_, err := con.Exec("INSERT INTO groups VALUES (?)", g.Name)
+	if err != nil {
+		panic(err)
 	}
-	// TODO possibly add database entry in here
+
 	return g
 }
 

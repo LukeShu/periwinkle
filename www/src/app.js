@@ -1,15 +1,20 @@
 ﻿(function(){
-	var periwinkleApp = angular.module('periwinkleApp', [
+	'use strict';
+
+	var periwinkleApp = angular.module('periwinkle', [
 		'ngRoute',
 		'ngMaterial',
 		'ngMessages',
 		'ngCookies',
 		'pascalprecht.translate',
 		'validation.match',
+		'ngSanitize',
 		//periwinkle modules
-		'periwinkle',
 		'login'
 	]);
+
+	//user this plugin instead of the browsers regex (for unicode support)
+	XRegExp.install('natives');
 
 	periwinkleApp.config(function($mdThemingProvider){
 		$mdThemingProvider.theme('default')
@@ -23,6 +28,7 @@
 			.translations('it', localised.it);
 		$translateProvider.fallbackLanguage('en');
 		$translateProvider.use(lang);
+		$translateProvider.useSanitizeValueStrategy('sanitize');
 	}]);
 
 	periwinkleApp.config(['$routeProvider', '$locationProvider',

@@ -4,7 +4,6 @@ package httpentity
 
 import (
 	"bitbucket.org/ww/goautoneg"
-	"io"
 	"mime"
 	"net/url"
 	"path"
@@ -30,8 +29,7 @@ func methods2string(methods map[string]Handler) string {
 }
 
 // Takes the normalized path without the leading slash
-func route(entity Entity, req Request, method string, upath string) Response {
-	var ret Response
+func route(entity Entity, req Request, method string, upath string) (ret Response) {
 	if entity == nil {
 		ret = req.statusNotFound()
 	} else if upath == "" {
@@ -51,22 +49,18 @@ func route(entity Entity, req Request, method string, upath string) Response {
 			ret.Headers.Set("Allow", methods2string(methods))
 		}
 	} else {
-		child := ""
-		grandchildren := ""
 		parts := strings.SplitN(upath, "/", 2)
-		if len(parts) >= 1 {
-			child = parts[0]
+		if len(parts) != 2 {
+			panic("path parser logic borked")
 		}
-		if len(parts) >= 2 {
-			grandchildren = parts[1]
-		}
+		child := parts[0]
+		grandchildren := parts[1]
 		ret = route(entity.Subentity(child, req), req, method, grandchildren)
 	}
-	return ret
+	return
 }
 
-func Route(prefix string, entity Entity, req Request, method string, u *url.URL) Response {
-	var res Response
+func Route(prefix string, entity Entity, req Request, method string, u *url.URL) (res Response) {
 	// just in case anything goes wrong, don't bring down the
 	// process.
 	defer func() {
@@ -76,7 +70,7 @@ func Route(prefix string, entity Entity, req Request, method string, u *url.URL)
 	}()
 
 	// sanitize the URL
-	u, _ = url.Parse("") // normalize
+	u, _ = u.Parse("") // normalize
 	// the file extension overrides the Accept: header
 	if ext := path.Ext(u.Path); ext != "" {
 		req.Headers.Set("Accept", mime.TypeByExtension(ext))
@@ -123,16 +117,4 @@ func Route(prefix string, entity Entity, req Request, method string, u *url.URL)
 
 	// return the response
 	return res
-}
-
-func (r Response) WriteEntity(w io.Writer) error {
-	if r.entity == nil {
-		return nil
-	}
-	mimetype := strings.SplitN(r.Headers.Get("Content-Type"), ";", 2)[0]
-	return r.entity.Encoders()[mimetype](w)
-}
-
-func ReadEntity(w io.Reader, mimetype string, entity interface{}) {
-	panic("not implemented")
 }
