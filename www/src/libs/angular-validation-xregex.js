@@ -1,11 +1,11 @@
 (function() {
 	'use strict';
 
-	angular.module('validation.match', []);
+	angular.module('validation.xregex', []);
 
-	angular.module('validation.match').directive('match', match);
+	angular.module('validation.xregex').directive('patern-test', paternTest);
 
-	function match ($parse) {
+	function paternTest ($parse) {
 		return {
 		    require: '?ngModel',
 		    restrict: 'A',

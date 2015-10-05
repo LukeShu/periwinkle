@@ -1,7 +1,8 @@
 (function(){
-	
+	'use strict';
+
 	angular
-		.module('periwinkle', [])
+		.module('periwinkle')
 		.controller('PeriwinkleController', ['$scope', PeriwinkleController]);
 		
 	function PeriwinkleController ($scope) {

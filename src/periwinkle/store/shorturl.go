@@ -1,11 +1,13 @@
 // Copyright 2015 Luke Shumaker
+// Copyright 2015 Davis Webb
 
 package store
 
 import (
-	//"database/sql"
+	"database/sql"
 	he "httpentity"
 	"net/url"
+	"math/rand"
 )
 
 var _ he.Entity = &ShortUrl{}
@@ -18,8 +20,30 @@ type ShortUrl struct {
 	Dest *url.URL
 }
 
+func newShortURL(u *url.URL) *ShortUrl{
+	s := &ShortUrl {
+		Id: string(rand.Intn(128)),
+		Dest: u,
+	}
+	// TODO implement Save()
+	// err := s.Save()
+	// if err != nil {
+	// 	return nil
+	// }
+	return s
+}
+
 func GetShortUrlById(con DB, id string) *ShortUrl {
-	panic("not implemented")
+	var s ShortUrl
+	err := con.QueryRow("SELECT shortURL FROM shortURL WHERE id=?", id).Scan(&s);
+	switch {
+		case err == sql.ErrNoRows:
+			return nil
+		case err != nil:
+			panic(err)
+		default:
+			return &s	
+	}
 }
 
 func (o *ShortUrl) Subentity(name string, req he.Request) he.Entity {

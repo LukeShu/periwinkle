@@ -38,6 +38,7 @@ func NewGroup(con DB, name string) *Group {
 	if err != nil {
 		panic(err)
 	}
+
 	return g
 }
 
@@ -65,7 +66,7 @@ func newDirGroups() t_dirGroups {
 	r := t_dirGroups{}
 	r.methods = map[string]he.Handler{
 		"POST": func(req he.Request) he.Response {
-			return req.StatusCreated(r, NewGroup().Name)
+			return req.StatusCreated(r, NewGroup("").Name)
 		},
 	}
 	return r

@@ -15,14 +15,25 @@ var dirMessages he.Entity = newDirMessages()
 // Model /////////////////////////////////////////////////////////////
 
 type Message struct {
-	id       string
+	id       int
 	group_id int
 	filename string
 	// cached fields??????
 }
 
-func GetMessageById(id string) *Message {
-	panic("not implemented")
+func GetMessageById(id int) *Message {
+	var mes Message
+	err := con.QueryRow("select * from message where id=?", id).Scan(&mes)
+	switch {
+	case err == sql.ErrNoRows:
+		// message does not exist
+		return nil, nil
+	case err != nil:
+		// error talking to the DB
+		return nil, err
+	default:
+		return &mes, nil
+	}
 }
 
 func (o *Message) Subentity(name string, req he.Request) he.Entity {

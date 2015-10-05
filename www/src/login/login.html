@@ -5,7 +5,7 @@
 			<div layout="column">
 				<md-input-container>
 					<label>{{ "USERNAME_EMAIL" | translate }}</label>
-					<input ng-model="login.username" type="text" name="username" required></input>
+					<input ng-model="login.username" type="text" name="username" required ng-pattern="/^[\\pL0-9]+$/"></input>
 					<div ng-messages="loginForm.username.$error" role="alert" ng-if="loginForm.username.$dirty">
 						<div ng-message="required">{{ "REQUIRED_FIELD" | translate }}</div>
 					</div>

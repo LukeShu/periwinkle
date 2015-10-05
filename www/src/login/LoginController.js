@@ -1,5 +1,7 @@
 ﻿(function(){
-  angular
+	'use strict';
+
+	angular
 		.module('login')
 		.controller('LoginController', ['$cookies', '$http', '$scope', '$interval', LoginController]); 
 
