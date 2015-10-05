@@ -1,3 +1,5 @@
 (function(){
-  angular.module('login', [ 'ngMaterial' ]);
+	'use strict';
+
+	angular.module('login', [ 'ngMaterial' ]);
 })();
