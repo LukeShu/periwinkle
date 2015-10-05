@@ -32,8 +32,13 @@ func GetGroupByName(con DB, name string) *Group {
 	}
 }
 
-func NewGroup() *Group {
-	panic("not implemented")
+func NewGroup(con DB, name string) *Group {
+	g := &Group{Name: name}
+	_, err := con.Exec("INSERT INTO groups VALUES (?)", g.Name)
+	if err != nil {
+		panic(err)
+	}
+	return g
 }
 
 func (o *Group) Subentity(name string, req he.Request) he.Entity {
