@@ -8,10 +8,11 @@
 		'ngCookies',
 		'pascalprecht.translate',
 		'validation.match',
-		'validation.xregex',
 		'ngSanitize',
 		//periwinkle modules
-		'login'
+		'validation.xregex',
+		'login',
+		'dashboard'
 	]);
 
 	//user this plugin instead of the browsers regex (for unicode support)
@@ -26,10 +27,11 @@
 	periwinkleApp.config(['$translateProvider', function($translateProvider) {
 		$translateProvider
 			.translations('en', localised.en)
-			.translations('it', localised.it);
+			.translations('it', localised.it)
+			.translations('es', localised.es);
 		$translateProvider.fallbackLanguage('en');
 		$translateProvider.use(lang);
-		$translateProvider.useSanitizeValueStrategy('sanitize');
+		$translateProvider.useSanitizeValueStrategy('escape');
 	}]);
 
 	periwinkleApp.config(['$routeProvider', '$locationProvider',

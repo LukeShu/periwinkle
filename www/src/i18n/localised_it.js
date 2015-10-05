@@ -1,4 +1,4 @@
-localised.it = {
+﻿localised.it = {
 	USERNAME_EMAIL:	"Nome utente o email",
 	USERNAME:		"Nome utente",
 	PASSWORD:		"Password",
@@ -11,6 +11,8 @@ localised.it = {
 		CONFIRM_EMAIL:				"Conferma email",
 		CONFIRM_EMAIL_NO_MATCH:		"I tuoi indirizzi d'email non sono simili.",
 		CONFIRM_PASSWORD:			"Conferma password",
-		CONFIRM_PASSWORD_NO_MATCH:	"I tuoi password non sono simili."
+		CONFIRM_PASSWORD_NO_MATCH:	"I tuoi password non sono simili.",
+		USERNAME_INVALID:			"I nomi untente possono contenere lettere, numeri, _, o -.",
+		EMAIL_INVALID:				"Quello non è un indirizzo d'email valido."
 	}
 };
