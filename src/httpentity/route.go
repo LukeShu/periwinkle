@@ -96,7 +96,7 @@ func Route(prefix string, entity Entity, req Request, method string, u *url.URL)
 		u2, _ := u.Parse(l)
 		res.Headers.Set("Location", u2.String())
 		if res.status == 201 {
-			ilist := []interface{}(res.entity.(netList))
+			ilist := []interface{}(res.entity.(NetList))
 			slist := make([]string, len(ilist))
 			for i, iface := range ilist {
 				slist[i] = iface.(string)
