@@ -1,5 +1,5 @@
 localised.en = {
-	USERNAME_EMAIL:	"Username or eMail",
+	USERNAME_EMAIL:	"Username or Email",
 	USERNAME:		"Username",
 	EMAIL:			"Email",
 	PASSWORD:		"Password",

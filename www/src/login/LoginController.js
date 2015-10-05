@@ -14,8 +14,9 @@
 		self.username = '';
 		self.password = '';
 		self.email = "";
-		self.comfirmEmail = "t.walters1101@gmail.com";
-		self.confirmPassword = "";
+		self.comfirmEmail = '';
+		self.confirmPassword = '';
+		self.captcha_key = '';
 		self.isSignup = false;
 		//prep the toolbar
 		$scope.toolbar.title = 'LOGIN';
@@ -57,7 +58,8 @@
 		
 		this.togleSignup = function () {
 			self.isSignup = !self.isSignup;
-			self.username = '';
+			if(!(new RegExp("/^.+@.+\..+$/")).test(self.username))
+				self.username = '';
 			self.password = '';
 			if(self.isSignup) {
 				$scope.toolbar.title = 'SIGNUP.SIGNUP';
