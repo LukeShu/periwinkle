@@ -54,16 +54,17 @@ func ReadEntity(r io.Reader, contenttype string) (interface{}, error) {
 		for k, v := range form.File {
 			if _, exists := entity[k]; exists {
 				values := entity[k].([]string)
-				entity[k] = make([]interface{}, len(values)+len(v))
+				list := make([]interface{}, len(values)+len(v))
 				i := uint(0)
 				for _, value := range values {
-					entity[k][i] = value
+					list[i] = value
 					i++
 				}
 				for _, value := range v {
-					entity[k][i] = value
-					i+++
+					list[i] = value
+					i++
 				}
+				entity[k] = list
 			} else {
 				entity[k] = v
 			}
