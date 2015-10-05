@@ -6,6 +6,7 @@
 		'ngCookies',
 		'pascalprecht.translate',
 		'validation.match',
+		'ngSanitize',
 		//periwinkle modules
 		'periwinkle',
 		'login'
@@ -23,6 +24,7 @@
 			.translations('it', localised.it);
 		$translateProvider.fallbackLanguage('en');
 		$translateProvider.use(lang);
+		$translateProvider.useSanitizeValueStrategy('sanitize');
 	}]);
 
 	periwinkleApp.config(['$routeProvider', '$locationProvider',

@@ -15,20 +15,19 @@ func getConnection() *sql.DB {
 	db_user := os.Getenv("DBUSERNAME")
 	db_pass := os.Getenv("DBPASSWORD")
 	// @/test is the current database we are using which is the test database
-	db, err := sql.Open("mariadb", fmt.Sprint(db_user, ":", db_pass, "@/test"))
+	db, err := sql.Open("mysql", fmt.Sprint(db_user, ":", db_pass, "@/test"))
 
 	if err != nil {
 		fmt.Printf("Could not connect to database")
+		fmt.Println(err)
+		return nil
 	}
 	err = db.Ping()
 	if err != nil {
 		fmt.Printf("Could not ping database")
+		fmt.Println(err)
+		return nil
 	}
 
 	return db
-}
-
-func main() {
-	db := getConnection()
-	defer db.Close()
 }

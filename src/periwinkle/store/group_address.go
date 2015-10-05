@@ -28,9 +28,32 @@ func getGroupAddressById(con DB, id int) (*GroupAddr, error) {
 }
 
 func getGroupAddressByGroupId(con DB, group_id int) (*GroupAddr, error) {
-	panic("not implemented")
+	var g_addr GroupAddr
+	err := con.QueryRow("select * from group_addresses where group_id=?", group_id).Scan(&g_addr)
+	switch {
+	case err == sql.ErrNoRows:
+		// group does not exist
+		return nil, nil
+	case err != nil:
+		// error talking to the DB
+		return nil, err
+	default:
+		return &g_addr, nil
+	}
 }
 
 func getGroupAddressByAddress(con DB, address string) (*GroupAddr, error) {
-	panic("not implemented")
+	var g_addr GroupAddr
+	err := con.QueryRow("select * from group_addresses where address=?", address).Scan(&g_addr)
+	switch {
+	case err == sql.ErrNoRows:
+		// group does not exist
+		return nil, nil
+	case err != nil:
+		// error talking to the DB
+		return nil, err
+	default:
+		return &g_addr, nil
+	}
+
 }
