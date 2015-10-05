@@ -9,7 +9,7 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-type User struct{
+type User struct {
 	Id       string
 	FullName string
 	pwHash   []byte
@@ -31,9 +31,9 @@ func getUserById(con DB, id int) (*User, error) {
 	}
 }
 
-func GetUserByName(con DB, name string) (*User, error){
+func GetUserByName(con DB, name string) (*User, error) {
 	var user User
-	err := con.QueryRow("SELECT * FROM users WHERE name=?",name).Scan(&user)
+	err := con.QueryRow("SELECT * FROM users WHERE name=?", name).Scan(&user)
 	switch {
 	case err == sql.ErrNoRows:
 		// user does not exist
@@ -47,7 +47,7 @@ func GetUserByName(con DB, name string) (*User, error){
 	}
 }
 
-func GetUserByEmail(con DB, address string)(*User, error){
+func GetUserByEmail(con DB, address string) (*User, error) {
 	var user User
 	err := con.QueryRow(""+
 		"SELECT users.* "+
@@ -81,7 +81,7 @@ func (u *User) CheckPassword(password string) bool {
 
 func NewUser(con DB, name string, password string) (u *User, err error) {
 	u = &User{
-		Id: name,
+		Id:       name,
 		FullName: "",
 	}
 	u.SetPassword(password)

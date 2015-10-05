@@ -3,9 +3,9 @@
 package listener_util
 
 import (
-	"net/mail"
 	"cfg"
 	"fmt"
+	"net/mail"
 	"strings"
 )
 
@@ -14,9 +14,9 @@ type RecipientBuilder []mail.Address
 func (b RecipientBuilder) String() {
 	s := make([]string, len(b))
 	for i, a := range b {
-		s[i] = a.String();
+		s[i] = a.String()
 	}
-	return strings.Join(s, ", ");
+	return strings.Join(s, ", ")
 }
 
 type Stringable interface {
@@ -25,7 +25,7 @@ type Stringable interface {
 
 type MessageBuilder struct {
 	Headers map[string]Stringable
-	Body string
+	Body    string
 }
 
 func (b MessageBuilder) Done() {
@@ -35,7 +35,7 @@ func (b MessageBuilder) Done() {
 
 	writer := cfg.IncomingMail.NewMail()
 	for k, v := range b.Headers {
-		fmt.Fprintf("%s: %s\r\n", k, v);
+		fmt.Fprintf("%s: %s\r\n", k, v)
 	}
 	writer.Write([]byte("\r\n"))
 	encoder := base64.NewEncoder(base64.StdEncoding, writer)

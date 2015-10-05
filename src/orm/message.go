@@ -3,8 +3,8 @@
 
 package orm
 
-type Message struct{
-	id int
+type Message struct {
+	id       int
 	group_id int
 	filename string
 	// cached fields??????

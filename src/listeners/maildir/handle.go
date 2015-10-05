@@ -6,7 +6,6 @@ package maildir
 import (
 	md "maildir"
 	// "orm"
-
 )
 
 func handle(maildir md.Maildir) {

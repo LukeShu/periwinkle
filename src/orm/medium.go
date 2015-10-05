@@ -5,13 +5,13 @@ package orm
 
 import "database/sql"
 
-type Medium struct{
+type Medium struct {
 	Id string
 }
 
-func GetMedium(con DB, id string)(*Medium, error){
+func GetMedium(con DB, id string) (*Medium, error) {
 	var med Medium
-	err := con.QueryRow("SELECT * FROM group_addresses WHERE id=?",id).Scan(&med)
+	err := con.QueryRow("SELECT * FROM group_addresses WHERE id=?", id).Scan(&med)
 	switch {
 	case err == sql.ErrNoRows:
 		// group does not exist

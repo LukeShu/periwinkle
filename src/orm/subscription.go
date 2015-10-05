@@ -3,8 +3,8 @@
 
 package orm
 
-type Subscription struct{
-	id int
+type Subscription struct {
+	id         int
 	address_id int
-	group_id int
+	group_id   int
 }

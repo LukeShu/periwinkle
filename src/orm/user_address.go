@@ -3,9 +3,9 @@
 
 package orm
 
-type UserAddress struct{
-	id int
-	user_id int
+type UserAddress struct {
+	id        int
+	user_id   int
 	medium_id int
-	address string
+	address   string
 }

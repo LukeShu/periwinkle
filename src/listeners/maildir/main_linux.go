@@ -6,9 +6,9 @@
 package maildir
 
 import (
+	"cfg"
 	"inotify"
 	"inotify/inutil"
-	"cfg"
 )
 
 func Main() error {
@@ -17,8 +17,8 @@ func Main() error {
 	if err != nil {
 		return err
 	}
-	defer in.Close();
-	in.AddWatch(string(md)+"/new", inotify.IN_CREATE | inotify.IN_MOVED_TO)
+	defer in.Close()
+	in.AddWatch(string(md)+"/new", inotify.IN_CREATE|inotify.IN_MOVED_TO)
 	for {
 		select {
 		case _ = <-in.Events:

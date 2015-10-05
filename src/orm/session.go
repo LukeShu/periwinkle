@@ -3,8 +3,8 @@
 
 package orm
 
-type Session struct{
-	id int
-	user_id int
+type Session struct {
+	id        int
+	user_id   int
 	last_used string // not 100% on this
 }
