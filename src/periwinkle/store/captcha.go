@@ -10,7 +10,7 @@ import (
 
 var _ he.Entity = &Captcha{}
 var _ he.NetEntity = &Captcha{}
-var dirCaptcha he.Entity = newDirCaptcha()
+var dirCaptchas he.Entity = newDirCaptchas()
 
 // Model /////////////////////////////////////////////////////////////
 
@@ -52,12 +52,12 @@ func (o *Captcha) Encoders() map[string]he.Encoder {
 
 // Directory ("Controller") //////////////////////////////////////////
 
-type t_dirCaptcha struct {
+type t_dirCaptchas struct {
 	methods map[string]he.Handler
 }
 
-func newDirCaptcha() t_dirCaptcha {
-	r := t_dirCaptcha{}
+func newDirCaptchas() t_dirCaptchas {
+	r := t_dirCaptchas{}
 	r.methods = map[string]he.Handler{
 		"POST": func(req he.Request) he.Response {
 			return req.StatusCreated(r, NewCaptcha().Id)
@@ -66,10 +66,10 @@ func newDirCaptcha() t_dirCaptcha {
 	return r
 }
 
-func (d t_dirCaptcha) Methods() map[string]he.Handler {
+func (d t_dirCaptchas) Methods() map[string]he.Handler {
 	return d.methods
 }
 
-func (d t_dirCaptcha) Subentity(name string, request he.Request) he.Entity {
+func (d t_dirCaptchas) Subentity(name string, request he.Request) he.Entity {
 	return GetCaptchaById(name)
 }

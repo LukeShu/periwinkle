@@ -21,7 +21,7 @@ func (d t_dirRoot) Methods() map[string]he.Handler {
 func (d t_dirRoot) Subentity(name string, request he.Request) he.Entity {
 	switch name {
 	case "captcha":
-		return dirCaptcha
+		return dirCaptchas
 	// case "groups":
 	// 	return dirGroups
 	// case "msgs":
