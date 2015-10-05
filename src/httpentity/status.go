@@ -39,6 +39,14 @@ func (req Request) StatusCreated(parent Entity, child_name string) Response {
 	}
 }
 
+func (req Request) StatusNoContent() Response {
+	return Response{
+		status:  204,
+		Headers: http.Header{},
+		entity:  nil,
+	}
+}
+
 func (req Request) statusMultipleChoices(u *url.URL, mimetypes []string) Response {
 	return Response{
 		status: 300,
@@ -64,6 +72,16 @@ func (req Request) StatusFound(u *url.URL) Response {
 			"Location":     {u.String()},
 		},
 		entity: NetString("302: Found"),
+	}
+}
+
+func (req Request) StatusUnauthorized(e NetEntity) Response {
+	return Response{
+		status:  401,
+		Headers: http.Header{
+			"WWW-Authenticate": {"TODO"},
+		},
+		entity:  e,
 	}
 }
 
