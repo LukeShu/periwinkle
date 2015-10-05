@@ -34,7 +34,7 @@ all: bin
 # The rule to build the Go code.  The first line nukes the built files
 # if there is a discrepancy between Make and Go's internal
 # dependency tracker.
-bin pkg: $(gosrc) $(addprefix src/,$(deps)) $(addprefix .var.,$(cgo_variables))
+bin pkg: $(gosrc) $(addprefix src/,$(deps)) $(addprefix .var.,$(cgo_variables) packages)
 	@true $(foreach f,$(filter-out .var.%,$^), && test $@ -nt $f ) || rm -rf -- bin pkg
 	GOPATH='$(topdir)' go install $(packages)
 
