@@ -6,6 +6,7 @@ packages = listener
 
 # set deps to be a list of import strings of external packages we need to import
 deps += bitbucket.org/ww/goautoneg
+deps += github.com/dchest/captcha
 deps += github.com/go-sql-driver/mysql
 deps += golang.org/x/crypto/bcrypt
 
