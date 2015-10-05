@@ -5,6 +5,7 @@ package httpentity
 import (
 	"net/http"
 	"net/url"
+	"fmt"
 )
 
 func (req Request) StatusOK(entity NetEntity) Response {
@@ -90,10 +91,10 @@ func (req Request) statusNotAcceptable(u *url.URL, mimetypes []string) Response 
 	}
 }
 
-func (req Request) statusInternalServerError() Response {
+func (req Request) statusInternalServerError(err interface{}) Response {
 	return Response{
 		status:  500,
 		Headers: http.Header{},
-		entity:  netString("500 Internal Server Error"),
+		entity:  netString(fmt.Sprintf("500 Internal Server Error: %v", err)),
 	}
 }

@@ -71,7 +71,7 @@ func Route(prefix string, entity Entity, req Request, method string, u *url.URL)
 	// process.
 	defer func() {
 		if r := recover(); r != nil {
-			res = req.statusInternalServerError()
+			res = req.statusInternalServerError(r)
 		}
 	}()
 
