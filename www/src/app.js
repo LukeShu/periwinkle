@@ -8,6 +8,7 @@
 		'ngCookies',
 		'pascalprecht.translate',
 		'validation.match',
+		'validation.xregex',
 		'ngSanitize',
 		//periwinkle modules
 		'login'

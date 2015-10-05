@@ -5,15 +5,16 @@
 			<div layout="column">
 				<md-input-container>
 					<label>{{ "USERNAME_EMAIL" | translate }}</label>
-					<input ng-model="login.username" type="text" name="username" required ng-pattern="/^[\\pL0-9]+$/"></input>
-					<div ng-messages="loginForm.username.$error" role="alert" ng-if="loginForm.username.$dirty">
+					<input ng-model="login.username" type="text" name="username" required xreg-pattern="^[0-9\pL]+$"></input>
+					<div ng-messages="loginForm.username.$error" role="alert" ng-if="!loginForm.username.$untouched">
 						<div ng-message="required">{{ "REQUIRED_FIELD" | translate }}</div>
+						<div ng-message="xregPattern">The pattern is broken</div>
 					</div>
 				</md-input-container>
 				<md-input-container>
 					<label>{{ "PASSWORD" | translate }}</label>
 					<input ng-model="login.password" name="password" type="password" required></input>
-					<div ng-messages="loginForm.password.$error" role="alert" ng-if="loginForm.password.$dirty">
+					<div ng-messages="loginForm.password.$error" role="alert" ng-if="!loginForm.password.$untouched">
 						<div ng-message="required">{{ "REQUIRED_FIELD" | translate }}</div>
 					</div>
 				</md-input-container>
@@ -44,21 +45,21 @@
 				<md-input-container>
 					<label>{{ "USERNAME" | translate }}</label>
 					<input ng-model="login.username" type="text" name="username" required></input>
-					<div ng-messages="signupForm.username.$error" role="alert" ng-if="signupForm.username.$dirty">
+					<div ng-messages="signupForm.username.$error" role="alert" ng-if="!signupForm.username.$untouched">
 						<div ng-message="required">{{ "REQUIRED_FIELD" | translate }}</div>
 					</div>
 				</md-input-container>
 				<md-input-container>
 					<label>{{ "EMAIL" | translate }}</label>
 					<input ng-model="login.email" name="email" type="email" ng-change="signupForm.confirmEmail.$validate();" ng-pattern="/^.+@.+\..+$/" required></input>
-					<div ng-messages="signupForm.email.$error" role="alert" ng-if="signupForm.email.$dirty">
+					<div ng-messages="signupForm.email.$error" role="alert" ng-if="!signupForm.email.$untouched">
 						<div ng-message="required">{{ "REQUIRED_FIELD" | translate }}</div>
 					</div>
 				</md-input-container>
 				<md-input-container>
 					<label>{{ "SIGNUP.CONFIRM_EMAIL" | translate }}</label>
 					<input ng-model="login.confirmEmail" name="confirm_email" type="email" data-match="signupForm.email" ng-pattern="/^.+@.+\..+$/" required></input>
-					<div ng-messages="signupForm.confirm_email.$error" role="alert" ng-if="signupForm.confirm_email.$dirty">
+					<div ng-messages="signupForm.confirm_email.$error" role="alert" ng-if="!signupForm.confirm_email.$untouched">
 							<div ng-message="required">{{ "REQUIRED_FIELD" | translate }}</div>
 							<div ng-message="match">{{ "SIGNUP.CONFIRM_EMAIL_NO_MATCH" | translate }}</div>
 					</div>
@@ -66,14 +67,14 @@
 				<md-input-container>
 					<label>{{ "PASSWORD" | translate }}</label>
 					<input ng-model="login.password" type="password" name="password" ng-change="signupForm.confirmPassword.$validate();" required></input>
-					<div ng-messages="signupForm.password.$error" role="alert" ng-if="signupForm.password.$dirty">
+					<div ng-messages="signupForm.password.$error" role="alert" ng-if="!signupForm.password.$untouched">
 						<div ng-message="required">{{ "REQUIRED_FIELD" | translate }}</div>
 					</div>
 				</md-input-container>
 				<md-input-container>
 					<label>{{ "SIGNUP.CONFIRM_PASSWORD" | translate }}</label>
 					<input ng-model="login.confirmPassword" name="confirm_password" data-match="signupForm.password" type="password" required></input>
-					<div ng-messages="signupForm.confirm_password.$error" role="alert" ng-if="signupForm.confirm_password.$dirty">
+					<div ng-messages="signupForm.confirm_password.$error" role="alert" ng-if="!signupForm.confirm_password.$untouched">
 							<div ng-message="required">{{ "REQUIRED_FIELD" | translate }}</div>
 							<div ng-message="match">{{ "SIGNUP.CONFIRM_PASSWORD_NO_MATCH" | translate }}</div>
 					</div>
