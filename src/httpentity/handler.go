@@ -5,6 +5,7 @@ package httpentity
 import (
 	"net/http"
 	"strings"
+	"fmt"
 )
 
 type netHttpHandler struct {
@@ -17,6 +18,7 @@ func NetHttpHandler(prefix string, entity Entity) http.Handler {
 }
 
 func (h netHttpHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	var res Response
 	// Adapt the request from `net/http` format to `httpentity` format
 	req := Request{
 		Headers: r.Header,
@@ -26,15 +28,21 @@ func (h netHttpHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case "POST", "PUT", "PATCH":
 		entity, err := ReadEntity(r.Body, r.Header.Get("Content-Type"))
-		if entity == nil || err != nil {
-			panic("needs better error handling")
+		if entity == nil {
+			if err == nil {
+				res = req.statusUnsupportedMediaType()
+			} else {
+				res = req.StatusBadRequest(fmt.Sprintf("reading request body: %s", err))
+			}
+			goto end
+		} else {
+			req.Entity = entity
 		}
-		req.Entity = entity
 	}
 
 	// Run the request
-	res := Route(h.prefix, h.root, req, r.Method, r.URL)
-
+	res = Route(h.prefix, h.root, req, r.Method, r.URL)
+end:
 	// Adapt the response from `httpentity` format to `net/http` format
 	for k, v := range res.Headers {
 		w.Header().Set(k, strings.Join(v, ", "))

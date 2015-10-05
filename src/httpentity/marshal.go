@@ -59,11 +59,12 @@ func ReadEntity(r io.Reader, contenttype string) (interface{}, error) {
 			return nil, err
 		}
 		return entity, nil
+	case "application/octet-stream":
+		bytes, err := ioutil.ReadAll(r)
+		if err != nil {
+			return nil, err
+		}
+		return bytes, nil
 	}
-	// fall back to returning a byte array
-	bytes, err := ioutil.ReadAll(r)
-	if err != nil {
-		return nil, err
-	}
-	return bytes, nil
+	return nil, nil
 }

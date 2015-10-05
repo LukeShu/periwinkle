@@ -75,6 +75,14 @@ func (req Request) StatusFound(u *url.URL) Response {
 	}
 }
 
+func (req Request) StatusBadRequest(err interface{}) Response {
+	return Response{
+		status: 400,
+		Headers: http.Header{},
+		entity: NetString(fmt.Sprintf("400 Bad Request: %v", err)),
+	}
+}
+
 func (req Request) StatusUnauthorized(e NetEntity) Response {
 	return Response{
 		status:  401,
@@ -106,6 +114,15 @@ func (req Request) statusNotAcceptable(u *url.URL, mimetypes []string) Response 
 		status: 406,
 		Headers: http.Header{},
 		entity: mimetypes2net(u, mimetypes),
+	}
+}
+
+
+func (req Request) statusUnsupportedMediaType() Response {
+	return Response{
+		status: 415,
+		Headers: http.Header{},
+		entity: NetString("415 Unsupported Media Type"),
 	}
 }
 
