@@ -32,8 +32,12 @@ func GetGroupByName(con DB, name string) *Group {
 	}
 }
 
-func NewGroup() *Group {
-	panic("not implemented")
+func NewGroup(name string) *Group {
+	g := &Group{
+		Name: name,
+	}
+	// TODO possibly add database entry in here
+	return g
 }
 
 func (o *Group) Subentity(name string, req he.Request) he.Entity {
@@ -60,7 +64,7 @@ func newDirGroups() t_dirGroups {
 	r := t_dirGroups{}
 	r.methods = map[string]he.Handler{
 		"POST": func(req he.Request) he.Response {
-			return req.StatusCreated(r, NewGroup().Name)
+			return req.StatusCreated(r, NewGroup("").Name)
 		},
 	}
 	return r
