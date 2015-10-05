@@ -52,6 +52,19 @@ digraph "relational-model-diagram" {
 			<TR><TD ALIGN="LEFT" PORT="user_id">user_id</TD></TR>
 			<TR><TD ALIGN="LEFT" PORT="last_used">last_used</TD></TR>
 			</TABLE>>];
+
+		shorturls [label=<<TABLE>
+			<TR><TD PORT="_"><B>shorturls</B></TD></TR>
+			<TR><TD ALIGN="LEFT" PORT="id">id</TD></TR>
+			<TR><TD ALIGN="LEFT" PORT="dest">dest</TD></TR>
+			</TABLE>>];
+		captchas [label=<<TABLE>
+			<TR><TD PORT="_"><B>captchas</B></TD></TR>
+			<TR><TD ALIGN="LEFT" PORT="id">id</TD></TR>
+			<TR><TD ALIGN="LEFT" PORT="value">value</TD></TR>
+			<TR><TD ALIGN="LEFT" PORT="token">token</TD></TR>
+			<TR><TD ALIGN="LEFT" PORT="expiration">expiration</TD></TR>
+			</TABLE>>];
 	}
 	Maildir [shape=rect];
 
