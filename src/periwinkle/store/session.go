@@ -20,19 +20,19 @@ type Session struct {
 	Last_used time.Time
 }
 
-func NewSession(username string, password string) *Session {
+func NewSession(con DB, username string, password string) *Session {
 	panic("not implemented")
 }
 
-func GetSessionById(id string) *Session {
+func GetSessionById(con DB, id string) *Session {
 	panic("not implemented")
 }
 
-func (o *Session) Delete() {
+func (o *Session) Delete(con DB) {
 	panic("not implemented")
 }
 
-func (o *Session) Save() {
+func (o *Session) Save(con DB) {
 	panic("not implemented")
 }
 
@@ -52,13 +52,14 @@ func newFileSession() t_fileSession {
 	r := t_fileSession{}
 	r.methods = map[string]he.Handler{
 		"POST": func(req he.Request) he.Response {
+			db := req.Things["db"].(DB)
 			badbody := req.StatusBadRequest("submitted body not what expected")
 			hash    , ok := req.Entity.(map[string]interface{}); if !ok { return badbody }
 			username, ok := hash["username"].(string)          ; if !ok { return badbody }
 			password, ok := hash["password"].(string)          ; if !ok { return badbody }
 			if len(hash) != 2                                           { return badbody }
 
-			sess := NewSession(username, password)
+			sess := NewSession(db, username, password)
 			if sess == nil {
 				return req.StatusUnauthorized(he.NetString("Incorrect username/password"))
 			} else {
@@ -68,9 +69,10 @@ func newFileSession() t_fileSession {
 			}
 		},
 		"DELETE": func(req he.Request) he.Response {
+			db := req.Things["db"].(DB)
 			sess := req.Things["session"].(*Session)
 			if sess != nil {
-				sess.Delete()
+				sess.Delete(db)
 			}
 			return req.StatusNoContent()
 		},
