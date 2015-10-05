@@ -6,5 +6,6 @@ try {
 
 var localised = {
 	en: {},
-	it: {}
+	it: {},
+	es: {}
 }

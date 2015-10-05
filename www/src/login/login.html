@@ -5,10 +5,9 @@
 			<div layout="column">
 				<md-input-container>
 					<label>{{ "USERNAME_EMAIL" | translate }}</label>
-					<input ng-model="login.username" type="text" name="username" required xreg-pattern="^[0-9\pL]+$"></input>
+					<input ng-model="login.username" type="text" name="username" required></input>
 					<div ng-messages="loginForm.username.$error" role="alert" ng-if="!loginForm.username.$untouched">
 						<div ng-message="required">{{ "REQUIRED_FIELD" | translate }}</div>
-						<div ng-message="xregPattern">The pattern is broken</div>
 					</div>
 				</md-input-container>
 				<md-input-container>
@@ -39,28 +38,31 @@
 </div>
 
 <div ng-if="login.isSignup">
-	<md-card id="login" style="max-width: 25em; margin-left: auto; margin-right: auto;">
+	<md-card id="signup" style="max-width: 25em; margin-left: auto; margin-right: auto;">
 		<md-card-content>
 			<form name="signupForm"><div layout="column">
 				<md-input-container>
 					<label>{{ "USERNAME" | translate }}</label>
-					<input ng-model="login.username" type="text" name="username" required></input>
+					<input ng-model="login.username" type="text" name="username" required xreg-pattern="^[0-9_\-\pL]+$"></input>
 					<div ng-messages="signupForm.username.$error" role="alert" ng-if="!signupForm.username.$untouched">
 						<div ng-message="required">{{ "REQUIRED_FIELD" | translate }}</div>
+						<div ng-message="xregPattern">{{  }}</div>
 					</div>
 				</md-input-container>
 				<md-input-container>
 					<label>{{ "EMAIL" | translate }}</label>
-					<input ng-model="login.email" name="email" type="email" ng-change="signupForm.confirmEmail.$validate();" ng-pattern="/^.+@.+\..+$/" required></input>
+					<input ng-model="login.email" name="email" type="email" ng-change="signupForm.confirmEmail.$validate();" xreg-pattern="/^.+@.+\..+$/" required></input>
 					<div ng-messages="signupForm.email.$error" role="alert" ng-if="!signupForm.email.$untouched">
 						<div ng-message="required">{{ "REQUIRED_FIELD" | translate }}</div>
+						<div ng-message="xregPattern">That is not a valid email address.</div>
 					</div>
 				</md-input-container>
 				<md-input-container>
 					<label>{{ "SIGNUP.CONFIRM_EMAIL" | translate }}</label>
-					<input ng-model="login.confirmEmail" name="confirm_email" type="email" data-match="signupForm.email" ng-pattern="/^.+@.+\..+$/" required></input>
+					<input ng-model="login.confirmEmail" name="confirm_email" type="email" data-match="signupForm.email" xreg-pattern="/^.+@.+\..+$/" required></input>
 					<div ng-messages="signupForm.confirm_email.$error" role="alert" ng-if="!signupForm.confirm_email.$untouched">
 							<div ng-message="required">{{ "REQUIRED_FIELD" | translate }}</div>
+							<div ng-message="xregPattern">That is not a valid email address.</div>
 							<div ng-message="match">{{ "SIGNUP.CONFIRM_EMAIL_NO_MATCH" | translate }}</div>
 					</div>
 				</md-input-container>

@@ -1,4 +1,4 @@
-localised.en = {
+localised.es = {
 	USERNAME_EMAIL:	"Username or Email",
 	USERNAME:		"Username",
 	EMAIL:			"Email",
