@@ -6,8 +6,8 @@ package store
 import (
 	"database/sql"
 	he "httpentity"
-	"net/url"
 	"math/rand"
+	"net/url"
 )
 
 var _ he.Entity = &ShortUrl{}
@@ -20,9 +20,9 @@ type ShortUrl struct {
 	Dest *url.URL
 }
 
-func newShortURL(u *url.URL) *ShortUrl{
-	s := &ShortUrl {
-		Id: string(rand.Intn(128)),
+func newShortURL(u *url.URL) *ShortUrl {
+	s := &ShortUrl{
+		Id:   string(rand.Intn(128)),
 		Dest: u,
 	}
 	// TODO implement Save()
@@ -35,14 +35,14 @@ func newShortURL(u *url.URL) *ShortUrl{
 
 func GetShortUrlById(con DB, id string) *ShortUrl {
 	var s ShortUrl
-	err := con.QueryRow("SELECT shortURL FROM shortURL WHERE id=?", id).Scan(&s);
+	err := con.QueryRow("SELECT shortURL FROM shortURL WHERE id=?", id).Scan(&s)
 	switch {
-		case err == sql.ErrNoRows:
-			return nil
-		case err != nil:
-			panic(err)
-		default:
-			return &s	
+	case err == sql.ErrNoRows:
+		return nil
+	case err != nil:
+		panic(err)
+	default:
+		return &s
 	}
 }
 
