@@ -112,7 +112,9 @@ func (req Request) statusNotAcceptable(u *url.URL, mimetypes []string) Response 
 func (req Request) statusInternalServerError(err interface{}) Response {
 	return Response{
 		status:  500,
-		Headers: http.Header{},
+		Headers: http.Header{
+			"Content-Type": {"text/plain; charset=utf-8"},
+		},
 		entity:  NetString(fmt.Sprintf("500 Internal Server Error: %v", err)),
 	}
 }
