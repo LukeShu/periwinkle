@@ -117,7 +117,6 @@ func (req Request) statusNotAcceptable(u *url.URL, mimetypes []string) Response 
 	}
 }
 
-
 func (req Request) statusUnsupportedMediaType() Response {
 	return Response{
 		status: 415,

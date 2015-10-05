@@ -4,7 +4,7 @@
 package store
 
 import (
-	//"database/sql"
+	"database/sql"
 	he "httpentity"
 )
 
@@ -15,24 +15,24 @@ var dirMessages he.Entity = newDirMessages()
 // Model /////////////////////////////////////////////////////////////
 
 type Message struct {
-	id       int
+	id       string
 	group_id int
 	filename string
 	// cached fields??????
 }
 
-func GetMessageById(id int) *Message {
+func GetMessageById(con DB, id string) *Message {
 	var mes Message
 	err := con.QueryRow("select * from message where id=?", id).Scan(&mes)
 	switch {
 	case err == sql.ErrNoRows:
 		// message does not exist
-		return nil, nil
+		return nil
 	case err != nil:
 		// error talking to the DB
-		return nil, err
+		panic(err)
 	default:
-		return &mes, nil
+		return &mes
 	}
 }
 
@@ -71,5 +71,5 @@ func (d t_dirMessages) Methods() map[string]he.Handler {
 }
 
 func (d t_dirMessages) Subentity(name string, request he.Request) he.Entity {
-	return GetMessageById(name)
+	return GetMessageById(nil /*TODO*/, name)
 }

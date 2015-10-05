@@ -43,9 +43,31 @@ func ReadEntity(r io.Reader, contenttype string) (interface{}, error) {
 			return nil, http.ErrMissingBoundary
 		}
 		reader := multipart.NewReader(r, boundary)
-		entity, err := reader.ReadForm(0)
+		form, err := reader.ReadForm(0)
 		if err != nil {
 			return nil, err
+		}
+		entity := make(map[string]interface{}, len(form.Value)+len(form.File))
+		for k, v := range form.Value {
+			entity[k] = v
+		}
+		for k, v := range form.File {
+			if _, exists := entity[k]; exists {
+				values := entity[k].([]string)
+				list := make([]interface{}, len(values)+len(v))
+				i := uint(0)
+				for _, value := range values {
+					list[i] = value
+					i++
+				}
+				for _, value := range v {
+					list[i] = value
+					i++
+				}
+				entity[k] = list
+			} else {
+				entity[k] = v
+			}
 		}
 		return entity, nil
 	case "application/json":

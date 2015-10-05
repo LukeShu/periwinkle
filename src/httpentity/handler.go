@@ -8,13 +8,16 @@ import (
 	"fmt"
 )
 
+type Middleware func(req *Request)
+
 type netHttpHandler struct {
 	prefix string
 	root   Entity
+	middle []Middleware
 }
 
-func NetHttpHandler(prefix string, entity Entity) http.Handler {
-	return netHttpHandler{prefix: prefix, root: entity}
+func NetHttpHandler(prefix string, entity Entity, middlewares ...Middleware) http.Handler {
+	return netHttpHandler{prefix: prefix, root: entity, middle: middlewares}
 }
 
 func (h netHttpHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
@@ -38,6 +41,9 @@ func (h netHttpHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		} else {
 			req.Entity = entity
 		}
+	}
+	for _, middleware := range h.middle {
+		middleware(&req)
 	}
 
 	// Run the request

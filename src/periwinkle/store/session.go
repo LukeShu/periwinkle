@@ -48,17 +48,23 @@ func newFileSession() t_fileSession {
 	r := t_fileSession{}
 	r.methods = map[string]he.Handler{
 		"POST": func(req he.Request) he.Response {
-			username := "" /*TODO*/
-			password := "" /*TODO*/
+			badbody := req.StatusBadRequest("submitted body not what expected")
+			hash    , ok := req.Entity.(map[string]interface{}); if !ok { return badbody }
+			username, ok := hash["username"].(string)          ; if !ok { return badbody }
+			password, ok := hash["password"].(string)          ; if !ok { return badbody }
+			if len(hash) != 2                                           { return badbody }
+
 			sess := NewSession(username, password)
 			if sess == nil {
 				return req.StatusUnauthorized(he.NetString("Incorrect username/password"))
 			} else {
-				return req.StatusOK(sess)
+				ret := req.StatusOK(sess)
+				// TODO: set the session_id cookie (in ret.Headers) to sess.Id
+				return ret
 			}
 		},
 		"DELETE": func(req he.Request) he.Response {
-			sess := GetSessionById("" /*TODO*/)
+			sess := req.Things["session"].(*Session)
 			if sess != nil {
 				sess.Delete()
 			}
