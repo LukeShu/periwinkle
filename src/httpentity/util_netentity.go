@@ -8,21 +8,21 @@ import (
 	"fmt"
 )
 
-type netString string
+type NetString string
 
-func (s netString) Encoders() map[string]Encoder {
+func (s NetString) Encoders() map[string]Encoder {
 	return map[string]Encoder{
 		"text/plain": s.text,
 		"application/json": s.json,
 	}
 }
 
-func (s netString) text(w io.Writer) error {
+func (s NetString) text(w io.Writer) error {
 	_, err := w.Write([]byte(s))
 	return err
 }
 
-func (s netString) json(w io.Writer) (err error) {
+func (s NetString) json(w io.Writer) (err error) {
 	bytes, err := json.Marshal(s)
 	if err != nil {
 		return
@@ -31,16 +31,16 @@ func (s netString) json(w io.Writer) (err error) {
 	return
 }
 
-type netList []interface{}
+type NetList []interface{}
 
-func (l netList) Encoders() map[string]Encoder {
+func (l NetList) Encoders() map[string]Encoder {
 	return map[string]Encoder{
 		"text/plain": l.text,
 		"application/json": l.json,
 	}
 }
 
-func (l netList) text(w io.Writer) error {
+func (l NetList) text(w io.Writer) error {
 	for _, line := range l {
 		_, err := fmt.Fprintln(w, line)
 		if err != nil {
@@ -50,7 +50,7 @@ func (l netList) text(w io.Writer) error {
 	return nil
 }
 
-func (l netList) json(w io.Writer) (err error) {
+func (l NetList) json(w io.Writer) (err error) {
 	bytes, err := json.Marshal(l)
 	if err != nil {
 		return

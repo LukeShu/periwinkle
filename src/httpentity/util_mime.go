@@ -28,7 +28,7 @@ func mimetypes2net(u *url.URL, mimetypes []string) NetEntity {
 		u2.Path += exts[0]
 		locations[i] = u2.String()
 	}
-	return netList{locations}
+	return NetList{locations}
 }
 
 func extensions2net(u *url.URL, extensions []string) NetEntity {
@@ -40,5 +40,5 @@ func extensions2net(u *url.URL, extensions []string) NetEntity {
 		u2.Path += extension
 		locations[i] = u2.String()
 	}
-	return netList{locations}
+	return NetList{locations}
 }

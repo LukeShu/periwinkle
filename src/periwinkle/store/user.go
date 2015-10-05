@@ -7,7 +7,14 @@ package store
 import (
 	"database/sql"
 	"golang.org/x/crypto/bcrypt"
+	he "httpentity"
 )
+
+var _ he.Entity = &User{}
+var _ he.NetEntity = &User{}
+var dirUsers he.Entity = newDirUsers()
+
+// Model /////////////////////////////////////////////////////////////
 
 type User struct {
 	Id       string
@@ -15,39 +22,39 @@ type User struct {
 	pwHash   []byte
 }
 
-func getUserById(con DB, id int) (*User, error) {
+func getUserById(con DB, id int) *User {
 	var user User
 	err := con.QueryRow("SELECT * FROM users WHERE id=?", id).Scan(&user)
 	switch {
 	case err == sql.ErrNoRows:
 		// user does not exist
-		return nil, nil
+		return nil
 	case err != nil:
 		// error talking to the DB
-		return nil, err
+		panic(err)
 	default:
 		// all ok
-		return &user, nil
+		return &user
 	}
 }
 
-func GetUserByName(con DB, name string) (*User, error) {
+func GetUserByName(con DB, name string) *User {
 	var user User
 	err := con.QueryRow("SELECT * FROM users WHERE name=?", name).Scan(&user)
 	switch {
 	case err == sql.ErrNoRows:
 		// user does not exist
-		return nil, nil
+		return nil
 	case err != nil:
 		// error talking to the DB
-		return nil, err
+		panic(err)
 	default:
 		// all ok
-		return &user, nil
+		return &user
 	}
 }
 
-func GetUserByEmail(con DB, address string) (*User, error) {
+func GetUserByEmail(con DB, address string) *User {
 	var user User
 	err := con.QueryRow(""+
 		"SELECT users.* "+
@@ -58,13 +65,13 @@ func GetUserByEmail(con DB, address string) (*User, error) {
 	switch {
 	case err == sql.ErrNoRows:
 		// user does not exist
-		return nil, nil
+		return nil
 	case err != nil:
 		// error talking to the DB
-		return nil, err
+		panic(err)
 	default:
 		// all ok
-		return &user, nil
+		return &user
 	}
 }
 
@@ -79,20 +86,58 @@ func (u *User) CheckPassword(password string) bool {
 	return err != nil
 }
 
-func NewUser(con DB, name string, password string) (u *User, err error) {
-	u = &User{
+func NewUser(con DB, name string, password string) *User {
+	u := &User{
 		Id:       name,
 		FullName: "",
 	}
 	u.SetPassword(password)
-	_, err = con.Exec("INSERT INTO users VALUES (?,?)", u.Id, u.FullName, u.pwHash)
+	_, err := con.Exec("INSERT INTO users VALUES (?,?)", u.Id, u.FullName, u.pwHash)
 	if err != nil {
-		u = nil
+		panic(err)
 	}
-	return
+	return u
 }
 
 func (u *User) Save() error {
 	// TODO
 	panic("not implemented")
+}
+
+func (o *User) Subentity(name string, req he.Request) he.Entity {
+	return nil
+}
+
+func (o *User) Methods() map[string]he.Handler {
+	panic("not implemented")
+}
+
+// View //////////////////////////////////////////////////////////////
+
+func (o *User) Encoders() map[string]he.Encoder {
+	return defaultEncoders(o)
+}
+
+// Directory ("Controller") //////////////////////////////////////////
+
+type t_dirUsers struct {
+	methods map[string]he.Handler
+}
+
+func newDirUsers() t_dirUsers {
+	r := t_dirUsers{}
+	r.methods = map[string]he.Handler{
+		"POST": func(req he.Request) he.Response {
+			return req.StatusCreated(r, NewUser(nil /*TODO*/, "" /*TODO*/, "" /*TODO*/).Id)
+		},
+	}
+	return r
+}
+
+func (d t_dirUsers) Methods() map[string]he.Handler {
+	return d.methods
+}
+
+func (d t_dirUsers) Subentity(name string, request he.Request) he.Entity {
+	return GetUserByName(nil /*TODO*/, name)
 }

@@ -22,16 +22,16 @@ func (d t_dirRoot) Subentity(name string, request he.Request) he.Entity {
 	switch name {
 	case "captcha":
 		return dirCaptchas
-	// case "groups":
-	// 	return dirGroups
-	// case "msgs":
-	// 	return dirMessages
-	// case "s":
-	// 	return dirShortUrls
-	// case "session":
-	// 	return fileSession
-	// case "users":
-	// 	return dirUsers
+	case "groups":
+		return dirGroups
+	case "msgs":
+		return dirMessages
+	case "s":
+		return dirShortUrls
+	case "session":
+		return fileSession
+	case "users":
+		return dirUsers
 	}
 	return nil
 }

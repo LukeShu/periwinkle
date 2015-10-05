@@ -3,39 +3,73 @@
 
 package store
 
-import "database/sql"
+import (
+	"database/sql"
+	he "httpentity"
+)
+
+var _ he.Entity = &Group{}
+var _ he.NetEntity = &Group{}
+var dirGroups he.Entity = newDirGroups()
+
+// Model /////////////////////////////////////////////////////////////
 
 type Group struct {
-	id   int
-	name string
+	Name string
 }
 
-func getGroupById(con DB, id int) (*Group, error) {
-	var group Group
-	err := con.QueryRow("select * from groups where id=?", id).Scan(&group)
-	switch {
-	case err == sql.ErrNoRows:
-		// group does not exist
-		return nil, nil
-	case err != nil:
-		// error talking to the DB
-		return nil, err
-	default:
-		return &group, nil
-	}
-}
-
-func GetGroupByName(con DB, name string) (*Group, error) {
+func GetGroupByName(con DB, name string) *Group {
 	var group Group
 	err := con.QueryRow("select * from groups where name=?", name).Scan(&group)
 	switch {
 	case err == sql.ErrNoRows:
-		//user does not exist
-		return nil, nil
+		// group does not exist
+		return nil
 	case err != nil:
-		//error talking to the DB
-		return nil, err
+		panic(err)
 	default:
-		return &group, nil
+		return &group
 	}
+}
+
+func NewGroup() *Group {
+	panic("not implemented")
+}
+
+func (o *Group) Subentity(name string, req he.Request) he.Entity {
+	panic("not implemented")
+}
+
+func (o *Group) Methods() map[string]he.Handler {
+	panic("not implemented")
+}
+
+// View //////////////////////////////////////////////////////////////
+
+func (o *Group) Encoders() map[string]he.Encoder {
+	return defaultEncoders(o)
+}
+
+// Directory ("Controller") //////////////////////////////////////////
+
+type t_dirGroups struct {
+	methods map[string]he.Handler
+}
+
+func newDirGroups() t_dirGroups {
+	r := t_dirGroups{}
+	r.methods = map[string]he.Handler{
+		"POST": func(req he.Request) he.Response {
+			return req.StatusCreated(r, NewGroup().Name)
+		},
+	}
+	return r
+}
+
+func (d t_dirGroups) Methods() map[string]he.Handler {
+	return d.methods
+}
+
+func (d t_dirGroups) Subentity(name string, request he.Request) he.Entity {
+	return GetGroupByName(nil /*TODO*/, name)
 }

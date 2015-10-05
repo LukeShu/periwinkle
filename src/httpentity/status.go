@@ -39,6 +39,14 @@ func (req Request) StatusCreated(parent Entity, child_name string) Response {
 	}
 }
 
+func (req Request) StatusNoContent() Response {
+	return Response{
+		status:  204,
+		Headers: http.Header{},
+		entity:  nil,
+	}
+}
+
 func (req Request) statusMultipleChoices(u *url.URL, mimetypes []string) Response {
 	return Response{
 		status: 300,
@@ -53,7 +61,7 @@ func (req Request) StatusMoved(u *url.URL) Response {
 		Headers: http.Header{
 			"Location":     {u.String()},
 		},
-		entity: netString("301: Moved"),
+		entity: NetString("301: Moved"),
 	}
 }
 
@@ -63,7 +71,17 @@ func (req Request) StatusFound(u *url.URL) Response {
 		Headers: http.Header{
 			"Location":     {u.String()},
 		},
-		entity: netString("302: Found"),
+		entity: NetString("302: Found"),
+	}
+}
+
+func (req Request) StatusUnauthorized(e NetEntity) Response {
+	return Response{
+		status:  401,
+		Headers: http.Header{
+			"WWW-Authenticate": {"TODO"},
+		},
+		entity:  e,
 	}
 }
 
@@ -71,7 +89,7 @@ func (req Request) statusNotFound() Response {
 	return Response{
 		status:  404,
 		Headers: http.Header{},
-		entity:  netString("404 Not Found"),
+		entity:  NetString("404 Not Found"),
 	}
 }
 
@@ -79,7 +97,7 @@ func (req Request) statusMethodNotAllowed(methods string) Response {
 	return Response{
 		status: 405,
 		Headers: http.Header{},
-		entity: netString("405 Method Not Allowed"),
+		entity: NetString("405 Method Not Allowed"),
 	}
 }
 
@@ -94,7 +112,9 @@ func (req Request) statusNotAcceptable(u *url.URL, mimetypes []string) Response 
 func (req Request) statusInternalServerError(err interface{}) Response {
 	return Response{
 		status:  500,
-		Headers: http.Header{},
-		entity:  netString(fmt.Sprintf("500 Internal Server Error: %v", err)),
+		Headers: http.Header{
+			"Content-Type": {"text/plain; charset=utf-8"},
+		},
+		entity:  NetString(fmt.Sprintf("500 Internal Server Error: %v", err)),
 	}
 }
