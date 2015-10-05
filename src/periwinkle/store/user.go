@@ -77,7 +77,7 @@ func GetUserByEmail(con DB, address string) *User {
 
 func (u *User) SetPassword(password string) error {
 	hash, err := bcrypt.GenerateFromPassword([]byte(password), -1)
-	u.pwHash = hash
+	u.password = hash
 	return err
 }
 
@@ -86,13 +86,14 @@ func (u *User) CheckPassword(password string) bool {
 	return err != nil
 }
 
-func NewUser(con DB, name string, password string) *User {
+func NewUser(con DB, name string, password string, email string) *User {
 	u := &User{
-		Id:       name,
+		Login:       name,
 		FullName: "",
+		Email:	email,
 	}
 	u.SetPassword(password)
-	_, err := con.Exec("INSERT INTO users VALUES (?,?)", u.Id, u.FullName, u.pwHash)
+	_, err := con.Exec("INSERT INTO users VALUES (?,?,?,?)", u.Login, u.FullName, u.password, u.email)
 	if err != nil {
 		panic(err)
 	}
