@@ -20,9 +20,19 @@ type ShortUrl struct {
 	Dest *url.URL
 }
 
+func randomByte() []byte {
+	byteSize := 5
+	var table = []byte("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789")
+	var gen []byte
+	for i := 0 ; i < byteSize; i++{
+		gen[i] = table[rand.Intn(61)]
+	}
+	return gen
+}
+
 func newShortURL(u *url.URL) *ShortUrl {
 	s := &ShortUrl{
-		Id:   string(rand.Intn(128)),
+		Id:   string(randomByte()),
 		Dest: u,
 	}
 	// TODO implement Save()
