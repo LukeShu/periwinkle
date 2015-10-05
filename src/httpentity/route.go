@@ -13,8 +13,8 @@ import (
 
 func methods2string(methods map[string]Handler) string {
 	set := make(map[string]bool, len(methods)+2)
-	for k, _ := range methods {
-		set[k] = true
+	for method := range methods {
+		set[method] = true
 	}
 	set["OPTIONS"] = true
 	if _, get := set["GET"]; get {
@@ -22,8 +22,8 @@ func methods2string(methods map[string]Handler) string {
 	}
 	list := make([]string, len(set))
 	i := uint(0)
-	for m, _ := range set {
-		list[i] = m
+	for method := range set {
+		list[i] = method
 		i++
 	}
 	return strings.Join(list, ", ")
@@ -68,8 +68,8 @@ func route(entity Entity, req Request, method string, upath string) Response {
 func encoders2mimelist(encoders map[string]Encoder) []string {
 	list := make([]string, len(encoders))
 	i := uint(0)
-	for m, _ := range encoders {
-		list[i] = m
+	for mimetype := range encoders {
+		list[i] = mimetype
 		i++
 	}
 	return list
