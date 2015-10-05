@@ -18,6 +18,10 @@ func SessionCheck(req *he.Request) {
 	// TODO
 }
 
+func GetDatabase(req *he.Request) {
+	// TODO
+}
+
 func Main() error {
 	mux := http.NewServeMux()
 	mux.Handle("/v1/", he.NetHttpHandler("/v1/", store.DirRoot, PostHack, SessionCheck))

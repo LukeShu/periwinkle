@@ -66,7 +66,7 @@ func newDirGroups() t_dirGroups {
 	r := t_dirGroups{}
 	r.methods = map[string]he.Handler{
 		"POST": func(req he.Request) he.Response {
-			return req.StatusCreated(r, NewGroup("").Name)
+			return req.StatusCreated(r, NewGroup(nil /*TODO*/, "").Name)
 		},
 	}
 	return r
