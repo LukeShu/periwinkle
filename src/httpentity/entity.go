@@ -12,6 +12,7 @@ type Request struct {
 	Headers http.Header
 	Query   url.Values
 	Entity  interface{}
+	Things  map[string]interface{}
 }
 
 type Response struct {
