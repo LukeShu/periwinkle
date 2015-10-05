@@ -4,19 +4,65 @@ package store
 
 import (
 	he "httpentity"
+	"time"
 	//"github.com/dchest/captcha"
-	//"orm"
 )
+
+var _ he.Entity = &Captcha{}
+var _ he.NetEntity = &Captcha{}
+var dirCaptcha he.Entity = newDirCaptcha()
+
+// Model /////////////////////////////////////////////////////////////
+
+type Captcha struct {
+	Id         string
+	Value      string
+	token      string
+	Expiration time.Time
+}
+
+func NewCaptcha() *Captcha {
+	panic("not implemented")
+}
+
+func GetCaptchaById(id string) *Captcha {
+	panic("not implemented")
+}
+
+func (o *Captcha) Subentity(name string, req he.Request) he.Entity {
+	return nil
+}
+
+func (o *Captcha) Methods() map[string]he.Handler {
+	return map[string]he.Handler{
+		"GET": func(he.Request) he.Response {
+			panic("not implemented")
+		},
+		"PATCH": func(he.Request) he.Response {
+			panic("not implemented")
+		},
+	}
+}
+
+// View //////////////////////////////////////////////////////////////
+
+func (o *Captcha) Encoders() map[string]he.Encoder {
+	return defaultEncoders(o)
+}
+
+// Directory ("Controller") //////////////////////////////////////////
 
 type t_dirCaptcha struct {
 	methods map[string]he.Handler
 }
 
-var dirCaptcha he.Entity = newDirCaptcha()
-
 func newDirCaptcha() t_dirCaptcha {
-	r := t_dirCaptcha{methods: make(map[string]he.Handler)}
-	r.methods["POST"] = r.newCaptcha
+	r := t_dirCaptcha{}
+	r.methods = map[string]he.Handler{
+		"POST": func(req he.Request) he.Response {
+			return req.StatusCreated(r, NewCaptcha().Id)
+		},
+	}
 	return r
 }
 
@@ -25,9 +71,5 @@ func (d t_dirCaptcha) Methods() map[string]he.Handler {
 }
 
 func (d t_dirCaptcha) Subentity(name string, request he.Request) he.Entity {
-	panic("not implemented")
-}
-
-func (d t_dirCaptcha) newCaptcha(req he.Request) he.Response {
-	panic("not implemented")
+	return GetCaptchaById(name)
 }
