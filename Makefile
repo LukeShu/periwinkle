@@ -29,7 +29,7 @@ goext = c s S cc cpp cxx h hh hpp hxx
 gosrc = $(shell find -L src -name '.*' -prune -o \( -type f \( $(foreach e,$(goext), -name '*.$e' ) \) -o -type d \) -print)
 
 # Iterate over external dependencies, and create a rule to download it
-$(foreach d,$(deps),$(eval src/$d: $(NET); GOPATH='$(topdir)' go get -d -u $d))
+$(foreach d,$(deps),$(eval src/$d: $(NET); GOPATH='$(topdir)' go get -d -u $d || { rm -rf -- $$@; false; }))
 
 all: bin
 .PHONY: all
@@ -39,7 +39,7 @@ all: bin
 # dependency tracker.
 bin pkg: $(gosrc) $(addprefix src/,$(deps)) $(addprefix .var.,$(cgo_variables))
 	@true $(foreach f,$(filter-out .var.%,$^), && test $@ -nt $f ) || rm -rf -- bin pkg
-	GOPATH='$(topdir)' go install $(packages)
+	GOPATH='$(topdir)' go install $(packages) || { rm -rf -- bin; false; }
 
 # Rule to nuke everything
 clean:
