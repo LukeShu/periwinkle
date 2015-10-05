@@ -133,9 +133,9 @@ is returned.
 
 		Will attempt to create a user. On success, an HTTP 201
 		("Created"), with the `Location` header set to the created
-		`/user/%{alias}`, and the response document identical to as if
-		the client had followed up with a `GET` request to that
-		`Location`.
+		`/user/%{alias}`, and the response document with a list of
+		URLs the resource is accessable at, differentiated by file
+		extension.
 
 		TODO: Specify exactly what is needed to create a user.
 

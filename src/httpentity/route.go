@@ -65,16 +65,6 @@ func route(entity Entity, req Request, method string, upath string) Response {
 	return ret
 }
 
-func encoders2mimelist(encoders map[string]Encoder) []string {
-	list := make([]string, len(encoders))
-	i := uint(0)
-	for mimetype := range encoders {
-		list[i] = mimetype
-		i++
-	}
-	return list
-}
-
 func Route(prefix string, entity Entity, req Request, method string, u *url.URL) Response {
 	var res Response
 	// just in case anything goes wrong, don't bring down the
@@ -105,11 +95,15 @@ func Route(prefix string, entity Entity, req Request, method string, u *url.URL)
 	if l := res.Headers.Get("Location"); l != "" {
 		u2, _ := u.Parse(l)
 		res.Headers.Set("Location", u2.String())
+		if res.status == 201 {
+			list := res.entity.(netJson).body.([]string)
+			res.entity = extensions2json(u2, list)
+		}
 	}
 	// figure out the content type of the response
 	if res.entity != nil && res.Headers.Get("Content-Type") == "" {
 		encoders := res.entity.Encoders()
-		mimetypes := encoders2mimelist(encoders)
+		mimetypes := encoders2mimetypes(encoders)
 		accept := req.Headers.Get("Accept")
 		if len(encoders) > 1 && accept == "" {
 			res = req.statusMultipleChoices(u, mimetypes)
