@@ -15,9 +15,9 @@ var fileSession he.Entity = newFileSession()
 // Model /////////////////////////////////////////////////////////////
 
 type Session struct {
-	id        string
-	user_id   string
-	last_used time.Time
+	Id        string
+	User_id   string
+	Last_used time.Time
 }
 
 func NewSession(username string, password string) *Session {
@@ -29,6 +29,10 @@ func GetSessionById(id string) *Session {
 }
 
 func (o *Session) Delete() {
+	panic("not implemented")
+}
+
+func (o *Session) Save() {
 	panic("not implemented")
 }
 

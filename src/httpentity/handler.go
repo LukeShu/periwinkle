@@ -8,7 +8,10 @@ import (
 	"fmt"
 )
 
-type Middleware func(req *Request)
+type Middleware interface {
+	Before(req *Request)
+	After(req Request, res *Response)
+}
 
 type netHttpHandler struct {
 	prefix string
@@ -20,15 +23,23 @@ func NetHttpHandler(prefix string, entity Entity, middlewares ...Middleware) htt
 	return netHttpHandler{prefix: prefix, root: entity, middle: middlewares}
 }
 
-func (h netHttpHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	var res Response
+func (h netHttpHandler) serveHTTP(w http.ResponseWriter, r *http.Request) (res Response) {
 	// Adapt the request from `net/http` format to `httpentity` format
 	req := Request{
+		Method: r.Method,
 		Headers: r.Header,
 		Query:   r.URL.Query(),
 		Entity:  nil,
 	}
-	switch r.Method {
+	// just in case anything goes wrong, don't bring down the
+	// process.
+	defer func() {
+		if r := recover(); r != nil {
+			res = req.statusInternalServerError(r)
+		}
+	}()
+	// parse the submitted entity
+	switch req.Method {
 	case "POST", "PUT", "PATCH":
 		entity, err := ReadEntity(r.Body, r.Header.Get("Content-Type"))
 		if entity == nil {
@@ -43,12 +54,23 @@ func (h netHttpHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 	for _, middleware := range h.middle {
-		middleware(&req)
+		middleware.Before(&req)
 	}
 
 	// Run the request
-	res = Route(h.prefix, h.root, req, r.Method, r.URL)
+	res = Route(h.prefix, h.root, req, req.Method, r.URL)
 end:
+	// this loop has go go backwards over h.middle
+	var i int
+	for i = len(h.middle)-1; i >= 0; i-- {
+		middleware := h.middle[i]
+		middleware.After(req, &res)
+	}
+	return
+}
+
+func (h netHttpHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	res := h.serveHTTP(w, r)
 	// Adapt the response from `httpentity` format to `net/http` format
 	for k, v := range res.Headers {
 		w.Header().Set(k, strings.Join(v, ", "))

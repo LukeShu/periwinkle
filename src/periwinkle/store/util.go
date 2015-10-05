@@ -9,6 +9,7 @@ import (
 	"io"
 )
 
+// The intersection of *sql.DB and *sql.Tx
 type DB interface {
 	Exec(query string, args ...interface{}) (sql.Result, error)
 	Prepare(query string) (*sql.Stmt, error)
@@ -16,6 +17,7 @@ type DB interface {
 	QueryRow(query string, args ...interface{}) *sql.Row
 }
 
+// Simple dump to JSON, good for most entities
 func defaultEncoders(o interface{}) map[string]he.Encoder {
 	return map[string]he.Encoder{
 		"application/json": func(w io.Writer) error {
