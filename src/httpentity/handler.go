@@ -23,7 +23,14 @@ func (h netHttpHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		Query:   r.URL.Query(),
 		Entity:  nil,
 	}
-	ReadEntity(r.Body, r.Header.Get("Content-Type"), &req.Entity)
+	switch r.Method {
+	case "POST", "PUT", "PATCH":
+		entity, err := ReadEntity(r.Body, r.Header.Get("Content-Type"))
+		if entity == nil || err != nil {
+			panic("needs better error handling")
+		}
+		req.Entity = entity
+	}
 
 	// Run the request
 	res := Route(h.prefix, h.root, req, r.Method, r.URL)

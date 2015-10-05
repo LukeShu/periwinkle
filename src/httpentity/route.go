@@ -4,7 +4,6 @@ package httpentity
 
 import (
 	"bitbucket.org/ww/goautoneg"
-	"io"
 	"mime"
 	"net/url"
 	"path"
@@ -118,17 +117,4 @@ func Route(prefix string, entity Entity, req Request, method string, u *url.URL)
 
 	// return the response
 	return res
-}
-
-func (r Response) WriteEntity(w io.Writer) error {
-	if r.entity == nil {
-		return nil
-	}
-	mimetype := strings.SplitN(r.Headers.Get("Content-Type"), ";", 2)[0]
-	encoders := r.entity.Encoders()
-	return encoders[mimetype](w)
-}
-
-func ReadEntity(w io.Reader, mimetype string, entity interface{}) {
-	//panic("not implemented")
 }
