@@ -61,14 +61,6 @@ func route(entity Entity, req Request, method string, upath string) (ret Respons
 }
 
 func Route(prefix string, entity Entity, req Request, method string, u *url.URL) (res Response) {
-	// just in case anything goes wrong, don't bring down the
-	// process.
-	defer func() {
-		if r := recover(); r != nil {
-			res = req.statusInternalServerError(r)
-		}
-	}()
-
 	// sanitize the URL
 	u, _ = u.Parse("") // normalize
 	// the file extension overrides the Accept: header

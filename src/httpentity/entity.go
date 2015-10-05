@@ -9,6 +9,7 @@ import (
 )
 
 type Request struct {
+	Method  string
 	Headers http.Header
 	Query   url.Values
 	Entity  interface{}
