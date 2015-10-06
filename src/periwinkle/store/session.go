@@ -21,7 +21,16 @@ type Session struct {
 }
 
 func NewSession(con DB, username string, password string) *Session {
-	panic("not implemented")
+	user := getUserByName(con, username)
+	if !user.CheckPassword(password) {
+		return nil
+	}
+
+	ses := &Session{id: createSessionId(),
+		user_id:   user.Id,
+		last_used: Now(),
+	}
+	return ses
 }
 
 func GetSessionById(con DB, id string) *Session {
@@ -54,10 +63,21 @@ func newFileSession() t_fileSession {
 		"POST": func(req he.Request) he.Response {
 			db := req.Things["db"].(DB)
 			badbody := req.StatusBadRequest("submitted body not what expected")
-			hash    , ok := req.Entity.(map[string]interface{}); if !ok { return badbody }
-			username, ok := hash["username"].(string)          ; if !ok { return badbody }
-			password, ok := hash["password"].(string)          ; if !ok { return badbody }
-			if len(hash) != 2                                           { return badbody }
+			hash, ok := req.Entity.(map[string]interface{})
+			if !ok {
+				return badbody
+			}
+			username, ok := hash["username"].(string)
+			if !ok {
+				return badbody
+			}
+			password, ok := hash["password"].(string)
+			if !ok {
+				return badbody
+			}
+			if len(hash) != 2 {
+				return badbody
+			}
 
 			sess := NewSession(db, username, password)
 			if sess == nil {
@@ -86,4 +106,20 @@ func (d t_fileSession) Methods() map[string]he.Handler {
 
 func (d t_fileSession) Subentity(name string, request he.Request) he.Entity {
 	return nil
+}
+
+const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz01234567890"
+
+var alphabet_len = big.NewInt(int64(len(alphabet)))
+
+func createSessionId() string {
+	var sessionid [24]byte
+	for i := 0; i < len(sessionid); i++ {
+		bigint, err := rand.Int(rand.Reader, alphabet_len)
+		if err != nil {
+			return
+		}
+		sessionid[i] = alphabet[bigint.Int64()]
+	}
+	ret <- p.PAM_SessionOpen{SessionID: string(sessionid[:])}
 }
