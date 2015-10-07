@@ -15,7 +15,7 @@ var fileSession he.Entity = newFileSession()
 // Model /////////////////////////////////////////////////////////////
 
 type Session struct {
-	Id        string
+	Id       string
 	UserId   string
 	LastUsed time.Time
 }
@@ -27,15 +27,11 @@ func NewSession(con DB, username string, password string) *Session {
 	}
 
 	ses := &Session{
-		Id: createSessionId(),
+		Id:       randomString(24),
 		UserId:   user.Id,
-		LastUsed: Now(),
+		LastUsed: time.Now(),
 	}
 	return ses
-}
-
-func Now() time.Time{
-	panic("not implemented")
 }
 
 func GetSessionById(con DB, id string) *Session {
@@ -100,8 +96,4 @@ func (d t_fileSession) Methods() map[string]he.Handler {
 
 func (d t_fileSession) Subentity(name string, request he.Request) he.Entity {
 	return nil
-}
-
-func createSessionId() string {
-	return randomString(24)
 }

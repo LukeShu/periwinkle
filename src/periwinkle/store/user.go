@@ -7,13 +7,14 @@ package store
 import (
 	"database/sql"
 	"golang.org/x/crypto/bcrypt"
-	"strings"
 	he "httpentity"
+	"strings"
 )
 
 var _ he.Entity = &User{}
 var _ he.NetEntity = &User{}
-var dirUsers he.Entity;
+var dirUsers he.Entity
+
 func init() {
 	dirUsers = newDirUsers()
 }
@@ -93,9 +94,9 @@ func (u *User) CheckPassword(password string) bool {
 
 func NewUser(con DB, name string, password string, email string) *User {
 	u := &User{
-		Id: name,
+		Id:       name,
 		FullName: "",
-		Email:	email,
+		Email:    email,
 	}
 	u.SetPassword(password)
 	_, err := con.Exec("INSERT INTO users VALUES (?,?,?,?)", u.Id, u.FullName, u.pwHash, u.Email)

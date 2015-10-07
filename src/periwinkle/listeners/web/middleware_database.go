@@ -3,9 +3,9 @@
 package web
 
 import (
+	"database/sql"
 	he "httpentity"
 	"periwinkle/store"
-	"database/sql"
 )
 
 type database struct{}
