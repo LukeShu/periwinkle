@@ -120,17 +120,34 @@ const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789
 
 var alphabetLen = big.NewInt(int64(len(alphabet)))
 
+func randomByte() []byte {
+	byteSize := 24
+	var table = []byte("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789")
+	var gen []byte
+	for i := 0 ; i < byteSize; i++{
+		gen[i] = table[rand.Intn(61)]
+	}
+	return gen
+}
+
+func createSessionId() string {
+	sessionId := randomByte()
+	return string(sessionId)
+}
+
+/*
 func createSessionId() string {
 	var sessionid [24]byte
 	for i := 0; i < len(sessionid); i++ {
-		bigint/*, err*/:= rand.Int(rand.Reader, alphabetLen)
-		/*
+		bigint, err:= rand.Int(rand.Reader, alphabetLen)
+		
 		if err != nil {
 			return
 		}
-		*/
-		// sessionid[i] = alphabet[bigint.int64()]
+		
+		/sessionid[i] = alphabet[bigint.int64()]
 		sessionid[i] = alphabet[int64(bigint)]
 	}
 	ret <- p.PAM_SessionOpen{SessionID: string(sessionid[:])}
 }
+*/

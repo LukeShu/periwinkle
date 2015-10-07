@@ -19,6 +19,7 @@ var dirUsers he.Entity = newDirUsers()
 type User struct {
 	Id       string
 	FullName string
+	Email    string
 	pwHash   []byte
 }
 
@@ -77,7 +78,7 @@ func GetUserByEmail(con DB, address string) *User {
 
 func (u *User) SetPassword(password string) error {
 	hash, err := bcrypt.GenerateFromPassword([]byte(password), -1)
-	u.password = hash
+	u.pwHash = hash
 	return err
 }
 
@@ -88,12 +89,12 @@ func (u *User) CheckPassword(password string) bool {
 
 func NewUser(con DB, name string, password string, email string) *User {
 	u := &User{
-		Login:       name,
+		Id: name,
 		FullName: "",
 		Email:	email,
 	}
 	u.SetPassword(password)
-	_, err := con.Exec("INSERT INTO users VALUES (?,?,?,?)", u.Login, u.FullName, u.password, u.email)
+	_, err := con.Exec("INSERT INTO users VALUES (?,?,?,?)", u.Id, u.FullName, u.pwHash, u.Email)
 	if err != nil {
 		panic(err)
 	}
