@@ -121,15 +121,20 @@ const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789
 
 var alphabetLen = big.NewInt(int64(len(alphabet)))
 
-func createSessionId() string {
-		var sessionid [24]byte
-		for i := 0; i < len(sessionid); i++ {
+func randomByte(size int) string {
+		byteSize := size
+		var randStr []byte
+		for i := 0; i < size; i++ {
 			bigint, err := rand.Int(rand.Reader, alphabetLen)
 			if err != nil {
 				panic(err)
 			}
-			sessionid[i] = alphabet[bigint.Int64()]
+			randStr[i] = alphabet[bigint.Int64()]
 		}
-		return string(sessionid[:])
+		return string(randStr[:])
+}
+
+func createSessionId() string {
+	return randomByte(24)
 }
 
