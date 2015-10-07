@@ -69,23 +69,11 @@ func newFileSession() t_fileSession {
 	r.methods = map[string]he.Handler{
 		"POST": func(req he.Request) he.Response {
 			db := req.Things["db"].(DB)
-			// the below var name is both funny and kinda hot
 			badbody := req.StatusBadRequest("submitted body not what expected")
-			hash, ok := req.Entity.(map[string]interface{})
-			if !ok {
-				return badbody
-			}
-			username, ok := hash["username"].(string)
-			if !ok {
-				return badbody
-			}
-			password, ok := hash["password"].(string)
-			if !ok {
-				return badbody
-			}
-			if len(hash) != 2 {
-				return badbody
-			}
+			hash, ok := req.Entity.(map[string]interface{}); if !ok { return badbody }
+			username, ok := hash["username"].(string)      ; if !ok { return badbody }
+			password, ok := hash["password"].(string)      ; if !ok { return badbody }
+			if len(hash) != 2                                       { return badbody }
 
 			sess := NewSession(db, username, password)
 			if sess == nil {
