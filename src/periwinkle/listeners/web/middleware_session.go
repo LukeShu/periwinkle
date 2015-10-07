@@ -29,7 +29,7 @@ func (p session) Before(req *he.Request) {
 	sess = store.GetSessionById(db, session_id1)
 end:
 	if sess != nil {
-		sess.Last_used = time.Now()
+		sess.LastUsed = time.Now()
 	}
 	req.Things["session"] = sess
 }
