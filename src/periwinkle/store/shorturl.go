@@ -20,8 +20,8 @@ type ShortUrl struct {
 	Dest *url.URL
 }
 /*
-func randomByte() []byte {
-	byteSize := 5
+func randomByte(size int) []byte {
+	byteSize := size
 	var table = []byte("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789")
 	var gen []byte
 	for i := 0 ; i < byteSize; i++{

@@ -48,9 +48,27 @@
 		this.login = function() {
 			//http login api call
 			$scope.loading.is = true;
-			$interval(function() {
-				$scope.loading.is = false;
-			}, 5000, 1);
+			$http({
+				method: 'POST',
+				url: '/session',
+				headers: {
+					'Content-Type': 'application/json'
+				},
+				data: {
+					username: self.username,
+					password: self.password
+				}
+			}).then(
+				function success() {
+					//do work with response
+					$scope.loading.is = false;
+				},
+				function fail() {
+					//do work with response
+					//show error to user
+					$scope.loading.is = false;
+				}
+			);
 		}
 		
 		this.signup = function() {

@@ -8,7 +8,8 @@ import (
 	he "httpentity"
 	"time"
 	"math/big"
-	"math/rand"
+	//"math/rand"
+	"crypto/rand"
 )
 
 var _ he.NetEntity = &Session{}
@@ -108,34 +109,20 @@ const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789
 
 var alphabetLen = big.NewInt(int64(len(alphabet)))
 
-func randomByte(num int) []byte {
-	byteSize := num
-	var table = []byte("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789")
-	var gen []byte
-	for i := 0 ; i < byteSize; i++{
-		gen[i] = table[rand.Intn(61)]
-	}
-	return gen
-}
-
-func createSessionId() string {
-	sessionId := randomByte(24)
-	return string(sessionId)
-}
-
-/*
-func createSessionId() string {
-	var sessionid [24]byte
-	for i := 0; i < len(sessionid); i++ {
-		bigint, err:= rand.Int(rand.Reader, alphabetLen)
-		
-		if err != nil {
-			return
+func randomByte(size int) string {
+		byteSize := size
+		var randStr []byte
+		for i := 0; i < size; i++ {
+			bigint, err := rand.Int(rand.Reader, alphabetLen)
+			if err != nil {
+				panic(err)
+			}
+			randStr[i] = alphabet[bigint.Int64()]
 		}
-		
-		/sessionid[i] = alphabet[bigint.int64()]
-		sessionid[i] = alphabet[int64(bigint)]
-	}
-	ret <- p.PAM_SessionOpen{SessionID: string(sessionid[:])}
+		return string(randStr[:])
 }
-*/
+
+func createSessionId() string {
+	return randomByte(24)
+}
+
