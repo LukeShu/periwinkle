@@ -137,7 +137,12 @@ is returned.
 		URLs the resource is accessable at, differentiated by file
 		extension.
 
-		TODO: Specify exactly what is needed to create a user.
+		If the user can't be created, it will return an HTTP 409
+		("Conflict") with a response document explaining the conflict.
+
+		The submitted document must include "username", "email", and
+		"password" fields, and may optionally include a
+		"password_verification" field.
 
 		* `/users/%{alias}` [`GET`, `PUT`, `PATCH`, `DELETE`]
 

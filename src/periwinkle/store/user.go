@@ -7,12 +7,16 @@ package store
 import (
 	"database/sql"
 	"golang.org/x/crypto/bcrypt"
+	"strings"
 	he "httpentity"
 )
 
 var _ he.Entity = &User{}
 var _ he.NetEntity = &User{}
-var dirUsers he.Entity = newDirUsers()
+var dirUsers he.Entity;
+func init() {
+	dirUsers = newDirUsers()
+}
 
 // Model /////////////////////////////////////////////////////////////
 
@@ -130,7 +134,28 @@ func newDirUsers() t_dirUsers {
 	r := t_dirUsers{}
 	r.methods = map[string]he.Handler{
 		"POST": func(req he.Request) he.Response {
-			return req.StatusCreated(r, NewUser(nil /*TODO*/, "" /*TODO*/, "" /*TODO*/).Id)
+			db := req.Things["db"].(DB)
+			badbody := req.StatusBadRequest("submitted body not what expected")
+			hash, ok := req.Entity.(map[string]interface{}); if !ok { return badbody }
+			username, ok := hash["username"].(string)      ; if !ok { return badbody }
+			email   , ok := hash["email"].(string)         ; if !ok { return badbody }
+			password, ok := hash["password"].(string)      ; if !ok { return badbody }
+
+			if password2, ok := hash["password_verification"].(string); ok {
+				if password != password2 {
+					// Passwords don't match
+					return req.StatusConflict(he.NetString("password and password_verification don't match"))
+				}
+			}
+
+			username = strings.ToLower(username)
+
+			user := NewUser(db, username, password, email)
+			if user == nil {
+				return req.StatusConflict(he.NetString("either that username or password is already taken"))
+			} else {
+				return req.StatusCreated(dirUsers, username)
+			}
 		},
 	}
 	return r

@@ -117,6 +117,14 @@ func (req Request) statusNotAcceptable(u *url.URL, mimetypes []string) Response 
 	}
 }
 
+func (req Request) StatusConflict(entity NetEntity) Response {
+	return Response{
+		status:  409,
+		Headers: http.Header{},
+		entity:  entity,
+	}
+}
+
 func (req Request) statusUnsupportedMediaType() Response {
 	return Response{
 		status: 415,
