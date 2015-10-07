@@ -120,8 +120,8 @@ const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789
 
 var alphabetLen = big.NewInt(int64(len(alphabet)))
 
-func randomByte() []byte {
-	byteSize := 24
+func randomByte(num int) []byte {
+	byteSize := num
 	var table = []byte("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789")
 	var gen []byte
 	for i := 0 ; i < byteSize; i++{
@@ -131,7 +131,7 @@ func randomByte() []byte {
 }
 
 func createSessionId() string {
-	sessionId := randomByte()
+	sessionId := randomByte(24)
 	return string(sessionId)
 }
 

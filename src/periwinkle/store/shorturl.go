@@ -32,7 +32,7 @@ func randomByte() []byte {
 */
 func newShortURL(u *url.URL) *ShortUrl {
 	s := &ShortUrl{
-		Id:   string(randomByte()),
+		Id:   string(randomByte(5)),
 		Dest: u,
 	}
 	err := s.Save()
