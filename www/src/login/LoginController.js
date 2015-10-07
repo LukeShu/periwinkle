@@ -61,12 +61,12 @@
 			}).then(
 				function success() {
 					//do work with response
-					alert()
 					$scope.loading.is = false;
 				},
-				function fail() {
+				function fail(response) {
 					//do work with response
 					//show error to user
+					alert(response);
 					$scope.loading.is = false;
 				}
 			);
