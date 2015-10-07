@@ -48,8 +48,11 @@ func (o *Session) Save(con DB) {
 
 // View //////////////////////////////////////////////////////////////
 
-func (o *Session) Encoders() map[string]he.Encoder {
-	panic("not implemented")
+func (sess *Session) Encoders() map[string]he.Encoder {
+	dat := map[string]string {
+		"session_id": sess.Id,
+	}
+	return defaultEncoders(dat)
 }
 
 // File ("Controller") ///////////////////////////////////////////////
