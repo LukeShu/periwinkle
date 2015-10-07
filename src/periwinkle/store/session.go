@@ -7,6 +7,8 @@ import (
 	//"database/sql"
 	he "httpentity"
 	"time"
+	"math/big"
+	"math/rand"
 )
 
 var _ he.NetEntity = &Session{}
@@ -16,21 +18,26 @@ var fileSession he.Entity = newFileSession()
 
 type Session struct {
 	Id        string
-	User_id   string
-	Last_used time.Time
+	UserId   string
+	LastUsed time.Time
 }
 
 func NewSession(con DB, username string, password string) *Session {
-	user := getUserByName(con, username)
+	user := GetUserByName(con, username)
 	if !user.CheckPassword(password) {
 		return nil
 	}
 
-	ses := &Session{id: createSessionId(),
-		user_id:   user.Id,
-		last_used: Now(),
+	ses := &Session{
+		Id: createSessionId(),
+		UserId:   user.Id,
+		LastUsed: Now(),
 	}
 	return ses
+}
+
+func Now() time.Time{
+	panic("not implemented")
 }
 
 func GetSessionById(con DB, id string) *Session {
@@ -62,6 +69,7 @@ func newFileSession() t_fileSession {
 	r.methods = map[string]he.Handler{
 		"POST": func(req he.Request) he.Response {
 			db := req.Things["db"].(DB)
+			// the below var name is both funny and kinda hot
 			badbody := req.StatusBadRequest("submitted body not what expected")
 			hash, ok := req.Entity.(map[string]interface{})
 			if !ok {
@@ -108,18 +116,21 @@ func (d t_fileSession) Subentity(name string, request he.Request) he.Entity {
 	return nil
 }
 
-const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz01234567890"
+const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
 
-var alphabet_len = big.NewInt(int64(len(alphabet)))
+var alphabetLen = big.NewInt(int64(len(alphabet)))
 
 func createSessionId() string {
 	var sessionid [24]byte
 	for i := 0; i < len(sessionid); i++ {
-		bigint, err := rand.Int(rand.Reader, alphabet_len)
+		bigint/*, err*/:= rand.Int(rand.Reader, alphabetLen)
+		/*
 		if err != nil {
 			return
 		}
-		sessionid[i] = alphabet[bigint.Int64()]
+		*/
+		// sessionid[i] = alphabet[bigint.int64()]
+		sessionid[i] = alphabet[int64(bigint)]
 	}
 	ret <- p.PAM_SessionOpen{SessionID: string(sessionid[:])}
 }

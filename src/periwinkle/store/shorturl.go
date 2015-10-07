@@ -35,12 +35,16 @@ func newShortURL(u *url.URL) *ShortUrl {
 		Id:   string(randomByte()),
 		Dest: u,
 	}
-	// TODO implement Save()
-	// err := s.Save()
-	// if err != nil {
-	// 	return nil
-	// }
+	err := s.Save()
+	if err != nil {
+		return nil
+	}
 	return s
+}
+
+func (s *ShortUrl) Save() error {
+	// TODO
+	panic("not implemented")
 }
 
 func GetShortUrlById(con DB, id string) *ShortUrl {
