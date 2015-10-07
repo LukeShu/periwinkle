@@ -3,10 +3,12 @@
 package store
 
 import (
+	"crypto/rand"
 	"database/sql"
 	"encoding/json"
 	he "httpentity"
 	"io"
+	"math/big"
 )
 
 // The intersection of *sql.DB and *sql.Tx
@@ -29,4 +31,20 @@ func defaultEncoders(o interface{}) map[string]he.Encoder {
 			return err
 		},
 	}
+}
+
+const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
+
+var alphabetLen = big.NewInt(int64(len(alphabet)))
+
+func randomString(size int) string {
+	var randStr []byte
+	for i := 0; i < size; i++ {
+		bigint, err := rand.Int(rand.Reader, alphabetLen)
+		if err != nil {
+			panic(err)
+		}
+		randStr[i] = alphabet[bigint.Int64()]
+	}
+	return string(randStr[:])
 }

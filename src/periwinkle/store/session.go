@@ -7,9 +7,6 @@ import (
 	//"database/sql"
 	he "httpentity"
 	"time"
-	"math/big"
-	//"math/rand"
-	"crypto/rand"
 )
 
 var _ he.NetEntity = &Session{}
@@ -105,24 +102,6 @@ func (d t_fileSession) Subentity(name string, request he.Request) he.Entity {
 	return nil
 }
 
-const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
-
-var alphabetLen = big.NewInt(int64(len(alphabet)))
-
-func randomByte(size int) string {
-		byteSize := size
-		var randStr []byte
-		for i := 0; i < size; i++ {
-			bigint, err := rand.Int(rand.Reader, alphabetLen)
-			if err != nil {
-				panic(err)
-			}
-			randStr[i] = alphabet[bigint.Int64()]
-		}
-		return string(randStr[:])
-}
-
 func createSessionId() string {
-	return randomByte(24)
+	return randomString(24)
 }
-
