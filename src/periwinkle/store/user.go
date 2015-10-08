@@ -149,22 +149,10 @@ func newDirUsers() t_dirUsers {
 		"POST": func(req he.Request) he.Response {
 			db := req.Things["db"].(DB)
 			badbody := req.StatusBadRequest("submitted body not what expected")
-			hash, ok := req.Entity.(map[string]interface{})
-			if !ok {
-				return badbody
-			}
-			username, ok := hash["username"].(string)
-			if !ok {
-				return badbody
-			}
-			email, ok := hash["email"].(string)
-			if !ok {
-				return badbody
-			}
-			password, ok := hash["password"].(string)
-			if !ok {
-				return badbody
-			}
+			hash, ok := req.Entity.(map[string]interface{}); if !ok { return badbody }
+			username, ok := hash["username"].(string)      ; if !ok { return badbody }
+			email   , ok := hash["email"].(string)         ; if !ok { return badbody }
+			password, ok := hash["password"].(string)      ; if !ok { return badbody }
 
 			if password2, ok := hash["password_verification"].(string); ok {
 				if password != password2 {

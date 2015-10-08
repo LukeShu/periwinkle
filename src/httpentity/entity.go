@@ -15,7 +15,7 @@ type Request struct {
 	Query   url.Values
 	Entity  interface{}
 	Things  map[string]interface{}
-	cookies *map[string]*http.Cookie // cached
+	cookies map[string]*http.Cookie // cached
 }
 
 type Response struct {

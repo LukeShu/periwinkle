@@ -20,10 +20,9 @@ func ParseCookies(h http.Header) map[string]*http.Cookie {
 
 func (req *Request) Cookie(name string) *http.Cookie {
 	if req.cookies == nil {
-		stack := ParseCookies(req.Headers)
-		req.cookies = &stack
+		req.cookies = ParseCookies(req.Headers)
 	}
-	cookie, ok := (*req.cookies)[name]
+	cookie, ok := req.cookies[name]
 	if ok {
 		return cookie
 	}
