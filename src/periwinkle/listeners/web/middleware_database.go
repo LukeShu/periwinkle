@@ -6,12 +6,18 @@ import (
 	"database/sql"
 	he "httpentity"
 	"periwinkle/store"
+	"periwinkle/cfg"
 )
 
 type database struct{}
 
 func (p database) Before(req *he.Request) {
-	var transaction *sql.Tx = nil /* TODO: DB */
+	var transaction *sql.Tx
+	var err error
+	transaction, err = cfg.DB.Begin()
+	if err != nil {
+		panic("Could not begin transaction: "+err.Error())
+	}
 	req.Things["db"] = store.DB(transaction)
 }
 
