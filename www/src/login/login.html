@@ -6,7 +6,7 @@
 		<md-card-content layout="column">
 			<md-input-container>
 				<label>{{ "USERNAME_EMAIL" | translate }}</label>
-				<input ng-model="login.username" type="text" name="username" required></input>
+				<input ng-model="login.username" type="text" name="username" required autofocus></input>
 				<div ng-messages="loginForm.username.$error" role="alert" ng-if="!loginForm.username.$untouched">
 					<div ng-message="required">{{ "REQUIRED_FIELD" | translate }}</div>
 				</div>
@@ -44,7 +44,7 @@
 		<md-card-content layout="column">
 			<md-input-container>
 				<label>{{ "USERNAME" | translate }}</label>
-				<input ng-model="login.username" type="text" name="username" required xreg-pattern="^[0-9_\-\pL]+$"></input>
+				<input ng-model="login.username" type="text" name="username" required xreg-pattern="^[0-9_\-\pL]+$" autofocus></input>
 				<div ng-messages="signupForm.username.$error" role="alert" ng-if="!signupForm.username.$untouched">
 					<div ng-message="required">{{ "REQUIRED_FIELD" | translate }}</div>
 					<div ng-message="xregPattern">{{  }}</div>
