@@ -5,6 +5,7 @@ package httpentity
 import (
 	"fmt"
 	"net/http"
+	"runtime"
 	"strings"
 )
 
@@ -37,11 +38,15 @@ func (h netHttpHandler) serveHTTP(w http.ResponseWriter, r *http.Request) (res R
 	// just in case anything goes wrong, don't bring down the
 	// process.
 	defer func() {
-		if h.debug {
-			return
-		}
-		if r := recover(); r != nil {
-			res = req.statusInternalServerError(r)
+		if err := recover(); err != nil {
+			reason := err
+			if h.debug {
+				const size = 64 << 10
+				buf := make([]byte, size)
+				buf = buf[:runtime.Stack(buf, false)]
+				reason = fmt.Sprintf("%v\n\n%s", string(buf))
+			}
+			res = req.statusInternalServerError(reason)
 		}
 	}()
 	// parse the submitted entity
