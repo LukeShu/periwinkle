@@ -43,11 +43,24 @@ func NewGroup(con DB, name string) *Group {
 }
 
 func (o *Group) Subentity(name string, req he.Request) he.Entity {
-	panic("not implemented")
+	panic("TODO: API: (*Group).Subentity()")
 }
 
 func (o *Group) Methods() map[string]he.Handler {
-	panic("not implemented")
+	return map[string]he.Handler{
+		"GET": func(req he.Request) he.Response {
+			panic("TODO: API: (*Group).Methods()[\"GET\"]")
+		},
+		"PUT": func(req he.Request) he.Response {
+			panic("TODO: API: (*Group).Methods()[\"PUT\"]")
+		},
+		"PATCH": func(req he.Request) he.Response {
+			panic("TODO: API: (*Group).Methods()[\"PATCH\"]")
+		},
+		"DELETE": func(req he.Request) he.Response {
+			panic("TODO: API: (*Group).Methods()[\"DELETE\"]")
+		},
+	}
 }
 
 // View //////////////////////////////////////////////////////////////

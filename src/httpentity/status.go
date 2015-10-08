@@ -87,7 +87,7 @@ func (req Request) StatusUnauthorized(e NetEntity) Response {
 	return Response{
 		status:  401,
 		Headers: http.Header{
-			"WWW-Authenticate": {"TODO"},
+			"WWW-Authenticate": {"TODO: long-term"},
 		},
 		entity:  e,
 	}

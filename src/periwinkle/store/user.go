@@ -107,7 +107,7 @@ func NewUser(con DB, name string, password string, email string) *User {
 }
 
 func (u *User) Save() error {
-	panic("not implemented")
+	panic("TODO: ORM: (*User).Save()")
 }
 
 func (o *User) Subentity(name string, req he.Request) he.Entity {
@@ -117,16 +117,16 @@ func (o *User) Subentity(name string, req he.Request) he.Entity {
 func (o *User) Methods() map[string]he.Handler {
 	return map[string]he.Handler{
 		"GET": func(req he.Request) he.Response {
-			panic("not implemented")
+			panic("TODO: API: (*User).Methods()[\"GET\"]")
 		},
 		"PUT": func(req he.Request) he.Response {
-			panic("not implemented")
+			panic("TODO: API: (*User).Methods()[\"PUT\"]")
 		},
 		"PATCH": func(req he.Request) he.Response {
-			panic("not implemented")
+			panic("TODO: API: (*User).Methods()[\"PATCH\"]")
 		},
 		"DELETE": func(req he.Request) he.Response {
-			panic("not implemented")
+			panic("TODO: API: (*User).Methods()[\"DELETE\"]")
 		},
 	}
 }

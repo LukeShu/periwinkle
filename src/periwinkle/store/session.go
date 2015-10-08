@@ -36,15 +36,15 @@ func NewSession(con DB, username string, password string) *Session {
 }
 
 func GetSessionById(con DB, id string) *Session {
-	panic("not implemented")
+	panic("TODO: ORM: GetSessionById()")
 }
 
 func (o *Session) Delete(con DB) {
-	panic("not implemented")
+	panic("TODO: ORM: (*Session).Delete()")
 }
 
 func (o *Session) Save(con DB) {
-	panic("not implemented")
+	panic("TODO: ORM: (*Session).Save()")
 }
 
 // View //////////////////////////////////////////////////////////////

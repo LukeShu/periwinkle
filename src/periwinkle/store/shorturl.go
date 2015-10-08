@@ -33,8 +33,7 @@ func newShortURL(u *url.URL) *ShortUrl {
 }
 
 func (s *ShortUrl) Save() error {
-	// TODO
-	panic("not implemented")
+	panic("TODO: ORM: (*ShortUrl).Save()")
 }
 
 func GetShortUrlById(con DB, id string) *ShortUrl {
@@ -55,7 +54,11 @@ func (o *ShortUrl) Subentity(name string, req he.Request) he.Entity {
 }
 
 func (o *ShortUrl) Methods() map[string]he.Handler {
-	panic("not implemented")
+	return map[string]he.Handler{
+		"GET": func(req he.Request) he.Response {
+			panic("TODO: API: (*ShortUrl).Methods()[\"GET\"]")
+		},
+	}
 }
 
 // Directory ("Controller") //////////////////////////////////////////

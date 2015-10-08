@@ -37,13 +37,13 @@ func GetMessageById(con DB, id string) *Message {
 }
 
 func (o *Message) Subentity(name string, req he.Request) he.Entity {
-	panic("not implemented")
+	panic("TODO: SMTP: (*Message).Subentity()")
 }
 
 func (o *Message) Methods() map[string]he.Handler {
 	return map[string]he.Handler{
 		"GET": func(he.Request) he.Response {
-			panic("not implemented")
+			panic("TODO: API: (*Message).Subentity()")
 		},
 	}
 }
@@ -51,7 +51,7 @@ func (o *Message) Methods() map[string]he.Handler {
 // View //////////////////////////////////////////////////////////////
 
 func (o *Message) Encoders() map[string]he.Encoder {
-	panic("not implemented")
+	panic("TODO: API: (*Message).Encoders()")
 }
 
 // Directory ("Controller") //////////////////////////////////////////

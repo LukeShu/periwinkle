@@ -22,11 +22,11 @@ type Captcha struct {
 }
 
 func NewCaptcha() *Captcha {
-	panic("not implemented")
+	panic("TODO: captcha/ORM: NewCaptcha()")
 }
 
 func GetCaptchaById(id string) *Captcha {
-	panic("not implemented")
+	panic("TODO: ORM: GetCaptchaById()")
 }
 
 func (o *Captcha) Subentity(name string, req he.Request) he.Entity {
@@ -36,10 +36,10 @@ func (o *Captcha) Subentity(name string, req he.Request) he.Entity {
 func (o *Captcha) Methods() map[string]he.Handler {
 	return map[string]he.Handler{
 		"GET": func(he.Request) he.Response {
-			panic("not implemented")
+			panic("TODO: API: (*Captcha).Methods()[\"GET\"]")
 		},
 		"PATCH": func(he.Request) he.Response {
-			panic("not implemented")
+			panic("TODO: API: (*Captcha).Methods()[\"PATCH\"]")
 		},
 	}
 }
