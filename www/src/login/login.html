@@ -1,8 +1,8 @@
 <div ng-if="!login.isSignup">
 	<md-card id="login" style="max-width: 25em; margin-left: auto; margin-right: auto;">
 		<form name="loginForm" ng-submit="login.login()">
-		<md-card-content class="md-padding">
-			<div layout="column">
+		<md-card-content>
+			<div layout="column" class="md-padding">
 				<md-input-container>
 					<label>{{ "USERNAME_EMAIL" | translate }}</label>
 					<input ng-model="login.username" type="text" name="username" required></input>
