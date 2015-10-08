@@ -14,18 +14,15 @@ import (
 func getConnection() *sql.DB {
 	db_user := os.Getenv("DBUSERNAME")
 	db_pass := os.Getenv("DBPASSWORD")
-	// @/test is the current database we are using which is the test database
-	db, err := sql.Open("mysql", fmt.Sprint(db_user, ":", db_pass, "@/test"))
+	db, err := sql.Open("mysql", fmt.Sprint(db_user, ":", db_pass, "@/periwinkle"))
 
 	if err != nil {
-		fmt.Printf("Could not connect to database")
-		fmt.Println(err)
+		panic("Could not connect to database")
 		return nil
 	}
 	err = db.Ping()
 	if err != nil {
-		fmt.Printf("Could not ping database")
-		fmt.Println(err)
+		panic("Could not ping database")
 		return nil
 	}
 

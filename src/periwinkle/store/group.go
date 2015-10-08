@@ -66,7 +66,9 @@ func newDirGroups() t_dirGroups {
 	r := t_dirGroups{}
 	r.methods = map[string]he.Handler{
 		"POST": func(req he.Request) he.Response {
-			return req.StatusCreated(r, NewGroup(nil /*TODO*/, "").Name)
+			con := getConnection()
+			defer con.Close()
+			return req.StatusCreated(r, NewGroup(con /*TODO NAME*/, "").Name)
 		},
 	}
 	return r
@@ -77,5 +79,7 @@ func (d t_dirGroups) Methods() map[string]he.Handler {
 }
 
 func (d t_dirGroups) Subentity(name string, request he.Request) he.Entity {
-	return GetGroupByName(nil /*TODO*/, name)
+	con := getConnection()
+	defer con.Close()
+	return GetGroupByName(con, name)
 }

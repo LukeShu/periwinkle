@@ -71,5 +71,7 @@ func (d t_dirMessages) Methods() map[string]he.Handler {
 }
 
 func (d t_dirMessages) Subentity(name string, request he.Request) he.Entity {
-	return GetMessageById(nil /*TODO*/, name)
+	con := getConnection()
+	defer con.Close()
+	return GetMessageById(con, name)
 }

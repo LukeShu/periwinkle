@@ -75,5 +75,7 @@ func (d t_dirShortUrls) Methods() map[string]he.Handler {
 }
 
 func (d t_dirShortUrls) Subentity(name string, request he.Request) he.Entity {
-	return GetShortUrlById(nil /*TODO*/, name)
+	con := getConnection()
+	defer con.Close()
+	return GetShortUrlById(con, name)
 }

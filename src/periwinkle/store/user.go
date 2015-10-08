@@ -107,7 +107,7 @@ func NewUser(con DB, name string, password string, email string) *User {
 }
 
 func (u *User) Save() error {
-	// TODO
+	/*TODO*/
 	panic("not implemented")
 }
 
@@ -137,10 +137,22 @@ func newDirUsers() t_dirUsers {
 		"POST": func(req he.Request) he.Response {
 			db := req.Things["db"].(DB)
 			badbody := req.StatusBadRequest("submitted body not what expected")
-			hash, ok := req.Entity.(map[string]interface{}); if !ok { return badbody }
-			username, ok := hash["username"].(string)      ; if !ok { return badbody }
-			email   , ok := hash["email"].(string)         ; if !ok { return badbody }
-			password, ok := hash["password"].(string)      ; if !ok { return badbody }
+			hash, ok := req.Entity.(map[string]interface{})
+			if !ok {
+				return badbody
+			}
+			username, ok := hash["username"].(string)
+			if !ok {
+				return badbody
+			}
+			email, ok := hash["email"].(string)
+			if !ok {
+				return badbody
+			}
+			password, ok := hash["password"].(string)
+			if !ok {
+				return badbody
+			}
 
 			if password2, ok := hash["password_verification"].(string); ok {
 				if password != password2 {
@@ -167,5 +179,7 @@ func (d t_dirUsers) Methods() map[string]he.Handler {
 }
 
 func (d t_dirUsers) Subentity(name string, request he.Request) he.Entity {
-	return GetUserByName(nil /*TODO*/, name)
+	con := getConnection()
+	defer con.Close()
+	return GetUserByName(con, name)
 }
