@@ -39,7 +39,16 @@ func NewSession(con DB, username string, password string) *Session {
 }
 
 func GetSessionById(con DB, id string) *Session {
-	panic("TODO: ORM: GetSessionById()")
+	var s Session
+	err := con.QueryRow("SELECT * FROM sessions WHERE id=?", id).Scan(&s)
+	switch {
+		case err != nil:
+			// error talking to the DB
+			panic(err)
+		default:
+			// all ok
+			return &s
+	}
 }
 
 func (o *Session) Delete(con DB) {
