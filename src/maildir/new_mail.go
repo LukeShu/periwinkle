@@ -48,17 +48,16 @@ type mailWriter struct {
 	file   *os.File
 }
 
-func (w *mailWriter) Close() error {
-	err := w.file.Close()
+func (w *mailWriter) Close() (err error) {
+	defer syscall.Unlink(string(w.md) + "/tmp/" + string(w.unique))
+	err = w.file.Close()
 	if err != nil {
-		goto end
+		return
 	}
 	err = os.Link(
 		string(w.md)+"/tmp/"+string(w.unique),
 		string(w.md)+"/new/"+string(w.unique))
-end:
-	syscall.Unlink(string(w.md) + "/tmp/" + string(w.unique))
-	return err
+	return
 }
 
 func (w *mailWriter) Write(p []byte) (n int, err error) {
