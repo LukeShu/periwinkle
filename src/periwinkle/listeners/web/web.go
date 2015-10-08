@@ -12,7 +12,7 @@ import (
 
 func Main() error {
 	mux := http.NewServeMux()
-	mux.Handle("/v1/", he.NetHttpHandler("/v1/", store.DirRoot, postHack{}, database{}, session{}))
+	mux.Handle("/v1/", he.NetHttpHandler(cfg.Debug, "/v1/", store.DirRoot, postHack{}, database{}, session{}))
 	mux.Handle("/webui/", http.StripPrefix("/webui/", http.FileServer(cfg.WebUiDir)))
 	server := &http.Server{
 		Addr:           cfg.WebAddr,

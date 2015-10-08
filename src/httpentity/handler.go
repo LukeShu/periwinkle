@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"strings"
 	"fmt"
+	"runtime"
 )
 
 type Middleware interface {
@@ -17,10 +18,11 @@ type netHttpHandler struct {
 	prefix string
 	root   Entity
 	middle []Middleware
+	debug  bool
 }
 
-func NetHttpHandler(prefix string, entity Entity, middlewares ...Middleware) http.Handler {
-	return netHttpHandler{prefix: prefix, root: entity, middle: middlewares}
+func NetHttpHandler(debug bool, prefix string, entity Entity, middlewares ...Middleware) http.Handler {
+	return netHttpHandler{prefix: prefix, root: entity, middle: middlewares, debug: debug}
 }
 
 func (h netHttpHandler) serveHTTP(w http.ResponseWriter, r *http.Request) (res Response) {
@@ -36,6 +38,12 @@ func (h netHttpHandler) serveHTTP(w http.ResponseWriter, r *http.Request) (res R
 	// process.
 	defer func() {
 		if r := recover(); r != nil {
+			if h.debug {
+				stack := make([]byte, 4096)
+				n := runtime.Stack(stack, false)
+				stack = stack[0:n]
+				r = fmt.Sprintf("%v\n\n%s", string(stack))
+			}
 			res = req.statusInternalServerError(r)
 		}
 	}()
