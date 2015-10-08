@@ -26,6 +26,7 @@ func NetHttpHandler(prefix string, entity Entity, middlewares ...Middleware) htt
 func (h netHttpHandler) serveHTTP(w http.ResponseWriter, r *http.Request) (res Response) {
 	// Adapt the request from `net/http` format to `httpentity` format
 	req := Request{
+		Scheme: r.URL.Scheme,
 		Method: r.Method,
 		Headers: r.Header,
 		Query:   r.URL.Query(),

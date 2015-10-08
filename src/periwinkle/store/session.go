@@ -6,6 +6,7 @@ package store
 import (
 	//"database/sql"
 	he "httpentity"
+	"net/http"
 	"time"
 )
 
@@ -49,7 +50,7 @@ func (o *Session) Save(con DB) {
 // View //////////////////////////////////////////////////////////////
 
 func (sess *Session) Encoders() map[string]he.Encoder {
-	dat := map[string]string {
+	dat := map[string]string{
 		"session_id": sess.Id,
 	}
 	return defaultEncoders(dat)
@@ -77,7 +78,13 @@ func newFileSession() t_fileSession {
 				return req.StatusUnauthorized(he.NetString("Incorrect username/password"))
 			} else {
 				ret := req.StatusOK(sess)
-				// TODO: set the session_id cookie (in ret.Headers) to sess.Id
+				cookie := &http.Cookie{
+					Name:     "session_id",
+					Value:    sess.Id,
+					Secure:   req.Scheme == "https",
+					HttpOnly: req.Scheme == "http",
+				}
+				ret.Headers.Add("Set-Cookie", cookie.String())
 				return ret
 			}
 		},

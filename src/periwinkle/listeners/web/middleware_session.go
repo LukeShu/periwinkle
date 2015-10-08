@@ -4,6 +4,7 @@ package web
 
 import (
 	he "httpentity"
+	"net/http"
 	"periwinkle/store"
 	"time"
 )
@@ -16,11 +17,16 @@ func (p session) Before(req *he.Request) {
 
 	var session_id1 string
 	var session_id2 string
+	var cookie *http.Cookie
 
-	hash    , ok := req.Entity.(map[string]interface{}); if !ok { goto end }
+	hash, ok := req.Entity.(map[string]interface{}); if !ok { goto end }
 	session_id1, ok = hash["session_id"].(string); if !ok { goto end }
 	delete(hash, "session_id")
-	session_id2 = "" // TODO: get from req.Headers cookies
+
+	cookie = req.Cookie("session_id")
+	if cookie != nil {
+		session_id2 = cookie.Value
+	}
 
 	if session_id1 != session_id2 {
 		goto end

@@ -9,11 +9,13 @@ import (
 )
 
 type Request struct {
+	Scheme  string
 	Method  string
 	Headers http.Header
 	Query   url.Values
 	Entity  interface{}
 	Things  map[string]interface{}
+	cookies *map[string]*http.Cookie // cached
 }
 
 type Response struct {
