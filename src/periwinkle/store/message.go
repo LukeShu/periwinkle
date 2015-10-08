@@ -43,7 +43,7 @@ func (o *Message) Subentity(name string, req he.Request) he.Entity {
 func (o *Message) Methods() map[string]he.Handler {
 	return map[string]he.Handler{
 		"GET": func(he.Request) he.Response {
-			panic("TODO: API: (*Message).Subentity()")
+			panic("TODO: API: (*Message).Methods()[\"GET\"]")
 		},
 	}
 }

@@ -14,8 +14,8 @@ type Maildir string
 
 type Unique string
 
+// Remove files in `md+"/tmp/"` not accessed in the last 36 hours
 func (md Maildir) Clean() error {
-	// TODO: remove files in `md+"/tmp/"` not accessed in 36 hours
 	dir, err := os.Open(string(md) + "/tmp")
 	if err != nil {
 		return err
@@ -25,7 +25,7 @@ func (md Maildir) Clean() error {
 		return err
 	}
 	for _, fileinfo := range fileinfos {
-		// TODO: check the access time (UNIX atime).
+		// TODO: long-term: check the access time (UNIX atime).
 		// Unfortunately, Go os.FileInfo only provides the
 		// modification time (UNIX mtime).  Actually, we
 		// should probably take the newest of the

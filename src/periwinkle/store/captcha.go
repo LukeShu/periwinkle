@@ -22,7 +22,7 @@ type Captcha struct {
 }
 
 func NewCaptcha() *Captcha {
-	panic("TODO: captcha/ORM: NewCaptcha()")
+	panic("TODO: captcha+ORM: NewCaptcha()")
 }
 
 func GetCaptchaById(id string) *Captcha {
