@@ -1,5 +1,7 @@
+<div style="max-width: 25em; margin-left: auto; margin-right: auto;">
+
 <div ng-if="!login.isSignup">
-	<md-card id="login" style="max-width: 25em; margin-left: auto; margin-right: auto;">
+	<md-card id="login">
 		<form name="loginForm" ng-submit="login.login()">
 		<md-card-content layout="column">
 			<md-input-container>
@@ -37,7 +39,7 @@
 </div>
 
 <div ng-if="login.isSignup">
-	<md-card id="signup" style="max-width: 25em; margin-left: auto; margin-right: auto;">
+	<md-card id="signup">
 	<form name="signupForm" ng-submit="login.signup()">
 		<md-card-content layout="column">
 			<md-input-container>
@@ -98,4 +100,6 @@
 			{{ "LOGIN" | translate }}
 		</md-button>
 	</md-card>
+</div>
+
 </div>
