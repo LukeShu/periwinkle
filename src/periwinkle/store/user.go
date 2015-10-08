@@ -107,7 +107,6 @@ func NewUser(con DB, name string, password string, email string) *User {
 }
 
 func (u *User) Save() error {
-	/*TODO*/
 	panic("not implemented")
 }
 
@@ -116,7 +115,20 @@ func (o *User) Subentity(name string, req he.Request) he.Entity {
 }
 
 func (o *User) Methods() map[string]he.Handler {
-	panic("not implemented")
+	return map[string]he.Handler{
+		"GET": func(req he.Request) he.Response {
+			panic("not implemented")
+		},
+		"PUT": func(req he.Request) he.Response {
+			panic("not implemented")
+		},
+		"PATCH": func(req he.Request) he.Response {
+			panic("not implemented")
+		},
+		"DELETE": func(req he.Request) he.Response {
+			panic("not implemented")
+		},
+	}
 }
 
 // View //////////////////////////////////////////////////////////////
