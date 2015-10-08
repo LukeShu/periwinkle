@@ -13,11 +13,7 @@ import (
 
 var _ he.Entity = &User{}
 var _ he.NetEntity = &User{}
-var dirUsers he.Entity
-
-func init() {
-	dirUsers = newDirUsers()
-}
+var dirUsers he.Entity = newDirUsers()
 
 // Model /////////////////////////////////////////////////////////////
 
@@ -167,7 +163,7 @@ func newDirUsers() t_dirUsers {
 			if user == nil {
 				return req.StatusConflict(he.NetString("either that username or password is already taken"))
 			} else {
-				return req.StatusCreated(dirUsers, username)
+				return req.StatusCreated(r, username)
 			}
 		},
 	}
