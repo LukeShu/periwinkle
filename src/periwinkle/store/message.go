@@ -6,6 +6,7 @@ package store
 import (
 	"database/sql"
 	he "httpentity"
+	"maildir"
 )
 
 var _ he.Entity = &Message{}
@@ -19,6 +20,11 @@ type Message struct {
 	group_id int
 	filename string
 	// cached fields??????
+}
+
+func NewMessage(unique maildir.Unique) *Message {
+	panic("TODO: SMTP+ORM: NewMessage()")
+	// TODO: sprint2: add the message to the outgoing mail queue
 }
 
 func GetMessageById(con DB, id string) *Message {

@@ -5,7 +5,7 @@ package maildir
 
 import (
 	md "maildir"
-	// "orm"
+	"periwinkle/store"
 )
 
 func handle(maildir md.Maildir) {
@@ -18,11 +18,6 @@ func handle(maildir md.Maildir) {
 		if err != nil {
 			continue
 		}
-		// TODO: Add data about `cur` to the RDBMS, and add it
-		// to the outgoing queue as nescessary.
-		//msg := orm.Message{}
-		//msg.SetFilename(cur.GetUnique())
-		//msg.Save()
-		cur.SetInfo("foo")
+		store.NewMessage(cur.GetUnique())
 	}
 }
