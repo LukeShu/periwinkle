@@ -1,7 +1,7 @@
 <div ng-if="!login.isSignup">
 	<md-card id="login" style="max-width: 25em; margin-left: auto; margin-right: auto;">
-		<md-card-content>
-			<form name="loginForm">
+		<form name="loginForm" ng-submit="login.login()">
+		<md-card-content class="md-padding">
 			<div layout="column">
 				<md-input-container>
 					<label>{{ "USERNAME_EMAIL" | translate }}</label>
@@ -18,13 +18,13 @@
 					</div>
 				</md-input-container>
 			</div>
-			</form>
 		</md-card-content>
 		<div layout="row" layout-align="end center">
-			<md-button class="md-button md-primary" aria-label="Sign Up" ng-click="login.login()">
+			<md-button class="md-button md-primary" aria-label="Sign Up">
 				{{ "LOGIN" | translate }}
 			</md-button>
 		</div>
+		</form>
 	</md-card>
 	
 	<md-card style="max-width: 25em; margin-left: auto; margin-right: auto;" layout="row" layout-align="space-between center">
