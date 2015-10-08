@@ -8,10 +8,13 @@ import (
 	he "httpentity"
 	"net/http"
 	"time"
+	//"github.com/jmoiron/modl"
+	//"periwinkle/cfg"
 )
 
 var _ he.NetEntity = &Session{}
 var fileSession he.Entity = newFileSession()
+// var dbMap = &modl.DbMap{Db: cfg.DB, Dialect: modl.MySQLDialect{"InnoDB", "UTF8"}}
 
 // Model /////////////////////////////////////////////////////////////
 
@@ -44,7 +47,7 @@ func (o *Session) Delete(con DB) {
 }
 
 func (o *Session) Save(con DB) {
-	panic("TODO: ORM: (*Session).Save()")
+	dbMap.Update(o)
 }
 
 // View //////////////////////////////////////////////////////////////

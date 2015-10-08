@@ -9,7 +9,7 @@ deps += bitbucket.org/ww/goautoneg
 deps += github.com/dchest/captcha
 deps += github.com/go-sql-driver/mysql
 deps += golang.org/x/crypto/bcrypt
-
+deps += github.com/jmoiron/modl
 
 default: all
 .PHONY: default

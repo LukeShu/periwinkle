@@ -102,8 +102,8 @@ func NewUser(con DB, name string, password string, email string) *User {
 	return u
 }
 
-func (u *User) Save() error {
-	panic("TODO: ORM: (*User).Save()")
+func (u *User) Save() {
+	dbMap.Update(u)
 }
 
 func (o *User) Subentity(name string, req he.Request) he.Entity {

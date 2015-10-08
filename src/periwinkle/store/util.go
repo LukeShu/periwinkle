@@ -1,4 +1,5 @@
 // Copyright 2015 Luke Shumaker
+// Copyright 2015 Davis Webb
 
 package store
 
@@ -9,7 +10,11 @@ import (
 	he "httpentity"
 	"io"
 	"math/big"
+	"github.com/jmoiron/modl"
+	"periwinkle/cfg"
 )
+// Global for database access in the ORM
+var dbMap = &modl.DbMap{Db: cfg.DB, Dialect: modl.MySQLDialect{"InnoDB", "UTF8"}}
 
 // The intersection of *sql.DB and *sql.Tx
 type DB interface {
