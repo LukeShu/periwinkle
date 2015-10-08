@@ -54,24 +54,18 @@ func (h netHttpHandler) serveHTTP(w http.ResponseWriter, r *http.Request) (res R
 			} else {
 				res = req.StatusBadRequest(fmt.Sprintf("reading request body: %s", err))
 			}
-			goto end
+			return
 		} else {
 			req.Entity = entity
 		}
 	}
 	for _, middleware := range h.middle {
 		middleware.Before(&req)
+		defer middleware.After(req, &res)
 	}
 
 	// Run the request
 	res = Route(h.prefix, h.root, req, req.Method, r.URL)
-end:
-	// this loop has go go backwards over h.middle
-	var i int
-	for i = len(h.middle) - 1; i >= 0; i-- {
-		middleware := h.middle[i]
-		middleware.After(req, &res)
-	}
 	return
 }
 
