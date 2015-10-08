@@ -1,0 +1,29 @@
+GET /mediums
+[ 1, 2, 3 ]
+
+GET /users/#{alias}
+{
+    name:
+    addresses: [
+	{
+	    medium:
+	    address:
+	},...
+    ]
+}
+
+GET /groups/#{alias}
+{
+    name:
+    subscriptions: [
+	{
+	    medium:
+	    address:
+	},...
+    ]
+}
+
+PATCH /group/#{alias}
+{ 'op': 'add', 'obj': 'subscription', 'value': { 'medium': FOO, 'address': BAR } }
+{ 'op': 'del', 'obj': 'subscription', 'value': { 'medium': FOO, 'address': BAR } }
+{ 'op': 'set', 'obj': 'subscription', 'value': [ { 'medium': FOO, 'address': BAR }, ... ] }

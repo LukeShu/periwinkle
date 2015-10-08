@@ -1,0 +1,2 @@
+https://tools.ietf.org/html/rfc5322 Internet Message Format
+https://tools.ietf.org/html/rfc2045 MIME Part One: Format of Internet Message Bodies
