@@ -77,8 +77,7 @@ func (d t_dirShortUrls) Methods() map[string]he.Handler {
 	return d.methods
 }
 
-func (d t_dirShortUrls) Subentity(name string, request he.Request) he.Entity {
-	con := getConnection()
-	defer con.Close()
-	return GetShortUrlById(con, name)
+func (d t_dirShortUrls) Subentity(name string, req he.Request) he.Entity {
+	db := req.Things["db"].(DB)
+	return GetShortUrlById(db, name)
 }

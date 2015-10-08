@@ -102,8 +102,7 @@ func (d t_dirGroups) Methods() map[string]he.Handler {
 	return d.methods
 }
 
-func (d t_dirGroups) Subentity(name string, request he.Request) he.Entity {
-	con := getConnection()
-	defer con.Close()
-	return GetGroupByName(con, name)
+func (d t_dirGroups) Subentity(name string, req he.Request) he.Entity {
+	db := req.Things["db"].(DB)
+	return GetGroupByName(db, name)
 }

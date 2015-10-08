@@ -174,8 +174,7 @@ func (d t_dirUsers) Methods() map[string]he.Handler {
 	return d.methods
 }
 
-func (d t_dirUsers) Subentity(name string, request he.Request) he.Entity {
-	con := getConnection()
-	defer con.Close()
-	return GetUserByName(con, name)
+func (d t_dirUsers) Subentity(name string, req he.Request) he.Entity {
+	db := req.Things["db"].(DB)
+	return GetUserByName(db, name)
 }
