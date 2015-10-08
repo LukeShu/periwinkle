@@ -50,7 +50,7 @@
 			$scope.loading.is = true;
 			$http({
 				method: 'POST',
-				url: '/session',
+				url: '/v1/session',
 				headers: {
 					'Content-Type': 'application/json'
 				},
@@ -63,9 +63,10 @@
 					//do work with response
 					$scope.loading.is = false;
 				},
-				function fail() {
+				function fail(response) {
 					//do work with response
 					//show error to user
+					alert(response);
 					$scope.loading.is = false;
 				}
 			);
