@@ -8,8 +8,8 @@ import (
 	"io/ioutil"
 	"mime"
 	"mime/multipart"
-	"net/url"
 	"net/http"
+	"net/url"
 )
 
 func (r Response) WriteEntity(w io.Writer) error {

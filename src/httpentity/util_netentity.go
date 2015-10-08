@@ -3,16 +3,16 @@
 package httpentity
 
 import (
-	"io"
 	"encoding/json"
 	"fmt"
+	"io"
 )
 
 type NetString string
 
 func (s NetString) Encoders() map[string]Encoder {
 	return map[string]Encoder{
-		"text/plain": s.text,
+		"text/plain":       s.text,
 		"application/json": s.json,
 	}
 }
@@ -35,7 +35,7 @@ type NetList []interface{}
 
 func (l NetList) Encoders() map[string]Encoder {
 	return map[string]Encoder{
-		"text/plain": l.text,
+		"text/plain":       l.text,
 		"application/json": l.json,
 	}
 }

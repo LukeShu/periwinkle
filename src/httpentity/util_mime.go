@@ -3,8 +3,8 @@
 package httpentity
 
 import (
-	"net/url"
 	"mime"
+	"net/url"
 	"strings"
 )
 

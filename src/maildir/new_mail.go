@@ -53,8 +53,9 @@ func (w *mailWriter) Close() error {
 	if err != nil {
 		goto end
 	}
-	err = os.Link(string(w.md)+"/tmp/"+string(w.unique),
-	              string(w.md)+"/new/"+string(w.unique))
+	err = os.Link(
+		string(w.md)+"/tmp/"+string(w.unique),
+		string(w.md)+"/new/"+string(w.unique))
 end:
 	syscall.Unlink(string(w.md) + "/tmp/" + string(w.unique))
 	return err

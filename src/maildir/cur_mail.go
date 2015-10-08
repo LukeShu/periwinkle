@@ -37,8 +37,9 @@ func (md Maildir) Open(u Unique) (mail CurMail, err error) {
 }
 
 func (md Maildir) Acknowledge(u Unique) (mail CurMail, err error) {
-	err = os.Rename(string(md)+"/new/"+string(u),
-	                string(md)+"/cur/"+string(u)+":")
+	err = os.Rename(
+		string(md)+"/new/"+string(u),
+		string(md)+"/cur/"+string(u)+":")
 	if err != nil {
 		return
 	}

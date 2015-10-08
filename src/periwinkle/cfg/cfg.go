@@ -20,9 +20,9 @@ var DB *sql.DB = getConnection()
 func getConnection() *sql.DB {
 	db_user := "periwinkle"
 	db_pass := "periwinkle"
-	db_db   := "periwinkle"
+	db_name := "periwinkle"
 
-	db, err := sql.Open("mysql", db_user+":"+db_pass+"@/"+db_db)
+	db, err := sql.Open("mysql", db_user+":"+db_pass+"@/"+db_name)
 	if err != nil {
 		panic("Could not connect to database")
 	}

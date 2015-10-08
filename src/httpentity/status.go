@@ -3,9 +3,9 @@
 package httpentity
 
 import (
+	"fmt"
 	"net/http"
 	"net/url"
-	"fmt"
 )
 
 func (req Request) StatusOK(entity NetEntity) Response {
@@ -49,9 +49,9 @@ func (req Request) StatusNoContent() Response {
 
 func (req Request) statusMultipleChoices(u *url.URL, mimetypes []string) Response {
 	return Response{
-		status: 300,
+		status:  300,
 		Headers: http.Header{},
-		entity: mimetypes2net(u, mimetypes),
+		entity:  mimetypes2net(u, mimetypes),
 	}
 }
 
@@ -59,7 +59,7 @@ func (req Request) StatusMoved(u *url.URL) Response {
 	return Response{
 		status: 301,
 		Headers: http.Header{
-			"Location":     {u.String()},
+			"Location": {u.String()},
 		},
 		entity: NetString("301: Moved"),
 	}
@@ -69,7 +69,7 @@ func (req Request) StatusFound(u *url.URL) Response {
 	return Response{
 		status: 302,
 		Headers: http.Header{
-			"Location":     {u.String()},
+			"Location": {u.String()},
 		},
 		entity: NetString("302: Found"),
 	}
@@ -77,19 +77,19 @@ func (req Request) StatusFound(u *url.URL) Response {
 
 func (req Request) StatusBadRequest(err interface{}) Response {
 	return Response{
-		status: 400,
+		status:  400,
 		Headers: http.Header{},
-		entity: NetString(fmt.Sprintf("400 Bad Request: %v", err)),
+		entity:  NetString(fmt.Sprintf("400 Bad Request: %v", err)),
 	}
 }
 
 func (req Request) StatusUnauthorized(e NetEntity) Response {
 	return Response{
-		status:  401,
+		status: 401,
 		Headers: http.Header{
 			"WWW-Authenticate": {"TODO: long-term"},
 		},
-		entity:  e,
+		entity: e,
 	}
 }
 
@@ -103,17 +103,17 @@ func (req Request) statusNotFound() Response {
 
 func (req Request) statusMethodNotAllowed(methods string) Response {
 	return Response{
-		status: 405,
+		status:  405,
 		Headers: http.Header{},
-		entity: NetString("405 Method Not Allowed"),
+		entity:  NetString("405 Method Not Allowed"),
 	}
 }
 
 func (req Request) statusNotAcceptable(u *url.URL, mimetypes []string) Response {
 	return Response{
-		status: 406,
+		status:  406,
 		Headers: http.Header{},
-		entity: mimetypes2net(u, mimetypes),
+		entity:  mimetypes2net(u, mimetypes),
 	}
 }
 
@@ -127,18 +127,18 @@ func (req Request) StatusConflict(entity NetEntity) Response {
 
 func (req Request) statusUnsupportedMediaType() Response {
 	return Response{
-		status: 415,
+		status:  415,
 		Headers: http.Header{},
-		entity: NetString("415 Unsupported Media Type"),
+		entity:  NetString("415 Unsupported Media Type"),
 	}
 }
 
 func (req Request) statusInternalServerError(err interface{}) Response {
 	return Response{
-		status:  500,
+		status: 500,
 		Headers: http.Header{
 			"Content-Type": {"text/plain; charset=utf-8"},
 		},
-		entity:  NetString(fmt.Sprintf("500 Internal Server Error: %v", err)),
+		entity: NetString(fmt.Sprintf("500 Internal Server Error: %v", err)),
 	}
 }

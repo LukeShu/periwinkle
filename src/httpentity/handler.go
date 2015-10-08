@@ -3,9 +3,9 @@
 package httpentity
 
 import (
+	"fmt"
 	"net/http"
 	"strings"
-	"fmt"
 )
 
 type Middleware interface {
@@ -37,7 +37,7 @@ func (h netHttpHandler) serveHTTP(w http.ResponseWriter, r *http.Request) (res R
 	// just in case anything goes wrong, don't bring down the
 	// process.
 	defer func() {
-		if (h.debug) {
+		if h.debug {
 			return
 		}
 		if r := recover(); r != nil {
@@ -68,7 +68,7 @@ func (h netHttpHandler) serveHTTP(w http.ResponseWriter, r *http.Request) (res R
 end:
 	// this loop has go go backwards over h.middle
 	var i int
-	for i = len(h.middle)-1; i >= 0; i-- {
+	for i = len(h.middle) - 1; i >= 0; i-- {
 		middleware := h.middle[i]
 		middleware.After(req, &res)
 	}
