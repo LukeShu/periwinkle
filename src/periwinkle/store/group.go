@@ -6,6 +6,7 @@ package store
 import (
 	"database/sql"
 	he "httpentity"
+	"strings"
 )
 
 var _ he.Entity = &Group{}
@@ -79,9 +80,19 @@ func newDirGroups() t_dirGroups {
 	r := t_dirGroups{}
 	r.methods = map[string]he.Handler{
 		"POST": func(req he.Request) he.Response {
-			con := getConnection()
-			defer con.Close()
-			return req.StatusCreated(r, NewGroup(con /*TODO NAME*/, "").Name)
+			db := req.Things["db"].(DB)
+			badbody := req.StatusBadRequest("submitted body not what expected")
+			hash, ok := req.Entity.(map[string]interface{}); if !ok { return badbody }
+			groupname, ok := hash["groupname"].(string)    ; if !ok { return badbody }
+
+			groupname = strings.ToLower(groupname)
+
+			group := NewGroup(db, groupname)
+			if group == nil {
+				return req.StatusConflict(he.NetString("a group with that name already exists"))
+			} else {
+				return req.StatusCreated(r, groupname)
+			}
 		},
 	}
 	return r
