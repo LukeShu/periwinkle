@@ -15,7 +15,7 @@ import(
 	"time"
 	"strings"
 	"periwinkle/listeners/twilio/twilio_json"
-
+	"periwinkle/listeners/util"
 )
 
 
@@ -25,10 +25,10 @@ func Main() error {
 
 
 	// account SID for Twilio account 
-	account_sid := "AC3140ba4160934bc0e4f874e2d99871ee"
+	account_sid := os.Getenv("TWILIO_ACCOUNTID") 
 
 	// Authorization token for Twilio account
-	auth_token := "b7ac9496408440c4755087dc4a934a4d"
+	auth_token := os.Getenv("TWILIO_TOKEN") 
 
 
 	var arr_temp [1000]string
@@ -115,8 +115,14 @@ func Main() error {
 	arr_temp[j] = m_sid
 
 	//TODO adding the message to sqrl
-
-	fmt.Println(message.Messages[i].Body)
+	listener_util.MessageBuilder{
+		Headers: map[string]string {
+			"To": message.Messages[i].To,
+			"From": message.Messages[i].From,
+			"Subject": message.Messages[i].Body,
+		},
+		Body: "",
+	}.Done()
 	break
 
 	}else if(arr_temp[j] == m_sid) {
