@@ -1,23 +1,22 @@
 <div ng-if="!login.isSignup">
 	<md-card id="login" style="max-width: 25em; margin-left: auto; margin-right: auto;">
 		<form name="loginForm" ng-submit="login.login()">
-		<md-card-content>
-			<div layout="column" class="md-padding">
-				<md-input-container>
-					<label>{{ "USERNAME_EMAIL" | translate }}</label>
-					<input ng-model="login.username" type="text" name="username" required></input>
-					<div ng-messages="loginForm.username.$error" role="alert" ng-if="!loginForm.username.$untouched">
-						<div ng-message="required">{{ "REQUIRED_FIELD" | translate }}</div>
-					</div>
-				</md-input-container>
-				<md-input-container>
-					<label>{{ "PASSWORD" | translate }}</label>
-					<input ng-model="login.password" name="password" type="password" required></input>
-					<div ng-messages="loginForm.password.$error" role="alert" ng-if="!loginForm.password.$untouched">
-						<div ng-message="required">{{ "REQUIRED_FIELD" | translate }}</div>
-					</div>
-				</md-input-container>
-			</div>
+		<md-card-content layout="column">
+			<md-input-container>
+				<label>{{ "USERNAME_EMAIL" | translate }}</label>
+				<input ng-model="login.username" type="text" name="username" required></input>
+				<div ng-messages="loginForm.username.$error" role="alert" ng-if="!loginForm.username.$untouched">
+					<div ng-message="required">{{ "REQUIRED_FIELD" | translate }}</div>
+				</div>
+			</md-input-container>
+			<md-input-container>
+				<label>{{ "PASSWORD" | translate }}</label>
+				<input ng-model="login.password" name="password" type="password" required></input>
+				<div ng-messages="loginForm.password.$error" role="alert" ng-if="!loginForm.password.$untouched">
+					<div ng-message="required">{{ "REQUIRED_FIELD" | translate }}</div>
+				</div>
+			</md-input-container>
+			<div id="clear" style="clear:both;"></div>
 		</md-card-content>
 		<div layout="row" layout-align="end center">
 			<md-button class="md-button md-primary" aria-label="Sign Up">
