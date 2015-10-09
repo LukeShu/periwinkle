@@ -42,7 +42,7 @@
 			
 			$routeProvider.
 				when('/login', {
-					templateUrl:	'src/login/login1.html',
+					templateUrl:	'src/login/login.html',
 					controller:		'LoginController as login'
 				}).
 				when('/dash', {
