@@ -8,6 +8,7 @@ import (
 	"net/url"
 )
 
+// For when you're returning a document, with nothing special.
 func (req Request) StatusOK(entity NetEntity) Response {
 	return Response{
 		status:  200,
@@ -16,6 +17,7 @@ func (req Request) StatusOK(entity NetEntity) Response {
 	}
 }
 
+// For when you've created a document with a new URL.
 func (req Request) StatusCreated(parent Entity, child_name string) Response {
 	child := parent.Subentity(child_name, req)
 	if child == nil {
@@ -41,6 +43,8 @@ func (req Request) StatusCreated(parent Entity, child_name string) Response {
 	}
 }
 
+// For when you've successfully done something, but have no body to
+// return.
 func (req Request) StatusNoContent() Response {
 	return Response{
 		status:  204,
@@ -49,6 +53,8 @@ func (req Request) StatusNoContent() Response {
 	}
 }
 
+// For when you have document in multiple formats, but you're not sure
+// which the user wants.
 func (req Request) statusMultipleChoices(u *url.URL, mimetypes []string) Response {
 	return Response{
 		status:  300,
@@ -57,6 +63,8 @@ func (req Request) statusMultipleChoices(u *url.URL, mimetypes []string) Respons
 	}
 }
 
+// For when the document the user requested has permantly moved to a
+// new address.
 func (req Request) StatusMoved(u *url.URL) Response {
 	return Response{
 		status: 301,
@@ -67,6 +75,8 @@ func (req Request) StatusMoved(u *url.URL) Response {
 	}
 }
 
+// For when the document the user requested is currently found at
+// another address, but that may not be the case in the future.
 func (req Request) StatusFound(u *url.URL) Response {
 	return Response{
 		status: 302,
@@ -77,6 +87,7 @@ func (req Request) StatusFound(u *url.URL) Response {
 	}
 }
 
+// For when the *user* has screwed up a request.
 func (req Request) StatusBadRequest(err interface{}) Response {
 	return Response{
 		status:  400,
@@ -85,6 +96,9 @@ func (req Request) StatusBadRequest(err interface{}) Response {
 	}
 }
 
+// For when the user doesn't have permission to see something, either
+// because they aren't logged in, or because their account doesn't
+// have permission.
 func (req Request) StatusUnauthorized(e NetEntity) Response {
 	return Response{
 		status: 401,
@@ -119,6 +133,8 @@ func (req Request) statusNotAcceptable(u *url.URL, mimetypes []string) Response 
 	}
 }
 
+// For when the user asked us to make a change conflicting with the
+// current state of things.
 func (req Request) StatusConflict(entity NetEntity) Response {
 	return Response{
 		status:  409,
