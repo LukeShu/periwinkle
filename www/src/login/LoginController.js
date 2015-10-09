@@ -57,8 +57,9 @@
 					password: self.password
 				}
 			}).then(
-				function success() {
+				function success(response) {
 					//do work with response
+					alert(response);
 					$scope.loading.is = false;
 				},
 				function fail(response) {

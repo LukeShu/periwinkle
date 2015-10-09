@@ -1,7 +1,58 @@
-<md-card id="user" style="max-width: 25em; margin-left: auto; margin-right: auto;">
+<div layout="row" layout-wrap>
+
+<div flex="50" flex-sm="100">
+<md-card id="user">
 	<md-card-content>
 		<h1>{{ user.username }}</h1>
-		<p>Email:  {{user.email}}</p>
+		<div layout="row" layout-align="space-between center">
+			<p>Email:  {{user.email}}</p>
+			<md-button class="md-button md-primary" aria-label="change Email" ng-click="user.changeEmail()">
+				{{ "USER.EMAIL_CHANGE" | translate }}
+			</md-button>
+		</div>
 		<p>Session: {{user.sessionID}}</p>
 	</md-card-content>
-</md-card>	
+	<div layout="row" layout-align="space-between center">
+		<md-button class="md-button md-primary" aria-label="delete account" ng-click="user.delete()">
+			{{ "USER.DELETE" | translate }}
+		</md-button>
+		<md-button class="md-button md-primary" aria-label="change password" ng-click="user.changePassword()">
+			{{ "USER.CHANGE_PASSWORD" }}
+		</md-button>
+	</div>
+</md-card>
+</div>
+
+<div flex="50" flex-sm="100">
+<md-card id="groups">
+	<h1 style="padding-left: .5em; padding-bottom: 0em; margin-bottom: 0em;">{{ "GROUPS" | translate }}</h1>
+	<md-card-content>
+		<ul ng-if="user.groups.length">
+			<li ng-repeat="group in user.groups">{{ group.name}}</li>
+		</ul>
+		<p ng-if="!user.groups.length">{{ "NO_GROUPS" | translate }}</p>
+	</md-card-content>
+	
+	<div class="lock-size " layout="row" layout-align="end center">
+		<md-fab-speed-dial md-direction="left" class="md-fling">
+			<md-fab-trigger>
+				<md-button aria-label="menu" class="md-fab md-accent">
+					<md-icon md-svg-src="assets/svg/menu.svg"></md-icon>
+				</md-button>
+			</md-fab-trigger>
+			
+			<md-fab-actions>
+				<md-button aria-label="Join" class="md-fab md-raised md-mini">
+					<md-icon md-svg-src="assets/svg/share.svg"></md-icon>
+				</md-button>
+				
+				<md-button aria-label="New" class="md-fab md-raised md-mini">
+					+
+				</md-button>
+			</md-fab-actions>
+      </md-fab-speed-dial>
+	
+</md-card>
+</div>	
+
+</div>
