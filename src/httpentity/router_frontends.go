@@ -65,7 +65,7 @@ func (h *Router) serveHTTP(w http.ResponseWriter, r *http.Request) (res Response
 		middleware.Before(&req)
 		defer middleware.After(req, &res)
 	}
-	res = h.route(req, r.URL)
+	res = h.route(req, u)
 
 	return
 }

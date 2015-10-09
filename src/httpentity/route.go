@@ -3,6 +3,7 @@
 package httpentity
 
 import (
+	"fmt"
 	"strings"
 )
 
@@ -47,7 +48,7 @@ func route(entity Entity, req Request, upath string) (ret Response) {
 	} else {
 		parts := strings.SplitN(upath, "/", 2)
 		if len(parts) != 2 {
-			panic("path parser logic borked")
+			panic(fmt.Sprintf("path parser logic failure: %#v", upath))
 		}
 		child := parts[0]
 		grandchildren := parts[1]

@@ -4,7 +4,6 @@ package web
 
 import (
 	he "httpentity"
-	"net/http"
 	"periwinkle/store"
 	"time"
 )
@@ -12,7 +11,6 @@ import (
 type session struct{}
 
 func (p session) Before(req *he.Request) {
-	db := req.Things["db"].(store.DB)
 	var sess *store.Session = nil
 	defer func() {
 		if sess != nil {
@@ -21,15 +19,11 @@ func (p session) Before(req *he.Request) {
 		req.Things["session"] = sess
 	}()
 
-	var session_id1 string
-	var session_id2 string
-	var cookie *http.Cookie
-
 	hash, ok := req.Entity.(map[string]interface{}); if !ok { return }
-	session_id1, ok = hash["session_id"].(string)  ; if !ok { return }
+	session_id1, ok := hash["session_id"].(string) ; if !ok { return }
 	delete(hash, "session_id")
-
-	cookie = req.Cookie("session_id")
+	cookie := req.Cookie("session_id")
+	session_id2 := ""
 	if cookie != nil {
 		session_id2 = cookie.Value
 	}
@@ -38,13 +32,9 @@ func (p session) Before(req *he.Request) {
 		return
 	}
 
+	db, ok := req.Things["db"].(store.DB); if !ok { return }
 	sess = store.GetSessionById(db, session_id1)
+	sess.Save(db)
 }
 
-func (p session) After(req he.Request, res *he.Response) {
-	db := req.Things["db"].(store.DB)
-	sess, ok := req.Things["session"].(*store.Session)
-	if ok && sess != nil {
-		sess.Save(db)
-	}
-}
+func (p session) After(req he.Request, res *he.Response) {}

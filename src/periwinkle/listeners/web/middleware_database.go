@@ -15,14 +15,16 @@ func (p database) Before(req *he.Request) {
 	var transaction *sql.Tx
 	var err error
 	transaction, err = cfg.DB.Begin()
-	if err != nil {
-		panic("Could not begin transaction: " + err.Error())
+	if transaction != nil && err == nil {
+		req.Things["db"] = store.DB(transaction)
 	}
-	req.Things["db"] = store.DB(transaction)
 }
 
 func (p database) After(req he.Request, res *he.Response) {
-	transaction := req.Things["db"].(*sql.Tx)
+	transaction, ok := req.Things["db"].(*sql.Tx)
+	if !ok {
+		return
+	}
 	err := transaction.Commit()
 	if err != nil {
 		// TODO: DB: handle the error; it could be either HTTP 500
