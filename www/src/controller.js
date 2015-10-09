@@ -27,7 +27,7 @@
 			$scope.sidenav.exists = false;
 			$scope.sidenav.items = [];
 			$scope.sidenav.selected = NaN;
-			$scope.toolbar.exists: true;
+			$scope.toolbar.exists = true;
 			$scope.toolbar.title = "";
 			$scope.toolbar.buttons = [];
 			$scope.toolbar.onclick = function(){};
