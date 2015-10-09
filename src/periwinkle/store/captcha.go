@@ -17,7 +17,7 @@ var dirCaptchas he.Entity = newDirCaptchas()
 type Captcha struct {
 	Id         string
 	Value      string
-	token      string
+	Token      string
 	Expiration time.Time
 }
 

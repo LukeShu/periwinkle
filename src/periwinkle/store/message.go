@@ -18,13 +18,13 @@ var dirMessages he.Entity = newDirMessages()
 
 type Message struct {
 	Id      string
-	groupId string
+	GroupId string
 	Unique  maildir.Unique
 	// cached fields??????
 }
 
 func (m Message) Group(con modl.SqlExecutor) *Group {
-	return GetGroupById(con, m.groupId)
+	return GetGroupById(con, m.GroupId)
 }
 
 func NewMessage(unique maildir.Unique) *Message {

@@ -4,7 +4,7 @@
 package store
 
 type Subscription struct {
-	id         int
-	address_id int
-	group_id   int
+	Id        int
+	AddressId int
+	GroupId   string
 }

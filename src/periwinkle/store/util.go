@@ -13,16 +13,16 @@ import (
 )
 
 func init() {
-	cfg.DB.AddTable(Captcha{})
-	cfg.DB.AddTable(GroupAddress{})
-	cfg.DB.AddTable(Group{})
-	cfg.DB.AddTable(Medium{})
-	cfg.DB.AddTable(Message{})
-	cfg.DB.AddTable(Session{})
-	cfg.DB.AddTable(ShortUrl{})
-	cfg.DB.AddTable(Subscription{})
-	cfg.DB.AddTable(UserAddress{})
-	cfg.DB.AddTable(User{})
+	cfg.DB.AddTable(Captcha{}).SetKeys(true, "Id")
+	cfg.DB.AddTable(GroupAddress{}).SetKeys(true, "Id")
+	cfg.DB.AddTable(Group{}).SetKeys(true, "Id")
+	cfg.DB.AddTable(Medium{}).SetKeys(true, "Id")
+	cfg.DB.AddTable(Message{}).SetKeys(true, "Id")
+	cfg.DB.AddTable(Session{}).SetKeys(true, "Id")
+	cfg.DB.AddTable(ShortUrl{}).SetKeys(true, "Id")
+	cfg.DB.AddTable(Subscription{}).SetKeys(true, "Id")
+	cfg.DB.AddTable(UserAddress{}).SetKeys(true, "Id")
+	cfg.DB.AddTable(User{}).SetKeys(true, "Id")
 	if err := cfg.DB.CreateTablesIfNotExists(); err != nil {
 		panic(err)
 	}

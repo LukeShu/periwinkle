@@ -26,7 +26,7 @@ func (g *Group) init(con modl.SqlExecutor) error {
 }
 
 type GroupAddress struct {
-	id      int64
+	Id      int64
 	groupId string
 	Medium  string
 	Address string

@@ -21,8 +21,8 @@ var dirUsers he.Entity = newDirUsers()
 type User struct {
 	Id        string
 	FullName  string
-	pwHash    []byte
-	Addresses []UserAddress
+	PwHash    []byte
+	Addresses []UserAddress `db:"-"`
 }
 
 func (u *User) init(con modl.SqlExecutor) error {
@@ -30,8 +30,8 @@ func (u *User) init(con modl.SqlExecutor) error {
 }
 
 type UserAddress struct {
-	id      int64
-	userId  string
+	Id      int64
+	UserId  string
 	Medium  string
 	Address string
 }
@@ -71,12 +71,12 @@ func GetUserByAddress(con modl.SqlExecutor, medium string, address string) *User
 
 func (u *User) SetPassword(password string) error {
 	hash, err := bcrypt.GenerateFromPassword([]byte(password), -1)
-	u.pwHash = hash
+	u.PwHash = hash
 	return err
 }
 
 func (u *User) CheckPassword(password string) bool {
-	err := bcrypt.CompareHashAndPassword(u.pwHash, []byte(password))
+	err := bcrypt.CompareHashAndPassword(u.PwHash, []byte(password))
 	return err != nil
 }
 
@@ -94,7 +94,7 @@ func NewUser(con modl.SqlExecutor, name string, password string, email string) *
 		panic(err)
 	}
 	a := &UserAddress{
-		userId:  u.Id,
+		UserId:  u.Id,
 		Medium:  "email",
 		Address: email,
 	}
