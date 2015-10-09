@@ -3,10 +3,6 @@
 package httpentity
 
 import (
-	"bitbucket.org/ww/goautoneg"
-	"mime"
-	"net/url"
-	"path"
 	"strings"
 )
 
@@ -29,16 +25,16 @@ func methods2string(methods map[string]Handler) string {
 }
 
 // Takes the normalized path without the leading slash
-func route(entity Entity, req Request, method string, upath string) (ret Response) {
+func route(entity Entity, req Request, upath string) (ret Response) {
 	if entity == nil {
 		ret = req.statusNotFound()
 	} else if upath == "" {
-		callmethod := method
+		callmethod := req.Method
 		if callmethod == "HEAD" {
 			callmethod = "GET"
 		}
 		methods := entity.Methods()
-		handler, method_allowed := methods[method]
+		handler, method_allowed := methods[req.Method]
 		if method_allowed {
 			ret = handler(req)
 		} else {
@@ -55,58 +51,7 @@ func route(entity Entity, req Request, method string, upath string) (ret Respons
 		}
 		child := parts[0]
 		grandchildren := parts[1]
-		ret = route(entity.Subentity(child, req), req, method, grandchildren)
+		ret = route(entity.Subentity(child, req), req, grandchildren)
 	}
 	return
-}
-
-func Route(prefix string, entity Entity, req Request, method string, u *url.URL) (res Response) {
-	// sanitize the URL
-	u, _ = u.Parse("") // normalize
-	// the file extension overrides the Accept: header
-	if ext := path.Ext(u.Path); ext != "" {
-		req.Headers.Set("Accept", mime.TypeByExtension(ext))
-		u.Path = strings.TrimSuffix(u.Path, ext)
-	}
-	// add a trailing slash if there isn't one (so that relative
-	// child URLs don't go to the parent)
-	if !strings.HasSuffix(u.Path, "/") {
-		u.Path = u.Path + "/"
-	}
-
-	// do the routing
-	res = route(entity, req, method, strings.TrimPrefix(u.Path, prefix))
-
-	// make sure the Location: header is absolute
-	if l := res.Headers.Get("Location"); l != "" {
-		u2, _ := u.Parse(l)
-		res.Headers.Set("Location", u2.String())
-		if res.status == 201 {
-			ilist := []interface{}(res.entity.(NetList))
-			slist := make([]string, len(ilist))
-			for i, iface := range ilist {
-				slist[i] = iface.(string)
-			}
-			res.entity = extensions2net(u2, slist)
-		}
-	}
-	// figure out the content type of the response
-	if res.entity != nil && res.Headers.Get("Content-Type") == "" {
-		encoders := res.entity.Encoders()
-		mimetypes := encoders2mimetypes(encoders)
-		accept := req.Headers.Get("Accept")
-		if len(encoders) > 1 && accept == "" {
-			res = req.statusMultipleChoices(u, mimetypes)
-		} else {
-			mimetype := goautoneg.Negotiate(req.Headers.Get("Accept"), mimetypes)
-			if mimetype == "" {
-				res = req.statusNotAcceptable(u, mimetypes)
-			} else {
-				res.Headers.Set("Content-Type", mimetype+"; charset=utf-8")
-			}
-		}
-	}
-
-	// return the response
-	return res
 }

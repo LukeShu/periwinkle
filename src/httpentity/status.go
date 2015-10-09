@@ -35,7 +35,9 @@ func (req Request) StatusCreated(parent Entity, child_name string) Response {
 	return Response{
 		status:  201,
 		Headers: response.Headers,
-		entity:  mimetypes2net(u, mimetypes), // gets modified by Route() filled in the rest of the way by Route()
+		// XXX: .entity gets modified by (*Router).route()
+		// filled in the rest of the way by Route()
+		entity: mimetypes2net(u, mimetypes),
 	}
 }
 

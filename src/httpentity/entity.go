@@ -36,3 +36,8 @@ type Entity interface {
 	Methods() map[string]Handler
 	Subentity(name string, request Request) Entity
 }
+
+type Middleware interface {
+	Before(req *Request)
+	After(req Request, res *Response)
+}
