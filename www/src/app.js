@@ -49,7 +49,7 @@
 				templateUrl:	'src/dashboard/dashboard.html',
 				controller:		'DashboardController'
 			}).
-			when('user', {
+			when('/user', {
 				templateURL:	'src/user/user.html',
 				controller:		'UserController as user'
 			}).
