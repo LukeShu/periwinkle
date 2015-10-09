@@ -8,6 +8,7 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 	"maildir"
 	"net/http"
+	"github.com/jmoiron/modl"
 )
 
 const IncomingMail maildir.Maildir = "/srv/periwinkle/Maildir"
@@ -15,17 +16,13 @@ const WebUiDir http.Dir = "./www"
 const WebAddr string = ":8080"
 const Debug bool = true
 
-var DB *sql.DB = getConnection()
+var DB *modl.DbMap = getConnection()
 
-func getConnection() *sql.DB {
-	db_user := "periwinkle"
-	db_pass := "periwinkle"
-	db_name := "periwinkle"
-
-	db, err := sql.Open("mysql", db_user+":"+db_pass+"@/"+db_name)
+func getConnection() *modl.DbMap {
+	sql, err := sql.Open("mysql", "periwinkle:periwinkle@/periwinkle?parseTime=true")
 	if err != nil {
 		panic("Could not connect to database")
 	}
-
-	return db
+	dbMap := modl.NewDbMap(sql, modl.MySQLDialect{"InnoDB", "UTF8"})
+	return dbMap
 }

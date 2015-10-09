@@ -4,6 +4,7 @@
 package store
 
 import (
+	"github.com/jmoiron/modl"
 	"database/sql"
 	he "httpentity"
 	"maildir"
@@ -16,10 +17,14 @@ var dirMessages he.Entity = newDirMessages()
 // Model /////////////////////////////////////////////////////////////
 
 type Message struct {
-	id       string
-	group_id int
-	filename string
+	Id       string
+	groupId  string
+	Unique   maildir.Unique
 	// cached fields??????
+}
+
+func (m Message) Group(con modl.SqlExecutor) *Group {
+	return GetGroupById(con, m.groupId)
 }
 
 func NewMessage(unique maildir.Unique) *Message {
@@ -27,15 +32,13 @@ func NewMessage(unique maildir.Unique) *Message {
 	// TODO: sprint2: add the message to the outgoing mail queue
 }
 
-func GetMessageById(con DB, id string) *Message {
+func GetMessageById(con modl.SqlExecutor, id string) *Message {
 	var mes Message
-	err := con.QueryRow("select * from message where id=?", id).Scan(&mes)
+	err := con.Get(&mes, id)
 	switch {
 	case err == sql.ErrNoRows:
-		// message does not exist
 		return nil
 	case err != nil:
-		// error talking to the DB
 		panic(err)
 	default:
 		return &mes
@@ -77,6 +80,6 @@ func (d t_dirMessages) Methods() map[string]he.Handler {
 }
 
 func (d t_dirMessages) Subentity(name string, req he.Request) he.Entity {
-	db := req.Things["db"].(DB)
+	db := req.Things["db"].(modl.SqlExecutor)
 	return GetMessageById(db, name)
 }

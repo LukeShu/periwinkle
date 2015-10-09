@@ -3,24 +3,24 @@
 
 package store
 
-import "database/sql"
+import (
+	"database/sql"
+	"github.com/jmoiron/modl"
+)
 
 type Medium struct {
 	Id string
 }
 
-func GetMedium(con DB, id string) (*Medium, error) {
+func GetMedium(con *modl.Transaction, id string) *Medium {
 	var med Medium
-	err := con.QueryRow("SELECT * FROM group_addresses WHERE id=?", id).Scan(&med)
+	err := con.Get(&med, id)
 	switch {
 	case err == sql.ErrNoRows:
-		// group does not exist
-		return nil, nil
+		return nil
 	case err != nil:
-		// error talking to the DB
-		return nil, err
+		panic(err)
 	default:
-		// all ok
-		return &med, nil
+		return &med
 	}
 }

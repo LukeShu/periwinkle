@@ -5,10 +5,11 @@
 package store
 
 import (
-	"database/sql"
+	"github.com/jmoiron/modl"
 	"golang.org/x/crypto/bcrypt"
 	he "httpentity"
 	"strings"
+	"database/sql"
 )
 
 var _ he.Entity = &User{}
@@ -18,61 +19,52 @@ var dirUsers he.Entity = newDirUsers()
 // Model /////////////////////////////////////////////////////////////
 
 type User struct {
-	Id       string
-	FullName string
-	Email    string
-	pwHash   []byte
+	Id        string
+	FullName  string
+	pwHash    []byte
+	Addresses []UserAddress
 }
 
-func getUserById(con DB, id int) *User {
+func (u *User) init(con modl.SqlExecutor) error {
+	return con.Select(&u.Addresses, "SELECT * FROM user_addresses WHERE user_id=?", u.Id)
+}
+
+type UserAddress struct {
+	id      int64
+	userId  string
+	Medium  string
+	Address string
+}
+
+func GetUserById(con modl.SqlExecutor, id string) *User {
 	var user User
-	err := con.QueryRow("SELECT * FROM users WHERE id=?", id).Scan(&user)
+	err := con.Get(&user, id)
 	switch {
 	case err == sql.ErrNoRows:
-		// user does not exist
 		return nil
 	case err != nil:
-		// error talking to the DB
 		panic(err)
 	default:
-		// all ok
+		user.init(con)
 		return &user
 	}
 }
 
-func GetUserByName(con DB, name string) *User {
+func GetUserByAddress(con modl.SqlExecutor, medium string, address string) *User {
 	var user User
-	err := con.QueryRow("SELECT * FROM users WHERE name=?", name).Scan(&user)
-	switch {
-	case err == sql.ErrNoRows:
-		// user does not exist
-		return nil
-	case err != nil:
-		// error talking to the DB
-		panic(err)
-	default:
-		// all ok
-		return &user
-	}
-}
-
-func GetUserByEmail(con DB, address string) *User {
-	var user User
-	err := con.QueryRow(""+
+	err := con.SelectOne(&user,
 		"SELECT users.* "+
 		"FROM users JOIN user_address ON users.id=user_address.user_id "+
 		"WHERE user_address.address=? AND user_address=?",
 		address,
-		"email").Scan(&user)
+		"email")
 	switch {
 	case err == sql.ErrNoRows:
-		// user does not exist
 		return nil
 	case err != nil:
-		// error talking to the DB
 		panic(err)
 	default:
-		// all ok
+		user.init(con)
 		return &user
 	}
 }
@@ -88,25 +80,34 @@ func (u *User) CheckPassword(password string) bool {
 	return err != nil
 }
 
-func NewUser(con DB, name string, password string, email string) *User {
+func NewUser(con modl.SqlExecutor, name string, password string, email string) *User {
 	u := &User{
 		Id:       name,
 		FullName: "",
-		Email:    email,
 	}
 	err := u.SetPassword(password)
 	if err != nil {
 		panic(err)
 	}
-	_, err = con.Exec("INSERT INTO users VALUES (?,?,?,?)", u.Id, u.FullName, u.pwHash, u.Email)
+	err = con.Insert(u)
 	if err != nil {
 		panic(err)
 	}
+	a := &UserAddress{
+		userId: u.Id,
+		Medium: "email",
+		Address: email,
+	}
+	con.Insert(a)
+	if err != nil {
+		panic(err)
+	}
+	u.init(con)
 	return u
 }
 
-func (u *User) Save() error {
-	_, err := dbMap.Update(u)
+func (u *User) Save(con modl.SqlExecutor) error {
+	_, err := con.Update(u)
 	return err
 }
 
@@ -125,26 +126,10 @@ func (o *User) Methods() map[string]he.Handler {
 			return req.StatusOK(o)
 		},
 		"PUT": func(req he.Request) he.Response {
-			badbody := req.StatusBadRequest("submitted body not what expected")
-			hash, ok := req.Entity.(map[string]interface{}); if !ok { return badbody }
-			fullname, ok := hash["fullname"].(string)      ; if !ok { return badbody }
-			email   , ok := hash["email"].(string)         ; if !ok { return badbody }
-			password, ok := hash["password"].(string)      ; if !ok { return badbody }
-
-			if password2, ok := hash["password_verification"].(string); ok {
-				if password != password2 {
-					// Passwords don't match
-					return req.StatusConflict(he.NetString("password and password_verification don't match"))
-				}
-			}
-			o.Email = email
-			o.FullName = fullname
-			if err := o.SetPassword(password); err != nil { panic(err) }
-			if err := o.Save()               ; err != nil { panic(err) }
-			return req.StatusOK(o)
+			panic("TODO: API: (*User).Methods()[\"PUT\"]")
 		},
 		"PATCH": func(req he.Request) he.Response {
-			panic("TODO: API: (*User).Methods()[\"Patch\"]")
+			panic("TODO: API: (*User).Methods()[\"PATCH\"]")
 		},
 		"DELETE": func(req he.Request) he.Response {
 			panic("TODO: API: (*User).Methods()[\"DELETE\"]")
@@ -168,7 +153,7 @@ func newDirUsers() t_dirUsers {
 	r := t_dirUsers{}
 	r.methods = map[string]he.Handler{
 		"POST": func(req he.Request) he.Response {
-			db := req.Things["db"].(DB)
+			db := req.Things["db"].(modl.SqlExecutor)
 			badbody := req.StatusBadRequest("submitted body not what expected")
 			hash, ok := req.Entity.(map[string]interface{}); if !ok { return badbody }
 			username, ok := hash["username"].(string)      ; if !ok { return badbody }
@@ -200,6 +185,6 @@ func (d t_dirUsers) Methods() map[string]he.Handler {
 }
 
 func (d t_dirUsers) Subentity(name string, req he.Request) he.Entity {
-	db := req.Things["db"].(DB)
-	return GetUserByName(db, name)
+	db := req.Things["db"].(modl.SqlExecutor)
+	return GetUserById(db, name)
 }

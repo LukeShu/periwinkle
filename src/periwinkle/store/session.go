@@ -4,6 +4,7 @@
 package store
 
 import (
+	"github.com/jmoiron/modl"
 	he "httpentity"
 	"net/http"
 	"time"
@@ -20,39 +21,39 @@ type Session struct {
 	LastUsed time.Time
 }
 
-func NewSession(con DB, username string, password string) *Session {
-	user := GetUserByName(con, username)
-	if !user.CheckPassword(password) {
+func NewSession(con modl.SqlExecutor, username string, password string) *Session {
+	user := GetUserById(con, username)
+	if user != nil && !user.CheckPassword(password) {
 		return nil
 	}
-
-	ses := &Session{
+	sess := &Session{
 		Id:       randomString(24),
 		UserId:   user.Id,
 		LastUsed: time.Now(),
 	}
-	return ses
+	if err := con.Insert(sess); err != nil {
+		panic(err)
+	}
+	return sess
 }
 
-func GetSessionById(con DB, id string) *Session {
-	var s Session
-	err := con.QueryRow("SELECT * FROM sessions WHERE id=?", id).Scan(&s)
+func GetSessionById(con modl.SqlExecutor, id string) *Session {
+	var sess Session
+	err := con.Get(&sess, id)
 	switch {
 	case err != nil:
-		// error talking to the DB
 		panic(err)
 	default:
-		// all ok
-		return &s
+		return &sess
 	}
 }
 
-func (o *Session) Delete(con DB) {
+func (o *Session) Delete(con modl.SqlExecutor) {
 	panic("TODO: ORM: (*Session).Delete()")
 }
 
-func (o *Session) Save(con DB) {
-	dbMap.Update(o)
+func (o *Session) Save(con modl.SqlExecutor) {
+	con.Update(o)
 }
 
 // View //////////////////////////////////////////////////////////////
@@ -74,7 +75,7 @@ func newFileSession() t_fileSession {
 	r := t_fileSession{}
 	r.methods = map[string]he.Handler{
 		"POST": func(req he.Request) he.Response {
-			db := req.Things["db"].(DB)
+			db := req.Things["db"].(modl.SqlExecutor)
 			badbody := req.StatusBadRequest("submitted body not what expected")
 			hash, ok := req.Entity.(map[string]interface{}); if !ok { return badbody }
 			username, ok := hash["username"].(string)      ; if !ok { return badbody }
@@ -97,7 +98,7 @@ func newFileSession() t_fileSession {
 			}
 		},
 		"DELETE": func(req he.Request) he.Response {
-			db := req.Things["db"].(DB)
+			db := req.Things["db"].(modl.SqlExecutor)
 			sess := req.Things["session"].(*Session)
 			if sess != nil {
 				sess.Delete(db)

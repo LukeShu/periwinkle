@@ -6,8 +6,8 @@ package store
 import (
 	"database/sql"
 	he "httpentity"
-	//"math/rand"
 	"net/url"
+	"github.com/jmoiron/modl"
 )
 
 var _ he.Entity = &ShortUrl{}
@@ -20,25 +20,26 @@ type ShortUrl struct {
 	Dest *url.URL
 }
 
-func newShortURL(u *url.URL) *ShortUrl {
+func NewShortURL(con modl.SqlExecutor, u *url.URL) *ShortUrl {
 	s := &ShortUrl{
 		Id:   randomString(5),
 		Dest: u,
 	}
-	err := s.Save()
+	err := con.Insert(s)
 	if err != nil {
 		return nil
 	}
 	return s
 }
 
-func (s *ShortUrl) Save() error {
-	panic("TODO: ORM: (*ShortUrl).Save()")
+func (s *ShortUrl) Save(con modl.SqlExecutor) error {
+	_, err := con.Update(s)
+	return err
 }
 
-func GetShortUrlById(con DB, id string) *ShortUrl {
+func GetShortUrlById(con modl.SqlExecutor, id string) *ShortUrl {
 	var s ShortUrl
-	err := con.QueryRow("SELECT shortURL FROM shortURL WHERE id=?", id).Scan(&s)
+	err := con.Get(&s, id)
 	switch {
 	case err == sql.ErrNoRows:
 		return nil
@@ -56,7 +57,7 @@ func (o *ShortUrl) Subentity(name string, req he.Request) he.Entity {
 func (o *ShortUrl) Methods() map[string]he.Handler {
 	return map[string]he.Handler{
 		"GET": func(req he.Request) he.Response {
-			panic("TODO: API: (*ShortUrl).Methods()[\"GET\"]")
+			return req.StatusMoved(o.Dest)
 		},
 	}
 }
@@ -78,6 +79,6 @@ func (d t_dirShortUrls) Methods() map[string]he.Handler {
 }
 
 func (d t_dirShortUrls) Subentity(name string, req he.Request) he.Entity {
-	db := req.Things["db"].(DB)
+	db := req.Things["db"].(modl.SqlExecutor)
 	return GetShortUrlById(db, name)
 }

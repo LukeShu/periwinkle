@@ -5,24 +5,27 @@ package store
 
 import (
 	"crypto/rand"
-	"database/sql"
 	"encoding/json"
-	"github.com/jmoiron/modl"
 	he "httpentity"
 	"io"
 	"math/big"
 	"periwinkle/cfg"
 )
 
-// Global for database access in the ORM
-var dbMap = &modl.DbMap{Db: cfg.DB, Dialect: modl.MySQLDialect{"InnoDB", "UTF8"}}
-
-// The intersection of *sql.DB and *sql.Tx
-type DB interface {
-	Exec(query string, args ...interface{}) (sql.Result, error)
-	Prepare(query string) (*sql.Stmt, error)
-	Query(query string, args ...interface{}) (*sql.Rows, error)
-	QueryRow(query string, args ...interface{}) *sql.Row
+func init() {
+	cfg.DB.AddTable(Captcha{})
+	cfg.DB.AddTable(GroupAddress{})
+	cfg.DB.AddTable(Group{})
+	cfg.DB.AddTable(Medium{})
+	cfg.DB.AddTable(Message{})
+	cfg.DB.AddTable(Session{})
+	cfg.DB.AddTable(ShortUrl{})
+	cfg.DB.AddTable(Subscription{})
+	cfg.DB.AddTable(UserAddress{})
+	cfg.DB.AddTable(User{})
+	if err := cfg.DB.CreateTablesIfNotExists(); err != nil {
+		panic(err)
+	}
 }
 
 // Simple dump to JSON, good for most entities

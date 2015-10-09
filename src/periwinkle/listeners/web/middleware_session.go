@@ -6,6 +6,7 @@ import (
 	he "httpentity"
 	"periwinkle/store"
 	"time"
+	"github.com/jmoiron/modl"
 )
 
 type session struct{}
@@ -32,7 +33,7 @@ func (p session) Before(req *he.Request) {
 		return
 	}
 
-	db, ok := req.Things["db"].(store.DB); if !ok { return }
+	db, ok := req.Things["db"].(modl.SqlExecutor); if !ok { return }
 	sess = store.GetSessionById(db, session_id1)
 	sess.Save(db)
 }

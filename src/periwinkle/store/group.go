@@ -5,6 +5,7 @@ package store
 
 import (
 	"database/sql"
+	"github.com/jmoiron/modl"
 	he "httpentity"
 	"strings"
 )
@@ -16,30 +17,45 @@ var dirGroups he.Entity = newDirGroups()
 // Model /////////////////////////////////////////////////////////////
 
 type Group struct {
-	Name string
+	Id string
+	Addresses []GroupAddress
 }
 
-func GetGroupByName(con DB, name string) *Group {
+func (g *Group) init(con modl.SqlExecutor) error {
+	return con.Select(&g.Addresses, "SELECT * FROM group_addresses WHERE group_id=?", g.Id)
+}
+
+type GroupAddress struct {
+	id      int64
+	groupId string
+	Medium  string
+	Address string
+}
+
+func GetGroupById(con modl.SqlExecutor, name string) *Group {
 	var group Group
-	err := con.QueryRow("select * from groups where name=?", name).Scan(&group)
+	err := con.Get(&group, name)
 	switch {
 	case err == sql.ErrNoRows:
-		// group does not exist
 		return nil
 	case err != nil:
 		panic(err)
 	default:
+		group.init(con)
 		return &group
 	}
 }
 
-func NewGroup(con DB, name string) *Group {
-	g := &Group{Name: name}
-	_, err := con.Exec("INSERT INTO groups VALUES (?)", g.Name)
+func GetGroupByAddress(con modl.SqlExecutor, medium string, address string) *Group {
+	panic("TODO: ORM")
+}
+
+func NewGroup(con modl.SqlExecutor, name string) *Group {
+	g := &Group{Id: name}
+	err := con.Insert(g)
 	if err != nil {
 		panic(err)
 	}
-
 	return g
 }
 
@@ -80,7 +96,7 @@ func newDirGroups() t_dirGroups {
 	r := t_dirGroups{}
 	r.methods = map[string]he.Handler{
 		"POST": func(req he.Request) he.Response {
-			db := req.Things["db"].(DB)
+			db := req.Things["db"].(modl.SqlExecutor)
 			badbody := req.StatusBadRequest("submitted body not what expected")
 			hash, ok := req.Entity.(map[string]interface{}); if !ok { return badbody }
 			groupname, ok := hash["groupname"].(string)    ; if !ok { return badbody }
@@ -103,6 +119,6 @@ func (d t_dirGroups) Methods() map[string]he.Handler {
 }
 
 func (d t_dirGroups) Subentity(name string, req he.Request) he.Entity {
-	db := req.Things["db"].(DB)
-	return GetGroupByName(db, name)
+	db := req.Things["db"].(modl.SqlExecutor)
+	return GetGroupById(db, name)
 }

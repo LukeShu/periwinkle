@@ -3,25 +3,24 @@
 package web
 
 import (
-	"database/sql"
 	he "httpentity"
 	"periwinkle/cfg"
-	"periwinkle/store"
+	"github.com/jmoiron/modl"
 )
 
 type database struct{}
 
 func (p database) Before(req *he.Request) {
-	var transaction *sql.Tx
+	var transaction modl.SqlExecutor
 	var err error
 	transaction, err = cfg.DB.Begin()
 	if transaction != nil && err == nil {
-		req.Things["db"] = store.DB(transaction)
+		req.Things["db"] = transaction
 	}
 }
 
 func (p database) After(req he.Request, res *he.Response) {
-	transaction, ok := req.Things["db"].(*sql.Tx)
+	transaction, ok := req.Things["db"].(*modl.Transaction)
 	if !ok {
 		return
 	}
