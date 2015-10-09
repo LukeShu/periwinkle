@@ -12,7 +12,8 @@
 		//periwinkle modules
 		'validation.xregex',
 		'login',
-		'dashboard'
+		'dashboard',
+		'user'
 	]);
 
 	//user this plugin instead of the browsers regex (for unicode support)
@@ -40,25 +41,21 @@
 				  .hashPrefix('!');
 			
 			$routeProvider.
-			when('/login', {
-				templateUrl:	'src/login/login.html',
-				controller:		'LoginController as login'
-			}).
-			when('/dashboard', {
-				templateUrl:	'src/dashboard/dashboard.html',
-				controller:		'DashboardController'
-			}).
-			when('/messaages/:groupid', {
-				templateURL:	'src/messages/messages.html',
-				controller:		'MessaagesController'
-			}).
-			when('/settings', {
-				templateUrl:	'src/settings/settings.html',
-				controller:		'SettingsController'
-			}).
-			otherwise({
-				redirectTo:	'/login'
-			})
+				when('/login', {
+					templateUrl:	'src/login/login.html',
+					controller:		'LoginController as login'
+				}).
+				when('/dash', {
+					templateUrl:	'src/dashboard/dashboard.html',
+					controller:		'DashboardController as dash'
+				}).
+				when('/user', {
+					templateUrl:	'src/user/user.html',
+					controller:		'UserController as user'
+				}).
+				otherwise({
+					redirectTo:	'/login'
+				});
 		}
 	]);
 })();
