@@ -113,13 +113,36 @@ func (o *User) Subentity(name string, req he.Request) he.Entity {
 func (o *User) Methods() map[string]he.Handler {
 	return map[string]he.Handler{
 		"GET": func(req he.Request) he.Response {
-			panic("TODO: API: (*User).Methods()[\"GET\"]")
+			sess, ok := req.Entity.Things["session"]; if !ok { return badbody }
+			if sess.UserId !=  o.Id {
+				return req.StatusUnauthorized(o)
+			}
+			else {
+				req.Entity.Things["user"], ok = getUserById(req.Entity.Things["db"], sess.UserId) ; if !ok { return badbody }
+				return req.StatusOK(o)
+			}
 		},
 		"PUT": func(req he.Request) he.Response {
 			panic("TODO: API: (*User).Methods()[\"PUT\"]")
 		},
 		"PATCH": func(req he.Request) he.Response {
-			panic("TODO: API: (*User).Methods()[\"PATCH\"]")
+                        badbody := req.StatusBadRequest("submitted body not what expected")
+                        hash, ok := req.Entity.(map[string]interface{}); if !ok { return badbody }
+                        email   , ok := hash["email"].(string)         ; if !ok { return badbody }
+			password, ok := hash["password"].(string)      ; if !ok { return badbody }
+
+			if password2, ok := hash["password_verification"].(string); ok {
+                                if password != password2 {
+                                        // Passwords don't match
+                                        return req.StatusConflict(he.NetString("password and password_verification don't match"))
+                                }
+                        }
+                        internalerror := req.StatusBadRequest("Internal Error")
+			o.Email = email
+			err = o.SetPassword(password); if err != nil { return internalerror }
+			err = o.Save()               ; if err != nil { return internalerror }
+			return req.StatusOK()
+
 		},
 		"DELETE": func(req he.Request) he.Response {
 			panic("TODO: API: (*User).Methods()[\"DELETE\"]")
