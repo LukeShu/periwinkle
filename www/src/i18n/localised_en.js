@@ -15,5 +15,13 @@ localised.en = {
 		CONFIRM_PASSWORD_NO_MATCH:	"Your passwords do not match",
 		USERNAME_INVALID:			"Usernames may only contain letters, number, _, or -.",
 		EMAIL_INVALID:				"That is not a valid email address."
-	}
+	},
+	USER: {
+		USER:						"User",
+		EMAIL_CHANGE:				"Change",
+		CHANGE_PASSWORD:			"Change Password",
+		DELETE:						"Delete Account"
+	},
+	GROUPS:			"Groups",
+	NO_GROUPS:		"You are not currently in any groups."
 };

@@ -10,7 +10,7 @@
 		var self = this;
 		//clears the toolbar and such so we can set it up for this view
 		$scope.resetHeader();
-		$scope.toolbar.title = "User";
+		$scope.toolbar.title = "USER.USER";
 		//set up public fields
 		self.username = 'Richard Wisniewski';
 		self.email = 'rwisniew@purdue.edu';
