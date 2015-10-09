@@ -5,11 +5,11 @@
 package store
 
 import (
+	"database/sql"
 	"github.com/jmoiron/modl"
 	"golang.org/x/crypto/bcrypt"
 	he "httpentity"
 	"strings"
-	"database/sql"
 )
 
 var _ he.Entity = &User{}
@@ -54,8 +54,8 @@ func GetUserByAddress(con modl.SqlExecutor, medium string, address string) *User
 	var user User
 	err := con.SelectOne(&user,
 		"SELECT users.* "+
-		"FROM users JOIN user_address ON users.id=user_address.user_id "+
-		"WHERE user_address.address=? AND user_address=?",
+			"FROM users JOIN user_address ON users.id=user_address.user_id "+
+			"WHERE user_address.address=? AND user_address=?",
 		address,
 		"email")
 	switch {
@@ -94,8 +94,8 @@ func NewUser(con modl.SqlExecutor, name string, password string, email string) *
 		panic(err)
 	}
 	a := &UserAddress{
-		userId: u.Id,
-		Medium: "email",
+		userId:  u.Id,
+		Medium:  "email",
 		Address: email,
 	}
 	con.Insert(a)

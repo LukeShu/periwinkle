@@ -3,10 +3,10 @@
 package web
 
 import (
+	"github.com/jmoiron/modl"
 	he "httpentity"
 	"periwinkle/store"
 	"time"
-	"github.com/jmoiron/modl"
 )
 
 type session struct{}

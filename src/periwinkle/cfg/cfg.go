@@ -6,9 +6,9 @@ package cfg
 import (
 	"database/sql"
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/jmoiron/modl"
 	"maildir"
 	"net/http"
-	"github.com/jmoiron/modl"
 )
 
 const IncomingMail maildir.Maildir = "/srv/periwinkle/Maildir"

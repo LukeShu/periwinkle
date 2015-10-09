@@ -3,9 +3,9 @@
 package web
 
 import (
+	"github.com/jmoiron/modl"
 	he "httpentity"
 	"periwinkle/cfg"
-	"github.com/jmoiron/modl"
 )
 
 type database struct{}

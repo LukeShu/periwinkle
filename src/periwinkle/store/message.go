@@ -4,8 +4,8 @@
 package store
 
 import (
-	"github.com/jmoiron/modl"
 	"database/sql"
+	"github.com/jmoiron/modl"
 	he "httpentity"
 	"maildir"
 )
@@ -17,9 +17,9 @@ var dirMessages he.Entity = newDirMessages()
 // Model /////////////////////////////////////////////////////////////
 
 type Message struct {
-	Id       string
-	groupId  string
-	Unique   maildir.Unique
+	Id      string
+	groupId string
+	Unique  maildir.Unique
 	// cached fields??????
 }
 

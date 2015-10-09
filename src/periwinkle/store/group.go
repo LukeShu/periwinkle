@@ -17,7 +17,7 @@ var dirGroups he.Entity = newDirGroups()
 // Model /////////////////////////////////////////////////////////////
 
 type Group struct {
-	Id string
+	Id        string
 	Addresses []GroupAddress
 }
 

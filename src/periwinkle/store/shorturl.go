@@ -5,9 +5,9 @@ package store
 
 import (
 	"database/sql"
+	"github.com/jmoiron/modl"
 	he "httpentity"
 	"net/url"
-	"github.com/jmoiron/modl"
 )
 
 var _ he.Entity = &ShortUrl{}

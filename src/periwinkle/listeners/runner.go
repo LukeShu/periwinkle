@@ -3,9 +3,9 @@
 package main
 
 import (
-	"periwinkle/listeners/twilio"
 	"fmt"
 	"periwinkle/listeners/maildir"
+	"periwinkle/listeners/twilio"
 	"periwinkle/listeners/web"
 	"sync"
 )
