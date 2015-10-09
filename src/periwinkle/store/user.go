@@ -123,10 +123,33 @@ func (o *User) Methods() map[string]he.Handler {
 			}
 		},
 		"PUT": func(req he.Request) he.Response {
-			panic("TODO: API: (*User).Methods()[\"PUT\"]")
+			badbody := req.StatusBadRequest("submitted body not what expected")
+                        hash, ok := req.Entity.(map[string]interface{}); if !ok { return badbody }
+                        fullname, ok := hash["fullname"].(string)      ; if !ok { return badbody }
+			email   , ok := hash["email"].(string)         ; if !ok { return badbody }
+                        password, ok := hash["password"].(string)      ; if !ok { return badbody }
+
+                        if password2, ok := hash["password_verification"].(string); ok {
+                                if password != password2 {
+                                        // Passwords don't match
+                                        return req.StatusConflict(he.NetString("password and password_verification don't match"))
+                                }
+                        }
+                        internalerror := req.StatusBadRequest("Internal Error")
+                        o.Email = email
+			o.FullName = fullname
+                        err = o.SetPassword(password); if err != nil { return internalerror }
+                        err = o.Save()               ; if err != nil { return internalerror }
+                        return req.StatusOK()
+
+
+			return req.statusMethodNotAllowed("User can't create another user")
 		},
 		"PATCH": func(req he.Request) he.Response {
-                        badbody := req.StatusBadRequest("submitted body not what expected")
+                        panic("TODO: API: (*User).Methods()[\"Patch\"]")
+
+			/*TODO Not required for now though
+			badbody := req.StatusBadRequest("submitted body not what expected")
                         hash, ok := req.Entity.(map[string]interface{}); if !ok { return badbody }
                         email   , ok := hash["email"].(string)         ; if !ok { return badbody }
 			password, ok := hash["password"].(string)      ; if !ok { return badbody }
@@ -142,6 +165,7 @@ func (o *User) Methods() map[string]he.Handler {
 			err = o.SetPassword(password); if err != nil { return internalerror }
 			err = o.Save()               ; if err != nil { return internalerror }
 			return req.StatusOK()
+			*/
 
 		},
 		"DELETE": func(req he.Request) he.Response {
