@@ -16,6 +16,8 @@
 		self.password = '';
 		self.email = '';
 		
+		alert();
+		
 		self.reload = function() {
 			
 		};

@@ -41,21 +41,21 @@
 				  .hashPrefix('!');
 			
 			$routeProvider.
-			when('/login', {
-				templateUrl:	'src/login/login.html',
-				controller:		'LoginController as login'
-			}).
-			when('/dashboard', {
-				templateUrl:	'src/dashboard/dashboard.html',
-				controller:		'DashboardController'
-			}).
-			when('/user', {
-				templateURL:	'src/user/user.html',
-				controller:		'UserController as user'
-			}).
-			otherwise({
-				redirectTo:	'/login'
-			})
+				when('/login', {
+					templateUrl:	'src/login/login.html',
+					controller:		'LoginController as login'
+				}).
+				when('/dashboard', {
+					templateUrl:	'src/dashboard/dashboard.html',
+					controller:		'DashboardController'
+				}).
+				when('/user', {
+					templateURL:	'src/user/user.html',
+					controller:		'UserController as user'
+				}).
+				otherwise({
+					redirectTo:	'/login'
+				});
 		}
 	]);
 })();
