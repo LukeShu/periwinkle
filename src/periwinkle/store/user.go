@@ -126,25 +126,25 @@ func (o *User) Methods() map[string]he.Handler {
 		},
 		"PUT": func(req he.Request) he.Response {
 			badbody := req.StatusBadRequest("submitted body not what expected")
-                        hash, ok := req.Entity.(map[string]interface{}); if !ok { return badbody }
-                        fullname, ok := hash["fullname"].(string)      ; if !ok { return badbody }
+			hash, ok := req.Entity.(map[string]interface{}); if !ok { return badbody }
+			fullname, ok := hash["fullname"].(string)      ; if !ok { return badbody }
 			email   , ok := hash["email"].(string)         ; if !ok { return badbody }
-                        password, ok := hash["password"].(string)      ; if !ok { return badbody }
+			password, ok := hash["password"].(string)      ; if !ok { return badbody }
 
-                        if password2, ok := hash["password_verification"].(string); ok {
-                                if password != password2 {
-                                        // Passwords don't match
-                                        return req.StatusConflict(he.NetString("password and password_verification don't match"))
-                                }
-                        }
-                        o.Email = email
+			if password2, ok := hash["password_verification"].(string); ok {
+				if password != password2 {
+					// Passwords don't match
+					return req.StatusConflict(he.NetString("password and password_verification don't match"))
+				}
+			}
+			o.Email = email
 			o.FullName = fullname
-                        if err := o.SetPassword(password); err != nil { panic(err) }
-                        if err := o.Save()               ; err != nil { panic(err) }
-                        return req.StatusOK(o)
+			if err := o.SetPassword(password); err != nil { panic(err) }
+			if err := o.Save()               ; err != nil { panic(err) }
+			return req.StatusOK(o)
 		},
 		"PATCH": func(req he.Request) he.Response {
-                        panic("TODO: API: (*User).Methods()[\"Patch\"]")
+			panic("TODO: API: (*User).Methods()[\"Patch\"]")
 		},
 		"DELETE": func(req he.Request) he.Response {
 			panic("TODO: API: (*User).Methods()[\"DELETE\"]")

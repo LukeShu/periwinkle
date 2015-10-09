@@ -4,17 +4,13 @@
 package store
 
 import (
-	//"database/sql"
 	he "httpentity"
 	"net/http"
 	"time"
-	//"github.com/jmoiron/modl"
-	//"periwinkle/cfg"
 )
 
 var _ he.NetEntity = &Session{}
 var fileSession he.Entity = newFileSession()
-// var dbMap = &modl.DbMap{Db: cfg.DB, Dialect: modl.MySQLDialect{"InnoDB", "UTF8"}}
 
 // Model /////////////////////////////////////////////////////////////
 
@@ -42,12 +38,12 @@ func GetSessionById(con DB, id string) *Session {
 	var s Session
 	err := con.QueryRow("SELECT * FROM sessions WHERE id=?", id).Scan(&s)
 	switch {
-		case err != nil:
-			// error talking to the DB
-			panic(err)
-		default:
-			// all ok
-			return &s
+	case err != nil:
+		// error talking to the DB
+		panic(err)
+	default:
+		// all ok
+		return &s
 	}
 }
 

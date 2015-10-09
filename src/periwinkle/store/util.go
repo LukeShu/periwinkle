@@ -7,12 +7,13 @@ import (
 	"crypto/rand"
 	"database/sql"
 	"encoding/json"
+	"github.com/jmoiron/modl"
 	he "httpentity"
 	"io"
 	"math/big"
-	"github.com/jmoiron/modl"
 	"periwinkle/cfg"
 )
+
 // Global for database access in the ORM
 var dbMap = &modl.DbMap{Db: cfg.DB, Dialect: modl.MySQLDialect{"InnoDB", "UTF8"}}
 

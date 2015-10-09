@@ -15,7 +15,7 @@ func Main() error {
 	mux.Handle("/v1/", &he.Router{
 		Prefix:      "/v1/",
 		Root:        store.DirRoot,
-		Middlewares: []he.Middleware{ postHack{}, database{}, session{} },
+		Middlewares: []he.Middleware{postHack{}, database{}, session{}},
 		Stacktrace:  cfg.Debug,
 	})
 	mux.Handle("/webui/", http.StripPrefix("/webui/", http.FileServer(cfg.WebUiDir)))
