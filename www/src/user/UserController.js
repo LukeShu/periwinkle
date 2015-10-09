@@ -10,6 +10,7 @@
 		var self = this;
 		//clears the toolbar and such so we can set it up for this view
 		$scope.resetHeader();
+		$scope.tootbar.title = "";
 		//set up public fields
 		self.username = '';
 		self.password = '';
