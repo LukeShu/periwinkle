@@ -45,9 +45,9 @@
 					templateUrl:	'src/login/login.html',
 					controller:		'LoginController as login'
 				}).
-				when('/dashboard', {
+				when('/dash', {
 					templateUrl:	'src/dashboard/dashboard.html',
-					controller:		'DashboardController'
+					controller:		'DashboardController as dash'
 				}).
 				when('/user', {
 					templateURL:	'src/user/user.html',
