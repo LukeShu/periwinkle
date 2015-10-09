@@ -9,7 +9,7 @@
 		//gives us an anchor to the outer object from within sub objects or functions
 		var self = this;
 		//clears the toolbar and such so we can set it up for this view
-		$scope.resetHeader();
+		//$scope.resetHeader();
 		$scope.tootbar.title = "MOOOO";
 		//set up public fields
 		self.username = '';
