@@ -94,16 +94,20 @@ func NewUser(con DB, name string, password string, email string) *User {
 		FullName: "",
 		Email:    email,
 	}
-	u.SetPassword(password)
-	_, err := con.Exec("INSERT INTO users VALUES (?,?,?,?)", u.Id, u.FullName, u.pwHash, u.Email)
+	err := u.SetPassword(password)
+	if err != nil {
+		panic(err)
+	}
+	_, err = con.Exec("INSERT INTO users VALUES (?,?,?,?)", u.Id, u.FullName, u.pwHash, u.Email)
 	if err != nil {
 		panic(err)
 	}
 	return u
 }
 
-func (u *User) Save() {
-	dbMap.Update(u)
+func (u *User) Save() error {
+	_, err := dbMap.Update(u)
+	return err
 }
 
 func (o *User) Subentity(name string, req he.Request) he.Entity {
@@ -113,14 +117,12 @@ func (o *User) Subentity(name string, req he.Request) he.Entity {
 func (o *User) Methods() map[string]he.Handler {
 	return map[string]he.Handler{
 		"GET": func(req he.Request) he.Response {
-			sess, ok := req.Entity.Things["session"]; if !ok { return badbody }
-			if sess.UserId !=  o.Id {
+			badbody := req.StatusBadRequest("submitted body not what expected")
+			sess, ok := req.Things["session"].(*Session); if !ok { return badbody }
+			if !ok || sess.UserId != o.Id {
 				return req.StatusUnauthorized(o)
 			}
-			else {
-				req.Entity.Things["user"], ok = getUserById(req.Entity.Things["db"], sess.UserId) ; if !ok { return badbody }
-				return req.StatusOK(o)
-			}
+			return req.StatusOK(o)
 		},
 		"PUT": func(req he.Request) he.Response {
 			badbody := req.StatusBadRequest("submitted body not what expected")
@@ -135,38 +137,14 @@ func (o *User) Methods() map[string]he.Handler {
                                         return req.StatusConflict(he.NetString("password and password_verification don't match"))
                                 }
                         }
-                        internalerror := req.StatusBadRequest("Internal Error")
                         o.Email = email
 			o.FullName = fullname
-                        err = o.SetPassword(password); if err != nil { return internalerror }
-                        err = o.Save()               ; if err != nil { return internalerror }
-                        return req.StatusOK()
-
-
-			return req.statusMethodNotAllowed("User can't create another user")
+                        if err := o.SetPassword(password); err != nil { panic(err) }
+                        if err := o.Save()               ; err != nil { panic(err) }
+                        return req.StatusOK(o)
 		},
 		"PATCH": func(req he.Request) he.Response {
                         panic("TODO: API: (*User).Methods()[\"Patch\"]")
-
-			/*TODO Not required for now though
-			badbody := req.StatusBadRequest("submitted body not what expected")
-                        hash, ok := req.Entity.(map[string]interface{}); if !ok { return badbody }
-                        email   , ok := hash["email"].(string)         ; if !ok { return badbody }
-			password, ok := hash["password"].(string)      ; if !ok { return badbody }
-
-			if password2, ok := hash["password_verification"].(string); ok {
-                                if password != password2 {
-                                        // Passwords don't match
-                                        return req.StatusConflict(he.NetString("password and password_verification don't match"))
-                                }
-                        }
-                        internalerror := req.StatusBadRequest("Internal Error")
-			o.Email = email
-			err = o.SetPassword(password); if err != nil { return internalerror }
-			err = o.Save()               ; if err != nil { return internalerror }
-			return req.StatusOK()
-			*/
-
 		},
 		"DELETE": func(req he.Request) he.Response {
 			panic("TODO: API: (*User).Methods()[\"DELETE\"]")
