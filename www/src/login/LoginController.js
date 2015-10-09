@@ -10,8 +10,6 @@
 		var self = this;
 		//clears the toolbar and such so we can set it up for this view
 		$scope.resetHeader();
-		//adds the public fields and methods of this object to the model ($scope)
-		//$scope.login = self;
 		//set up public fields
 		self.username = '';
 		self.password = '';
