@@ -50,7 +50,7 @@
 					controller:		'DashboardController'
 				}).
 				when('/user', {
-					templateURL:	'src/user/user.html',
+					templateURL:	'src/user/user1.html',
 					controller:		'UserController as user'
 				}).
 				otherwise({
