@@ -24,7 +24,7 @@
 			is:	false
 		};
 		var resetHeader = function() {
-			$scope.sidenav.exists: false;
+			$scope.sidenav.exists = false;
 			$scope.sidenav.items = [];
 			$scope.sidenav.selected = NaN;
 			$scope.toolbar.exists: true;
