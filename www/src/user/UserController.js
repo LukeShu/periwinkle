@@ -16,9 +16,18 @@
 		self.email = 'rwisniew@purdue.edu';
 		self.sessionID = "0x1234567890";
 		
+		self.groups = [];
+		
 		self.reload = function() {
 			
 		};
+		self.createGroup = function() {
+			
+		};
+		self.joinGroup = function() {
+			
+		};
+		
 		self.reload();
 	}
 })();
