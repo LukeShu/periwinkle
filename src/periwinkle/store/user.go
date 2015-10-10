@@ -171,6 +171,11 @@ func (d t_dirUsers) Methods() map[string]he.Handler {
 }
 
 func (d t_dirUsers) Subentity(name string, req he.Request) he.Entity {
-	db := req.Things["db"].(modl.SqlExecutor)
-	return GetUserById(db, name)
+	db := req.Things["db"].(*gorm.DB)
+	user := GetUserById(db, name)
+	if user == nil {
+		// TODO: return a mock object that returns
+		// unauthorized for all supported methods
+	}
+	return user
 }

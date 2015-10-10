@@ -14,14 +14,3 @@ type Medium struct {
 func (o Medium) schema(db *gorm.DB) {
 	db.CreateTable(&o)
 }
-
-func GetMedium(db *gorm.DB, id string) *Medium {
-	var o Medium
-	if result := db.First(&o, id); result.Error != nil {
-		if result.RecordNotFound() {
-			return nil
-		}
-		panic(result.Error)
-	}
-	return &o
-}

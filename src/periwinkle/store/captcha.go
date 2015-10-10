@@ -47,10 +47,10 @@ func (o *Captcha) Subentity(name string, req he.Request) he.Entity {
 
 func (o *Captcha) Methods() map[string]he.Handler {
 	return map[string]he.Handler{
-		"GET": func(he.Request) he.Response {
-			panic("TODO: API: (*Captcha).Methods()[\"GET\"]")
+		"GET": func(req he.Request) he.Response {
+			return req.StatusOK(o)
 		},
-		"PATCH": func(he.Request) he.Response {
+		"PATCH": func(req he.Request) he.Response {
 			panic("TODO: API: (*Captcha).Methods()[\"PATCH\"]")
 		},
 	}

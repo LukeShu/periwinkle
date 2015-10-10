@@ -6,8 +6,9 @@ package store
 import (
 	"github.com/jinzhu/gorm"
 )
+
 type Subscription struct {
-	Id        int
+	//Id        int
 	AddressId int
 	GroupId   string
 }

@@ -68,7 +68,8 @@ func (o *Group) Subentity(name string, req he.Request) he.Entity {
 func (o *Group) Methods() map[string]he.Handler {
 	return map[string]he.Handler{
 		"GET": func(req he.Request) he.Response {
-			panic("TODO: API: (*Group).Methods()[\"GET\"]")
+			// TODO: permission check
+			return req.StatusOK(o)
 		},
 		"PUT": func(req he.Request) he.Response {
 			panic("TODO: API: (*Group).Methods()[\"PUT\"]")
