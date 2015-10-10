@@ -3,7 +3,7 @@
 package web
 
 import (
-	"github.com/jmoiron/modl"
+	"github.com/jinzhu/gorm"
 	he "httpentity"
 	"periwinkle/store"
 	"time"
@@ -33,7 +33,7 @@ func (p session) Before(req *he.Request) {
 		return
 	}
 
-	db, ok := req.Things["db"].(modl.SqlExecutor); if !ok { return }
+	db, ok := req.Things["db"].(*gorm.DB); if !ok { return }
 	sess = store.GetSessionById(db, session_id1)
 	sess.Save(db)
 }

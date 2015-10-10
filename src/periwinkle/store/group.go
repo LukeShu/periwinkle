@@ -4,8 +4,7 @@
 package store
 
 import (
-	"database/sql"
-	"github.com/jmoiron/modl"
+	"github.com/jinzhu/gorm"
 	he "httpentity"
 	"strings"
 )
@@ -21,42 +20,45 @@ type Group struct {
 	Addresses []GroupAddress
 }
 
-func (g *Group) init(con modl.SqlExecutor) error {
-	return con.Select(&g.Addresses, "SELECT * FROM group_addresses WHERE group_id=?", g.Id)
+func (o Group) schema(db *gorm.DB) {
+	db.CreateTable(&o)
 }
 
 type GroupAddress struct {
 	Id      int64
-	groupId string
+	GroupId string
 	Medium  string
 	Address string
 }
 
-func GetGroupById(con modl.SqlExecutor, name string) *Group {
-	var group Group
-	err := con.Get(&group, name)
-	switch {
-	case err == sql.ErrNoRows:
-		return nil
-	case err != nil:
-		panic(err)
-	default:
-		group.init(con)
-		return &group
-	}
+func (o GroupAddress) schema(db *gorm.DB) {
+	db.CreateTable(&o).
+		AddForeignKey("group_id", "groups(id)", "RESTRICT", "RESTRICT").
+		AddForeignKey("medium", "mediums(id)", "RESTRICT", "RESTRICT").
+		AddUniqueIndex("uniqueness_idx", "medium", "address")
 }
 
-func GetGroupByAddress(con modl.SqlExecutor, medium string, address string) *Group {
+func GetGroupById(db *gorm.DB, id string) *Group {
+	var o Group
+	if result := db.First(&o, id); result.Error != nil {
+		if result.RecordNotFound() {
+			return nil
+		}
+		panic(result.Error)
+	}
+	return &o
+}
+
+func GetGroupByAddress(db *gorm.DB, medium string, address string) *Group {
 	panic("TODO: ORM")
 }
 
-func NewGroup(con modl.SqlExecutor, name string) *Group {
-	g := &Group{Id: name}
-	err := con.Insert(g)
-	if err != nil {
+func NewGroup(db *gorm.DB, name string) *Group {
+	o := Group{Id: name}
+	if err := db.Create(&o).Error; err != nil {
 		panic(err)
 	}
-	return g
+	return &o
 }
 
 func (o *Group) Subentity(name string, req he.Request) he.Entity {
@@ -96,7 +98,7 @@ func newDirGroups() t_dirGroups {
 	r := t_dirGroups{}
 	r.methods = map[string]he.Handler{
 		"POST": func(req he.Request) he.Response {
-			db := req.Things["db"].(modl.SqlExecutor)
+			db := req.Things["db"].(*gorm.DB)
 			badbody := req.StatusBadRequest("submitted body not what expected")
 			hash, ok := req.Entity.(map[string]interface{}); if !ok { return badbody }
 			groupname, ok := hash["groupname"].(string)    ; if !ok { return badbody }
@@ -119,6 +121,6 @@ func (d t_dirGroups) Methods() map[string]he.Handler {
 }
 
 func (d t_dirGroups) Subentity(name string, req he.Request) he.Entity {
-	db := req.Things["db"].(modl.SqlExecutor)
+	db := req.Things["db"].(*gorm.DB)
 	return GetGroupById(db, name)
 }

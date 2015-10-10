@@ -4,8 +4,7 @@
 package store
 
 import (
-	"database/sql"
-	"github.com/jmoiron/modl"
+	"github.com/jinzhu/gorm"
 	he "httpentity"
 	"maildir"
 )
@@ -23,8 +22,10 @@ type Message struct {
 	// cached fields??????
 }
 
-func (m Message) Group(con modl.SqlExecutor) *Group {
-	return GetGroupById(con, m.GroupId)
+func (o Message) schema(db *gorm.DB) {
+	db.CreateTable(&o).
+		AddForeignKey("group_id", "groups(id)", "RESTRICT", "RESTRICT").
+		AddUniqueIndex("filename_idx", "unique")
 }
 
 func NewMessage(unique maildir.Unique) *Message {
@@ -32,17 +33,15 @@ func NewMessage(unique maildir.Unique) *Message {
 	// TODO: sprint2: add the message to the outgoing mail queue
 }
 
-func GetMessageById(con modl.SqlExecutor, id string) *Message {
-	var mes Message
-	err := con.Get(&mes, id)
-	switch {
-	case err == sql.ErrNoRows:
-		return nil
-	case err != nil:
-		panic(err)
-	default:
-		return &mes
+func GetMessageById(db *gorm.DB, id string) *Message {
+	var o Message
+	if result := db.First(&o, id); result.Error != nil {
+		if result.RecordNotFound() {
+			return nil
+		}
+		panic(result.Error)
 	}
+	return &o
 }
 
 func (o *Message) Subentity(name string, req he.Request) he.Entity {
@@ -80,6 +79,6 @@ func (d t_dirMessages) Methods() map[string]he.Handler {
 }
 
 func (d t_dirMessages) Subentity(name string, req he.Request) he.Entity {
-	db := req.Things["db"].(modl.SqlExecutor)
+	db := req.Things["db"].(*gorm.DB)
 	return GetMessageById(db, name)
 }

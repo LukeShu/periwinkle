@@ -4,23 +4,24 @@
 package store
 
 import (
-	"database/sql"
-	"github.com/jmoiron/modl"
+	"github.com/jinzhu/gorm"
 )
 
 type Medium struct {
 	Id string
 }
 
-func GetMedium(con *modl.Transaction, id string) *Medium {
-	var med Medium
-	err := con.Get(&med, id)
-	switch {
-	case err == sql.ErrNoRows:
-		return nil
-	case err != nil:
-		panic(err)
-	default:
-		return &med
+func (o Medium) schema(db *gorm.DB) {
+	db.CreateTable(&o)
+}
+
+func GetMedium(db *gorm.DB, id string) *Medium {
+	var o Medium
+	if result := db.First(&o, id); result.Error != nil {
+		if result.RecordNotFound() {
+			return nil
+		}
+		panic(result.Error)
 	}
+	return &o
 }

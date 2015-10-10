@@ -3,6 +3,7 @@
 package store
 
 import (
+	"github.com/jinzhu/gorm"
 	he "httpentity"
 	"time"
 	//"github.com/dchest/captcha"
@@ -21,12 +22,23 @@ type Captcha struct {
 	Expiration time.Time
 }
 
+func (o Captcha) schema(db *gorm.DB) {
+	db.CreateTable(&o)
+}
+
 func NewCaptcha() *Captcha {
 	panic("TODO: captcha+ORM: NewCaptcha()")
 }
 
-func GetCaptchaById(id string) *Captcha {
-	panic("TODO: ORM: GetCaptchaById()")
+func GetCaptchaById(db *gorm.DB, id string) *Captcha {
+	var o Captcha
+	if result := db.First(&o, id); result.Error != nil {
+		if result.RecordNotFound() {
+			return nil
+		}
+		panic(result.Error)
+	}
+	return &o
 }
 
 func (o *Captcha) Subentity(name string, req he.Request) he.Entity {
@@ -70,6 +82,7 @@ func (d t_dirCaptchas) Methods() map[string]he.Handler {
 	return d.methods
 }
 
-func (d t_dirCaptchas) Subentity(name string, request he.Request) he.Entity {
-	return GetCaptchaById(name)
+func (d t_dirCaptchas) Subentity(name string, req he.Request) he.Entity {
+	db := req.Things["db"].(*gorm.DB)
+	return GetCaptchaById(db, name)
 }

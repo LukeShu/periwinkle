@@ -6,26 +6,23 @@ package store
 import (
 	"crypto/rand"
 	"encoding/json"
+	"github.com/jinzhu/gorm"
 	he "httpentity"
 	"io"
 	"math/big"
-	"periwinkle/cfg"
 )
 
-func init() {
-	cfg.DB.AddTable(Captcha{}).SetKeys(true, "Id")
-	cfg.DB.AddTable(GroupAddress{}).SetKeys(true, "Id")
-	cfg.DB.AddTable(Group{}).SetKeys(true, "Id")
-	cfg.DB.AddTable(Medium{}).SetKeys(true, "Id")
-	cfg.DB.AddTable(Message{}).SetKeys(true, "Id")
-	cfg.DB.AddTable(Session{}).SetKeys(true, "Id")
-	cfg.DB.AddTable(ShortUrl{}).SetKeys(true, "Id")
-	cfg.DB.AddTable(Subscription{}).SetKeys(true, "Id")
-	cfg.DB.AddTable(UserAddress{}).SetKeys(true, "Id")
-	cfg.DB.AddTable(User{}).SetKeys(true, "Id")
-	if err := cfg.DB.CreateTablesIfNotExists(); err != nil {
-		panic(err)
-	}
+func Schema(db *gorm.DB) {
+	(Captcha{}).schema(db)
+	(GroupAddress{}).schema(db)
+	(Group{}).schema(db)
+	(Medium{}).schema(db)
+	(Message{}).schema(db)
+	(Session{}).schema(db)
+	(ShortUrl{}).schema(db)
+	(Subscription{}).schema(db)
+	(UserAddress{}).schema(db)
+	(User{}).schema(db)
 }
 
 // Simple dump to JSON, good for most entities

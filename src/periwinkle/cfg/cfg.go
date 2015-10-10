@@ -4,9 +4,8 @@
 package cfg
 
 import (
-	"database/sql"
 	_ "github.com/go-sql-driver/mysql"
-	"github.com/jmoiron/modl"
+	"github.com/jinzhu/gorm"
 	"maildir"
 	"net/http"
 )
@@ -16,13 +15,12 @@ const WebUiDir http.Dir = "./www"
 const WebAddr string = ":8080"
 const Debug bool = true
 
-var DB *modl.DbMap = getConnection()
+var DB *gorm.DB = getConnection()
 
-func getConnection() *modl.DbMap {
-	sql, err := sql.Open("mysql", "periwinkle:periwinkle@/periwinkle?parseTime=true")
+func getConnection() *gorm.DB {
+	db, err := gorm.Open("mysql", "periwinkle:periwinkle@/periwinkle?charset=utf8&parseTime=true")
 	if err != nil {
 		panic("Could not connect to database")
 	}
-	dbMap := modl.NewDbMap(sql, modl.MySQLDialect{"InnoDB", "UTF8"})
-	return dbMap
+	return &db
 }

@@ -4,8 +4,7 @@
 package store
 
 import (
-	"database/sql"
-	"github.com/jmoiron/modl"
+	"github.com/jinzhu/gorm"
 	he "httpentity"
 	"net/url"
 )
@@ -20,34 +19,37 @@ type ShortUrl struct {
 	Dest *url.URL
 }
 
-func NewShortURL(con modl.SqlExecutor, u *url.URL) *ShortUrl {
-	s := &ShortUrl{
+func (o ShortUrl) schema(db *gorm.DB) {
+	db.CreateTable(&o).
+		AddUniqueIndex("dest_idx", "dest")
+}
+
+func NewShortURL(db *gorm.DB, u *url.URL) *ShortUrl {
+	o := ShortUrl{
 		Id:   randomString(5),
 		Dest: u,
 	}
-	err := con.Insert(s)
-	if err != nil {
-		return nil
-	}
-	return s
-}
-
-func (s *ShortUrl) Save(con modl.SqlExecutor) error {
-	_, err := con.Update(s)
-	return err
-}
-
-func GetShortUrlById(con modl.SqlExecutor, id string) *ShortUrl {
-	var s ShortUrl
-	err := con.Get(&s, id)
-	switch {
-	case err == sql.ErrNoRows:
-		return nil
-	case err != nil:
+	if err := db.Create(&o).Error; err != nil {
 		panic(err)
-	default:
-		return &s
 	}
+	return &o
+}
+
+func (o *ShortUrl) Save(db *gorm.DB) {
+	if err := db.Save(o).Error; err != nil {
+		panic(err)
+	}
+}
+
+func GetShortUrlById(db *gorm.DB, id string) *ShortUrl {
+	var o ShortUrl
+	if result := db.First(&o, id); result.Error != nil {
+		if result.RecordNotFound() {
+			return nil
+		}
+		panic(result.Error)
+	}
+	return &o
 }
 
 func (o *ShortUrl) Subentity(name string, req he.Request) he.Entity {
@@ -79,6 +81,6 @@ func (d t_dirShortUrls) Methods() map[string]he.Handler {
 }
 
 func (d t_dirShortUrls) Subentity(name string, req he.Request) he.Entity {
-	db := req.Things["db"].(modl.SqlExecutor)
+	db := req.Things["db"].(*gorm.DB)
 	return GetShortUrlById(db, name)
 }

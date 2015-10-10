@@ -5,8 +5,7 @@
 package store
 
 import (
-	"database/sql"
-	"github.com/jmoiron/modl"
+	"github.com/jinzhu/gorm"
 	"golang.org/x/crypto/bcrypt"
 	he "httpentity"
 	"strings"
@@ -22,11 +21,11 @@ type User struct {
 	Id        string
 	FullName  string
 	PwHash    []byte
-	Addresses []UserAddress `db:"-"`
+	Addresses []UserAddress
 }
 
-func (u *User) init(con modl.SqlExecutor) error {
-	return con.Select(&u.Addresses, "SELECT * FROM user_addresses WHERE user_id=?", u.Id)
+func (o User) schema(db *gorm.DB) {
+	db.CreateTable(&o)
 }
 
 type UserAddress struct {
@@ -36,37 +35,34 @@ type UserAddress struct {
 	Address string
 }
 
-func GetUserById(con modl.SqlExecutor, id string) *User {
-	var user User
-	err := con.Get(&user, id)
-	switch {
-	case err == sql.ErrNoRows:
-		return nil
-	case err != nil:
-		panic(err)
-	default:
-		user.init(con)
-		return &user
-	}
+func (o UserAddress) schema(db *gorm.DB) {
+	db.CreateTable(&o).
+		AddForeignKey("user_id", "users(id)", "RESTRICT", "RESTRICT").
+		AddForeignKey("medium", "mediums(id)", "RESTRICT", "RESTRICT").
+		AddUniqueIndex("uniqueness_idx", "medium", "address")
 }
 
-func GetUserByAddress(con modl.SqlExecutor, medium string, address string) *User {
-	var user User
-	err := con.SelectOne(&user,
-		"SELECT users.* "+
-			"FROM users JOIN user_address ON users.id=user_address.user_id "+
-			"WHERE user_address.address=? AND user_address=?",
-		address,
-		"email")
-	switch {
-	case err == sql.ErrNoRows:
-		return nil
-	case err != nil:
-		panic(err)
-	default:
-		user.init(con)
-		return &user
+func GetUserById(db *gorm.DB, id string) *User {
+	var o User
+	if result := db.First(&o, id); result.Error != nil {
+		if result.RecordNotFound() {
+			return nil
+		}
+		panic(result.Error)
 	}
+	return &o
+}
+
+func GetUserByAddress(db *gorm.DB, medium string, address string) *User {
+	var o User
+	result := db.Where(UserAddress{Medium: medium, Address: address}).Related(&o)
+	if result.Error != nil {
+		if result.RecordNotFound() {
+			return nil
+		}
+		panic(result.Error)
+	}
+	return &o
 }
 
 func (u *User) SetPassword(password string) error {
@@ -80,35 +76,25 @@ func (u *User) CheckPassword(password string) bool {
 	return err != nil
 }
 
-func NewUser(con modl.SqlExecutor, name string, password string, email string) *User {
-	u := &User{
-		Id:       name,
-		FullName: "",
+func NewUser(db *gorm.DB, name string, password string, email string) *User {
+	o := User{
+		Id:        name,
+		FullName:  "",
+		Addresses: []UserAddress{{Medium: "email", Address: email}},
 	}
-	err := u.SetPassword(password)
-	if err != nil {
+	if err := o.SetPassword(password); err != nil {
 		panic(err)
 	}
-	err = con.Insert(u)
-	if err != nil {
+	if err := db.Create(&o).Error; err != nil {
 		panic(err)
 	}
-	a := &UserAddress{
-		UserId:  u.Id,
-		Medium:  "email",
-		Address: email,
-	}
-	con.Insert(a)
-	if err != nil {
-		panic(err)
-	}
-	u.init(con)
-	return u
+	return &o
 }
 
-func (u *User) Save(con modl.SqlExecutor) error {
-	_, err := con.Update(u)
-	return err
+func (o *User) Save(db *gorm.DB) {
+	if err := db.Save(o).Error; err != nil {
+		panic(err)
+	}
 }
 
 func (o *User) Subentity(name string, req he.Request) he.Entity {
@@ -153,7 +139,7 @@ func newDirUsers() t_dirUsers {
 	r := t_dirUsers{}
 	r.methods = map[string]he.Handler{
 		"POST": func(req he.Request) he.Response {
-			db := req.Things["db"].(modl.SqlExecutor)
+			db := req.Things["db"].(*gorm.DB)
 			badbody := req.StatusBadRequest("submitted body not what expected")
 			hash, ok := req.Entity.(map[string]interface{}); if !ok { return badbody }
 			username, ok := hash["username"].(string)      ; if !ok { return badbody }

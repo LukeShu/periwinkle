@@ -4,7 +4,7 @@
 package store
 
 import (
-	"github.com/jmoiron/modl"
+	"github.com/jinzhu/gorm"
 	he "httpentity"
 	"net/http"
 	"time"
@@ -21,39 +21,46 @@ type Session struct {
 	LastUsed time.Time
 }
 
-func NewSession(con modl.SqlExecutor, username string, password string) *Session {
-	user := GetUserById(con, username)
-	if user != nil && !user.CheckPassword(password) {
+func (o Session) schema(db *gorm.DB) {
+	db.CreateTable(&o).
+		AddForeignKey("user_id", "users(id)", "RESTRICT", "RESTRICT")
+}
+
+func NewSession(db *gorm.DB, username string, password string) *Session {
+	user := GetUserById(db, username)
+	if user == nil || !user.CheckPassword(password) {
 		return nil
 	}
-	sess := &Session{
+	o := Session{
 		Id:       randomString(24),
 		UserId:   user.Id,
 		LastUsed: time.Now(),
 	}
-	if err := con.Insert(sess); err != nil {
+	if err := db.Create(&o).Error; err != nil {
 		panic(err)
 	}
-	return sess
+	return &o
 }
 
-func GetSessionById(con modl.SqlExecutor, id string) *Session {
-	var sess Session
-	err := con.Get(&sess, id)
-	switch {
-	case err != nil:
-		panic(err)
-	default:
-		return &sess
+func GetSessionById(db *gorm.DB, id string) *Session {
+	var o Session
+	if result := db.First(&o, id); result.Error != nil {
+		if result.RecordNotFound() {
+			return nil
+		}
+		panic(result.Error)
 	}
+	return &o
 }
 
-func (o *Session) Delete(con modl.SqlExecutor) {
-	panic("TODO: ORM: (*Session).Delete()")
+func (o *Session) Delete(db *gorm.DB) {
+	db.Delete(o)
 }
 
-func (o *Session) Save(con modl.SqlExecutor) {
-	con.Update(o)
+func (o *Session) Save(db *gorm.DB) {
+	if err := db.Save(o).Error; err != nil {
+		panic(err)
+	}
 }
 
 // View //////////////////////////////////////////////////////////////
@@ -75,7 +82,7 @@ func newFileSession() t_fileSession {
 	r := t_fileSession{}
 	r.methods = map[string]he.Handler{
 		"POST": func(req he.Request) he.Response {
-			db := req.Things["db"].(modl.SqlExecutor)
+			db := req.Things["db"].(*gorm.DB)
 			badbody := req.StatusBadRequest("submitted body not what expected")
 			hash, ok := req.Entity.(map[string]interface{}); if !ok { return badbody }
 			username, ok := hash["username"].(string)      ; if !ok { return badbody }
@@ -98,7 +105,7 @@ func newFileSession() t_fileSession {
 			}
 		},
 		"DELETE": func(req he.Request) he.Response {
-			db := req.Things["db"].(modl.SqlExecutor)
+			db := req.Things["db"].(*gorm.DB)
 			sess := req.Things["session"].(*Session)
 			if sess != nil {
 				sess.Delete(db)
