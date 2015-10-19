@@ -13,4 +13,5 @@ type Medium struct {
 
 func (o Medium) schema(db *gorm.DB) {
 	db.CreateTable(&o)
+	db.Create(&Medium{"email"}) // TODO: should probably not be hard-coded into the schema
 }
