@@ -30,5 +30,6 @@ func getConnection() *gorm.DB {
 			panic(err)
 		}
 	}
+	db.LogMode(true)
 	return &db
 }

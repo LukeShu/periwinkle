@@ -16,18 +16,18 @@ var dirShortUrls he.Entity = newDirShortUrls()
 
 type ShortUrl struct {
 	Id   string
-	Dest *url.URL
+	Dest string //*url.URL // TODO: figure out how to have (un)marshalling happen automatically
 }
 
 func (o ShortUrl) schema(db *gorm.DB) {
-	db.CreateTable(&o).
-		AddUniqueIndex("dest_idx", "dest")
+	table := db.CreateTable(&o)
+	table.AddUniqueIndex("dest_idx", "dest")
 }
 
 func NewShortURL(db *gorm.DB, u *url.URL) *ShortUrl {
 	o := ShortUrl{
 		Id:   randomString(5),
-		Dest: u,
+		Dest: u.String(), // TODO: automatic marshalling
 	}
 	if err := db.Create(&o).Error; err != nil {
 		panic(err)
@@ -59,7 +59,8 @@ func (o *ShortUrl) Subentity(name string, req he.Request) he.Entity {
 func (o *ShortUrl) Methods() map[string]func(he.Request) he.Response {
 	return map[string]func(he.Request) he.Response{
 		"GET": func(req he.Request) he.Response {
-			return req.StatusMoved(o.Dest)
+			u, _ := url.Parse(o.Dest) // TODO: automatic unmarshal
+			return req.StatusMoved(u)
 		},
 	}
 }

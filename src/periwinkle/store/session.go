@@ -24,8 +24,8 @@ type Session struct {
 }
 
 func (o Session) schema(db *gorm.DB) {
-	db.CreateTable(&o).
-		AddForeignKey("user_id", "users(id)", "RESTRICT", "RESTRICT")
+	table := db.CreateTable(&o)
+	table.AddForeignKey("user_id", "users(id)", "RESTRICT", "RESTRICT")
 }
 
 func NewSession(db *gorm.DB, username string, password string) *Session {

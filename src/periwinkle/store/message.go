@@ -24,9 +24,9 @@ type Message struct {
 }
 
 func (o Message) schema(db *gorm.DB) {
-	db.CreateTable(&o).
-		AddForeignKey("group_id", "groups(id)", "RESTRICT", "RESTRICT").
-		AddUniqueIndex("filename_idx", "unique")
+	table := db.CreateTable(&o)
+	table.AddForeignKey("group_id", "groups(id)", "RESTRICT", "RESTRICT")
+	table.AddUniqueIndex("filename_idx", "unique")
 }
 
 func NewMessage(unique maildir.Unique) *Message {
