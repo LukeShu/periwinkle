@@ -1,5 +1,6 @@
 // Copyright 2015 Mark Pundman
 // Copyright 2015 Luke Shumaker
+// Copyright 2015 Davis Webb
 
 package cfg
 
@@ -20,7 +21,10 @@ var DB *gorm.DB = getConnection()
 func getConnection() *gorm.DB {
 	db, err := gorm.Open("mysql", "periwinkle:periwinkle@/periwinkle?charset=utf8&parseTime=true")
 	if err != nil {
-		panic("Could not connect to database")
+		db, err = gorm.Open("sqlite3", "/temp/gorm.db")
+		if err != nil {
+			panic(err)
+		}
 	}
 	db.LogMode(true)
 	return &db
