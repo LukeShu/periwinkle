@@ -57,15 +57,15 @@
 					password: self.password
 				}
 			}).then(
-				function success(response) {
+				function success(data, status, headers, config) {
 					//do work with response
-					alert(response);
+					alert(data);
 					$scope.loading.is = false;
 				},
-				function fail(response) {
+				function fail(data, status, headers, config) {
 					//do work with response
 					//show error to user
-					alert(response);
+					alert(data);
 					$scope.loading.is = false;
 				}
 			);
