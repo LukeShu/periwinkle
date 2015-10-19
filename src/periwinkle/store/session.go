@@ -9,6 +9,7 @@ import (
 	"httpentity/util"
 	"io"
 	"net/http"
+	"strings"
 	"time"
 )
 
@@ -28,8 +29,7 @@ func (o Session) schema(db *gorm.DB) {
 	table.AddForeignKey("user_id", "users(id)", "RESTRICT", "RESTRICT")
 }
 
-func NewSession(db *gorm.DB, username string, password string) *Session {
-	user := GetUserById(db, username)
+func NewSession(db *gorm.DB, user *User, password string) *Session {
 	if user == nil || !user.CheckPassword(password) {
 		return nil
 	}
@@ -91,7 +91,14 @@ func newFileSession() t_fileSession {
 			password, ok := hash["password"].(string)      ; if !ok { return badbody }
 			if len(hash) != 2                                       { return badbody }
 
-			sess := NewSession(db, username, password)
+			var user *User
+			if strings.Contains(username, "@") {
+				user = GetUserByAddress(db, "email", username)
+			} else {
+				user = GetUserById(db, username)
+			}
+
+			sess := NewSession(db, user, password)
 			if sess == nil {
 				return req.StatusUnauthorized(heutil.NetString("Incorrect username/password"))
 			} else {
