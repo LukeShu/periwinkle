@@ -8,6 +8,7 @@ import (
 	"io"
 )
 
+// A string that implements httpentity.NetEntity.
 type NetString string
 
 func (s NetString) Encoders() map[string]func(out io.Writer) error {
@@ -31,6 +32,7 @@ func (s NetString) json(w io.Writer) (err error) {
 	return
 }
 
+// An array that implements httpentity.NetEntity.
 type NetList []interface{}
 
 func (l NetList) Encoders() map[string]func(out io.Writer) error {
