@@ -7,14 +7,14 @@ import he "httpentity"
 var DirRoot he.Entity = newDirRoot()
 
 type t_dirRoot struct {
-	methods map[string]he.Handler
+	methods map[string]func(he.Request) he.Response
 }
 
 func newDirRoot() t_dirRoot {
-	return t_dirRoot{methods: make(map[string]he.Handler)}
+	return t_dirRoot{methods: make(map[string]func(he.Request) he.Response)}
 }
 
-func (d t_dirRoot) Methods() map[string]he.Handler {
+func (d t_dirRoot) Methods() map[string]func(he.Request) he.Response {
 	return d.methods
 }
 

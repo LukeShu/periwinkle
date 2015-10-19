@@ -6,14 +6,15 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
+	"httpentity/util"
 )
 
 // For when you're returning a document, with nothing special.
 func (req Request) StatusOK(entity NetEntity) Response {
 	return Response{
-		status:  200,
+		Status:  200,
 		Headers: http.Header{},
-		entity:  entity,
+		Entity:  entity,
 	}
 }
 
@@ -29,17 +30,17 @@ func (req Request) StatusCreated(parent Entity, child_name string) Response {
 	}
 	response := handler(req)
 	response.Headers.Set("Location", url.QueryEscape(child_name))
-	if response.entity == nil {
+	if response.Entity == nil {
 		panic("called StatusCreated, but GET on subentity doesn't return an entity")
 	}
-	mimetypes := encoders2mimetypes(response.entity.Encoders())
+	mimetypes := encoders2mimetypes(response.Entity.Encoders())
 	u, _ := url.Parse("")
 	return Response{
-		status:  201,
+		Status:  201,
 		Headers: response.Headers,
 		// XXX: .entity gets modified by (*Router).route()
 		// filled in the rest of the way by Route()
-		entity: mimetypes2net(u, mimetypes),
+		Entity: mimetypes2net(u, mimetypes),
 	}
 }
 
@@ -47,9 +48,9 @@ func (req Request) StatusCreated(parent Entity, child_name string) Response {
 // return.
 func (req Request) StatusNoContent() Response {
 	return Response{
-		status:  204,
+		Status:  204,
 		Headers: http.Header{},
-		entity:  nil,
+		Entity:  nil,
 	}
 }
 
@@ -57,9 +58,9 @@ func (req Request) StatusNoContent() Response {
 // which the user wants.
 func (req Request) statusMultipleChoices(u *url.URL, mimetypes []string) Response {
 	return Response{
-		status:  300,
+		Status:  300,
 		Headers: http.Header{},
-		entity:  mimetypes2net(u, mimetypes),
+		Entity:  mimetypes2net(u, mimetypes),
 	}
 }
 
@@ -67,11 +68,11 @@ func (req Request) statusMultipleChoices(u *url.URL, mimetypes []string) Respons
 // new address.
 func (req Request) StatusMoved(u *url.URL) Response {
 	return Response{
-		status: 301,
+		Status: 301,
 		Headers: http.Header{
 			"Location": {u.String()},
 		},
-		entity: NetString("301: Moved"),
+		Entity: heutil.NetString("301: Moved"),
 	}
 }
 
@@ -79,20 +80,20 @@ func (req Request) StatusMoved(u *url.URL) Response {
 // another address, but that may not be the case in the future.
 func (req Request) StatusFound(u *url.URL) Response {
 	return Response{
-		status: 302,
+		Status: 302,
 		Headers: http.Header{
 			"Location": {u.String()},
 		},
-		entity: NetString("302: Found"),
+		Entity: heutil.NetString("302: Found"),
 	}
 }
 
 // For when the *user* has screwed up a request.
 func (req Request) StatusBadRequest(err interface{}) Response {
 	return Response{
-		status:  400,
+		Status:  400,
 		Headers: http.Header{},
-		entity:  NetString(fmt.Sprintf("400 Bad Request: %v", err)),
+		Entity:  heutil.NetString(fmt.Sprintf("400 Bad Request: %v", err)),
 	}
 }
 
@@ -101,35 +102,35 @@ func (req Request) StatusBadRequest(err interface{}) Response {
 // have permission.
 func (req Request) StatusUnauthorized(e NetEntity) Response {
 	return Response{
-		status: 401,
+		Status: 401,
 		Headers: http.Header{
 			"WWW-Authenticate": {"TODO: long-term"},
 		},
-		entity: e,
+		Entity: e,
 	}
 }
 
 func (req Request) statusNotFound() Response {
 	return Response{
-		status:  404,
+		Status:  404,
 		Headers: http.Header{},
-		entity:  NetString("404 Not Found"),
+		Entity:  heutil.NetString("404 Not Found"),
 	}
 }
 
 func (req Request) statusMethodNotAllowed(methods string) Response {
 	return Response{
-		status:  405,
+		Status:  405,
 		Headers: http.Header{},
-		entity:  NetString("405 Method Not Allowed"),
+		Entity:  heutil.NetString("405 Method Not Allowed"),
 	}
 }
 
 func (req Request) statusNotAcceptable(u *url.URL, mimetypes []string) Response {
 	return Response{
-		status:  406,
+		Status:  406,
 		Headers: http.Header{},
-		entity:  mimetypes2net(u, mimetypes),
+		Entity:  mimetypes2net(u, mimetypes),
 	}
 }
 
@@ -137,26 +138,26 @@ func (req Request) statusNotAcceptable(u *url.URL, mimetypes []string) Response 
 // current state of things.
 func (req Request) StatusConflict(entity NetEntity) Response {
 	return Response{
-		status:  409,
+		Status:  409,
 		Headers: http.Header{},
-		entity:  entity,
+		Entity:  entity,
 	}
 }
 
 func (req Request) statusUnsupportedMediaType() Response {
 	return Response{
-		status:  415,
+		Status:  415,
 		Headers: http.Header{},
-		entity:  NetString("415 Unsupported Media Type"),
+		Entity:  heutil.NetString("415 Unsupported Media Type"),
 	}
 }
 
 func (req Request) statusInternalServerError(err interface{}) Response {
 	return Response{
-		status: 500,
+		Status: 500,
 		Headers: http.Header{
 			"Content-Type": {"text/plain; charset=utf-8"},
 		},
-		entity: NetString(fmt.Sprintf("500 Internal Server Error: %v", err)),
+		Entity: heutil.NetString(fmt.Sprintf("500 Internal Server Error: %v", err)),
 	}
 }

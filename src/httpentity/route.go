@@ -7,7 +7,7 @@ import (
 	"strings"
 )
 
-func methods2string(methods map[string]Handler) string {
+func methods2string(methods map[string]func(request Request) Response) string {
 	set := make(map[string]bool, len(methods)+2)
 	for method := range methods {
 		set[method] = true
@@ -42,7 +42,7 @@ func route(entity Entity, req Request, upath string) (ret Response) {
 			ret = req.statusMethodNotAllowed(methods2string(methods))
 		}
 		if callmethod == "OPTIONS" {
-			ret.status = 200
+			ret.Status = 200
 			ret.Headers.Set("Allow", methods2string(methods))
 		}
 	} else {

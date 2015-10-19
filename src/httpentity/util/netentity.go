@@ -1,6 +1,6 @@
 // Copyright 2015 Luke Shumaker
 
-package httpentity
+package heutil
 
 import (
 	"encoding/json"
@@ -10,8 +10,8 @@ import (
 
 type NetString string
 
-func (s NetString) Encoders() map[string]Encoder {
-	return map[string]Encoder{
+func (s NetString) Encoders() map[string]func(out io.Writer) error {
+	return map[string]func(out io.Writer) error{
 		"text/plain":       s.text,
 		"application/json": s.json,
 	}
@@ -33,8 +33,8 @@ func (s NetString) json(w io.Writer) (err error) {
 
 type NetList []interface{}
 
-func (l NetList) Encoders() map[string]Encoder {
-	return map[string]Encoder{
+func (l NetList) Encoders() map[string]func(out io.Writer) error {
+	return map[string]func(out io.Writer) error{
 		"text/plain":       l.text,
 		"application/json": l.json,
 	}

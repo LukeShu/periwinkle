@@ -11,14 +11,8 @@ import (
 	"path"
 	"runtime"
 	"strings"
+	"httpentity/util"
 )
-
-type Router struct {
-	Prefix      string
-	Root        Entity
-	Middlewares []Middleware
-	Stacktrace  bool
-}
 
 func normalizeURL(u1 *url.URL) (u *url.URL, mimetype string) {
 	u, _ = u1.Parse("") // normalize
@@ -47,13 +41,13 @@ func (r *Router) route(req Request, u *url.URL) (res Response) {
 		// XXX: this is pretty hacky, because it is tightly
 		// integrated with the entity format used by
 		// (Request).StatusCreated()
-		if res.status == 201 {
-			ilist := []interface{}(res.entity.(NetList))
+		if res.Status == 201 {
+			ilist := []interface{}(res.Entity.(heutil.NetList))
 			slist := make([]string, len(ilist))
 			for i, iface := range ilist {
 				slist[i] = iface.(string)
 			}
-			res.entity = extensions2net(u2, slist)
+			res.Entity = extensions2net(u2, slist)
 		}
 	}
 
@@ -75,8 +69,8 @@ func (r *Router) finish(req Request, u *url.URL, res *Response) {
 		*res = req.statusInternalServerError(reason)
 	}
 	// figure out the content type of the response
-	if res.entity != nil && res.Headers.Get("Content-Type") == "" {
-		encoders := res.entity.Encoders()
+	if res.Entity != nil && res.Headers.Get("Content-Type") == "" {
+		encoders := res.Entity.Encoders()
 		mimetypes := encoders2mimetypes(encoders)
 		accept := req.Headers.Get("Accept")
 		if len(encoders) > 1 && accept == "" {

@@ -6,6 +6,8 @@ package store
 import (
 	"github.com/jinzhu/gorm"
 	he "httpentity"
+	"httpentity/util"
+	"io"
 	"net/http"
 	"time"
 )
@@ -65,7 +67,7 @@ func (o *Session) Save(db *gorm.DB) {
 
 // View //////////////////////////////////////////////////////////////
 
-func (sess *Session) Encoders() map[string]he.Encoder {
+func (sess *Session) Encoders() map[string]func(io.Writer) error {
 	dat := map[string]string{
 		"session_id": sess.Id,
 	}
@@ -75,12 +77,12 @@ func (sess *Session) Encoders() map[string]he.Encoder {
 // File ("Controller") ///////////////////////////////////////////////
 
 type t_fileSession struct {
-	methods map[string]he.Handler
+	methods map[string]func(he.Request) he.Response
 }
 
 func newFileSession() t_fileSession {
 	r := t_fileSession{}
-	r.methods = map[string]he.Handler{
+	r.methods = map[string]func(he.Request) he.Response{
 		"POST": func(req he.Request) he.Response {
 			db := req.Things["db"].(*gorm.DB)
 			badbody := req.StatusBadRequest("submitted body not what expected")
@@ -91,7 +93,7 @@ func newFileSession() t_fileSession {
 
 			sess := NewSession(db, username, password)
 			if sess == nil {
-				return req.StatusUnauthorized(he.NetString("Incorrect username/password"))
+				return req.StatusUnauthorized(heutil.NetString("Incorrect username/password"))
 			} else {
 				ret := req.StatusOK(sess)
 				cookie := &http.Cookie{
@@ -116,7 +118,7 @@ func newFileSession() t_fileSession {
 	return r
 }
 
-func (d t_fileSession) Methods() map[string]he.Handler {
+func (d t_fileSession) Methods() map[string]func(he.Request) he.Response {
 	return d.methods
 }
 

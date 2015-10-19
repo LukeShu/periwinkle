@@ -7,7 +7,6 @@ import (
 	"crypto/rand"
 	"encoding/json"
 	"github.com/jinzhu/gorm"
-	he "httpentity"
 	"io"
 	"math/big"
 )
@@ -26,8 +25,8 @@ func Schema(db *gorm.DB) {
 }
 
 // Simple dump to JSON, good for most entities
-func defaultEncoders(o interface{}) map[string]he.Encoder {
-	return map[string]he.Encoder{
+func defaultEncoders(o interface{}) map[string]func(io.Writer) error {
+	return map[string]func(io.Writer) error{
 		"application/json": func(w io.Writer) error {
 			bytes, err := json.Marshal(o)
 			if err != nil {

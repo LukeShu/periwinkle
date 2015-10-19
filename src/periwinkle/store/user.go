@@ -8,6 +8,8 @@ import (
 	"github.com/jinzhu/gorm"
 	"golang.org/x/crypto/bcrypt"
 	he "httpentity"
+	"httpentity/util"
+	"io"
 	"strings"
 )
 
@@ -101,8 +103,8 @@ func (o *User) Subentity(name string, req he.Request) he.Entity {
 	return nil
 }
 
-func (o *User) Methods() map[string]he.Handler {
-	return map[string]he.Handler{
+func (o *User) Methods() map[string]func(he.Request) he.Response {
+	return map[string]func(he.Request) he.Response{
 		"GET": func(req he.Request) he.Response {
 			badbody := req.StatusBadRequest("submitted body not what expected")
 			sess, ok := req.Things["session"].(*Session); if !ok { return badbody }
@@ -125,19 +127,19 @@ func (o *User) Methods() map[string]he.Handler {
 
 // View //////////////////////////////////////////////////////////////
 
-func (o *User) Encoders() map[string]he.Encoder {
+func (o *User) Encoders() map[string]func(io.Writer) error {
 	return defaultEncoders(o)
 }
 
 // Directory ("Controller") //////////////////////////////////////////
 
 type t_dirUsers struct {
-	methods map[string]he.Handler
+	methods map[string]func(he.Request) he.Response
 }
 
 func newDirUsers() t_dirUsers {
 	r := t_dirUsers{}
-	r.methods = map[string]he.Handler{
+	r.methods = map[string]func(he.Request) he.Response{
 		"POST": func(req he.Request) he.Response {
 			db := req.Things["db"].(*gorm.DB)
 			badbody := req.StatusBadRequest("submitted body not what expected")
@@ -149,7 +151,7 @@ func newDirUsers() t_dirUsers {
 			if password2, ok := hash["password_verification"].(string); ok {
 				if password != password2 {
 					// Passwords don't match
-					return req.StatusConflict(he.NetString("password and password_verification don't match"))
+					return req.StatusConflict(heutil.NetString("password and password_verification don't match"))
 				}
 			}
 
@@ -157,7 +159,7 @@ func newDirUsers() t_dirUsers {
 
 			user := NewUser(db, username, password, email)
 			if user == nil {
-				return req.StatusConflict(he.NetString("either that username or password is already taken"))
+				return req.StatusConflict(heutil.NetString("either that username or password is already taken"))
 			} else {
 				return req.StatusCreated(r, username)
 			}
@@ -166,7 +168,7 @@ func newDirUsers() t_dirUsers {
 	return r
 }
 
-func (d t_dirUsers) Methods() map[string]he.Handler {
+func (d t_dirUsers) Methods() map[string]func(he.Request) he.Response {
 	return d.methods
 }
 

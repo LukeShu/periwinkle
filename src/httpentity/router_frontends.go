@@ -76,6 +76,6 @@ func (h *Router) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	for k, v := range res.Headers {
 		w.Header().Set(k, strings.Join(v, ", "))
 	}
-	w.WriteHeader(int(res.status))
+	w.WriteHeader(int(res.Status))
 	res.WriteEntity(w)
 }

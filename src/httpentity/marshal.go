@@ -12,15 +12,20 @@ import (
 	"net/url"
 )
 
+// If the Response has an entity, write it to the given output stream.
 func (r Response) WriteEntity(w io.Writer) error {
-	if r.entity == nil {
+	if r.Entity == nil {
 		return nil
 	}
 	mimetype, _, _ := mime.ParseMediaType(r.Headers.Get("Content-Type"))
-	encoders := r.entity.Encoders()
+	encoders := r.Entity.Encoders()
 	return encoders[mimetype](w)
 }
 
+// Read an entity from the input stream, using the given content type.
+//
+// TODO: how this works will probably change in the future to allow
+// supporting other media types.
 func ReadEntity(r io.Reader, contenttype string) (interface{}, error) {
 	mimetype, params, err := mime.ParseMediaType(contenttype)
 	if err != nil {

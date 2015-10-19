@@ -4,23 +4,13 @@ package httpentity
 
 import (
 	"net/http"
+	"httpentity/util"
 )
 
-func ParseCookies(h http.Header) map[string]*http.Cookie {
-	req := http.Request{
-		Header: h,
-	}
-	ary := req.Cookies()
-	cookies := map[string]*http.Cookie{}
-	for _, cookie := range ary {
-		cookies[cookie.Name] = cookie
-	}
-	return cookies
-}
-
+// Return the cookie `name`, or nil if it isn't set.
 func (req *Request) Cookie(name string) *http.Cookie {
 	if req.cookies == nil {
-		req.cookies = ParseCookies(req.Headers)
+		req.cookies = heutil.ParseCookies(req.Headers)
 	}
 	cookie, ok := req.cookies[name]
 	if ok {

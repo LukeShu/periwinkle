@@ -5,6 +5,7 @@ package store
 import (
 	"github.com/jinzhu/gorm"
 	he "httpentity"
+	"io"
 	"time"
 	//"github.com/dchest/captcha"
 )
@@ -45,8 +46,8 @@ func (o *Captcha) Subentity(name string, req he.Request) he.Entity {
 	return nil
 }
 
-func (o *Captcha) Methods() map[string]he.Handler {
-	return map[string]he.Handler{
+func (o *Captcha) Methods() map[string]func(he.Request) he.Response {
+	return map[string]func(he.Request) he.Response{
 		"GET": func(req he.Request) he.Response {
 			return req.StatusOK(o)
 		},
@@ -58,19 +59,19 @@ func (o *Captcha) Methods() map[string]he.Handler {
 
 // View //////////////////////////////////////////////////////////////
 
-func (o *Captcha) Encoders() map[string]he.Encoder {
+func (o *Captcha) Encoders() map[string]func(io.Writer) error {
 	return defaultEncoders(o)
 }
 
 // Directory ("Controller") //////////////////////////////////////////
 
 type t_dirCaptchas struct {
-	methods map[string]he.Handler
+	methods map[string]func(he.Request) he.Response
 }
 
 func newDirCaptchas() t_dirCaptchas {
 	r := t_dirCaptchas{}
-	r.methods = map[string]he.Handler{
+	r.methods = map[string]func(he.Request) he.Response{
 		"POST": func(req he.Request) he.Response {
 			return req.StatusCreated(r, NewCaptcha().Id)
 		},
@@ -78,7 +79,7 @@ func newDirCaptchas() t_dirCaptchas {
 	return r
 }
 
-func (d t_dirCaptchas) Methods() map[string]he.Handler {
+func (d t_dirCaptchas) Methods() map[string]func(he.Request) he.Response {
 	return d.methods
 }
 

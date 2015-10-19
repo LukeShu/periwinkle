@@ -3,12 +3,14 @@
 package httpentity
 
 import (
+	"io"
 	"mime"
 	"net/url"
 	"strings"
+	"httpentity/util"
 )
 
-func encoders2mimetypes(encoders map[string]Encoder) []string {
+func encoders2mimetypes(encoders map[string]func(out io.Writer) error) []string {
 	list := make([]string, len(encoders))
 	i := uint(0)
 	for mimetype := range encoders {
@@ -28,7 +30,7 @@ func mimetypes2net(u *url.URL, mimetypes []string) NetEntity {
 		u2.Path += exts[0]
 		locations[i] = u2.String()
 	}
-	return NetList{locations}
+	return heutil.NetList{locations}
 }
 
 func extensions2net(u *url.URL, extensions []string) NetEntity {
@@ -40,5 +42,5 @@ func extensions2net(u *url.URL, extensions []string) NetEntity {
 		u2.Path += extension
 		locations[i] = u2.String()
 	}
-	return NetList{locations}
+	return heutil.NetList{locations}
 }

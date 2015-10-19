@@ -6,6 +6,7 @@ package store
 import (
 	"github.com/jinzhu/gorm"
 	he "httpentity"
+	"io"
 	"maildir"
 )
 
@@ -48,8 +49,8 @@ func (o *Message) Subentity(name string, req he.Request) he.Entity {
 	panic("TODO: SMTP: (*Message).Subentity()")
 }
 
-func (o *Message) Methods() map[string]he.Handler {
-	return map[string]he.Handler{
+func (o *Message) Methods() map[string]func(he.Request) he.Response {
+	return map[string]func(he.Request) he.Response{
 		"GET": func(req he.Request) he.Response {
 			// TODO: permission check
 			return req.StatusOK(o)
@@ -59,23 +60,23 @@ func (o *Message) Methods() map[string]he.Handler {
 
 // View //////////////////////////////////////////////////////////////
 
-func (o *Message) Encoders() map[string]he.Encoder {
+func (o *Message) Encoders() map[string]func(io.Writer) error {
 	panic("TODO: API: (*Message).Encoders()")
 }
 
 // Directory ("Controller") //////////////////////////////////////////
 
 type t_dirMessages struct {
-	methods map[string]he.Handler
+	methods map[string]func(he.Request) he.Response
 }
 
 func newDirMessages() t_dirMessages {
 	r := t_dirMessages{}
-	r.methods = map[string]he.Handler{}
+	r.methods = map[string]func(he.Request) he.Response{}
 	return r
 }
 
-func (d t_dirMessages) Methods() map[string]he.Handler {
+func (d t_dirMessages) Methods() map[string]func(he.Request) he.Response {
 	return d.methods
 }
 

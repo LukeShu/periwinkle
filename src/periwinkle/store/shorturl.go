@@ -56,8 +56,8 @@ func (o *ShortUrl) Subentity(name string, req he.Request) he.Entity {
 	return nil
 }
 
-func (o *ShortUrl) Methods() map[string]he.Handler {
-	return map[string]he.Handler{
+func (o *ShortUrl) Methods() map[string]func(he.Request) he.Response {
+	return map[string]func(he.Request) he.Response{
 		"GET": func(req he.Request) he.Response {
 			return req.StatusMoved(o.Dest)
 		},
@@ -67,16 +67,16 @@ func (o *ShortUrl) Methods() map[string]he.Handler {
 // Directory ("Controller") //////////////////////////////////////////
 
 type t_dirShortUrls struct {
-	methods map[string]he.Handler
+	methods map[string]func(he.Request) he.Response
 }
 
 func newDirShortUrls() t_dirShortUrls {
 	r := t_dirShortUrls{}
-	r.methods = map[string]he.Handler{}
+	r.methods = map[string]func(he.Request) he.Response{}
 	return r
 }
 
-func (d t_dirShortUrls) Methods() map[string]he.Handler {
+func (d t_dirShortUrls) Methods() map[string]func(he.Request) he.Response {
 	return d.methods
 }
 

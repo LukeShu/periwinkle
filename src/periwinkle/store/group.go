@@ -6,6 +6,8 @@ package store
 import (
 	"github.com/jinzhu/gorm"
 	he "httpentity"
+	"httpentity/util"
+	"io"
 	"strings"
 )
 
@@ -65,8 +67,8 @@ func (o *Group) Subentity(name string, req he.Request) he.Entity {
 	panic("TODO: API: (*Group).Subentity()")
 }
 
-func (o *Group) Methods() map[string]he.Handler {
-	return map[string]he.Handler{
+func (o *Group) Methods() map[string]func(he.Request) he.Response {
+	return map[string]func(he.Request) he.Response{
 		"GET": func(req he.Request) he.Response {
 			// TODO: permission check
 			return req.StatusOK(o)
@@ -85,19 +87,19 @@ func (o *Group) Methods() map[string]he.Handler {
 
 // View //////////////////////////////////////////////////////////////
 
-func (o *Group) Encoders() map[string]he.Encoder {
+func (o *Group) Encoders() map[string]func(io.Writer) error {
 	return defaultEncoders(o)
 }
 
 // Directory ("Controller") //////////////////////////////////////////
 
 type t_dirGroups struct {
-	methods map[string]he.Handler
+	methods map[string]func(he.Request) he.Response
 }
 
 func newDirGroups() t_dirGroups {
 	r := t_dirGroups{}
-	r.methods = map[string]he.Handler{
+	r.methods = map[string]func(he.Request) he.Response{
 		"POST": func(req he.Request) he.Response {
 			db := req.Things["db"].(*gorm.DB)
 			badbody := req.StatusBadRequest("submitted body not what expected")
@@ -108,7 +110,7 @@ func newDirGroups() t_dirGroups {
 
 			group := NewGroup(db, groupname)
 			if group == nil {
-				return req.StatusConflict(he.NetString("a group with that name already exists"))
+				return req.StatusConflict(heutil.NetString("a group with that name already exists"))
 			} else {
 				return req.StatusCreated(r, groupname)
 			}
@@ -117,7 +119,7 @@ func newDirGroups() t_dirGroups {
 	return r
 }
 
-func (d t_dirGroups) Methods() map[string]he.Handler {
+func (d t_dirGroups) Methods() map[string]func(he.Request) he.Response {
 	return d.methods
 }
 
