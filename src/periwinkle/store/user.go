@@ -38,10 +38,10 @@ type UserAddress struct {
 }
 
 func (o UserAddress) schema(db *gorm.DB) {
-	db.CreateTable(&o).
-		AddForeignKey("user_id", "users(id)", "RESTRICT", "RESTRICT").
-		AddForeignKey("medium", "mediums(id)", "RESTRICT", "RESTRICT").
-		AddUniqueIndex("uniqueness_idx", "medium", "address")
+	table := db.CreateTable(&o)
+	table.AddForeignKey("user_id", "users(id)", "RESTRICT", "RESTRICT")
+	table.AddForeignKey("medium", "media(id)", "RESTRICT", "RESTRICT")
+	table.AddUniqueIndex("uniqueness_idx", "medium", "address")
 }
 
 func GetUserById(db *gorm.DB, id string) *User {

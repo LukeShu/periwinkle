@@ -12,16 +12,32 @@ import (
 )
 
 func Schema(db *gorm.DB) {
+	// TODO: error detection
 	(Captcha{}).schema(db)
-	(GroupAddress{}).schema(db)
-	(Group{}).schema(db)
 	(Medium{}).schema(db)
-	(Message{}).schema(db)
-	(Session{}).schema(db)
-	(ShortUrl{}).schema(db)
-	(Subscription{}).schema(db)
-	(UserAddress{}).schema(db)
+	(Group{}).schema(db)
+	(GroupAddress{}).schema(db) // must come after Group and Medium
+	(Message{}).schema(db) // must come after Group
 	(User{}).schema(db)
+	(Session{}).schema(db) // must come after User
+	(ShortUrl{}).schema(db)
+	(UserAddress{}).schema(db)  // must come after User and Medium
+	(Subscription{}).schema(db) // must come after Group and UserAddress
+}
+
+func SchemaDrop(db *gorm.DB) {
+	// This must be in the reverse order of Schema()
+	// TODO: error detection
+	db.DropTable(&Subscription{})
+	db.DropTable(&UserAddress{})
+	db.DropTable(&ShortUrl{})
+	db.DropTable(&Session{})
+	db.DropTable(&User{})
+	db.DropTable(&Message{})
+	db.DropTable(&GroupAddress{})
+	db.DropTable(&Group{})
+	db.DropTable(&Medium{})
+	db.DropTable(&Captcha{})
 }
 
 // Simple dump to JSON, good for most entities
