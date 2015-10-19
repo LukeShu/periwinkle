@@ -19,7 +19,7 @@ default: all
 topdir := $(realpath $(dir $(lastword $(MAKEFILE_LIST))))
 
 # Configuration of the C compiler for C code called from Go
-CFLAGS = -std=c99 -Wall -Wextra -Werror -pedantic
+CFLAGS = -std=c99 -Wall -Wextra -Werror -Wno-old-style-declaration
 CGO_CFLAGS = $(CFLAGS) -Wno-unused-parameter
 CGO_ENABLED = 1
 cgo_variables = CGO_ENABLED CGO_CFLAGS CGO_CPPFLAGS CGO_CXXFLAGS CGO_LDFLAGS CC CXX
