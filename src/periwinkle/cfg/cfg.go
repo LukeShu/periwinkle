@@ -22,5 +22,6 @@ func getConnection() *gorm.DB {
 	if err != nil {
 		panic("Could not connect to database")
 	}
+	db.LogMode(true)
 	return &db
 }
