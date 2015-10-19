@@ -10,6 +10,7 @@ deps += github.com/dchest/captcha
 deps += github.com/go-sql-driver/mysql
 deps += github.com/jinzhu/gorm
 deps += golang.org/x/crypto/bcrypt
+deps += github.com/mattn/go-sqlite3
 
 default: all
 .PHONY: default
