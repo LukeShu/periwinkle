@@ -3,6 +3,7 @@
 package web
 
 import (
+	"fmt"
 	he "httpentity"
 	"net/http"
 	"periwinkle/cfg"
