@@ -3,9 +3,9 @@
 
 	angular
 		.module('login')
-		.controller('LoginController', ['$cookies', '$http', '$scope', '$interval', LoginController]); 
+		.controller('LoginController', ['$cookies', '$http', '$scope', '$interval', '$location', LoginController]); 
 
-	function LoginController($cookies, $http, $scope, $interval) {
+	function LoginController($cookies, $http, $scope, $interval, $location) {
 		//gives us an anchor to the outer object from within sub objects or functions
 		var self = this;
 		//clears the toolbar and such so we can set it up for this view
@@ -57,16 +57,18 @@
 					password: self.password
 				}
 			}).then(
-				function success(response) {
+				function success(data, status, headers, config) {
 					//do work with response
-					alert(response);
+					alert(data);
 					$scope.loading.is = false;
+					$location.path('/user').replace();
 				},
-				function fail(response) {
+				function fail(data, status, headers, config) {
 					//do work with response
 					//show error to user
-					alert(response);
+					alert(data);
 					$scope.loading.is = false;
+					//show alert
 				}
 			);
 		}
