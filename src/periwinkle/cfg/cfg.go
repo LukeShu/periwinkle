@@ -25,7 +25,7 @@ func getConnection() *gorm.DB {
 	db, err := gorm.Open("mysql", "periwinkle:periwinkle@/periwinkle?charset=utf8&parseTime=true")
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Falling back to SQLite3\n")
-		db, err = gorm.Open("sqlite3", "gorm.db")
+		db, err = gorm.Open("sqlite3", "periwinkle.sqlite")
 		if err != nil {
 			panic(err)
 		}
