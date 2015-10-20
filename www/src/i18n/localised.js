@@ -1,3 +1,4 @@
+// Copyright 2015 Richard Wisniewski
 var lang = "en";
 
 try {

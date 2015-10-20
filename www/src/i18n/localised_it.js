@@ -1,4 +1,5 @@
-﻿localised.it = {
+﻿// Copyright 2015 Richard Wisniewski
+localised.it = {
 	USERNAME_EMAIL:	"Nome utente o email",
 	USERNAME:		"Nome utente",
 	EMAIL:			"Email",

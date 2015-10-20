@@ -1,3 +1,4 @@
+// Copyright 2015 Richard Wisniewski
 localised.es = {
 	USERNAME_EMAIL:	"Username or Email",
 	USERNAME:		"Username",
