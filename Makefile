@@ -56,7 +56,13 @@ clean:
 # rebuilt, then Make knows.
 .var.%: FORCE
 	$(Q)printf '%s' '$($*)' > .tmp$@ && { cmp -s .tmp$@ $@ && rm -f -- .tmp$@ || mv -Tf .tmp$@ $@; } || { rm -f -- .tmp$@; false; }
-
+
+gofmt:
+	GOPATH='$(topdir)' find src -maxdepth 1 -mindepth 1 -not -name '*.*' -exec gofmt -d {} +
+govet:
+	GOPATH='$(topdir)' go vet $(packages)
+.PHONY: gofmt govet
+
 # Boilerplate
 .SECONDARY:
 .DELETE_ON_ERROR:
