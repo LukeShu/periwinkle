@@ -43,7 +43,7 @@ all: bin
 # if there is a discrepancy between Make and Go's internal
 # dependency tracker.
 bin pkg: $(gosrc) $(addprefix src/,$(deps)) $(addprefix .var.,$(cgo_variables))
-	$(Q)true $(foreach f,$(filter-out .var.%,$^), && test $@ -nt $f ) || rm -rf -- bin pkg
+	$(Q)true $(foreach f,$^, && test $@ -nt $f ) || rm -rf -- bin pkg
 	GOPATH='$(topdir)' go install $(packages) || { rm -rf -- bin; false; }
 
 # Rule to nuke everything
