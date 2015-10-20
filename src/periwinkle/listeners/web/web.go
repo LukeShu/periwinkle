@@ -26,6 +26,6 @@ func Main() error {
 		WriteTimeout:   10 * time.Second,
 		MaxHeaderBytes: 1 << 20,
 	}
-	server.ListenAndServe()
-	panic("not reached")
+	err := server.ListenAndServe()
+	panic(fmt.Sprintf("Could not start HTTP server: %v", err))
 }
