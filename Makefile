@@ -18,6 +18,9 @@ deps += github.com/mattn/go-sqlite3
 default: all
 .PHONY: default
 
+RMRF = { mkdir -p .rm && t=$$(mktemp -d .rm/XXXXXXXXXX) && mv -f -- $1 "$$t" 2>/dev/null && rm -rf -- "$$t"; }
+DIRFAIL = { $(RMRF); false; }
+
 # What directory is the Makefile in?
 topdir := $(realpath $(dir $(lastword $(MAKEFILE_LIST))))
 
@@ -34,25 +37,26 @@ gosrc_cmd = find -L src -name '.*' -prune -o \( -type f \( -false $(foreach e,$(
 gosrc = $(shell $(gosrc_cmd))
 
 # Iterate over external dependencies, and create a rule to download it
-$(foreach d,$(deps),$(eval src/$d: $(NET); GOPATH='$(topdir)' go get -d -u $d || { rm -rf -- $$@; false; }))
+$(foreach d,$(deps),$(eval src/$d: $(NET); GOPATH='$(topdir)' go get -d -u $d || $(call DIRFAIL,$@)))
 
 all: bin
 .PHONY: all
 
+#$(info $(gosrc) $(addprefix src/,$(deps)) $(addprefix .var.,$(cgo_variables)))
 bin pkg: $(gosrc) $(addprefix src/,$(deps)) $(addprefix .var.,$(cgo_variables))
-	GOPATH='$(topdir)' go install $(packages) || { rm -rf -- bin; false; }
+	GOPATH='$(topdir)' go install $(packages) || $(call DIRFAIL,bin pkg)
 	$(Q)true $(foreach f,$^, && test $@ -nt $f ) || { \
 		echo "# There's a discrepancy between Make and Go's dependency" && \
 		echo "# tracking; nuking and starting over." && \
 		PS4='' && set -x && \
-		rm -rf -- bin pkg && \
-		GOPATH='$(topdir)' go install $(packages) || { rm -rf -- bin; false; } \
+		$(call RMRF,bin pkg) && \
+		GOPATH='$(topdir)' go install $(packages) || $(call DIRFAIL,bin pkg); \
 	}
 	touch bin pkg
 
 # Rule to nuke everything
 clean:
-	rm -rf -- pkg bin src/*.*/ .var.*
+	rm -rf -- .rm pkg bin src/*.*/ .var.*
 .PHONY: clean
 
 # Now, this is magic.  It stores the values of environment variables,
