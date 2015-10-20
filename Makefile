@@ -39,12 +39,16 @@ $(foreach d,$(deps),$(eval src/$d: $(NET); GOPATH='$(topdir)' go get -d -u $d ||
 all: bin
 .PHONY: all
 
-# The rule to build the Go code.  The first line nukes the built files
-# if there is a discrepancy between Make and Go's internal
-# dependency tracker.
 bin pkg: $(gosrc) $(addprefix src/,$(deps)) $(addprefix .var.,$(cgo_variables))
-	$(Q)true $(foreach f,$^, && test $@ -nt $f ) || rm -rf -- bin pkg
 	GOPATH='$(topdir)' go install $(packages) || { rm -rf -- bin; false; }
+	$(Q)true $(foreach f,$^, && test $@ -nt $f ) || { \
+		echo "# There's a discrepancy between Make and Go's dependency" && \
+		echo "# tracking; nuking and starting over." && \
+		PS4='' && set -x && \
+		rm -rf -- bin pkg && \
+		GOPATH='$(topdir)' go install $(packages) || { rm -rf -- bin; false; } \
+	}
+	touch bin pkg
 
 # Rule to nuke everything
 clean:
