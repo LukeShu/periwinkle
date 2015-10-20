@@ -44,7 +44,7 @@ type Request struct {
 	Headers http.Header
 	Query   url.Values
 	Entity  interface{}
-	Things  map[string]interface{} // Objects added by middlewares.
+	Things  map[string]interface{}  // Objects added by middlewares
 	cookies map[string]*http.Cookie // cached
 }
 

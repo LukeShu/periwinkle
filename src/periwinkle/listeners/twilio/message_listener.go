@@ -8,7 +8,6 @@ import (
 	"io/ioutil"
 	"net/http"
 	"os"
-	"periwinkle/listeners/twilio/twilio_json"
 	"periwinkle/listeners/util"
 	"strings"
 	"time"
@@ -47,17 +46,17 @@ func Main() error {
 		resp, err := client.Do(req)
 
 		if err != nil {
-			fmt.Print("%s", "error")
+			fmt.Printf("%v", err)
 		}
 
 		defer resp.Body.Close()
 		body, err := ioutil.ReadAll(resp.Body)
 		if err != nil {
-			fmt.Print("%s", err)
+			fmt.Printf("%v", err)
 		}
 
 		//converts JSON messages
-		message := twilio_json.Paging{}
+		message := Paging{}
 		json.Unmarshal([]byte(body), &message)
 
 		mes_len := len(message.Messages)
@@ -67,7 +66,7 @@ func Main() error {
 				time_send, _ := time.Parse(time.RFC1123Z, message.Messages[i].DateSent)
 
 				if err != nil {
-					fmt.Print("%s", err)
+					fmt.Printf("%v", err)
 				}
 
 				if time_send.Unix() >= cur_time.Unix() {

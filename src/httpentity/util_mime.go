@@ -3,11 +3,11 @@
 package httpentity
 
 import (
+	"httpentity/util"
 	"io"
 	"mime"
 	"net/url"
 	"strings"
-	"httpentity/util"
 )
 
 func encoders2mimetypes(encoders map[string]func(out io.Writer) error) []string {

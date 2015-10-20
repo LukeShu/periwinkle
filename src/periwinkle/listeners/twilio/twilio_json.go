@@ -1,6 +1,6 @@
 // Copyright 2015 Zhandos Suleimenov
 
-package twilio_json
+package twilio
 
 type Paging struct {
 	First_page_uri    string    `json:"first_page_uri"`
@@ -37,5 +37,5 @@ type Message struct {
 }
 
 type Media struct {
-	media string `json:"media"`
+	Media string `json:"media"`
 }

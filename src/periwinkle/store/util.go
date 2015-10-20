@@ -17,7 +17,7 @@ func Schema(db *gorm.DB) {
 	(Medium{}).schema(db)
 	(Group{}).schema(db)
 	(GroupAddress{}).schema(db) // must come after Group and Medium
-	(Message{}).schema(db) // must come after Group
+	(Message{}).schema(db)      // must come after Group
 	(User{}).schema(db)
 	(Session{}).schema(db) // must come after User
 	(ShortUrl{}).schema(db)

@@ -5,13 +5,13 @@ package httpentity
 import (
 	"bitbucket.org/ww/goautoneg"
 	"fmt"
+	"httpentity/util"
 	"mime"
 	"net/url"
 	"os"
 	"path"
 	"runtime"
 	"strings"
-	"httpentity/util"
 )
 
 func normalizeURL(u1 *url.URL) (u *url.URL, mimetype string) {

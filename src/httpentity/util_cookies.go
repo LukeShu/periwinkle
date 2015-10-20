@@ -3,8 +3,8 @@
 package httpentity
 
 import (
-	"net/http"
 	"httpentity/util"
+	"net/http"
 )
 
 // Return the cookie `name`, or nil if it isn't set.

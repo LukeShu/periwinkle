@@ -4,9 +4,9 @@ package httpentity
 
 import (
 	"fmt"
+	"httpentity/util"
 	"net/http"
 	"net/url"
-	"httpentity/util"
 )
 
 // For when you're returning a document, with nothing special.
