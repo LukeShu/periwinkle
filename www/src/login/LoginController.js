@@ -76,7 +76,33 @@
 		
 		this.signup = function() {
 			//http signup api call
-			alert(self.username);
+			$scope.loading.is = true;
+			$http({
+				method: 'POST',
+				url: '/v1/users',
+				headers: {
+					'Content-Type': 'application/json'
+				},
+				data: {
+					username: self.username,
+					password: self.password,
+					email: self.email
+				}
+			}).then(
+				function success(data, status, headers, config) {
+					//do work with response
+					alert(data);
+					$scope.loading.is = false;
+					$location.path('/user').replace();
+				},
+				function fail(data, status, headers, config) {
+					//do work with response
+					//show error to user
+					alert(data);
+					$scope.loading.is = false;
+					//show alert
+				}
+			);
 		}
 		
 		this.togleSignup = function () {
