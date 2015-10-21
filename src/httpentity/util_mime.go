@@ -23,24 +23,24 @@ func encoders2mimetypes(encoders map[string]func(out io.Writer) error) []string 
 func mimetypes2net(u *url.URL, mimetypes []string) NetEntity {
 	u, _ = u.Parse("") // dup
 	u.Path = strings.TrimSuffix(u.Path, "/")
-	locations := make([]string, len(mimetypes))
+	locations := make([]interface{}, len(mimetypes))
 	for i, mimetype := range mimetypes {
 		u2, _ := u.Parse("")
 		exts, _ := mime.ExtensionsByType(mimetype)
 		u2.Path += exts[0]
 		locations[i] = u2.String()
 	}
-	return heutil.NetList{locations}
+	return heutil.NetList(locations)
 }
 
 func extensions2net(u *url.URL, extensions []string) NetEntity {
 	u, _ = u.Parse("") // dup
 	u.Path = strings.TrimSuffix(u.Path, "/")
-	locations := make([]string, len(extensions))
+	locations := make([]interface{}, len(extensions))
 	for i, extension := range extensions {
 		u2, _ := u.Parse("")
 		u2.Path += extension
 		locations[i] = u2.String()
 	}
-	return heutil.NetList{locations}
+	return heutil.NetList(locations)
 }
