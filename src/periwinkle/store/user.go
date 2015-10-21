@@ -107,9 +107,8 @@ func (o *User) Subentity(name string, req he.Request) he.Entity {
 func (o *User) Methods() map[string]func(he.Request) he.Response {
 	return map[string]func(he.Request) he.Response{
 		"GET": func(req he.Request) he.Response {
-			badbody := req.StatusBadRequest("submitted body not what expected")
-			sess, ok := req.Things["session"].(*Session); if !ok { return badbody }
-			if !ok || sess.UserId != o.Id {
+			sess := req.Things["session"].(*Session)
+			if sess == nil || sess.UserId != o.Id {
 				return req.StatusUnauthorized(o)
 			}
 			return req.StatusOK(o)
