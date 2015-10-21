@@ -22,7 +22,7 @@
 			<div style="clear:both;"></div>
 		</md-card-content>
 		<div layout="row" layout-align="end center">
-			<md-button class="md-button md-primary" aria-label="Sign Up">
+			<md-button class="md-button md-primary" ng-disabled="loginForm.$invalid && loginForm.$dirty" aria-label="Sign Up">
 				{{ "LOGIN" | translate }}
 			</md-button>
 		</div>
@@ -86,7 +86,7 @@
 			<div style="clear:both;"></div>
 		</md-card-content>
 		<div layout="row" layout-align="end center">
-			<md-button class="md-button md-primary" aria-label="Sign Up">
+			<md-button class="md-button md-primary" ng-disabled="signupForm.$invalid && signupForm.$dirty" aria-label="Sign Up">
 				{{ "SIGNUP.SIGNUP" | translate }}
 			</md-button>
 		</div>
