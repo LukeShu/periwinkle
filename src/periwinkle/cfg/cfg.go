@@ -22,7 +22,7 @@ const Debug bool = true
 var DB *gorm.DB = getConnection()
 
 func getConnection() *gorm.DB {
-	db, err := gorm.Open("mysql", "periwinkle:periwinkle@/periwinkle?charset=utf8&parseTime=true")
+	db, err := gorm.Open("mysql", "periwinkle:periwinkle@/periwinkle?charset=utf8&parseTime=True")
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Falling back to SQLite3\n")
 		db, err = gorm.Open("sqlite3", "periwinkle.sqlite")
