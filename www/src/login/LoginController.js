@@ -60,7 +60,7 @@
 			}).then(
 				function success(data, status, headers, config) {
 					//do work with response
-					alert(data);
+					debugger;
 					$scope.loading.is = false;
 					$location.path('/user').replace();
 				},
