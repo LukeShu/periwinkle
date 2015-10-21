@@ -56,16 +56,16 @@ func defaultEncoders(o interface{}) map[string]func(io.Writer) error {
 
 const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
 
-var alphabetLen = big.NewInt(int64(len(alphabet)))
+var alphabet_len = big.NewInt(int64(len(alphabet)))
 
 func randomString(size int) string {
-	var randStr []byte
+	bytes := make([]byte, size)
 	for i := 0; i < size; i++ {
-		bigint, err := rand.Int(rand.Reader, alphabetLen-1)
+		bigint, err := rand.Int(rand.Reader, alphabet_len)
 		if err != nil {
 			panic(err)
 		}
-		randStr[i] = alphabet[bigint.Int64()]
+		bytes[i] = alphabet[bigint.Int64()]
 	}
-	return string(randStr[:])
+	return string(bytes[:])
 }
