@@ -61,7 +61,7 @@ var alphabetLen = big.NewInt(int64(len(alphabet)))
 func randomString(size int) string {
 	var randStr []byte
 	for i := 0; i < size; i++ {
-		bigint, err := rand.Int(rand.Reader, alphabetLen)
+		bigint, err := rand.Int(rand.Reader, alphabetLen-1)
 		if err != nil {
 			panic(err)
 		}
