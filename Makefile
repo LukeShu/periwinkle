@@ -1,5 +1,5 @@
 # Set NET='' on the command line to not try to update things
-NET ?= NET
+NET ?= FORCE
 
 # Set Q='' on the command line to enable verbose building
 Q = @
@@ -18,6 +18,8 @@ deps += github.com/mattn/go-sqlite3
 default: all
 .PHONY: default
 
+# RMRF is complicated because stupid NFS won't always allow deleting
+# directory because of .nfsXXXXXXXXXXXX lock files
 RMRF = { mkdir -p .rm && t=$$(mktemp -d .rm/XXXXXXXXXX) && mv -f -- $1 "$$t" 2>/dev/null && rm -rf -- "$$t"; }
 DIRFAIL = { $(RMRF); false; }
 
@@ -74,4 +76,4 @@ govet:
 # Boilerplate
 .SECONDARY:
 .DELETE_ON_ERROR:
-.PHONY: FORCE NET
+.PHONY: FORCE
