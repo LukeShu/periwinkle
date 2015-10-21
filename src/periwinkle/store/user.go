@@ -45,8 +45,9 @@ func (o UserAddress) schema(db *gorm.DB) {
 }
 
 func GetUserById(db *gorm.DB, id string) *User {
+	id = strings.ToLower(id)
 	var o User
-	if result := db.Where("id=?", strings.ToLower(id)).First(&o); result.Error != nil {
+	if result := db.First(&o, "id = ?", id); result.Error != nil {
 		if result.RecordNotFound() {
 			return nil
 		}
@@ -161,7 +162,6 @@ func newDirUsers() t_dirUsers {
 			if user == nil {
 				return req.StatusConflict(heutil.NetString("either that username or password is already taken"))
 			} else {
-				user.Save(db)
 				return req.StatusCreated(r, username)
 			}
 		},
