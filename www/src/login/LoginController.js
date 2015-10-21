@@ -67,7 +67,7 @@
 				function fail(data, status, headers, config) {
 					//do work with response
 					//show error to user
-					alert(data);
+					debugger;
 					$scope.loading.is = false;
 					//show alert
 				}
@@ -98,7 +98,7 @@
 				function fail(data, status, headers, config) {
 					//do work with response
 					//show error to user
-					alert(data);
+					debugger;
 					$scope.loading.is = false;
 					//show alert
 				}
