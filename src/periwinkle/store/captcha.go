@@ -33,7 +33,7 @@ func NewCaptcha() *Captcha {
 
 func GetCaptchaById(db *gorm.DB, id string) *Captcha {
 	var o Captcha
-	if result := db.First(&o, id); result.Error != nil {
+	if result := db.First(&o, "id = ?", id); result.Error != nil {
 		if result.RecordNotFound() {
 			return nil
 		}

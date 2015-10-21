@@ -42,7 +42,7 @@ func (o GroupAddress) schema(db *gorm.DB) {
 
 func GetGroupById(db *gorm.DB, id string) *Group {
 	var o Group
-	if result := db.First(&o, id); result.Error != nil {
+	if result := db.First(&o, "id = ?", id); result.Error != nil {
 		if result.RecordNotFound() {
 			return nil
 		}

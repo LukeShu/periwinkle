@@ -46,7 +46,7 @@ func (o UserAddress) schema(db *gorm.DB) {
 
 func GetUserById(db *gorm.DB, id string) *User {
 	var o User
-	if result := db.First(&o, id); result.Error != nil {
+	if result := db.First(&o, "id = ?", id); result.Error != nil {
 		if result.RecordNotFound() {
 			return nil
 		}
