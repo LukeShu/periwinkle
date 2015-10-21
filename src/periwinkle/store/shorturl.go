@@ -43,7 +43,7 @@ func (o *ShortUrl) Save(db *gorm.DB) {
 
 func GetShortUrlById(db *gorm.DB, id string) *ShortUrl {
 	var o ShortUrl
-	if result := db.First(&o, id); result.Error != nil {
+	if result := db.First(&o, "id = ?", id); result.Error != nil {
 		if result.RecordNotFound() {
 			return nil
 		}

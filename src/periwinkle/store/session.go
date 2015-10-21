@@ -46,7 +46,7 @@ func NewSession(db *gorm.DB, user *User, password string) *Session {
 
 func GetSessionById(db *gorm.DB, id string) *Session {
 	var o Session
-	if result := db.First(&o, id); result.Error != nil {
+	if result := db.First(&o, "id = ?", id); result.Error != nil {
 		if result.RecordNotFound() {
 			return nil
 		}

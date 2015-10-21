@@ -36,7 +36,7 @@ func NewMessage(unique maildir.Unique) *Message {
 
 func GetMessageById(db *gorm.DB, id string) *Message {
 	var o Message
-	if result := db.First(&o, id); result.Error != nil {
+	if result := db.First(&o, "id = ?", id); result.Error != nil {
 		if result.RecordNotFound() {
 			return nil
 		}
