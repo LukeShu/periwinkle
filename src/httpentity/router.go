@@ -79,6 +79,12 @@ func (r *Router) finish(req Request, u *url.URL, res *Response) {
 		if len(encoders) > 1 && accept == "" {
 			*res = req.statusMultipleChoices(u, mimetypes)
 		} else {
+			// TODO: long term: In the event of a tie,
+			// goautoneg returns the first match in the
+			// mimetypes array, which in our case is
+			// essentially random.  Instead, we should
+			// return an HTTP 300 Multiple Choices.  This
+			// means forking or re-implementing goautoneg.
 			mimetype := goautoneg.Negotiate(req.Headers.Get("Accept"), mimetypes)
 			if mimetype == "" {
 				*res = req.statusNotAcceptable(u, mimetypes)
