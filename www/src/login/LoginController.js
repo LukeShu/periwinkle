@@ -21,15 +21,15 @@
 		self.isSignup = false;
 		//prep the toolbar
 		$scope.toolbar.title = 'LOGIN';
-		/*$scope.toolbar.buttons = [{
+		$scope.toolbar.buttons = [{
 			label: "Signup",
 			img_src: "assets/svg/phone.svg",
 		}];
 		$scope.toolbar.onclick = function(index) {
 			if(index == 0) {
-				$scope.login.togleSignup();
+				self.togleSignup();
 			}
-		} */
+		}; 
 		
 		//check if already loged in
 		var sessionID = $cookies.get("sessionID");
@@ -60,14 +60,14 @@
 			}).then(
 				function success(data, status, headers, config) {
 					//do work with response
-					alert(data);
+					debugger;
 					$scope.loading.is = false;
 					$location.path('/user').replace();
 				},
 				function fail(data, status, headers, config) {
 					//do work with response
 					//show error to user
-					alert(data);
+					debugger;
 					$scope.loading.is = false;
 					//show alert
 				}
@@ -91,14 +91,12 @@
 			}).then(
 				function success(data, status, headers, config) {
 					//do work with response
-					alert(data);
-					$scope.loading.is = false;
-					$location.path('/user').replace();
+					self.login();
 				},
 				function fail(data, status, headers, config) {
 					//do work with response
 					//show error to user
-					alert(data);
+					debugger;
 					$scope.loading.is = false;
 					//show alert
 				}

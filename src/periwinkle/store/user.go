@@ -58,7 +58,7 @@ func GetUserById(db *gorm.DB, id string) *User {
 
 func GetUserByAddress(db *gorm.DB, medium string, address string) *User {
 	var o User
-	result := db.Where(UserAddress{Medium: medium, Address: address}).Related(&o)
+	result := db.Joins("inner join user_addresses on user_addresses.user_id=users.id").Where("user_addresses.medium=? and user_addresses.address=?", medium, address).Find(&o)
 	if result.Error != nil {
 		if result.RecordNotFound() {
 			return nil

@@ -12,6 +12,7 @@
 		'ngSanitize',
 		//periwinkle modules
 		'validation.xregex',
+		'periwinkle.UserService',
 		'login',
 		'dashboard',
 		'user'

@@ -13,6 +13,17 @@
 		$scope.resetHeader();
 		$scope.toolbar.title = "USER.USER";
 		//set up public fields
+
+		$scope.toolbar.buttons = [{
+			label: "LogOut",
+			img_src: "assets/svg/share.svg",
+		}];
+		$scope.toolbar.onclick = function(index) {
+			if(index == 0) {
+				//self.togleSignup();
+			}
+		};
+
 		self.username = 'Richard Wisniewski';
 		self.email = 'rwisniew@purdue.edu';
 		self.sessionID = "0x1234567890";
