@@ -5,7 +5,7 @@ NET ?= FORCE
 Q = @
 
 # packages is the list of packages that we actually wrote and need built
-packages = $(sort $(shell cd src && find periwinkle/ -name '*.go' -printf '%h\n'))
+packages = $(sort $(shell find src -type d -name '*.*' -prune -o -type f -name '*.go' -printf '%h\n'|cut -d/ -f2-))
 
 # set deps to be a list of import strings of external packages we need to import
 deps += bitbucket.org/ww/goautoneg
@@ -68,7 +68,7 @@ clean:
 	$(Q)printf '%s' '$($*)' > .tmp$@ && { cmp -s .tmp$@ $@ && rm -f -- .tmp$@ || mv -Tf .tmp$@ $@; } || { rm -f -- .tmp$@; false; }
 
 gofmt:
-	GOPATH='$(topdir)' find src -maxdepth 1 -mindepth 1 -not -name '*.*' -exec gofmt -d {} +
+	GOPATH='$(topdir)' gofmt -d $(addprefix src/,$(packages))
 govet:
 	GOPATH='$(topdir)' go vet $(packages)
 .PHONY: gofmt govet
