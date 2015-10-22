@@ -61,7 +61,6 @@
 				function success(data, status, headers, config) {
 					//do work with response
 					debugger;
-					$scope.loading.is = false;
 					$location.path('/user').replace();
 				},
 				function fail(data, status, headers, config) {
