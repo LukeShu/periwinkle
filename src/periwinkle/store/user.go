@@ -107,10 +107,6 @@ func (o *User) Subentity(name string, req he.Request) he.Entity {
 func (o *User) Methods() map[string]func(he.Request) he.Response {
 	return map[string]func(he.Request) he.Response{
 		"GET": func(req he.Request) he.Response {
-			sess := req.Things["session"].(*Session)
-			if sess == nil || sess.UserId != o.Id {
-				return req.StatusUnauthorized(nil)
-			}
 			return req.StatusOK(o)
 		},
 		"PUT": func(req he.Request) he.Response {
@@ -173,11 +169,10 @@ func (d t_dirUsers) Methods() map[string]func(he.Request) he.Response {
 }
 
 func (d t_dirUsers) Subentity(name string, req he.Request) he.Entity {
-	db := req.Things["db"].(*gorm.DB)
-	user := GetUserById(db, name)
-	if user == nil {
-		// TODO: return a mock object that returns
-		// unauthorized for all supported methods
+	sess := req.Things["session"].(*Session)
+	if sess == nil || sess.UserId != name {
+		return nil
 	}
-	return user
+	db := req.Things["db"].(*gorm.DB)
+	return GetUserById(db, name)
 }

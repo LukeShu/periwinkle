@@ -107,8 +107,8 @@ is returned.
 		A `POST` request containing valid `login` and `password` will
 		create a session; returning a HTTP 200 ("Found") containing
 		`session_id`, as well as setting the `session_id` cookie.  If
-		the `login` and `password` do not match a user, an HTTP 401
-		("Unauthorized") response is returned.
+		the `login` and `password` do not match a user, an HTTP 403
+		("Forbidden") response is returned.
 
 		A `DELETE` request ends the current session (if there is one),
 		and returns an HTTP 204 ("No Content") response.
@@ -171,5 +171,5 @@ is returned.
 
 			Returns an HTTP 200 response containing a list of
 			`Message-ID`s, if the group alias points to a valid group
-			that the user is allowed to se; otherwise returns HTTP 401
-			("Unauthorized")
+			that the user is allowed to se; otherwise returns HTTP 403
+			("Forbidden")

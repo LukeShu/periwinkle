@@ -44,11 +44,30 @@ func (req Request) StatusCreated(parent Entity, child_name string) Response {
 	}
 }
 
+// For when you've received a request, but haven't completed it yet
+// (ex, it has been added to a queue).
+func (req Request) StatusAccepted(e NetEntity) Response {
+	return Response{
+		Status:  202,
+		Headers: http.Header{},
+		Entity:  e,
+	}
+}
+
 // For when you've successfully done something, but have no body to
 // return.
 func (req Request) StatusNoContent() Response {
 	return Response{
 		Status:  204,
+		Headers: http.Header{},
+		Entity:  nil,
+	}
+}
+
+// The client should reset the form of whatever view it currently has.
+func (req Request) StatusResetContent() Response {
+	return Response{
+		Status:  205,
 		Headers: http.Header{},
 		Entity:  nil,
 	}
@@ -66,25 +85,52 @@ func (req Request) statusMultipleChoices(u *url.URL, mimetypes []string) Respons
 
 // For when the document the user requested has permantly moved to a
 // new address.
-func (req Request) StatusMoved(u *url.URL) Response {
+func (req Request) StatusMovedPermanently(u *url.URL) Response {
 	return Response{
 		Status: 301,
 		Headers: http.Header{
 			"Location": {u.String()},
 		},
-		Entity: heutil.NetString("301: Moved"),
+		Entity: heutil.NetString("301 Moved"),
 	}
 }
 
 // For when the document the user requested is currently found at
 // another address, but that may not be the case in the future.
+//
+// The client may change a POST to a GET request when trying the new
+// location.
 func (req Request) StatusFound(u *url.URL) Response {
 	return Response{
 		Status: 302,
 		Headers: http.Header{
 			"Location": {u.String()},
 		},
-		Entity: heutil.NetString("302: Found"),
+		Entity: heutil.NetString("302 Found: " + u.String()),
+	}
+}
+
+func (req Request) StatusSeeOther(u *url.URL) Response {
+	return Response{
+		Status: 303,
+		Headers: http.Header{
+			"Location": {u.String()},
+		},
+		Entity: heutil.NetString("303 See Other: " + u.String()),
+	}
+}
+
+// For when rhe document the user requested has temporarily moved.
+//
+// The client must repeate the request exactly the same, except for
+// the URL.
+func (req Request) StatusTemporaryRedirect(u *url.URL) Response {
+	return Response{
+		Status: 307,
+		Headers: http.Header{
+			"Location": {u.String()},
+		},
+		Entity: heutil.NetString("307 Temporary Redirect: " + u.String()),
 	}
 }
 
@@ -100,19 +146,14 @@ func (req Request) StatusBadRequest(e NetEntity) Response {
 	}
 }
 
-// For when the user doesn't have permission to see something, either
-// because they aren't logged in, or because their account doesn't
-// have permission.
-func (req Request) StatusUnauthorized(e NetEntity) Response {
+func (req Request) StatusForbidden(e NetEntity) Response {
 	if e == nil {
-		e = heutil.NetString("401 Unauthorized")
+		e = heutil.NetString("403 Forbidden")
 	}
 	return Response{
-		Status: 401,
-		Headers: http.Header{
-			"WWW-Authenticate": {"TODO: long-term"},
-		},
-		Entity: e,
+		Status:  403,
+		Headers: http.Header{},
+		Entity:  e,
 	}
 }
 
@@ -126,11 +167,11 @@ func (req Request) statusNotFound() Response {
 
 func (req Request) statusMethodNotAllowed(methods string) Response {
 	return Response{
-		Status:  405,
+		Status: 405,
 		Headers: http.Header{
-			// TODO: set Allow header to the list of allowed methods
+			"Allow": {methods},
 		},
-		Entity:  heutil.NetString("405 Method Not Allowed"),
+		Entity: heutil.NetString("405 Method Not Allowed"),
 	}
 }
 
@@ -152,6 +193,15 @@ func (req Request) StatusConflict(entity NetEntity) Response {
 	}
 }
 
+// For the resource has been deleted, and will never ever return.
+func (req Request) StatusGone(entity NetEntity) Response {
+	return Response{
+		Status:  410,
+		Headers: http.Header{},
+		Entity:  entity,
+	}
+}
+
 func (req Request) statusUnsupportedMediaType() Response {
 	return Response{
 		Status:  415,
@@ -160,6 +210,9 @@ func (req Request) statusUnsupportedMediaType() Response {
 	}
 }
 
+// TODO: StatusExpectationFailed (417)
+// TODO: StatusUpgradeRequired (426)
+
 func (req Request) statusInternalServerError(err interface{}) Response {
 	return Response{
 		Status: 500,
@@ -167,5 +220,13 @@ func (req Request) statusInternalServerError(err interface{}) Response {
 			"Content-Type": {"text/plain; charset=utf-8"},
 		},
 		Entity: heutil.NetString(fmt.Sprintf("500 Internal Server Error: %v", err)),
+	}
+}
+
+func (req Request) StatusNotImplemented(e NetEntity) Response {
+	return Response{
+		Status:  501,
+		Headers: http.Header{},
+		Entity:  e,
 	}
 }
