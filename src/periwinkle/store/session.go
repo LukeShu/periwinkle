@@ -19,9 +19,9 @@ var fileSession he.Entity = newFileSession()
 // Model /////////////////////////////////////////////////////////////
 
 type Session struct {
-	Id       string
-	UserId   string
-	LastUsed time.Time
+	Id       string    `json:"session_id"`
+	UserId   string    `json:"user_id"`
+	LastUsed time.Time `json:"-"`
 }
 
 func (o Session) schema(db *gorm.DB) {
@@ -68,10 +68,7 @@ func (o *Session) Save(db *gorm.DB) {
 // View //////////////////////////////////////////////////////////////
 
 func (sess *Session) Encoders() map[string]func(io.Writer) error {
-	dat := map[string]string{
-		"session_id": sess.Id,
-	}
-	return defaultEncoders(dat)
+	return defaultEncoders(sess)
 }
 
 // File ("Controller") ///////////////////////////////////////////////
