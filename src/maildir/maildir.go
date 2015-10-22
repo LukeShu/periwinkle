@@ -1,20 +1,44 @@
 // Copyright 2015 Luke Shumaker
 // Copyright 2015 Zhandos Suleimenov
 
+// Package maildir implements access to DJB's maildir format.
+//
+// The type Maildir is a string of the path to the maildir.  The type
+// Unique is a string of a unique maildir message identifier.  The
+// type CurMail is a handle on a message that has been delivered.
 package maildir
 
 import (
+	"github.com/djherbis/times"
 	"os"
 	"strings"
 	"syscall"
 	"time"
 )
 
+// A Maildir is simply a string pathname to where the maildir is.
 type Maildir string
 
+// A Unique is a string that uniquely identifies a message in the
+// maildir.  The format of the string is opaque.
+//
+//    "Unless you're writing messages to a maildir, the format of a
+//    unique name is none of your business. A unique name can be
+//    anything that doesn't contain a colon (or slash) and doesn't
+//    start with a dot. Do not try to extract information from unique
+//    names." -- http://cr.yp.to/proto/maildir.html
+//
+// Fortunatley for you, even if you are writing messages to a maildir,
+// this package takes care of it, so the format of the unique name is
+// still none of your business.
 type Unique string
 
-// Remove files in `md+"/tmp/"` not accessed in the last 36 hours
+//    "It is a good idea for readers to skip all filenames in new and
+//    cur starting with a dot.  Other than this, readers should not
+//    attempt to parse filenames." --
+//    http://www.qmail.org/qmail-manual-html/man5/maildir.html
+
+// Remove files in `md+"/tmp/"` not accessed in the last 36 hours.
 func (md Maildir) Clean() error {
 	dir, err := os.Open(string(md) + "/tmp")
 	if err != nil {
@@ -25,12 +49,10 @@ func (md Maildir) Clean() error {
 		return err
 	}
 	for _, fileinfo := range fileinfos {
-		// TODO: long-term: check the access time (UNIX atime).
-		// Unfortunately, Go os.FileInfo only provides the
-		// modification time (UNIX mtime).  Actually, we
-		// should probably take the newest of the
-		// atime/mtime/ctime.
-		atime := time.Now()
+		if strings.HasPrefix(fileinfo.Name(), ".") {
+			continue
+		}
+		atime := times.Get(fileinfo).AccessTime()
 		if time.Since(atime) > (36 * time.Hour) {
 			path := string(md) + "/tmp/" + fileinfo.Name()
 			err1 := syscall.Unlink(path)
@@ -42,6 +64,7 @@ func (md Maildir) Clean() error {
 	return err
 }
 
+// List the identifiers of newly delivered messages in the maildir.
 func (md Maildir) ListNew() (mails []Unique, err error) {
 	dir, err := os.Open(string(md) + "/new")
 	if err != nil {
@@ -51,14 +74,18 @@ func (md Maildir) ListNew() (mails []Unique, err error) {
 	if err != nil {
 		return
 	}
-	mails = make([]Unique, len(fileinfos))
-	for i, fileinfo := range fileinfos {
-		mails[i] = Unique(fileinfo.Name())
+	mails = make([]Unique, 0, len(fileinfos))
+	for _, fileinfo := range fileinfos {
+		if strings.HasPrefix(fileinfo.Name(), ".") {
+			continue
+		}
+		mails = append(mails, Unique(fileinfo.Name()))
 	}
 	return
 }
 
-func (md Maildir) ListCur() (mails []CurMail, err error) {
+// List old messages in the maildir.
+func (md Maildir) ListCur() (mails []*CurMail, err error) {
 	dir, err := os.Open(string(md) + "/cur")
 	if err != nil {
 		return
@@ -67,11 +94,14 @@ func (md Maildir) ListCur() (mails []CurMail, err error) {
 	if err != nil {
 		return
 	}
-	mails = make([]CurMail, len(fileinfos))
-	for i, fileinfo := range fileinfos {
+	mails = make([]*CurMail, 0, len(fileinfos))
+	for _, fileinfo := range fileinfos {
+		if strings.HasPrefix(fileinfo.Name(), ".") {
+			continue
+		}
 		parts := strings.SplitN(fileinfo.Name(), ":", 2)
 		if len(parts) == 2 {
-			mails[i] = CurMail{md: md, uniq: Unique(parts[0]), info: parts[1]}
+			mails = append(mails, &CurMail{md: md, uniq: Unique(parts[0]), info: parts[1]})
 		}
 	}
 	return

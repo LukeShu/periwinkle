@@ -12,6 +12,8 @@ import (
 	"syscall"
 )
 
+// A handle on an Acknowledge()ed (not newly-delivered) message in the
+// maildir.
 type CurMail struct {
 	md   Maildir
 	uniq Unique
@@ -22,7 +24,9 @@ func (m *CurMail) path() string {
 	return string(m.md) + "/cur/" + string(m.uniq) + ":" + m.info
 }
 
-func (md Maildir) Open(u Unique) (mail CurMail, err error) {
+// Open the previously Acknowledg()ed message with the given unique
+// identifier.
+func (md Maildir) Open(u Unique) (mail *CurMail, err error) {
 	matches, err := filepath.Glob(string(md) + "/cur/" + string(u) + ":*")
 	if err != nil {
 		return
@@ -32,32 +36,49 @@ func (md Maildir) Open(u Unique) (mail CurMail, err error) {
 		return
 	}
 	parts := strings.SplitN(filepath.Base(matches[0]), ":", 2)
-	mail = CurMail{md: md, uniq: Unique(parts[0]), info: parts[1]}
+	mail = &CurMail{md: md, uniq: Unique(parts[0]), info: parts[1]}
 	return
 }
 
-func (md Maildir) Acknowledge(u Unique) (mail CurMail, err error) {
+// Acknowledge a newly delivered message (marking it as no longer
+// newly delivered), and return a handle on it.
+func (md Maildir) Acknowledge(u Unique) (mail *CurMail, err error) {
 	err = os.Rename(
 		string(md)+"/new/"+string(u),
 		string(md)+"/cur/"+string(u)+":")
 	if err != nil {
 		return
 	}
-	mail = CurMail{
+	mail = &CurMail{
 		uniq: u,
 		info: "",
 	}
 	return
 }
 
+// Return the unique idenfier for the message.
 func (m *CurMail) GetUnique() Unique {
 	return m.uniq
 }
 
+// Return the info string for the message, which "is morally
+// equivalent to the Status field used by mbox readers."
+//
+// This package treats info as an opaque string, but obviously it
+// would be good for it to have a common format between
+// implementations. See <http://cr.yp.to/proto/maildir.html> for a
+// recomendation for common semantics.
 func (m *CurMail) GetInfo() string {
 	return m.info
 }
 
+// Set the info string for the message, which "is morally equivalent
+// to the Status field used by mbox readers."
+//
+// This package treats info as an opaque string, but obviously it
+// would be good for it to have a common format between
+// implementations. See <http://cr.yp.to/proto/maildir.html> for a
+// recomendation for common semantics.
 func (m *CurMail) SetInfo(info string) error {
 	err := os.Rename(m.path(), string(m.md)+"/cur/"+string(m.uniq)+":"+info)
 	if err != nil {
@@ -66,6 +87,7 @@ func (m *CurMail) SetInfo(info string) error {
 	return err
 }
 
+// Delete the message.
 func (m *CurMail) Delete() error {
 	return syscall.Unlink(m.path())
 }
@@ -76,6 +98,8 @@ type Reader interface {
 	io.Seeker
 }
 
+// Return an io.{Reader,Seeker,Closer} for the message, so that you
+// can read its contents.
 func (m *CurMail) Reader() Reader {
 	file, err := os.Open(m.path())
 	if err != nil {
