@@ -28,7 +28,7 @@ func (md Maildir) Open(u Unique) (mail CurMail, err error) {
 		return
 	}
 	if len(matches) != 1 {
-		err = fmt.Errorf("Found %d files with unique %#v", u)
+		err = fmt.Errorf("Found %d files with unique %#v", len(matches), u)
 		return
 	}
 	parts := strings.SplitN(filepath.Base(matches[0]), ":", 2)
