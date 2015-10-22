@@ -1,4 +1,7 @@
 ﻿// Copyright 2015 Richard Wisniewski
+var _it = {
+	CONTACT_ADMIN:	"Contatta un amministratore."
+};
 localised.it = {
 	USERNAME_EMAIL:	"Nome utente o email",
 	USERNAME:		"Nome utente",
@@ -15,7 +18,32 @@ localised.it = {
 		CONFIRM_PASSWORD:			"Conferma password",
 		CONFIRM_PASSWORD_NO_MATCH:	"I tuoi password non sono simili.",
 		USERNAME_INVALID:			"I nomi untente possono contenere lettere, numeri, _, o -.",
-		EMAIL_INVALID:				"Quello non è un indirizzo d'email valido."
+		EMAIL_INVALID:				"Quello non è un indirizzo d'email valido.",
+		ERRORS:{
+			"409": {
+				TITLE:		"Utente Già Esiste",
+				CONTENT:	"Nome utente o indirizzo email è già usato."
+			},
+			"500": {
+				TITLE:		"Qualcosa Sbaglia",
+				CONTENT:	"Il server inconta un errore.  " + _it.CONTACT_ADMIN
+			},
+		}
+	},
+	LOGIN: {
+		ERRORS: {
+			"401": {
+				TITLE:		"Accesso Falito",
+				CONTENT:	"Nome utente e password non si correspondono.  "
+			}
+		}
+	},
+	ERRORS:	{
+		DEFAULT: {
+			TITLE:		"Errore Sconosciuto",
+			CONTENT:	"Ricevuto una risposta inattesa dal server. " + _it.CONTACT_ADMIN
+		},
+		CONTACT_ADMIN:	_it.CONTACT_ADMIN
 	},
 	USER: {
 		USER:						"Utente",

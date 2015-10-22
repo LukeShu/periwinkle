@@ -1,4 +1,7 @@
 // Copyright 2015 Richard Wisniewski
+var _en = {
+	CONTACT_ADMIN:	"Please contact an administrator."
+};
 localised.en = {
 	USERNAME_EMAIL:	"Username or Email",
 	USERNAME:		"Username",
@@ -19,17 +22,28 @@ localised.en = {
 		ERRORS:{
 			"409": {
 				TITLE:		"User Already Exists",
-				CONTENT:	"Username or Email already in use"
+				CONTENT:	"Username or Email already in use."
 			},
 			"500": {
-				TITLE:		"Something went wrong!",
-				CONTENT:	"The server encountered an error please tell luke to fix it!"
+				TITLE:		"Something Went Wrong",
+				CONTENT:	"The server has encountered an error.  " + _en.CONTACT_ADMIN
 			},
-			DEFAULT: {
-				TITLE:		"Unknown Error",
-				CONTENT:	"Unexpected response from server. Leave Earth Now!"
+		}
+	},
+	LOGIN: {
+		ERRORS: {
+			"401": {
+				TITLE:		"Login Failed",
+				CONTENT:	"Username or password do not match."
 			}
 		}
+	},
+	ERRORS:	{
+		DEFAULT: {
+			TITLE:		"Unknown Error",
+			CONTENT:	"An unexpected response was recieved from the server. " + _en.CONTACT_ADMIN
+		},
+		CONTACT_ADMIN:	_en.CONTACT_ADMIN
 	},
 	USER: {
 		USER:						"User",
@@ -38,5 +52,6 @@ localised.en = {
 		DELETE:						"Delete Account"
 	},
 	GROUPS:			"Groups",
-	NO_GROUPS:		"You are not currently in any groups."
+	NO_GROUPS:		"You are not currently in any groups.",
+	OK:				"OK"
 };

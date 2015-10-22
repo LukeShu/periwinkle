@@ -4,9 +4,9 @@
 
 	angular
 		.module('login')
-		.controller('LoginController', ['$cookies', '$http', '$scope', '$interval', '$location', '$mdDialog', '$filter', LoginController]); 
+		.controller('LoginController', ['$cookies', '$http', '$scope', '$interval', '$location', '$mdDialog', '$filter', 'UserService', LoginController]); 
 
-	function LoginController($cookies, $http, $scope, $interval, $location, $mdDialog, $filter) {
+	function LoginController($cookies, $http, $scope, $interval, $location, $mdDialog, $filter, userService) {
 		//gives us an anchor to the outer object from within sub objects or functions
 		var self = this;
 		//clears the toolbar and such so we can set it up for this view
@@ -21,7 +21,7 @@
 		self.isSignup = false;
 		//prep the toolbar
 		$scope.toolbar.title = 'LOGIN';
-		$scope.toolbar.buttons = [{
+		/*$scope.toolbar.buttons = [{
 			label: "Signup",
 			img_src: "assets/svg/phone.svg",
 		}];
@@ -29,7 +29,7 @@
 			if(index == 0) {
 				self.togleSignup();
 			}
-		}; 
+		}; */
 		
 		//check if already loged in
 		var sessionID = $cookies.get("sessionID");
@@ -61,6 +61,8 @@
 				function success(data, status, headers, config) {
 					//do work with response
 					debugger;
+					userService.session_id = data.data.session_id;
+					userService.user_id = data.data.user_id;
 					$location.path('/user').replace();
 				},
 				function fail(data, status, headers, config) {
@@ -98,7 +100,7 @@
 					debugger;
 					var status_code = data.status;
 					var reason = data.data;
-					var $translate = $filter("translate");
+					var $translate = $filter('translate');
 					$scope.loading.is = false;
 					//show alert
 					switch(status_code){
@@ -107,8 +109,8 @@
 						      $mdDialog.alert()
 						        .parent(angular.element(document.querySelector('#content')))
 						        .clickOutsideToClose(true)
-						        .title($translate("SIGNUP.ERRORS.409.TITLE"))
-						        .content($translate("SIGNUP.ERRORS.409.CONTENT"))
+						        .title($translate('SIGNUP.ERRORS.409.TITLE'))
+						        .content($translate('SIGNUP.ERRORS.409.CONTENT'))
 						        .ariaLabel('User Creation Error')
 						        .ok('Got it!')
 						        .targetEvent(ev)
@@ -119,8 +121,8 @@
 							      $mdDialog.alert()
 							        .parent(angular.element(document.querySelector('#content')))
 							        .clickOutsideToClose(true)
-							        .title($translate("SIGNUP.ERRORS.500.TITLE"))
-							        .content($translate("SIGNUP.ERRORS.500.CONTENT"))
+							        .title($translate('SIGNUP.ERRORS.500.TITLE'))
+							        .content($translate('SIGNUP.ERRORS.500.CONTENT'))
 							        .ariaLabel('Server Error')
 							        .ok('Got it!')
 							        .targetEvent(ev)
@@ -131,8 +133,8 @@
 						      $mdDialog.alert()
 						        .parent(angular.element(document.querySelector('#content')))
 						        .clickOutsideToClose(true)
-						        .title($translate("SIGNUP.ERRORS.DEFAULT.TITLE"))
-						        .content($translate("SIGNUP.ERRORS.DEFAULT.CONTENT"))
+						        .title($translate('SIGNUP.ERRORS.DEFAULT.TITLE'))
+						        .content($translate('SIGNUP.ERRORS.DEFAULT.CONTENT'))
 						        .ariaLabel('Unexpected Error')
 						        .ok('Got it!')
 						        .targetEvent(ev)
