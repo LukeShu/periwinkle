@@ -15,8 +15,8 @@
 		//set up public fields
 
 		$scope.toolbar.buttons = [{
-			label: "LogOut",
-			img_src: "assets/svg/share.svg",
+			aria_label: "LogOut",
+			label:	"Sign out"
 		}];
 		$scope.toolbar.onclick = function(index) {
 			if(index == 0) {

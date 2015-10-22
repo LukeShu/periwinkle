@@ -21,7 +21,7 @@
 		self.isSignup = false;
 		//prep the toolbar
 		$scope.toolbar.title = 'LOGIN';
-		$scope.toolbar.buttons = [{
+		/*$scope.toolbar.buttons = [{
 			label: "Signup",
 			img_src: "assets/svg/phone.svg",
 		}];
@@ -29,7 +29,7 @@
 			if(index == 0) {
 				self.togleSignup();
 			}
-		}; 
+		}; */
 		
 		//check if already loged in
 		var sessionID = $cookies.get("sessionID");

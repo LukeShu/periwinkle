@@ -29,8 +29,11 @@
 	<span flex=""></span>
 	
 	<span ng-repeat="b in toolbar.buttons">
-		<md-button class="md-icon-button" ng-attr-aria-label="{{ b.label }}" ng-click="toolbar.onclick($index)">
-			<md-icon md-svg-icon="{{ b.img_src }}"></md-icon>
+		<md-button class="md-icon-button" ng-if="b.img_src" ng-attr-aria-label="{{ b.aria_label }}" ng-click="toolbar.onclick($index)">
+			<md-icon md-svg-icon="{{ b.img_src }}"><md-icon>
+		</md-button>
+		<md-button ng-if="b.label" ng-attr-aria-label="{{ b.aria_label }}" ng-click="toolbar.onclick($index)">
+			{{ b.label | translate }}
 		</md-button>
 	</span>
 	<md-button ng-if="expandMenu.exists" class="md-icon-button" aria-label="More">

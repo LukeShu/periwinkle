@@ -16,7 +16,7 @@
 		};
 		self.reset();
 		
-		self.logout = function () {
+		$scope.logout = self.logout = function () {
 			if(session_id && session_id != "") {
 				$http({
 					method: 'DELETE',
