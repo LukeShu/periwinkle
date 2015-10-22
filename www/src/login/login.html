@@ -41,7 +41,7 @@
 
 <div ng-if="login.isSignup">
 	<md-card id="signup">
-	<form name="signupForm" ng-submit="login.signup()">
+	<form name="signupForm" ng-submit="login.signup($event)">
 		<md-card-content layout="column">
 			<md-input-container>
 				<label>{{ "USERNAME" | translate }}</label>

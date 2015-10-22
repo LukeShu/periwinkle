@@ -4,9 +4,9 @@
 
 	angular
 		.module('login')
-		.controller('LoginController', ['$cookies', '$http', '$scope', '$interval', '$location', LoginController]); 
+		.controller('LoginController', ['$cookies', '$http', '$scope', '$interval', '$location', '$mdDialog', '$filter', LoginController]); 
 
-	function LoginController($cookies, $http, $scope, $interval, $location) {
+	function LoginController($cookies, $http, $scope, $interval, $location, $mdDialog, $filter) {
 		//gives us an anchor to the outer object from within sub objects or functions
 		var self = this;
 		//clears the toolbar and such so we can set it up for this view
@@ -73,7 +73,7 @@
 			);
 		}
 		
-		this.signup = function() {
+		this.signup = function(ev) {
 			//http signup api call
 			$scope.loading.is = true;
 			$http({
@@ -96,8 +96,48 @@
 					//do work with response
 					//show error to user
 					debugger;
+					var status_code = data.status;
+					var reason = data.data;
+					var $translate = $filter("translate");
 					$scope.loading.is = false;
 					//show alert
+					switch(status_code){
+						case 409:
+							$mdDialog.show(
+						      $mdDialog.alert()
+						        .parent(angular.element(document.querySelector('#content')))
+						        .clickOutsideToClose(true)
+						        .title($translate("SIGNUP.ERRORS.409.TITLE"))
+						        .content($translate("SIGNUP.ERRORS.409.CONTENT"))
+						        .ariaLabel('User Creation Error')
+						        .ok('Got it!')
+						        .targetEvent(ev)
+						    );
+							break;
+						case 500:
+							$mdDialog.show(
+							      $mdDialog.alert()
+							        .parent(angular.element(document.querySelector('#content')))
+							        .clickOutsideToClose(true)
+							        .title($translate("SIGNUP.ERRORS.500.TITLE"))
+							        .content($translate("SIGNUP.ERRORS.500.CONTENT"))
+							        .ariaLabel('Server Error')
+							        .ok('Got it!')
+							        .targetEvent(ev)
+							    );
+							break;
+						default:
+							$mdDialog.show(
+						      $mdDialog.alert()
+						        .parent(angular.element(document.querySelector('#content')))
+						        .clickOutsideToClose(true)
+						        .title($translate("SIGNUP.ERRORS.DEFAULT.TITLE"))
+						        .content($translate("SIGNUP.ERRORS.DEFAULT.CONTENT"))
+						        .ariaLabel('Unexpected Error')
+						        .ok('Got it!')
+						        .targetEvent(ev)
+						    );
+					}
 				}
 			);
 		}

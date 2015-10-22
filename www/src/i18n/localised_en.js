@@ -15,7 +15,21 @@ localised.en = {
 		CONFIRM_PASSWORD:			"Confirm password",
 		CONFIRM_PASSWORD_NO_MATCH:	"Your passwords do not match",
 		USERNAME_INVALID:			"Usernames may only contain letters, number, _, or -.",
-		EMAIL_INVALID:				"That is not a valid email address."
+		EMAIL_INVALID:				"That is not a valid email address.",
+		ERRORS:{
+			"409": {
+				TITLE:		"User Already Exists",
+				CONTENT:	"Username or Email already in use"
+			},
+			"500": {
+				TITLE:		"Something went wrong!",
+				CONTENT:	"The server encountered an error please tell luke to fix it!"
+			},
+			DEFAULT: {
+				TITLE:		"Unknown Error",
+				CONTENT:	"Unexpected response from server. Leave Earth Now!"
+			}
+		}
 	},
 	USER: {
 		USER:						"User",
