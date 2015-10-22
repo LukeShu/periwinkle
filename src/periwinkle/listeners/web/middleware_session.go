@@ -49,10 +49,9 @@ func (p session) Before(req *he.Request) {
 		return
 	}
 	sess = store.GetSessionById(db, session_id)
-	if sess == nil {
-		return
+	if sess != nil {
+		sess.Save(db)
 	}
-	sess.Save(db)
 }
 
 func (p session) After(req he.Request, res *he.Response) {}
