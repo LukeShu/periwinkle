@@ -76,7 +76,7 @@ func (u *User) SetPassword(password string) error {
 
 func (u *User) CheckPassword(password string) bool {
 	err := bcrypt.CompareHashAndPassword(u.PwHash, []byte(password))
-	return err != nil
+	return err == nil
 }
 
 func NewUser(db *gorm.DB, name string, password string, email string) *User {
