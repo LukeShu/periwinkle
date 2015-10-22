@@ -29,12 +29,15 @@ func (r *Router) Route(req Request, u *url.URL) (res Response) {
 func (h *Router) serveHTTP(w http.ResponseWriter, r *http.Request) (res Response) {
 	// adapt the request from `net/http` format to `httpentity` format
 	req := Request{
-		Scheme:  r.URL.Scheme,
+		Scheme:  "http",
 		Method:  r.Method,
 		Headers: r.Header,
 		Query:   r.URL.Query(),
 		Entity:  nil,
 		Things:  map[string]interface{}{},
+	}
+	if r.TLS != nil {
+		req.Scheme = "https"
 	}
 	u, mimetype := normalizeURL(r.URL)
 	if mimetype != "" {
