@@ -4,6 +4,7 @@
 package store
 
 import (
+	"fmt"
 	"github.com/jinzhu/gorm"
 	he "httpentity"
 	"httpentity/util"
@@ -102,7 +103,7 @@ func newDirGroups() t_dirGroups {
 	r.methods = map[string]func(he.Request) he.Response{
 		"POST": func(req he.Request) he.Response {
 			db := req.Things["db"].(*gorm.DB)
-			badbody := req.StatusBadRequest("submitted body not what expected")
+			badbody := req.StatusBadRequest(heutil.NetString(fmt.Sprintf("submitted body not what expected")))
 			hash, ok := req.Entity.(map[string]interface{}); if !ok { return badbody }
 			groupname, ok := hash["groupname"].(string)    ; if !ok { return badbody }
 

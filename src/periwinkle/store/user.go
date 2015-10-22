@@ -109,7 +109,7 @@ func (o *User) Methods() map[string]func(he.Request) he.Response {
 		"GET": func(req he.Request) he.Response {
 			sess := req.Things["session"].(*Session)
 			if sess == nil || sess.UserId != o.Id {
-				return req.StatusUnauthorized(o)
+				return req.StatusUnauthorized(nil)
 			}
 			return req.StatusOK(o)
 		},
@@ -142,7 +142,7 @@ func newDirUsers() t_dirUsers {
 	r.methods = map[string]func(he.Request) he.Response{
 		"POST": func(req he.Request) he.Response {
 			db := req.Things["db"].(*gorm.DB)
-			badbody := req.StatusBadRequest("submitted body not what expected")
+			badbody := req.StatusBadRequest(heutil.NetString("submitted body not what expected"))
 			hash, ok := req.Entity.(map[string]interface{}); if !ok { return badbody }
 			username, ok := hash["username"].(string)      ; if !ok { return badbody }
 			email   , ok := hash["email"].(string)         ; if !ok { return badbody }

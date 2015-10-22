@@ -4,6 +4,7 @@ package httpentity
 
 import (
 	"fmt"
+	"httpentity/util"
 	"net/http"
 	"net/url"
 	"strings"
@@ -55,7 +56,7 @@ func (h *Router) serveHTTP(w http.ResponseWriter, r *http.Request) (res Response
 			if err == nil {
 				res = req.statusUnsupportedMediaType()
 			} else {
-				res = req.StatusBadRequest(fmt.Sprintf("reading request body: %s", err))
+				res = req.StatusBadRequest(heutil.NetString(fmt.Sprintf("reading request body: %s", err)))
 			}
 			return
 		} else {
