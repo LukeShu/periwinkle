@@ -31,6 +31,7 @@ func normalizeURL(u1 *url.URL) (u *url.URL, mimetype string) {
 
 // assumes that the url has already been passed to normalizeURL()
 func (r *Router) route(req Request, u *url.URL) (res Response) {
+	req.Method = strings.ToUpper(req.Method)
 	if r.LogRequest {
 		fmt.Fprintf(os.Stderr, "%s %q %#v\n", req.Method, u.String(), req)
 	}
