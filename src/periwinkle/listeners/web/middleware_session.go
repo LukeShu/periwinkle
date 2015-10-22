@@ -20,21 +20,38 @@ func (p session) Before(req *he.Request) {
 		req.Things["session"] = sess
 	}()
 
-	hash, ok := req.Entity.(map[string]interface{}); if !ok { return }
-	session_id1, ok := hash["session_id"].(string) ; if !ok { return }
-	delete(hash, "session_id")
 	cookie := req.Cookie("session_id")
-	session_id2 := ""
-	if cookie != nil {
-		session_id2 = cookie.Value
-	}
-
-	if session_id1 != session_id2 {
+	if cookie == nil {
 		return
 	}
+	session_id := cookie.Value
 
-	db, ok := req.Things["db"].(*gorm.DB); if !ok { return }
-	sess = store.GetSessionById(db, session_id1)
+	if req.Entity != nil {
+		hash, ok := req.Entity.(map[string]interface{})
+		if !ok {
+			return
+		}
+
+		session_id_body, ok := hash["session_id"].(string)
+		delete(hash, "session_id")
+		if !ok {
+			return
+		}
+
+		if session_id_body != session_id {
+			return
+		}
+	}
+
+	// It's not worth panicing if we have database errors here.
+	db, ok := req.Things["db"].(*gorm.DB)
+	if !ok {
+		return
+	}
+	sess = store.GetSessionById(db, session_id)
+	if sess == nil {
+		return
+	}
 	sess.Save(db)
 }
 

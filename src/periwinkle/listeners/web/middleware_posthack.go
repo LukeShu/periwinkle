@@ -4,6 +4,7 @@ package web
 
 import (
 	he "httpentity"
+	"strings"
 )
 
 type postHack struct{}
@@ -17,6 +18,12 @@ func (p postHack) Before(req *he.Request) {
 	delete(hash, "_method")
 	if !ok {
 		return
+	}
+	switch strings.ToUpper(method) {
+	case "POST", "PUT", "PATCH":
+		// do nothing
+	default:
+		req.Entity = nil
 	}
 	req.Method = method
 }
