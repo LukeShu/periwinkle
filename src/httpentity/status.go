@@ -89,11 +89,14 @@ func (req Request) StatusFound(u *url.URL) Response {
 }
 
 // For when the *user* has screwed up a request.
-func (req Request) StatusBadRequest(err interface{}) Response {
+func (req Request) StatusBadRequest(e NetEntity) Response {
+	if e == nil {
+		e = heutil.NetString("400 Bad Request")
+	}
 	return Response{
 		Status:  400,
 		Headers: http.Header{},
-		Entity:  heutil.NetString(fmt.Sprintf("400 Bad Request: %v", err)),
+		Entity:  e,
 	}
 }
 
@@ -101,6 +104,9 @@ func (req Request) StatusBadRequest(err interface{}) Response {
 // because they aren't logged in, or because their account doesn't
 // have permission.
 func (req Request) StatusUnauthorized(e NetEntity) Response {
+	if e == nil {
+		e = heutil.NetString("401 Unauthorized")
+	}
 	return Response{
 		Status: 401,
 		Headers: http.Header{
