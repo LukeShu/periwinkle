@@ -33,6 +33,7 @@ type Router struct {
 	Root        Entity
 	Middlewares []Middleware
 	Stacktrace  bool
+	LogRequest  bool
 }
 
 ////////////////////////////////////////////////////////////////////////////////

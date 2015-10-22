@@ -18,6 +18,7 @@ func Main() error {
 		Root:        store.DirRoot,
 		Middlewares: []he.Middleware{postHack{}, database{}, session{}},
 		Stacktrace:  cfg.Debug,
+		LogRequest:  cfg.Debug,
 	})
 	mux.Handle("/webui/", http.StripPrefix("/webui/", http.FileServer(cfg.WebUiDir)))
 	server := &http.Server{
