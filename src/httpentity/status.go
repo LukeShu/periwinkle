@@ -127,7 +127,9 @@ func (req Request) statusNotFound() Response {
 func (req Request) statusMethodNotAllowed(methods string) Response {
 	return Response{
 		Status:  405,
-		Headers: http.Header{},
+		Headers: http.Header{
+			// TODO: set Allow header to the list of allowed methods
+		},
 		Entity:  heutil.NetString("405 Method Not Allowed"),
 	}
 }
