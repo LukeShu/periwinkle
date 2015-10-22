@@ -14,6 +14,7 @@ func (p postHack) Before(req *he.Request) {
 		return
 	}
 	method, ok := hash["_method"].(string)
+	delete(hash, "_method")
 	if !ok {
 		return
 	}
