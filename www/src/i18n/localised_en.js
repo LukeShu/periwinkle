@@ -23,11 +23,7 @@ localised.en = {
 			"409": {
 				TITLE:		"User Already Exists",
 				CONTENT:	"Username or Email already in use."
-			},
-			"500": {
-				TITLE:		"Something Went Wrong",
-				CONTENT:	"The server has encountered an error.  " + _en.CONTACT_ADMIN
-			},
+			}
 		}
 	},
 	LOGIN: {
@@ -39,6 +35,10 @@ localised.en = {
 		}
 	},
 	ERRORS:	{
+		"500": {
+			TITLE:		"Something Went Wrong",
+			CONTENT:	"The server has encountered an error.  " + _en.CONTACT_ADMIN
+		},
 		DEFAULT: {
 			TITLE:		"Unknown Error",
 			CONTENT:	"An unexpected response was received from the server. " + _en.CONTACT_ADMIN

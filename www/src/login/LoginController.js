@@ -58,19 +58,55 @@
 					password: self.password
 				}
 			}).then(
-				function success(data, status, headers, config) {
+				function success(response) {
 					//do work with response
 					debugger;
 					userService.session_id = data.data.session_id;
 					userService.user_id = data.data.user_id;
 					$location.path('/user').replace();
 				},
-				function fail(data, status, headers, config) {
+				function fail(response) {
 					//do work with response
 					//show error to user
 					debugger;
+					var status_code = response.status;
+					var reason = response.data;
+					var $translate = $filter('translate');
 					$scope.loading.is = false;
 					//show alert
+					var dialog = null;
+					switch(status_code){
+						case 401:
+							dialog = $mdDialog.alert()
+								.parent(angular.element(document.querySelector('#content')))
+								.clickOutsideToClose(true)
+								.title($translate('LOGIN.ERRORS.401.TITLE'))
+								.content($translate('LOGIN.ERRORS.401.CONTENT'))
+								.ariaLabel('Invalid login')
+								.ok('Got it!')
+						        .targetEvent(ev);
+							break;
+						case 500:
+							dialog = $mdDialog.alert()
+								.parent(angular.element(document.querySelector('#content')))
+								.clickOutsideToClose(true)
+								.title($translate('ERRORS.500.TITLE'))
+								.content($translate('ERRORS.500.CONTENT'))
+								.ariaLabel('Server Error')
+								.ok('Got it!')
+						        .targetEvent(ev);
+							break;
+						default:
+							dialog = $mdDialog.alert()
+								.parent(angular.element(document.querySelector('#content')))
+								.clickOutsideToClose(true)
+								.title($translate('ERRORS.DEFAULT.TITLE'))
+								.content($translate('ERRORS.DEFAULT.CONTENT'))
+								.ariaLabel('Unexpected Response from Server')
+								.ok('Got it!')
+						        .targetEvent(ev);
+					}
+					$mdDialog.show(dialog);
 				}
 			);
 		}
@@ -90,57 +126,52 @@
 					email: self.email
 				}
 			}).then(
-				function success(data, status, headers, config) {
+				function success(response) {
 					//do work with response
 					self.login();
 				},
-				function fail(data, status, headers, config) {
+				function fail(response) {
 					//do work with response
 					//show error to user
 					debugger;
-					var status_code = data.status;
-					var reason = data.data;
+					var status_code = response.status;
+					var reason = response.data;
 					var $translate = $filter('translate');
 					$scope.loading.is = false;
 					//show alert
+					var dialog = null;
 					switch(status_code){
 						case 409:
-							$mdDialog.show(
-						      $mdDialog.alert()
-						        .parent(angular.element(document.querySelector('#content')))
-						        .clickOutsideToClose(true)
-						        .title($translate('SIGNUP.ERRORS.409.TITLE'))
-						        .content($translate('SIGNUP.ERRORS.409.CONTENT'))
-						        .ariaLabel('User Creation Error')
-						        .ok('Got it!')
-						        .targetEvent(ev)
-						    );
+							dialog = $mdDialog.alert()
+								.parent(angular.element(document.querySelector('#content')))
+								.clickOutsideToClose(true)
+								.title($translate('SIGNUP.ERRORS.409.TITLE'))
+								.content($translate('SIGNUP.ERRORS.409.CONTENT'))
+								.ariaLabel('User Creation Error')
+								.ok('Got it!')
+						        .targetEvent(ev);
 							break;
 						case 500:
-							$mdDialog.show(
-							      $mdDialog.alert()
-							        .parent(angular.element(document.querySelector('#content')))
-							        .clickOutsideToClose(true)
-							        .title($translate('SIGNUP.ERRORS.500.TITLE'))
-							        .content($translate('SIGNUP.ERRORS.500.CONTENT'))
-							        .ariaLabel('Server Error')
-							        .ok('Got it!')
-							        .targetEvent(ev)
-							    );
+							dialog = $mdDialog.alert()
+								.parent(angular.element(document.querySelector('#content')))
+								.clickOutsideToClose(true)
+								.title($translate('ERRORS.500.TITLE'))
+								.content($translate('ERRORS.500.CONTENT'))
+								.ariaLabel('Server Error')
+								.ok('Got it!')
+						        .targetEvent(ev);
 							break;
 						default:
-							$mdDialog.show(
-						      $mdDialog.alert()
-						        .parent(angular.element(document.querySelector('#content')))
-						        .clickOutsideToClose(true)
-						        .title($translate('SIGNUP.ERRORS.DEFAULT.TITLE'))
-						        .content($translate('SIGNUP.ERRORS.DEFAULT.CONTENT'))
-						        .ariaLabel('Unexpected Error')
-						        .ok('Got it!')
-						        .targetEvent(ev)
-						    );
+							dialog = $mdDialog.alert()
+								.parent(angular.element(document.querySelector('#content')))
+								.clickOutsideToClose(true)
+								.title($translate('ERRORS.DEFAULT.TITLE'))
+								.content($translate('ERRORS.DEFAULT.CONTENT'))
+								.ariaLabel('Unexpected Response from Server')
+								.ok('Got it!')
+						        .targetEvent(ev);
 					}
-				}
+					$mdDialog.show(dialog);
 			);
 		}
 		

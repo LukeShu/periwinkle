@@ -23,11 +23,7 @@ localised.it = {
 			"409": {
 				TITLE:		"Utente Già Esiste",
 				CONTENT:	"Nome utente o indirizzo email è già usato."
-			},
-			"500": {
-				TITLE:		"Qualcosa È Sbagliato",
-				CONTENT:	"C'è un errore del server.  " + _it.CONTACT_ADMIN
-			},
+			}
 		}
 	},
 	LOGIN: {
@@ -39,6 +35,10 @@ localised.it = {
 		}
 	},
 	ERRORS:	{
+		"500": {
+			TITLE:		"Qualcosa È Sbagliato",
+			CONTENT:	"C'è un errore del server.  " + _it.CONTACT_ADMIN
+		},
 		DEFAULT: {
 			TITLE:		"Errore Sconosciuto",
 			CONTENT:	"Una risposta inattesa è stata ricevuta dal server. " + _it.CONTACT_ADMIN
