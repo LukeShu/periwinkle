@@ -41,7 +41,7 @@ localised.en = {
 	ERRORS:	{
 		DEFAULT: {
 			TITLE:		"Unknown Error",
-			CONTENT:	"An unexpected response was recieved from the server. " + _en.CONTACT_ADMIN
+			CONTENT:	"An unexpected response was received from the server. " + _en.CONTACT_ADMIN
 		},
 		CONTACT_ADMIN:	_en.CONTACT_ADMIN
 	},

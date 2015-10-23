@@ -1,6 +1,6 @@
 ﻿// Copyright 2015 Richard Wisniewski
 var _it = {
-	CONTACT_ADMIN:	"Contatta un amministratore."
+	CONTACT_ADMIN:	"Si prega di contattare un amministratore."
 };
 localised.it = {
 	USERNAME_EMAIL:	"Nome utente o email",
@@ -8,16 +8,16 @@ localised.it = {
 	EMAIL:			"Email",
 	PASSWORD:		"Password",
 	LOGIN:			"Accedi",
-	REQUIRED_FIELD:	"Questo campo è necessario.",
+	REQUIRED_FIELD:	"Questo campo è obbligatorio.",
 	SIGNUP: {
-		SIGNUP:						"Inscriviti",
+		SIGNUP:						"Iscriviti",
 		NOT_A_USER:					"Non sei un utente?",
 		ALREADY_USER:				"Sei già un utente?",
 		CONFIRM_EMAIL:				"Conferma email",
-		CONFIRM_EMAIL_NO_MATCH:		"I tuoi indirizzi d'email non sono simili.",
+		CONFIRM_EMAIL_NO_MATCH:		"I tuoi indirizzi d'email non corrispondono.",
 		CONFIRM_PASSWORD:			"Conferma password",
-		CONFIRM_PASSWORD_NO_MATCH:	"I tuoi password non sono simili.",
-		USERNAME_INVALID:			"I nomi untente possono contenere lettere, numeri, _, o -.",
+		CONFIRM_PASSWORD_NO_MATCH:	"Le tue password non corrispondono.",
+		USERNAME_INVALID:			"I nomi utente possono contenere solo lettere, numeri, _, o -.",
 		EMAIL_INVALID:				"Quello non è un indirizzo d'email valido.",
 		ERRORS:{
 			"409": {
@@ -25,23 +25,23 @@ localised.it = {
 				CONTENT:	"Nome utente o indirizzo email è già usato."
 			},
 			"500": {
-				TITLE:		"Qualcosa Sbaglia",
-				CONTENT:	"Il server inconta un errore.  " + _it.CONTACT_ADMIN
+				TITLE:		"Qualcosa È Sbagliato",
+				CONTENT:	"C'è un errore del server.  " + _it.CONTACT_ADMIN
 			},
 		}
 	},
 	LOGIN: {
 		ERRORS: {
 			"401": {
-				TITLE:		"Accesso Falito",
-				CONTENT:	"Nome utente e password non si correspondono.  "
+				TITLE:		"Accesso Fallito",
+				CONTENT:	"Nome utente e password non corrispondono.  "
 			}
 		}
 	},
 	ERRORS:	{
 		DEFAULT: {
 			TITLE:		"Errore Sconosciuto",
-			CONTENT:	"Ricevuto una risposta inattesa dal server. " + _it.CONTACT_ADMIN
+			CONTENT:	"Una risposta inattesa è stata ricevuta dal server. " + _it.CONTACT_ADMIN
 		},
 		CONTACT_ADMIN:	_it.CONTACT_ADMIN
 	},
@@ -52,5 +52,6 @@ localised.it = {
 		DELETE:						"Elimina account"
 	},
 	GROUPS:			"Gruppi",
-	NO_GROUPS:		"Non hai nessuno gruppi adesso."
+	NO_GROUPS:		"Non sei in nessun gruppo al momento.",
+	OK:				"OK"
 };
