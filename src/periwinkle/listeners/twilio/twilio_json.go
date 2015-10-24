@@ -39,3 +39,32 @@ type Message struct {
 type Media struct {
 	Media string `json:"media"`
 }
+
+type Avail_ph_num struct {
+	PhoneNumberList []AvailPhoneNumbers	`json:"available_phone_numbers"`
+	Uri string	`json:"uri"`
+}
+
+type AvailPhoneNumbers struct {
+	FriendlyName string	        `json:"friendly_name"`
+	PhoneNumber	string	        `json:"phone_number"`
+	Lata string 	            `json:"lata"`
+	RateCenter string           `json:"rate_center"`
+	Latitude string             `json:"latitude"`
+	Longitude string	        `json:"longitude"`
+	Region string	            `json:"region"`
+	PostalCode string	        `json:"postal_code"`
+	IsoCountry string	        `json:"iso_country"`
+	AddressRequirements string  `json:"address_requirements"`
+	Beta bool	                `json:"beta"` 
+	Capabilities Capability	    `json:"capabilities"`		
+}
+
+type Capability struct {
+	Voice bool	`json:"voice"`
+	SMS bool	`json:"SMS"`
+	MMS bool	`json:"MMS"`
+}
+
+
+
