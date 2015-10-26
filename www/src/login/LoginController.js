@@ -172,6 +172,7 @@
 						        .targetEvent(ev);
 					}
 					$mdDialog.show(dialog);
+				}
 			);
 		}
 		
