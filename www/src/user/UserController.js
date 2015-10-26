@@ -16,11 +16,11 @@
 
 		$scope.toolbar.buttons = [{
 			aria_label: "LogOut",
-			label:	"Sign out"
+			label:	"SIGNOUT"
 		}];
 		$scope.toolbar.onclick = function(index) {
 			if(index == 0) {
-				//self.togleSignup();
+				$scope.logout();
 			}
 		};
 

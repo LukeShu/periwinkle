@@ -53,6 +53,5 @@ localised.it = {
 	},
 	GROUPS:			"Gruppi",
 	NO_GROUPS:		"Non sei in nessun gruppo al momento.",
-	OK:				"OK",
-	SIGNOUT:		"Esci"
+	OK:				"OK"
 };

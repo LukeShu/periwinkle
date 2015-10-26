@@ -53,5 +53,6 @@ localised.en = {
 	},
 	GROUPS:			"Groups",
 	NO_GROUPS:		"You are not currently in any groups.",
-	OK:				"OK"
+	OK:				"OK",
+	SIGNOUT:		"Sign out"
 };

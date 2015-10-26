@@ -44,7 +44,7 @@
 					function success(response) {
 						//do work with response
 						debugger;
-						self.reset();
+						userService.reset();
 						$location.path('/login').replace();
 					},
 					function fail(response) {
