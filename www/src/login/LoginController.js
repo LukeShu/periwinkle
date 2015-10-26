@@ -60,7 +60,6 @@
 			}).then(
 				function success(response) {
 					//do work with response
-					debugger;
 					userService.session_id = response.data.session_id;
 					userService.user_id = response.data.user_id;
 					$location.path('/user').replace();
@@ -68,7 +67,6 @@
 				function fail(response) {
 					//do work with response
 					//show error to user
-					debugger;
 					var status_code = response.status;
 					var reason = response.data;
 					var $translate = $filter('translate');
@@ -133,7 +131,6 @@
 				function fail(response) {
 					//do work with response
 					//show error to user
-					debugger;
 					var status_code = response.status;
 					var reason = response.data;
 					var $translate = $filter('translate');
