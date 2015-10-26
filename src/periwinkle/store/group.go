@@ -1,5 +1,6 @@
 // Copyright 2015 Davis Webb
 // Copyright 2015 Luke Shumaker
+// Copyright 2015 Guntas Grewal
 
 package store
 
@@ -52,13 +53,21 @@ func GetGroupById(db *gorm.DB, id string) *Group {
 	return &o
 }
 
+// NOT TESTED
 func GetGroupByAddress(db *gorm.DB, medium string, address string) *Group {
-	panic("TODO: ORM")
+	var o Group
+	if result := db.Where("address =?", medium).Find(&o); result.Error != nil {
+		if result.RecordNotFound(){
+			return nil
+		}
+		panic(result.Error)
+	}
+	return &o
 }
 
-func getGroupAddressesByMedium(db *gorm.DB, medium string) *GroupAddress {
+func getGroupAddressesByMedium(db *gorm.DB, medium string, groupId string) *GroupAddress {
 	var o GroupAddress
-	if result := db.Where("medium =?", medium).Find(&o); result.Error != nil {
+	if result := db.Where("medium =? and group_id =?", medium, groupId).Find(&o); result.Error != nil {
 		if result.RecordNotFound(){
 			return nil
 		}
