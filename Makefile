@@ -1,5 +1,5 @@
 # Set NET='' on the command line to not try to update things
-NET ?= FORCE
+#NET ?= FORCE
 
 # Set Q='' on the command line to enable verbose building
 Q = @
