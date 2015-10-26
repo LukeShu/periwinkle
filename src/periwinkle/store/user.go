@@ -11,6 +11,7 @@ import (
 	"httpentity/util"
 	"io"
 	"strings"
+	"errors"
 )
 
 var _ he.Entity = &User{}
@@ -77,6 +78,19 @@ func (u *User) SetPassword(password string) error {
 func (u *User) CheckPassword(password string) bool {
 	err := bcrypt.CompareHashAndPassword(u.PwHash, []byte(password))
 	return err == nil
+}
+
+var BadOldPasswordErr = errors.New("Old password was incorrect")
+
+func (u *User) UpdatePassword(db *gorm.DB, newPass string, oldPass string) error {
+	if !u.CheckPassword(oldPass) {
+		return BadOldPasswordErr
+	}
+	if err := u.SetPassword(newPass); err != nil {
+		return err
+	}
+	u.Save(db)
+	return nil
 }
 
 func NewUser(db *gorm.DB, name string, password string, email string) *User {
