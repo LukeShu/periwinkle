@@ -69,7 +69,7 @@ clean:
 	$(Q)printf '%s' '$($*)' > .tmp$@ && { cmp -s .tmp$@ $@ && rm -f -- .tmp$@ || mv -Tf .tmp$@ $@; } || { rm -f -- .tmp$@; false; }
 
 gofmt:
-	GOPATH='$(topdir)' gofmt -d $(addprefix src/,$(packages))
+	gofmt -d $(addprefix src/,$(packages))
 govet:
 	GOPATH='$(topdir)' go vet $(packages)
 .PHONY: gofmt govet
