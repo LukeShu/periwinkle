@@ -56,6 +56,17 @@ func GetGroupByAddress(db *gorm.DB, medium string, address string) *Group {
 	panic("TODO: ORM")
 }
 
+func getGroupAddressesByMedium(db *gorm.DB, medium string) *GroupAddress {
+	var o GroupAddress
+	if result := db.Where("medium =?", medium).Find(&o); result.Error != nil {
+		if result.RecordNotFound(){
+			return nil
+		}
+		panic(result.Error)
+	}
+	return &o
+}
+
 func NewGroup(db *gorm.DB, name string) *Group {
 	o := Group{Id: name}
 	if err := db.Create(&o).Error; err != nil {
