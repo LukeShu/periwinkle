@@ -184,7 +184,19 @@ func (d t_dirUsers) Methods() map[string]func(he.Request) he.Response {
 
 func (d t_dirUsers) Subentity(name string, req he.Request) he.Entity {
 	sess := req.Things["session"].(*Session)
-	if sess == nil || sess.UserId != name {
+	if sess == nil {
+		db := req.Things["db"].(*gorm.DB)
+                hash, ok := req.Entity.(map[string]interface{}); if !ok { return nil }
+		username, ok := hash["username"].(string)      ; if !ok { return nil }
+                password, ok := hash["password"].(string)      ; if !ok { return nil }
+                var user *User
+		user = GetUserById(db, username)
+		if !user.CheckPassword(password) {
+			return nil
+		} else {
+			return user
+		}
+	} else if sess.UserId != name {
 		return nil
 	}
 	db := req.Things["db"].(*gorm.DB)
