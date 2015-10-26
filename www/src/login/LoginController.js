@@ -61,8 +61,8 @@
 				function success(response) {
 					//do work with response
 					debugger;
-					userService.session_id = data.data.session_id;
-					userService.user_id = data.data.user_id;
+					userService.session_id = response.data.session_id;
+					userService.user_id = response.data.user_id;
 					$location.path('/user').replace();
 				},
 				function fail(response) {
