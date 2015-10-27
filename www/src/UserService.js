@@ -12,7 +12,6 @@
 		self.reset = function() {
 			self.user_id = '';
 			self.session_id = '';
-			debugger;
 		};
 		self.reset();
 		
@@ -28,7 +27,7 @@
 				},
 				function fail(response) {
 					self.reset();
-					fail_cb(reponse.status);
+					fail_cb(response.status);
 				}
 			);
 		};

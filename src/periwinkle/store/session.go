@@ -87,7 +87,7 @@ func newFileSession() t_fileSession {
 			} else {
 				return ret.StatusOK(sess)
 			}
-		}
+		},
 		"POST": func(req he.Request) he.Response {
 			db := req.Things["db"].(*gorm.DB)
 			badbody := req.StatusBadRequest(heutil.NetString("submitted body not what expected"))
