@@ -12,7 +12,7 @@
 		self.reset = function() {
 			self.user_id = '';
 			self.session_id = '';
-			self.redir_on_login = null;
+			self.loginRedir = null;
 		};
 		self.reset();
 		

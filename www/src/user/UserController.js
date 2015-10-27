@@ -80,7 +80,8 @@
 			},
 			function noSession_cb() {
 				debugger;
-				userService.redir_on_login = $location.path();
+				userService.loginRedir.has = true;
+				userService.loginRedir.message = $location.path();
 				$location.path('/login').replace();
 			}
 		);

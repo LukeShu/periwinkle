@@ -1,6 +1,12 @@
 <!-- // Copyright 2015 Richard Wisniewski -->
 <div style="max-width: 25em; margin-left: auto; margin-right: auto;">
 
+<md-card ng-if="login.redir.has">
+	<md-card-content>
+		<p>{{ login.redir.message | translate }}</p>
+	</md-card-content>
+</md-card>
+
 <div ng-if="!login.isSignup">
 	<md-card id="login">
 		<form name="loginForm" ng-submit="login.login($event)">
