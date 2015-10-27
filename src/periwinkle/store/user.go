@@ -11,6 +11,7 @@ import (
 	"httpentity/util"
 	"io"
 	"strings"
+	"errors"
 )
 
 var _ he.Entity = &User{}
@@ -77,6 +78,33 @@ func (u *User) SetPassword(password string) error {
 func (u *User) CheckPassword(password string) bool {
 	err := bcrypt.CompareHashAndPassword(u.PwHash, []byte(password))
 	return err == nil
+}
+
+var BadPasswordErr = errors.New("Password was incorrect")
+
+func (u *User) UpdatePassword(db *gorm.DB, newPass string, oldPass string) error {
+	if !u.CheckPassword(oldPass) {
+		return BadPasswordErr
+	}
+	if err := u.SetPassword(newPass); err != nil {
+		return err
+	}
+	u.Save(db)
+	return nil
+}
+
+func (u *User) UpdateEmail(db *gorm.DB, newEmail string, pw string) {
+	if !u.CheckPassword(pw) {
+		panic("Password was incorrect")
+	}
+	for _, addr := range u.Addresses {
+		if addr.Medium == "email" {
+			addr.Address = newEmail
+			if err := db.Save(&addr).Error; err != nil {
+				panic(err)
+			}
+		}
+	}
 }
 
 func NewUser(db *gorm.DB, name string, password string, email string) *User {
@@ -170,7 +198,19 @@ func (d t_dirUsers) Methods() map[string]func(he.Request) he.Response {
 
 func (d t_dirUsers) Subentity(name string, req he.Request) he.Entity {
 	sess := req.Things["session"].(*Session)
-	if sess == nil || sess.UserId != name {
+	if sess == nil {
+		db := req.Things["db"].(*gorm.DB)
+                hash, ok := req.Entity.(map[string]interface{}); if !ok { return nil }
+		username, ok := hash["username"].(string)      ; if !ok { return nil }
+                password, ok := hash["password"].(string)      ; if !ok { return nil }
+                var user *User
+		user = GetUserById(db, username)
+		if !user.CheckPassword(password) {
+			return nil
+		} else {
+			return user
+		}
+	} else if sess.UserId != name {
 		return nil
 	}
 	db := req.Things["db"].(*gorm.DB)

@@ -7,7 +7,7 @@
 		.controller('PeriwinkleController', ['$scope', 'UserService', PeriwinkleController]);
 		
 	function PeriwinkleController ($scope, userService) {
-		var resetHeader = function() {
+		var reset = function() {
 			$scope.sidenav = {
 				exists: false,
 				items: [],
@@ -25,8 +25,14 @@
 			$scope.loading = {
 				is:	false
 			};
+			$scope.originalEvent = null;
 		}
-		$scope.resetHeader = resetHeader;
+		$scope.reset = reset;
+		
+		$scope.openMenu = function($mdOpenMenu, ev) {
+			$scope.originalEvent = ev;
+			$mdOpenMenu(ev);
+		};
 		
 		$scope.logout = function () {
 			$scope.loading.is = true;

@@ -10,7 +10,7 @@
 		//gives us an anchor to the outer object from within sub objects or functions
 		var self = this;
 		//clears the toolbar and such so we can set it up for this view
-		$scope.resetHeader();
+		$scope.reset();
 		//set up public fields
 		self.username = '';
 		self.password = '';
@@ -60,15 +60,13 @@
 			}).then(
 				function success(response) {
 					//do work with response
-					debugger;
-					userService.session_id = data.data.session_id;
-					userService.user_id = data.data.user_id;
+					userService.session_id = response.data.session_id;
+					userService.user_id = response.data.user_id;
 					$location.path('/user').replace();
 				},
 				function fail(response) {
 					//do work with response
 					//show error to user
-					debugger;
 					var status_code = response.status;
 					var reason = response.data;
 					var $translate = $filter('translate');
@@ -133,7 +131,6 @@
 				function fail(response) {
 					//do work with response
 					//show error to user
-					debugger;
 					var status_code = response.status;
 					var reason = response.data;
 					var $translate = $filter('translate');
