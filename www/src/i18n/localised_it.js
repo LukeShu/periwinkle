@@ -28,7 +28,7 @@ localised.it = {
 	},
 	LOGIN: {
 		ERRORS: {
-			"401": {
+			"403": {
 				TITLE:		"Accesso Fallito",
 				CONTENT:	"Nome utente e password non corrispondono.  "
 			}

@@ -3,7 +3,7 @@
 
 <div ng-if="!login.isSignup">
 	<md-card id="login">
-		<form name="loginForm" ng-submit="login.login()">
+		<form name="loginForm" ng-submit="login.login($event)">
 		<md-card-content layout="column">
 			<md-input-container>
 				<label>{{ "USERNAME_EMAIL" | translate }}</label>

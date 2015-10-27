@@ -28,7 +28,7 @@ localised.en = {
 	},
 	LOGIN: {
 		ERRORS: {
-			"401": {
+			"403": {
 				TITLE:		"Login Failed",
 				CONTENT:	"Username or password do not match."
 			}

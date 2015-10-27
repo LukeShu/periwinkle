@@ -44,7 +44,7 @@
 		}
 		
 		//public functions
-		this.login = function() {
+		this.login = function($event) {
 			//http login api call
 			$scope.loading.is = true;
 			$http({
@@ -74,15 +74,15 @@
 					//show alert
 					var dialog = null;
 					switch(status_code){
-						case 401:
+						case 403:
 							dialog = $mdDialog.alert()
 								.parent(angular.element(document.querySelector('#content')))
 								.clickOutsideToClose(true)
-								.title($translate('LOGIN.ERRORS.401.TITLE'))
-								.content($translate('LOGIN.ERRORS.401.CONTENT'))
+								.title($translate('LOGIN.ERRORS.403.TITLE'))
+								.content($translate('LOGIN.ERRORS.403.CONTENT'))
 								.ariaLabel('Invalid login')
 								.ok('Got it!')
-						        .targetEvent(ev);
+						        .targetEvent($event);
 							break;
 						case 500:
 							dialog = $mdDialog.alert()
@@ -92,7 +92,7 @@
 								.content($translate('ERRORS.500.CONTENT'))
 								.ariaLabel('Server Error')
 								.ok('Got it!')
-						        .targetEvent(ev);
+						        .targetEvent($event);
 							break;
 						default:
 							dialog = $mdDialog.alert()
@@ -102,7 +102,7 @@
 								.content($translate('ERRORS.DEFAULT.CONTENT'))
 								.ariaLabel('Unexpected Response from Server')
 								.ok('Got it!')
-						        .targetEvent(ev);
+						        .targetEvent($event);
 					}
 					$mdDialog.show(dialog);
 				}
