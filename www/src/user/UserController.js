@@ -80,7 +80,7 @@
 			},
 			function noSession_cb() {
 				debugger;
-				$scope.redir_on_login = $location.path();
+				userService.redir_on_login = $location.path();
 				$location.path('/login').replace();
 			}
 		);

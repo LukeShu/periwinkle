@@ -54,9 +54,9 @@
 					debugger;
 					userService.session_id = response.data.session_id;
 					userService.user_id = response.data.user_id;
-					if($scope.redir_on_login != null) {
-						var redir = $scope.redir_on_login;
-						$scope.redir_on_login = null;
+					if(userService.redir_on_login != null) {
+						var redir = userService.redir_on_login;
+						userService.redir_on_login = null;
 						$location.path(redir).replace();
 					} else {
 						$location.path('/user').replace();
