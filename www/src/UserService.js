@@ -16,7 +16,7 @@
 				has:		false,
 				path:		null,
 				message:	null
-			}
+			};
 		};
 		self.reset();
 		
