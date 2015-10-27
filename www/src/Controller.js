@@ -7,6 +7,10 @@
 		.controller('PeriwinkleController', ['$scope', '$http', 'UserService', '$location', PeriwinkleController]);
 		
 	function PeriwinkleController ($scope, $http, userService, $location) {
+		var self = this;
+		
+		self.redir_on_login = null;
+		
 		var reset = function() {
 			$scope.sidenav = {
 				exists: false,

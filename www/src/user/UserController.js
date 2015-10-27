@@ -4,9 +4,9 @@
 
 	angular
 		.module('user')
-		.controller('UserController', ['$cookies', '$http', '$scope', '$interval', 'UserService', UserController]);
+		.controller('UserController', ['$cookies', '$http', '$scope', '$interval', 'UserService', '$location', UserController]);
 
-	function UserController($cookies, $http, $scope, $interval, userService) {
+	function UserController($cookies, $http, $scope, $interval, userService, $location) {
 		//gives us an anchor to the outer object from within sub objects or functions
 		var self = this;
 		//clears the toolbar and such so we can set it up for this view
@@ -60,6 +60,9 @@
 					//show error to user
 					$scope.loading.is = false;
 					debugger;
+				},
+				function noSession_cb() {
+					$scope.redir_on_login = $location
 				}
 			);
 		};
