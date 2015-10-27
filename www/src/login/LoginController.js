@@ -36,7 +36,7 @@
 			has: false,
 			message: null
 		};
-		if(userService.loginRedir != null) {
+		if(!userService.loginRedir.has) {
 			self.redir.has = true;
 			self.redir.message = userService.loginRedir.message;
 		}

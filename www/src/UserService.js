@@ -12,7 +12,11 @@
 		self.reset = function() {
 			self.user_id = '';
 			self.session_id = '';
-			self.loginRedir = null;
+			self.loginRedir = {
+				has:		false,
+				path:		null,
+				message:	null
+			}
 		};
 		self.reset();
 		
