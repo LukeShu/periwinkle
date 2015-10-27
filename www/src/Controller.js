@@ -26,7 +26,7 @@
 			};
 			$scope.toolbar.warn = {
 				exists:		false,
-				message:	null
+				message:	''
 			};
 			$scope.expandMenu = {
 				exists: false
