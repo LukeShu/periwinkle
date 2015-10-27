@@ -32,13 +32,9 @@
 		}; */
 		
 		//for login redir;
-		self.redir = {
-			has: false,
-			message: null
-		};
 		if(userService.loginRedir.has == true) {
-			self.redir.has = true;
-			self.redir.message = userService.loginRedir.message;
+			$scope.toolbar.warn.exists = true;
+			$scope.toolbar.warm.message = userService.loginRedir.message;
 		}
 		
 		debugger;
@@ -64,7 +60,7 @@
 					debugger;
 					userService.session_id = response.data.session_id;
 					userService.user_id = response.data.user_id;
-					if(self.redir.has) {
+					if(userService.loginRedir.has) {
 						var redir = userService.loginRedir.path;
 						userService.loginRedir = null;
 						$location.path(redir).replace();

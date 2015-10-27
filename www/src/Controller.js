@@ -21,7 +21,11 @@
 				exists: true,
 				title: '',
 				buttons: [],
-				onclick: function(){}
+				onclick: function(){},
+				warn: {
+					exists:		false,
+					message:	''
+				}
 			};
 			$scope.expandMenu = {
 				exists: false

@@ -39,4 +39,7 @@
 	<md-button ng-if="expandMenu.exists" class="md-icon-button" aria-label="More">
 		<md-icon md-svg-icon="assets/svg/more_vert.svg"></md-icon>
 	</md-button>
-</div></md-toolbar>
+</md-toolbar>
+<md-toolbar class="md-warn" ng-if="toolbar.warn.exists">
+	{{ toolbar.warn.message | translate }}
+</md-toolbar>
