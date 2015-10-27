@@ -61,9 +61,9 @@
 			}).then(
 				function success(response) {
 					//do work with response
+					debugger;
 					userService.session_id = response.data.session_id;
 					userService.user_id = response.data.user_id;
-					debugger;
 					if($scope.redir_on_login != null) {
 						var redir = $scope.redir_on_login;
 						$scope.redir_on_login = null;
