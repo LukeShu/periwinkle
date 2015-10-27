@@ -82,11 +82,7 @@ func newFileSession() t_fileSession {
 	r.methods = map[string]func(he.Request) he.Response{
 		"GET": func(req he.Request) he.Response {
 			sess := req.Things["session"].(*Session)
-			if sess == nil {
-				return req.StatusOK(make(map[string]interface{}))
-			} else {
-				return req.StatusOK(sess)
-			}
+			return req.StatusOK(sess)
 		},
 		"POST": func(req he.Request) he.Response {
 			db := req.Things["db"].(*gorm.DB)
