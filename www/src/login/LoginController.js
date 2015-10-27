@@ -63,7 +63,7 @@
 					//do work with response
 					userService.session_id = response.data.session_id;
 					userService.user_id = response.data.user_id;
-					if($scope.redir_on_login == null) {
+					if($scope.redir_on_login != null) {
 						var redir = $scope.redir_on_login;
 						debugger;
 						$scope.redir_on_login = null;
