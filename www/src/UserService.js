@@ -22,7 +22,8 @@
 				url:	'/v1/session'
 			}).then(
 				function success(response) {
-				
+					self.user_id = response.data.user_id;
+					self.session_id = response.data.session_id;
 					success_cb();
 				},
 				function fail(response) {

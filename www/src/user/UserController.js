@@ -67,6 +67,14 @@
 			
 		};
 		
-		self.reload();
+		//check and load
+		userService.validate(
+			function success() {
+				self.reload();
+			},
+			function fail(status) {
+				debugger;
+			}
+		);
 	}
 })();
