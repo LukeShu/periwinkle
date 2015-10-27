@@ -15,10 +15,11 @@
 		};
 		self.reset();
 		
-		self.validate = function(sucess_cb, fail_cb) {
+		self.validate = function(success_cb, fail_cb) {
 			$http({
 				method:	'GET',
-				url:	'/v1/session'
+				url:	'/v1/session',
+				responseType: 'json'
 			}).then(
 				function success(response) {
 					self.user_id = response.data.user_id;
