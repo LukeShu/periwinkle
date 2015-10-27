@@ -15,16 +15,23 @@
 		};
 		self.reset();
 		
-		self.validate = function(success_cb, fail_cb) {
+		self.validate = function(success_cb, fail_cb, noSession_cb) {
 			$http({
 				method:	'GET',
 				url:	'/v1/session',
 				responseType: 'json'
 			}).then(
 				function success(response) {
-					self.user_id = response.data.user_id;
-					self.session_id = response.data.session_id;
-					success_cb();
+					if(!response.data) {
+						//the user isnt logged in
+						self.reset();
+						noSession_cb();
+					}	else {
+						//they are
+						self.user_id = response.data.user_id;
+						self.session_id = response.data.session_id;
+						success_cb();
+					}
 				},
 				function fail(response) {
 					self.reset();
