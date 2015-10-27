@@ -46,7 +46,8 @@
 				},
 				data: {
 					session_id: userService.session_id
-				}
+				},
+				responseType: 'json'
 			}).then(
 				function success(response) {
 					//do work with response
