@@ -34,7 +34,7 @@
 		//for login redir;
 		if(userService.loginRedir.has == true) {
 			$scope.toolbar.warn.exists = true;
-			$scope.toolbar.warm.message = userService.loginRedir.message;
+			$scope.toolbar.warn.message = userService.loginRedir.message;
 		}
 		
 		debugger;
