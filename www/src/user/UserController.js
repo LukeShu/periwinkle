@@ -62,7 +62,8 @@
 					debugger;
 				},
 				function noSession_cb() {
-					$scope.redir_on_login = $location
+					$scope.redir_on_login = $locationn.path();
+					$location.path('/login').replace();
 				}
 			);
 		};

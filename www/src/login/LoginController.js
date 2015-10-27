@@ -63,7 +63,7 @@
 					//do work with response
 					userService.session_id = response.data.session_id;
 					userService.user_id = response.data.user_id;
-					$location.path('/user').replace();
+					$location.path($scope.redir_on_login == null ? '/user' : $scope.redir_on_login).replace();
 				},
 				function fail(response) {
 					//do work with response
