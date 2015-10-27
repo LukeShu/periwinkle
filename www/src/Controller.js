@@ -4,9 +4,9 @@
 
 	angular
 		.module('periwinkle')
-		.controller('PeriwinkleController', ['$scope', '$http', 'UserService', PeriwinkleController]);
+		.controller('PeriwinkleController', ['$scope', '$http', 'UserService', '$location', PeriwinkleController]);
 		
-	function PeriwinkleController ($scope, $http, userService) {
+	function PeriwinkleController ($scope, $http, userService, $location) {
 		var reset = function() {
 			$scope.sidenav = {
 				exists: false,
