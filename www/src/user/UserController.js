@@ -52,11 +52,13 @@
 				function success(response) {
 					//do work with response
 					self.userData = response.data;
+					$scope.loading.is = false;
 					debugger;
 				},
 				function fail(response) {
 					//do work with response
 					//show error to user
+					$scope.loading.is = false;
 					debugger;
 				}
 			);
