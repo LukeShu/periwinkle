@@ -80,6 +80,14 @@ type t_fileSession struct {
 func newFileSession() t_fileSession {
 	r := t_fileSession{}
 	r.methods = map[string]func(he.Request) he.Response{
+		"GET": func(req he.Request) he.Response {
+			sess := req.Things["session"].(*Session)
+			if sess == nil {
+				return ret.StatusOK(make(map[string]interface{}))
+			} else {
+				return ret.StatusOK(sess)
+			}
+		}
 		"POST": func(req he.Request) he.Response {
 			db := req.Things["db"].(*gorm.DB)
 			badbody := req.StatusBadRequest(heutil.NetString("submitted body not what expected"))
