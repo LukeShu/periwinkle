@@ -31,17 +31,7 @@
 			}
 		}; */
 		
-		//check if already loged in
-		var sessionID = $cookies.get("sessionID");
-		if(sessionID !== undefined) {
-			//show loading spinner
-			//validate sessionID
-			//if valid take down spinner
-			//if invalid (or error)
-				//show login screen
-				//clear cookie
-				//show warning bar
-		}
+		debugger;
 		
 		//public functions
 		this.login = function($event) {
