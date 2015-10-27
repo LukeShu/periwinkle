@@ -22,10 +22,11 @@
 				title: '',
 				buttons: [],
 				onclick: function(){},
-				warn: {
-					exists:		false,
-					message:	''
-				}
+				warn: null
+			};
+			$scope.toolbar.warn = {
+				exists:		false,
+				message:	null
 			};
 			$scope.expandMenu = {
 				exists: false
