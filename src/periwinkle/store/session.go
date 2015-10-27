@@ -83,9 +83,9 @@ func newFileSession() t_fileSession {
 		"GET": func(req he.Request) he.Response {
 			sess := req.Things["session"].(*Session)
 			if sess == nil {
-				return ret.StatusOK(make(map[string]interface{}))
+				return req.StatusOK(make(map[string]interface{}))
 			} else {
-				return ret.StatusOK(sess)
+				return req.StatusOK(sess)
 			}
 		},
 		"POST": func(req he.Request) he.Response {
