@@ -3,8 +3,30 @@
 
 <div flex="50" flex-sm="100">
 <md-card id="user">
-	<md-card-content>
+	<md-toolbar class="md-toolbar-tools">
 		<h1>{{ user.username }}</h1>
+		<!-- central gap -->
+		<span flex=""></span>
+		<md-menu>
+			<md-button aria-label="menu" class="md-icon-button" ng-click="openMenu($mdOpenMenu, $event)" >
+				<md-icon md-svg-src="assets/svg/menu.svg"></md-icon>
+			</md-button>
+			<md-menu-content>
+				<md-menu-item>
+					<md-button class="md-button md-primary" aria-label="delete account" ng-click="user.delete()">
+						{{ "USER.DELETE" | translate }}
+					</md-button>
+				</md-menu-item>
+				<md-menu-item>
+					<md-button class="md-button md-primary" aria-label="change password" ng-click="user.changePassword()">
+						{{ "USER.CHANGE_PASSWORD" | translate }}
+					</md-button>
+				</md-menu-item>
+			</md-menu-content>
+		</md-menu>
+	</md-toolbar>
+	
+	<md-card-content>
 		<div layout="row" layout-align="space-between center">
 			<p>Email:  {{user.email}}</p>
 			<md-button class="md-button md-primary" aria-label="change Email" ng-click="user.changeEmail()">
@@ -13,14 +35,6 @@
 		</div>
 		<p>Session: {{user.sessionID}}</p>
 	</md-card-content>
-	<div layout="row" layout-align="space-between center">
-		<md-button class="md-button md-primary" aria-label="delete account" ng-click="user.delete()">
-			{{ "USER.DELETE" | translate }}
-		</md-button>
-		<md-button class="md-button md-primary" aria-label="change password" ng-click="user.changePassword()">
-			{{ "USER.CHANGE_PASSWORD" | translate }}
-		</md-button>
-	</div>
 </md-card>
 </div>
 
