@@ -4,9 +4,9 @@
 
 	angular
 		.module('periwinkle.UserService', [])
-		.service('UserService', [UserService]);
+		.service('UserService', ['$http', UserService]);
 		
-	function UserService () {
+	function UserService ($http) {
 		var self = this;
 		
 		self.reset = function() {
