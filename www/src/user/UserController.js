@@ -60,10 +60,6 @@
 					//show error to user
 					$scope.loading.is = false;
 					debugger;
-				},
-				function noSession_cb() {
-					$scope.redir_on_login = $locationn.path();
-					$location.path('/login').replace();
 				}
 			);
 		};
@@ -81,6 +77,10 @@
 			},
 			function fail(status) {
 				debugger;
+			},
+			function noSession_cb() {
+				$scope.redir_on_login = $locationn.path();
+				$location.path('/login').replace();
 			}
 		);
 	}
