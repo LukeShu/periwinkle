@@ -1,8 +1,11 @@
 # Basic API design.
 
-There are a number of paths that respond to [HTTP][RFC-2616] `POST`,
-`PUT`, [`PATCH`][RFC-5789], `DELETE`, and `GET` requests, and may
-return a document in response.
+The API is accessible over the [HTTP protocol][RFC-7230].
+
+The HTTP resources use the
+[standard HTTP semantics and request types][RFC-7231]; `OPTIONS`,
+`HEAD`, `GET`, `DELETE`, `POST`, `PUT`, as well as
+[`PATCH`][RFC-5789].
 
 For actions requiring authentication, there will be a session token
 (see below for how to get a token).  All requests that require
@@ -25,18 +28,19 @@ the request shall be interpreted as a request of the type specified by
 that field, instead of a `POST` request.  Even if the specified
 `_method` does not have a document that is submitted (e.g., `DELETE`),
 because it started as a `POST` request, the submitted document it must
-still contain the `session_id` attribute.
+still contain the `session_id` attribute (if it wishes for the session
+to be recognized by the server).
 
 > Rationale: HTML forms may only submit `GET` and `POST` requests;
 > which is silly, and requires work-arounds to allow browsers to
 > emulate other request types with `POST` requests.
 
-Unless otherwise specified, response documents are always in JSON
-([RFC-7159][], [ECMA-404][]); however, other document formats may be
-added in the future; to request a specific format, either append the
-correct file extension to the path, or specify the MIME type in the
-HTTP `Accept` header (see below for a list of MIME types and file
-extension).
+Unless otherwise specified, response documents always support the JSON
+format ([RFC-7159][], [ECMA-404][]); however, other document formats
+may be added in the future; to request a specific format, either
+append the correct file extension to the path, or specify the MIME
+type in the HTTP `Accept` header (see below for a list of MIME types
+and file extension).
 
 If a file extension is not included in the path, any path may include
 a trailing "/".  A trailing "/" may therefore be used to clarify that
@@ -47,11 +51,22 @@ a file extension.
 > Accept headers are the "correct" thing to do.  Plus it makes
 > prototyping clients easy.
 
+Unless otherwise specified, `POST` and `PUT` requests may be in the
+following formats:
+ - JSON (`Content-Type: application/json`)
+ - [form-data][RFC-2388] (`Content-Type: multipart/form-data`)
+ - [x-www-form-urlencoded][x-www-form-urlencoded] (`Content-Type: application/x-www-form-urlencoded`)
+
+Unless otherwise specified, `PATCH` requests may be in the following
+formats:
+ - [JSON Patch][RFC-6902] (`Content-Type: application/json-patch+json`)
+ - [JSON Merge Patch][RFC-7368] (`Content-Type: application/merge-patch+json`)
+
 For requests in which information is submitted to the server (that is,
-everything but `GET` requests), the document may be submitted in
-either JSON format or [form-data][RFC-2388] format; as specified by
-the HTTP `Content-Type` header (with values of `application/json` and
-`multipart/form-data` respectively).
+everything but `GET` and `DELETE` requests), the document may be
+submitted in either JSON format or  format; as
+specified by the HTTP `Content-Type` header (with values of
+ and `` respectively).
 
 > Rationale: JSON is a pleasure to work with. `form-data` is also
 > supported in order to support submitting requests from HTML forms.
@@ -72,10 +87,20 @@ is returned.
 	"RFC 2616: Hypertext Transfer Protocol -- HTTP/1.1"
 [RFC-5789]: https://tools.ietf.org/html/rfc5789
 	"RFC 5789: PATCH Method for HTTP"
+[RFC-6902]: https://tools.ietf.org/html/rfc6902
+	"RFC 6902: JavaScript Object Notation (JSON) Patch"
 [RFC-7159]: https://tools.ietf.org/html/rfc7159
 	"RFC 7159: The JavaScript Object Notation (JSON) Data Interchange Format"
+[FRC-7230]: https://tools.ietf.org/html/rfc7231
+	"Hypertext Transfer Protocol (HTTP/1.1): Message Syntax and Routing"
+[RFC-7231]: https://tools.ietf.org/html/rfc7231
+	"Hypertext Transfer Protocol (HTTP/1.1): Semantics and Content"
+[RFC-7368]: https://tools.ietf.org/html/rfc7368
+	"RFC 7368: JSON Merge Patch"
 [ECMA-404]: http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf
 	"ECMA-404: The JSON Data Interchange Format"
+[x-www-form-urlencoded]: http://www.w3.org/html/wg/drafts/html/master/semantics.html#application/x-www-form-urlencoded-encoding-algorithm
+	"HTML5.1: x-www-form-urlencoded encoding Algorithm"
 
 # File-extenson / MIME-type mapping
 
