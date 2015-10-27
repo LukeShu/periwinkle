@@ -21,10 +21,10 @@ var dirUsers he.Entity = newDirUsers()
 // Model /////////////////////////////////////////////////////////////
 
 type User struct {
-	Id        string
-	FullName  string
-	PwHash    []byte
-	Addresses []UserAddress
+	Id        string        `json:"user_id"`
+	FullName  string        `json:"fullname"`
+	PwHash    []byte        `json:"-"`
+	Addresses []UserAddress `json:"addresses"`
 }
 
 func (o User) schema(db *gorm.DB) {
@@ -32,10 +32,10 @@ func (o User) schema(db *gorm.DB) {
 }
 
 type UserAddress struct {
-	Id      int64
-	UserId  string
-	Medium  string
-	Address string
+	Id      int64  `json:"-"`
+	UserId  string `json:"-"`
+	Medium  string `json:"medium"`
+	Address string `json:"address"`
 }
 
 func (o UserAddress) schema(db *gorm.DB) {
@@ -54,6 +54,7 @@ func GetUserById(db *gorm.DB, id string) *User {
 		}
 		panic(result.Error)
 	}
+	db.Model(&o).Related(&o.Addresses)
 	return &o
 }
 
@@ -66,6 +67,7 @@ func GetUserByAddress(db *gorm.DB, medium string, address string) *User {
 		}
 		panic(result.Error)
 	}
+	db.Model(&o).Related(&o.Addresses)
 	return &o
 }
 
