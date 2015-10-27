@@ -65,6 +65,7 @@
 					userService.user_id = response.data.user_id;
 					if($scope.redir_on_login) {
 						var redir = $scope.redir_on_login;
+						debugger;
 						$scope.redir_on_login = null;
 						$location.path(redir).replace();
 					} else {
