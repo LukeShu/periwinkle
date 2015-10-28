@@ -53,6 +53,17 @@ func GetGroupById(db *gorm.DB, id string) *Group {
 	return &o
 }
 
+func GetUsersInGroup(db *gorm.DB, groupId string) *[]User {
+	var users []User
+	err := db.Joins("inner join user_addresses on user_addresses.user_id = users.id").Joins(
+	"inner join subscriptions on subscriptions.address_id = user_addresses.id").Where(
+	"subscriptions.group_id = ?", groupId).Find(&users)
+	if err != nil {
+		panic("could not get users in group")
+	}
+	return &users
+}
+
 func GetGroupByAddress(db *gorm.DB, address string) *Group {
 	var o Group
 	if result := db.Joins("inner join groups on group_addresses.group_id = groups.id").Where("group_addresses.address = ?", address).Find(&o); result.Error != nil {
@@ -101,11 +112,34 @@ func (o *Group) Subentity(name string, req he.Request) he.Entity {
 func (o *Group) Methods() map[string]func(he.Request) he.Response {
 	return map[string]func(he.Request) he.Response{
 		"GET": func(req he.Request) he.Response {
-			// TODO: permission check
 			return he.StatusOK(o)
-		},
+	},
 		"PUT": func(req he.Request) he.Response {
-			panic("TODO: API: (*Group).Methods()[\"PUT\"]")
+			db := req.Things["db"].(*gorm.DB)
+			sess := req.Things["session"].(*Session)
+			users = GetUsersInGroup(db,  o.Id)
+			flag := false
+			for i := o; i < range *users; i++ {
+				if sess.UserId == users[i].Id {
+					flag = true
+					break
+				}
+			}
+			if !flag {
+                                return he.StatusForbidden(heutil.NetString("Unauthorized user"))
+                        }
+
+			var new_group Group
+			err := safeDecodeJSON(req.Entity, &new_group)
+			if err != nil {
+				return err.Response()
+			}
+			if o.Id != new_group.Id {
+				return he.StatusConflict(heutil.NetString("Cannot change group id"))
+			}
+			*o = new_group
+			o.Save(db)
+			return he.StatusOK(o)
 		},
 		"PATCH": func(req he.Request) he.Response {
 			panic("TODO: API: (*Group).Methods()[\"PATCH\"]")
