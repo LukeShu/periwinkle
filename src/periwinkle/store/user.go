@@ -197,7 +197,7 @@ func (o *User) Methods() map[string]func(he.Request) he.Response {
 			db := req.Things["db"].(*gorm.DB)
 			sess := req.Things["session"].(*Session)
 			if sess.UserId != o.Id {
-				return req.StatusForbidden(heutil.NetString("Unauthorized user"))
+				return he.StatusForbidden(heutil.NetString("Unauthorized user"))
 			}
 			var new_user User
 			err := safeDecodeJSON(req.Entity, &new_user)
@@ -205,7 +205,7 @@ func (o *User) Methods() map[string]func(he.Request) he.Response {
 				return err.Response()
 			}
 			if o.Id != new_user.Id {
-				return req.StatusConflict(heutil.NetString("Cannot change user id"))
+				return he.StatusConflict(heutil.NetString("Cannot change user id"))
 			}
 			*o = new_user
 			o.Save(db)
@@ -213,7 +213,10 @@ func (o *User) Methods() map[string]func(he.Request) he.Response {
 		},
 		"PATCH": func(req he.Request) he.Response {
 			db := req.Things["db"].(*gorm.DB)
-			// TODO: permissions
+			sess := req.Things["session"].(*Session)
+			if sess.UserId != o.Id {
+				return he.StatusForbidden(heutil.NetString("Unauthorized user"))
+			}
 			patch, ok := req.Entity.(jsonpatch.Patch)
 			if !ok {
 				return httpErrorf(415, "PATCH request must have a patch media type").Response()
@@ -227,7 +230,9 @@ func (o *User) Methods() map[string]func(he.Request) he.Response {
 			if err != nil {
 				return httpErrorf(409, "%v", err).Response()
 			}
-			// TODO: check that .Id didn't change.
+			if o.Id != new_user.Id {
+				return he.StatusConflict(heutil.NetString("Cannot change user id"))
+			}
 			*o = new_user
 			o.Save(db)
 			return he.StatusOK(o)
