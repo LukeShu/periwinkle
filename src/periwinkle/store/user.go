@@ -260,26 +260,32 @@ func newDirUsers() t_dirUsers {
 	r.methods = map[string]func(he.Request) he.Response{
 		"POST": func(req he.Request) he.Response {
 			db := req.Things["db"].(*gorm.DB)
-			badbody := he.StatusUnsupportedMediaType(heutil.NetString("submitted body not what expected"))
-			hash, ok := req.Entity.(map[string]interface{}); if !ok { return badbody }
-			username, ok := hash["username"].(string)      ; if !ok { return badbody }
-			email   , ok := hash["email"].(string)         ; if !ok { return badbody }
-			password, ok := hash["password"].(string)      ; if !ok { return badbody }
+			type postfmt struct {
+				Username             string
+				Email                string
+				Password             string
+				PasswordVerification string `json:"password_verification,omitempty"`
+			}
+			var entity postfmt
+			httperr := safeDecodeJSON(req.Entity, &entity)
+			if httperr != nil {
+				return httperr.Response()
+			}
 
-			if password2, ok := hash["password_verification"].(string); ok {
-				if password != password2 {
+			if entity.PasswordVerification != "" {
+				if entity.Password != entity.PasswordVerification {
 					// Passwords don't match
 					return he.StatusConflict(heutil.NetString("password and password_verification don't match"))
 				}
 			}
 
-			username = strings.ToLower(username)
+			entity.Username = strings.ToLower(entity.Username)
 
-			user := NewUser(db, username, password, email)
+			user := NewUser(db, entity.Username, entity.Password, entity.Email)
 			if user == nil {
-				return he.StatusConflict(heutil.NetString("either that username or password is already taken"))
+				return httpErrorf(409, "either that username or password is already taken").Response()
 			} else {
-				return he.StatusCreated(r, username, req)
+				return he.StatusCreated(r, entity.Username, req)
 			}
 		},
 	}
