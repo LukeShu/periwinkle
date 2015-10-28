@@ -7,6 +7,7 @@ package store
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"github.com/jinzhu/gorm"
 	"golang.org/x/crypto/bcrypt"
 	he "httpentity"
@@ -146,12 +147,12 @@ func (o *User) Methods() map[string]func(he.Request) he.Response {
 			// TODO: permissions
 			entity, ok := req.Entity.(json.Decoder)
 			if !ok {
-				return he.StatusUnsuppordedMediaType("415: PUT request must have a document media type")
+				return he.StatusUnsupportedMediaType(heutil.NetString("415: PUT request must have a document media type"))
 			}
 			var new_user User
 			err := entity.Decode(&new_user)
 			if err != nil {
-				return he.StatusConflict(fmt.Errorf("409 Conflict: %v", err))
+				return he.StatusConflict(heutil.NetString(fmt.Sprintf("409 Conflict: %v", err)))
 			}
 			// TODO: check that .Id didn't change.
 			*o = new_user
@@ -163,12 +164,12 @@ func (o *User) Methods() map[string]func(he.Request) he.Response {
 			// TODO: permissions
 			patch, ok := req.Entity.(jsonpatch.Patch)
 			if !ok {
-				return he.StatusUnsuppordedMediaType("415: PATCH request must have a patch media type")
+				return he.StatusUnsupportedMediaType(heutil.NetString("415: PATCH request must have a patch media type"))
 			}
 			var new_user User
 			err := patch.Apply(o, &new_user)
 			if err != nil {
-				return he.StatusConflict(fmt.Errorf("409 Conflict: %v", err))
+				return he.StatusConflict(heutil.NetString(fmt.Sprintf("409 Conflict: %v", err)))
 			}
 			// TODO: check that .Id didn't change.
 			*o = new_user
