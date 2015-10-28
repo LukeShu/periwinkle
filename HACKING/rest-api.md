@@ -91,7 +91,7 @@ is returned.
 	"RFC 6902: JavaScript Object Notation (JSON) Patch"
 [RFC-7159]: https://tools.ietf.org/html/rfc7159
 	"RFC 7159: The JavaScript Object Notation (JSON) Data Interchange Format"
-[FRC-7230]: https://tools.ietf.org/html/rfc7231
+[RFC-7230]: https://tools.ietf.org/html/rfc7231
 	"Hypertext Transfer Protocol (HTTP/1.1): Message Syntax and Routing"
 [RFC-7231]: https://tools.ietf.org/html/rfc7231
 	"Hypertext Transfer Protocol (HTTP/1.1): Semantics and Content"
