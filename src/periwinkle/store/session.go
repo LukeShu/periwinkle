@@ -86,20 +86,24 @@ func newFileSession() t_fileSession {
 		},
 		"POST": func(req he.Request) he.Response {
 			db := req.Things["db"].(*gorm.DB)
-			badbody := he.StatusUnsupportedMediaType(heutil.NetString("submitted body not what expected"))
-			hash, ok := req.Entity.(map[string]interface{}); if !ok { return badbody }
-			username, ok := hash["username"].(string)      ; if !ok { return badbody }
-			password, ok := hash["password"].(string)      ; if !ok { return badbody }
-			if len(hash) != 2                                       { return badbody }
-
-			var user *User
-			if strings.Contains(username, "@") {
-				user = GetUserByAddress(db, "email", username)
-			} else {
-				user = GetUserById(db, username)
+			type postfmt struct {
+				Username string
+				Password string
+			}
+			var entity postfmt
+			httperr := safeDecodeJSON(req.Entity, &entity)
+			if httperr != nil {
+				return httperr.Response()
 			}
 
-			sess := NewSession(db, user, password)
+			var user *User
+			if strings.Contains(entity.Username, "@") {
+				user = GetUserByAddress(db, "email", entity.Username)
+			} else {
+				user = GetUserById(db, entity.Username)
+			}
+
+			sess := NewSession(db, user, entity.Password)
 			if sess == nil {
 				return he.StatusForbidden(heutil.NetString("Incorrect username/password"))
 			} else {
