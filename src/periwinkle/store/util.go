@@ -7,6 +7,8 @@ import (
 	"crypto/rand"
 	"encoding/json"
 	"github.com/jinzhu/gorm"
+	he "httpentity"
+	"httpentity/util"
 	"io"
 	"jsondiff"
 	"math/big"
@@ -49,18 +51,26 @@ func safeDecodeJSON(in interface{}, out interface{}) HTTPError {
 	var tmp interface{}
 	err := decoder.Decode(&tmp)
 	if err != nil {
-		return httpErrorf(415, "Request body didn't have expected structure: %v", err)
+		return httpErrorf(415, "Couldn't parse: %v", err)
 	}
 	str, err := json.Marshal(tmp)
 	if err != nil {
-		return httpErrorf(500, "Internal data conversion: %v", err)
+		panic(err)
 	}
 	err = json.Unmarshal(str, out)
 	if err != nil {
-		return httpErrorf(415, "Request body didn't have expected structure: %v", err)
+		return httpErrorf(415, "Request body didn't have expected structure (field had wrong data type): %v", err)
 	}
 	if !jsondiff.Equal(tmp, out) {
-		return httpErrorf(415, "Request body didn't have expected structure: %v", err)
+		diff, err := jsondiff.NewJSONPatch(tmp, out)
+		if err != nil {
+			panic(err)
+		}
+		entity := heutil.NetMap{
+			"message": "Request body didn't have expected structure (extra or missing fields).  The included diff would make the request acceptable.",
+			"diff":    diff,
+		}
+		return httpError(he.StatusUnsupportedMediaType(entity))
 	}
 	return nil
 }

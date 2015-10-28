@@ -261,10 +261,10 @@ func newDirUsers() t_dirUsers {
 		"POST": func(req he.Request) he.Response {
 			db := req.Things["db"].(*gorm.DB)
 			type postfmt struct {
-				Username             string
-				Email                string
-				Password             string
-				PasswordVerification string `json:"password_verification,omitempty"`
+				Username             string `json:"username"`
+				Email                string `json:"email"`
+				Password             string `json:"password"`
+				PasswordVerification string `json:"password_verification,omitempty`
 			}
 			var entity postfmt
 			httperr := safeDecodeJSON(req.Entity, &entity)

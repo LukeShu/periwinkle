@@ -87,8 +87,8 @@ func newFileSession() t_fileSession {
 		"POST": func(req he.Request) he.Response {
 			db := req.Things["db"].(*gorm.DB)
 			type postfmt struct {
-				Username string
-				Password string
+				Username string `json:"username"`
+				Password string `json:"password"`
 			}
 			var entity postfmt
 			httperr := safeDecodeJSON(req.Entity, &entity)
