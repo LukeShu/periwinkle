@@ -40,6 +40,7 @@
 		<md-icon md-svg-icon="assets/svg/more_vert.svg"></md-icon>
 	</md-button>
 </md-toolbar>
-<md-toolbar class="md-warn" ng-if="toolbar.warn.exists">
-	{{ toolbar.warn.message | translate }}
+
+<md-toolbar class="md-warn md-padding" ng-if="toolbar.warn.exists">
+	<p style="padding-left: 1em; padding-right: 1em;">{{ toolbar.warn.message | translate }}</p>
 </md-toolbar>
