@@ -86,7 +86,7 @@ func (r *Router) finish(req Request, u *url.URL, res *Response) {
 			// essentially random.  Instead, we should
 			// return an HTTP 300 Multiple Choices.  This
 			// means forking or re-implementing goautoneg.
-			mimetype := goautoneg.Negotiate(req.Headers.Get("Accept"), mimetypes)
+			mimetype := goautoneg.Negotiate(accept, mimetypes)
 			if mimetype == "" {
 				*res = statusNotAcceptable(u, mimetypes)
 			} else {
