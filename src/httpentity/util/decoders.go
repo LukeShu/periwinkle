@@ -81,7 +81,9 @@ func DecoderJSONPatch(r io.Reader, params map[string]string) (interface{}, error
 	if err != nil {
 		return nil, err
 	}
-	return jsonpatch.NewJSONPatch(bytes)
+	var patch jsonpatch.JSONPatch
+	err = json.Unmarshal(bytes, &patch)
+	return patch, err
 }
 
 // application/merge-patch+json => jsonpatch.Patch
@@ -90,7 +92,9 @@ func DecoderJSONMergePatch(r io.Reader, params map[string]string) (interface{}, 
 	if err != nil {
 		return nil, err
 	}
-	return jsonpatch.NewJSONMergePatch(bytes)
+	var patch jsonpatch.JSONMergePatch
+	err = json.Unmarshal(bytes, &patch)
+	return patch, err
 }
 
 // application/octet-stream => io.Reader
