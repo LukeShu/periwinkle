@@ -12,6 +12,8 @@ import (
 	"io"
 	"strings"
 	"errors"
+	"encoding/json"
+	"jsonpatch"
 )
 
 var _ he.Entity = &User{}
@@ -140,10 +142,42 @@ func (o *User) Methods() map[string]func(he.Request) he.Response {
 			return req.StatusOK(o)
 		},
 		"PUT": func(req he.Request) he.Response {
-			panic("TODO: API: (*User).Methods()[\"PUT\"]")
+			db := req.Things["db"].(*gorm.DB)
+			// TODO: permissions
+			entity, ok := req.Entity.(json.Decoder)
+			if !ok {
+				// TODO: return HTTP 415
+				panic("foo")
+			}
+			var new_user User
+			err := entity.Decode(&new_user)
+			if err != nil {
+				// TODO: do an HTTP 409 instead of 500
+				panic(err)
+			}
+			// TODO: check that .Id didn't change.
+			*o = new_user
+			o.Save(db)
+			return req.StatusOK(o)
 		},
 		"PATCH": func(req he.Request) he.Response {
-			panic("TODO: API: (*User).Methods()[\"PATCH\"]")
+			db := req.Things["db"].(*gorm.DB)
+			// TODO: permissions
+			patch, ok := req.Entity.(jsonpatch.Patch)
+			if !ok {
+				// TODO: return HTTP 415
+				panic("foo")
+			}
+			var new_user User
+			err := patch.Apply(o, &new_user)
+			if err != nil {
+				// TODO: do an HTTP 409 instead of 500
+				panic(err)
+			}
+			// TODO: check that .Id didn't change.
+			*o = new_user
+			o.Save(db)
+			return req.StatusOK(o)
 		},
 		"DELETE": func(req he.Request) he.Response {
 			panic("TODO: API: (*User).Methods()[\"DELETE\"]")
