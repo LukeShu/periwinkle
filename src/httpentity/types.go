@@ -31,6 +31,7 @@ import (
 type Router struct {
 	Prefix      string
 	Root        Entity
+	Decoders    map[string]func(io.Reader, map[string]string) (interface{}, error)
 	Middlewares []Middleware
 	Stacktrace  bool
 	LogRequest  bool

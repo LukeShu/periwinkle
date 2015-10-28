@@ -11,8 +11,10 @@ packages = $(sort $(shell find src -type d -name '*.*' -prune -o -type f -name '
 deps += bitbucket.org/ww/goautoneg
 deps += github.com/dchest/captcha
 deps += github.com/djherbis/times
+deps += github.com/evanphx/json-patch
 deps += github.com/go-sql-driver/mysql
 deps += github.com/jinzhu/gorm
+deps += github.com/mattbaird/jsonpatch
 deps += github.com/mattn/go-sqlite3
 deps += golang.org/x/crypto/bcrypt
 

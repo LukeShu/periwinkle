@@ -51,12 +51,13 @@ func (h *Router) serveHTTP(w http.ResponseWriter, r *http.Request) (res Response
 	// parse the submitted entity
 	switch req.Method {
 	case "POST", "PUT", "PATCH":
-		entity, err := ReadEntity(r.Body, r.Header.Get("Content-Type"))
+		mimetype, entity, err := h.ReadEntity(r.Body, r.Header.Get("Content-Type"))
+		// TODO: fix this error handling; how ReadEntity works has changed
 		if entity == nil {
 			if err == nil {
 				res = req.statusUnsupportedMediaType()
 			} else {
-				res = req.StatusBadRequest(heutil.NetString(fmt.Sprintf("reading request body: %s", err)))
+				res = req.StatusBadRequest(heutil.NetString(fmt.Sprintf("reading request body (%q): %s", mimetype, err)))
 			}
 			return
 		} else {
