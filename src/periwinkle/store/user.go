@@ -145,14 +145,10 @@ func (o *User) Methods() map[string]func(he.Request) he.Response {
 		"PUT": func(req he.Request) he.Response {
 			db := req.Things["db"].(*gorm.DB)
 			// TODO: permissions
-			entity, ok := req.Entity.(json.Decoder)
-			if !ok {
-				return he.StatusUnsupportedMediaType(heutil.NetString("415: PUT request must have a document media type"))
-			}
 			var new_user User
-			err := entity.Decode(&new_user)
+			err := saveDecodeJSON(req.Entity, &new_ser)
 			if err != nil {
-				return he.StatusConflict(heutil.NetString(fmt.Sprintf("409 Conflict: %v", err)))
+				return err.Response()
 			}
 			// TODO: check that .Id didn't change.
 			*o = new_user

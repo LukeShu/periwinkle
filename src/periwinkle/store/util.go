@@ -8,6 +8,7 @@ import (
 	"encoding/json"
 	"github.com/jinzhu/gorm"
 	"io"
+	"jsondiff"
 	"math/big"
 )
 
@@ -38,6 +39,30 @@ func SchemaDrop(db *gorm.DB) {
 	db.DropTable(&Group{})
 	db.DropTable(&Medium{})
 	db.DropTable(&Captcha{})
+}
+
+func safeDecodeJSON(in interface{}, out interface{}) HTTPError {
+	decoder, ok := in.(*json.Decoder)
+	if !ok {
+		return httpErrorf(415, "PUT and POST requests must have a document media type")
+	}
+	var tmp interface{}
+	err := decoder.Decode(&tmp)
+	if err != nil {
+		return httpErrorf(415, "Request body didn't have expected structure: %v", err)
+	}
+	str, err := json.Marshal(tmp)
+	if err != nil {
+		return httpErrorf(500, "Internal data conversion: %v", err)
+	}
+	err = json.Unmarshal(str, out)
+	if err != nil {
+		return httpErrorf(415, "Request body didn't have expected structure: %v", err)
+	}
+	if !jsondiff.Equal(tmp, out) {
+		return httpErrorf(415, "Request body didn't have expected structure: %v", err)
+	}
+	return nil
 }
 
 // Simple dump to JSON, good for most entities
