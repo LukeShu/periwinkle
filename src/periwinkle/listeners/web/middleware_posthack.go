@@ -4,7 +4,6 @@ package web
 
 import (
 	he "httpentity"
-	"strings"
 )
 
 type postHack struct{}
@@ -19,7 +18,7 @@ func (p postHack) Before(req *he.Request) {
 	if !ok {
 		return
 	}
-	switch strings.ToUpper(method) {
+	switch method {
 	case "POST", "PUT", "PATCH":
 		// do nothing
 	default:
