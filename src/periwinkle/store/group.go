@@ -117,10 +117,10 @@ func (o *Group) Methods() map[string]func(he.Request) he.Response {
 		"PUT": func(req he.Request) he.Response {
 			db := req.Things["db"].(*gorm.DB)
 			sess := req.Things["session"].(*Session)
-			users = GetUsersInGroup(db,  o.Id)
+			users := GetUsersInGroup(db,  o.Id)
 			flag := false
-			for i := o; i < range *users; i++ {
-				if sess.UserId == users[i].Id {
+			for _, user := range *users {
+				if sess.UserId == user.Id {
 					flag = true
 					break
 				}
@@ -138,7 +138,7 @@ func (o *Group) Methods() map[string]func(he.Request) he.Response {
 				return he.StatusConflict(heutil.NetString("Cannot change group id"))
 			}
 			*o = new_group
-			o.Save(db)
+			//o.Save(db)
 			return he.StatusOK(o)
 		},
 		"PATCH": func(req he.Request) he.Response {
