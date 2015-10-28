@@ -5,7 +5,6 @@
 package store
 
 import (
-	"encoding/json"
 	"errors"
 	"fmt"
 	"github.com/jinzhu/gorm"
@@ -149,7 +148,7 @@ func (o *User) Methods() map[string]func(he.Request) he.Response {
 				return req.StatusForbidden(heutil.NetString("Unauthorized user"))
 			}
 			var new_user User
-			err := saveDecodeJSON(req.Entity, &new_ser)
+			err := safeDecodeJSON(req.Entity, &new_user)
 			if err != nil {
 				return err.Response()
 			}
