@@ -82,11 +82,11 @@ func newFileSession() t_fileSession {
 	r.methods = map[string]func(he.Request) he.Response{
 		"GET": func(req he.Request) he.Response {
 			sess := req.Things["session"].(*Session)
-			return req.StatusOK(sess)
+			return he.StatusOK(sess)
 		},
 		"POST": func(req he.Request) he.Response {
 			db := req.Things["db"].(*gorm.DB)
-			badbody := req.StatusUnsupportedMediaType(heutil.NetString("submitted body not what expected"))
+			badbody := he.StatusUnsupportedMediaType(heutil.NetString("submitted body not what expected"))
 			hash, ok := req.Entity.(map[string]interface{}); if !ok { return badbody }
 			username, ok := hash["username"].(string)      ; if !ok { return badbody }
 			password, ok := hash["password"].(string)      ; if !ok { return badbody }
@@ -101,9 +101,9 @@ func newFileSession() t_fileSession {
 
 			sess := NewSession(db, user, password)
 			if sess == nil {
-				return req.StatusForbidden(heutil.NetString("Incorrect username/password"))
+				return he.StatusForbidden(heutil.NetString("Incorrect username/password"))
 			} else {
-				ret := req.StatusOK(sess)
+				ret := he.StatusOK(sess)
 				cookie := &http.Cookie{
 					Name:     "session_id",
 					Value:    sess.Id,
@@ -120,7 +120,7 @@ func newFileSession() t_fileSession {
 			if sess != nil {
 				sess.Delete(db)
 			}
-			return req.StatusNoContent()
+			return he.StatusNoContent()
 		},
 	}
 	return r

@@ -70,7 +70,7 @@ func (r *Router) finish(req Request, u *url.URL, res *Response) {
 			reason = fmt.Sprintf("%v\n\n%s", err, string(buf))
 			fmt.Fprintf(os.Stderr, "%v\n\n%s", err, string(buf))
 		}
-		*res = req.statusInternalServerError(reason)
+		*res = statusInternalServerError(reason)
 	}
 	// figure out the content type of the response
 	if res.Entity != nil && res.Headers.Get("Content-Type") == "" {
@@ -78,7 +78,7 @@ func (r *Router) finish(req Request, u *url.URL, res *Response) {
 		mimetypes := encoders2mimetypes(encoders)
 		accept := req.Headers.Get("Accept")
 		if len(encoders) > 1 && accept == "" {
-			*res = req.statusMultipleChoices(u, mimetypes)
+			*res = statusMultipleChoices(u, mimetypes)
 		} else {
 			// TODO: long term: In the event of a tie,
 			// goautoneg returns the first match in the
@@ -88,7 +88,7 @@ func (r *Router) finish(req Request, u *url.URL, res *Response) {
 			// means forking or re-implementing goautoneg.
 			mimetype := goautoneg.Negotiate(req.Headers.Get("Accept"), mimetypes)
 			if mimetype == "" {
-				*res = req.statusNotAcceptable(u, mimetypes)
+				*res = statusNotAcceptable(u, mimetypes)
 			} else {
 				res.Headers.Set("Content-Type", mimetype+"; charset=utf-8")
 			}

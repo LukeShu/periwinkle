@@ -49,7 +49,7 @@ func (o *Captcha) Subentity(name string, req he.Request) he.Entity {
 func (o *Captcha) Methods() map[string]func(he.Request) he.Response {
 	return map[string]func(he.Request) he.Response{
 		"GET": func(req he.Request) he.Response {
-			return req.StatusOK(o)
+			return he.StatusOK(o)
 		},
 		"PATCH": func(req he.Request) he.Response {
 			panic("TODO: API: (*Captcha).Methods()[\"PATCH\"]")
@@ -73,7 +73,7 @@ func newDirCaptchas() t_dirCaptchas {
 	r := t_dirCaptchas{}
 	r.methods = map[string]func(he.Request) he.Response{
 		"POST": func(req he.Request) he.Response {
-			return req.StatusCreated(r, NewCaptcha().Id)
+			return he.StatusCreated(r, NewCaptcha().Id, req)
 		},
 	}
 	return r

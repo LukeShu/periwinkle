@@ -102,7 +102,7 @@ func (o *Group) Methods() map[string]func(he.Request) he.Response {
 	return map[string]func(he.Request) he.Response{
 		"GET": func(req he.Request) he.Response {
 			// TODO: permission check
-			return req.StatusOK(o)
+			return he.StatusOK(o)
 		},
 		"PUT": func(req he.Request) he.Response {
 			panic("TODO: API: (*Group).Methods()[\"PUT\"]")
@@ -133,7 +133,7 @@ func newDirGroups() t_dirGroups {
 	r.methods = map[string]func(he.Request) he.Response{
 		"POST": func(req he.Request) he.Response {
 			db := req.Things["db"].(*gorm.DB)
-			badbody := req.StatusUnsupportedMediaType(heutil.NetString(fmt.Sprintf("submitted body not what expected")))
+			badbody := he.StatusUnsupportedMediaType(heutil.NetString(fmt.Sprintf("submitted body not what expected")))
 			hash, ok := req.Entity.(map[string]interface{}); if !ok { return badbody }
 			groupname, ok := hash["groupname"].(string)    ; if !ok { return badbody }
 
@@ -141,9 +141,9 @@ func newDirGroups() t_dirGroups {
 
 			group := NewGroup(db, groupname)
 			if group == nil {
-				return req.StatusConflict(heutil.NetString("a group with that name already exists"))
+				return he.StatusConflict(heutil.NetString("a group with that name already exists"))
 			} else {
-				return req.StatusCreated(r, groupname)
+				return he.StatusCreated(r, groupname, req)
 			}
 		},
 	}

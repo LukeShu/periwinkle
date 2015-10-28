@@ -53,7 +53,7 @@ func (o *Message) Methods() map[string]func(he.Request) he.Response {
 	return map[string]func(he.Request) he.Response{
 		"GET": func(req he.Request) he.Response {
 			// TODO: permission check
-			return req.StatusOK(o)
+			return he.StatusOK(o)
 		},
 	}
 }

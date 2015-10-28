@@ -60,7 +60,7 @@ func (o *ShortUrl) Methods() map[string]func(he.Request) he.Response {
 	return map[string]func(he.Request) he.Response{
 		"GET": func(req he.Request) he.Response {
 			u, _ := url.Parse(o.Dest) // TODO: automatic unmarshal
-			return req.StatusMovedPermanently(u)
+			return he.StatusMovedPermanently(u)
 		},
 	}
 }

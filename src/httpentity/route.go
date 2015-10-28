@@ -28,7 +28,7 @@ func methods2string(methods map[string]func(request Request) Response) string {
 // Takes the normalized path without the leading slash
 func route(entity Entity, req Request, upath string) (ret Response) {
 	if entity == nil {
-		ret = req.statusNotFound()
+		ret = statusNotFound()
 	} else if upath == "" {
 		callmethod := req.Method
 		if callmethod == "HEAD" {
@@ -39,7 +39,7 @@ func route(entity Entity, req Request, upath string) (ret Response) {
 		if method_allowed {
 			ret = handler(req)
 		} else {
-			ret = req.statusMethodNotAllowed(methods2string(methods))
+			ret = statusMethodNotAllowed(methods2string(methods))
 		}
 		if callmethod == "OPTIONS" {
 			ret.Status = 200

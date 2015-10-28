@@ -139,7 +139,7 @@ func (o *User) Subentity(name string, req he.Request) he.Entity {
 func (o *User) Methods() map[string]func(he.Request) he.Response {
 	return map[string]func(he.Request) he.Response{
 		"GET": func(req he.Request) he.Response {
-			return req.StatusOK(o)
+			return he.StatusOK(o)
 		},
 		"PUT": func(req he.Request) he.Response {
 			db := req.Things["db"].(*gorm.DB)
@@ -158,7 +158,7 @@ func (o *User) Methods() map[string]func(he.Request) he.Response {
 			// TODO: check that .Id didn't change.
 			*o = new_user
 			o.Save(db)
-			return req.StatusOK(o)
+			return he.StatusOK(o)
 		},
 		"PATCH": func(req he.Request) he.Response {
 			db := req.Things["db"].(*gorm.DB)
@@ -177,7 +177,7 @@ func (o *User) Methods() map[string]func(he.Request) he.Response {
 			// TODO: check that .Id didn't change.
 			*o = new_user
 			o.Save(db)
-			return req.StatusOK(o)
+			return he.StatusOK(o)
 		},
 		"DELETE": func(req he.Request) he.Response {
 			panic("TODO: API: (*User).Methods()[\"DELETE\"]")
@@ -202,7 +202,7 @@ func newDirUsers() t_dirUsers {
 	r.methods = map[string]func(he.Request) he.Response{
 		"POST": func(req he.Request) he.Response {
 			db := req.Things["db"].(*gorm.DB)
-			badbody := req.StatusUnsupportedMediaType(heutil.NetString("submitted body not what expected"))
+			badbody := he.StatusUnsupportedMediaType(heutil.NetString("submitted body not what expected"))
 			hash, ok := req.Entity.(map[string]interface{}); if !ok { return badbody }
 			username, ok := hash["username"].(string)      ; if !ok { return badbody }
 			email   , ok := hash["email"].(string)         ; if !ok { return badbody }
@@ -211,7 +211,7 @@ func newDirUsers() t_dirUsers {
 			if password2, ok := hash["password_verification"].(string); ok {
 				if password != password2 {
 					// Passwords don't match
-					return req.StatusConflict(heutil.NetString("password and password_verification don't match"))
+					return he.StatusConflict(heutil.NetString("password and password_verification don't match"))
 				}
 			}
 
@@ -219,9 +219,9 @@ func newDirUsers() t_dirUsers {
 
 			user := NewUser(db, username, password, email)
 			if user == nil {
-				return req.StatusConflict(heutil.NetString("either that username or password is already taken"))
+				return he.StatusConflict(heutil.NetString("either that username or password is already taken"))
 			} else {
-				return req.StatusCreated(r, username)
+				return he.StatusCreated(r, username, req)
 			}
 		},
 	}
