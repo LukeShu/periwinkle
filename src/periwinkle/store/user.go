@@ -144,13 +144,18 @@ func (o *User) Methods() map[string]func(he.Request) he.Response {
 		},
 		"PUT": func(req he.Request) he.Response {
 			db := req.Things["db"].(*gorm.DB)
-			// TODO: permissions
+			sess := req.Things["session"].(*Session)
+			if sess.UserId != o.Id {
+				return req.StatusForbidden(heutil.NetString("Unauthorized user"))
+			}
 			var new_user User
 			err := saveDecodeJSON(req.Entity, &new_ser)
 			if err != nil {
 				return err.Response()
 			}
-			// TODO: check that .Id didn't change.
+			if o.Id != new_user.Id {
+				return req.StatusConflict(heutil.NetString("Cannot change user id"))
+			}
 			*o = new_user
 			o.Save(db)
 			return he.StatusOK(o)
