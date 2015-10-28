@@ -135,7 +135,7 @@ func (req Request) StatusTemporaryRedirect(u *url.URL) Response {
 }
 
 // For when the *user* has screwed up a request.
-func (req Request) StatusBadRequest(e NetEntity) Response {
+func (req Request) statusBadRequest(e NetEntity) Response {
 	if e == nil {
 		e = heutil.NetString("400 Bad Request")
 	}
@@ -202,11 +202,14 @@ func (req Request) StatusGone(entity NetEntity) Response {
 	}
 }
 
-func (req Request) statusUnsupportedMediaType() Response {
+func (req Request) StatusUnsupportedMediaType(e NetEntity) Response {
+	if e == nil {
+		e = heutil.NetString("415 Unsupported Media Type")
+	}
 	return Response{
 		Status:  415,
 		Headers: http.Header{},
-		Entity:  heutil.NetString("415 Unsupported Media Type"),
+		Entity:  e,
 	}
 }
 

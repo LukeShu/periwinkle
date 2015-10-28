@@ -3,8 +3,6 @@
 package httpentity
 
 import (
-	"fmt"
-	"httpentity/util"
 	"net/http"
 	"net/url"
 	"strings"
@@ -51,17 +49,9 @@ func (h *Router) serveHTTP(w http.ResponseWriter, r *http.Request) (res Response
 	// parse the submitted entity
 	switch req.Method {
 	case "POST", "PUT", "PATCH":
-		mimetype, entity, err := h.ReadEntity(r.Body, r.Header.Get("Content-Type"))
-		// TODO: fix this error handling; how ReadEntity works has changed
-		if entity == nil {
-			if err == nil {
-				res = req.statusUnsupportedMediaType()
-			} else {
-				res = req.StatusBadRequest(heutil.NetString(fmt.Sprintf("reading request body (%q): %s", mimetype, err)))
-			}
-			return
-		} else {
-			req.Entity = entity
+		resperr := req.readEntity(h, r.Body, r.Header.Get("Content-Type"))
+		if resperr != nil {
+			return *resperr
 		}
 	}
 
@@ -82,5 +72,5 @@ func (h *Router) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 		w.Header().Set(k, strings.Join(v, ", "))
 	}
 	w.WriteHeader(int(res.Status))
-	res.WriteEntity(w)
+	res.writeEntity(w)
 }

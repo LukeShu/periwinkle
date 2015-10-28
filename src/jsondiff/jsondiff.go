@@ -9,10 +9,10 @@
 package jsondiff
 
 import (
-	"jsonpatch"
 	"encoding/json"
 	evan "github.com/evanphx/json-patch"
 	matt "github.com/mattbaird/jsonpatch"
+	"jsonpatch"
 )
 
 // Diff two objects, and produce an RFC 7386 JSON Merge Patch.

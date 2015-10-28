@@ -202,7 +202,7 @@ func newDirUsers() t_dirUsers {
 	r.methods = map[string]func(he.Request) he.Response{
 		"POST": func(req he.Request) he.Response {
 			db := req.Things["db"].(*gorm.DB)
-			badbody := req.StatusBadRequest(heutil.NetString("submitted body not what expected"))
+			badbody := req.StatusUnsupportedMediaType(heutil.NetString("submitted body not what expected"))
 			hash, ok := req.Entity.(map[string]interface{}); if !ok { return badbody }
 			username, ok := hash["username"].(string)      ; if !ok { return badbody }
 			email   , ok := hash["email"].(string)         ; if !ok { return badbody }

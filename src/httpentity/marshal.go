@@ -4,12 +4,13 @@ package httpentity
 
 import (
 	"fmt"
+	"httpentity/util"
 	"io"
 	"mime"
 )
 
 // If the Response has an entity, write it to the given output stream.
-func (r Response) WriteEntity(w io.Writer) error {
+func (r Response) writeEntity(w io.Writer) error {
 	if r.Entity == nil {
 		return nil
 	}
@@ -19,18 +20,22 @@ func (r Response) WriteEntity(w io.Writer) error {
 }
 
 // Read an entity from the input stream, using the given content type.
-//
-// TODO: how this works will probably change in the future to allow
-// supporting other media types.
-func (router *Router) ReadEntity(r io.Reader, contenttype string) (string, interface{}, error) {
+func (req *Request) readEntity(router *Router, reader io.Reader, contenttype string) *Response {
 	mimetype, params, err := mime.ParseMediaType(contenttype)
 	if err != nil {
-		return mimetype, nil, err
+		res := req.statusBadRequest(heutil.NetString(fmt.Sprintf("400 Bad Request: Could not parse Content-Type: %v", err)))
+		return &res
 	}
 	decoder, found_decoder := router.Decoders[mimetype]
 	if !found_decoder {
-		return mimetype, nil, fmt.Errorf("No decoder found: %s", mimetype)
+		res := req.StatusUnsupportedMediaType(heutil.NetString("415 Unsupported Media Type: Unsupported MIME type: "+mimetype))
+		return &res
 	}
-	entity, err := decoder(r, params)
-	return mimetype, entity, err
+	entity, err := decoder(reader, params)
+	if err != nil {
+		res := req.StatusUnsupportedMediaType(heutil.NetString(fmt.Sprintf("415 Unsupported Media Type: Error reading request body (%s): %v", mimetype, err)))
+		return &res
+	}
+	req.Entity = entity
+	return nil
 }
