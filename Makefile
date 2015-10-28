@@ -48,16 +48,16 @@ all: bin
 .PHONY: all
 
 #$(info $(gosrc) $(addprefix src/,$(deps)) $(addprefix .var.,$(cgo_variables)))
-bin pkg: $(gosrc) $(addprefix src/,$(deps)) $(addprefix .var.,$(cgo_variables))
-	GOPATH='$(topdir)' go install $(packages) || $(call DIRFAIL,bin pkg)
+bin: $(gosrc) $(addprefix src/,$(deps)) $(addprefix .var.,$(cgo_variables))
+	GOPATH='$(topdir)' go install $(packages) || $(call DIRFAIL,bin)
 	$(Q)true $(foreach f,$^, && test $@ -nt $f ) || { \
 		echo "# There's a discrepancy between Make and Go's dependency" && \
 		echo "# tracking; nuking and starting over." && \
 		PS4='' && set -x && \
 		$(call RMRF,bin pkg) && \
-		GOPATH='$(topdir)' go install $(packages) || $(call DIRFAIL,bin pkg); \
+		GOPATH='$(topdir)' go install $(packages) || $(call DIRFAIL,bin); \
 	}
-	touch bin pkg
+	touch bin
 
 # Rule to nuke everything
 clean:
