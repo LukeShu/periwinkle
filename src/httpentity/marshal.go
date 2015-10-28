@@ -28,7 +28,7 @@ func (req *Request) readEntity(router *Router, reader io.Reader, contenttype str
 	}
 	decoder, found_decoder := router.Decoders[mimetype]
 	if !found_decoder {
-		res := StatusUnsupportedMediaType(heutil.NetString("415 Unsupported Media Type: Unsupported MIME type: "+mimetype))
+		res := StatusUnsupportedMediaType(heutil.NetString("415 Unsupported Media Type: Unsupported MIME type: " + mimetype))
 		return &res
 	}
 	entity, err := decoder(reader, params)
