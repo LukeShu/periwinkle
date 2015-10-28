@@ -5,15 +5,15 @@
 package store
 
 import (
+	"encoding/json"
+	"errors"
 	"github.com/jinzhu/gorm"
 	"golang.org/x/crypto/bcrypt"
 	he "httpentity"
 	"httpentity/util"
 	"io"
-	"strings"
-	"errors"
-	"encoding/json"
 	"jsonpatch"
+	"strings"
 )
 
 var _ he.Entity = &User{}
@@ -236,10 +236,10 @@ func (d t_dirUsers) Subentity(name string, req he.Request) he.Entity {
 	sess := req.Things["session"].(*Session)
 	if sess == nil {
 		db := req.Things["db"].(*gorm.DB)
-                hash, ok := req.Entity.(map[string]interface{}); if !ok { return nil }
+		hash, ok := req.Entity.(map[string]interface{}); if !ok { return nil }
 		username, ok := hash["username"].(string)      ; if !ok { return nil }
-                password, ok := hash["password"].(string)      ; if !ok { return nil }
-                var user *User
+		password, ok := hash["password"].(string)      ; if !ok { return nil }
+		var user *User
 		user = GetUserById(db, username)
 		if !user.CheckPassword(password) {
 			return nil

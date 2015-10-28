@@ -56,7 +56,7 @@ func GetGroupById(db *gorm.DB, id string) *Group {
 func GetGroupByAddress(db *gorm.DB, address string) *Group {
 	var o Group
 	if result := db.Joins("inner join groups on group_addresses.group_id = groups.id").Where("group_addresses.address = ?", address).Find(&o); result.Error != nil {
-		if result.RecordNotFound(){
+		if result.RecordNotFound() {
 			return nil
 		}
 		panic(result.Error)
@@ -67,7 +67,7 @@ func GetGroupByAddress(db *gorm.DB, address string) *Group {
 func getGroupAddressesByMediumAndGroupId(db *gorm.DB, medium string, groupId string) *GroupAddress {
 	var o GroupAddress
 	if result := db.Where("medium =? and group_id =?", medium, groupId).Find(&o); result.Error != nil {
-		if result.RecordNotFound(){
+		if result.RecordNotFound() {
 			return nil
 		}
 		panic(result.Error)
@@ -78,7 +78,7 @@ func getGroupAddressesByMediumAndGroupId(db *gorm.DB, medium string, groupId str
 func getGroupAddressesByMedium(db *gorm.DB, medium string) *GroupAddress {
 	var o GroupAddress
 	if result := db.Where("medium =?", medium).Find(&o); result.Error != nil {
-		if result.RecordNotFound(){
+		if result.RecordNotFound() {
 			return nil
 		}
 		panic(result.Error)

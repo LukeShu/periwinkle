@@ -13,6 +13,7 @@ type Patch interface {
 }
 
 type jsonPatch evan.Patch
+
 var _ Patch = jsonPatch{}
 
 func NewJSONPatch(str []byte) (Patch, error) {
@@ -33,6 +34,7 @@ func (patch jsonPatch) Apply(in interface{}, out interface{}) error {
 }
 
 type jsonMergePatch json.RawMessage
+
 var _ Patch = jsonMergePatch{}
 
 func NewJSONMergePatch(str []byte) (Patch, error) {

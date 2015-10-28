@@ -6,10 +6,10 @@ import (
 	"encoding/json"
 	"io"
 	"io/ioutil"
-	"net/url"
-	"net/http"
-	"mime/multipart"
 	"jsonpatch"
+	"mime/multipart"
+	"net/http"
+	"net/url"
 	"strings"
 )
 
@@ -68,7 +68,7 @@ func DecoderFormData(r io.Reader, params map[string]string) (interface{}, error)
 		}
 	}
 	return fuckit_json(entity)
-}	
+}
 
 // application/json => json.Decoder
 func DecoderJSON(r io.Reader, params map[string]string) (interface{}, error) {
@@ -83,7 +83,6 @@ func DecoderJSONPatch(r io.Reader, params map[string]string) (interface{}, error
 	}
 	return jsonpatch.NewJSONPatch(bytes)
 }
-
 
 // application/merge-patch+json => jsonpatch.Patch
 func DecoderJSONMergePatch(r io.Reader, params map[string]string) (interface{}, error) {

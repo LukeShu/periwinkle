@@ -3,9 +3,9 @@
 package httpentity
 
 import (
+	"fmt"
 	"io"
 	"mime"
-	"fmt"
 )
 
 // If the Response has an entity, write it to the given output stream.
