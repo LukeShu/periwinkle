@@ -5,8 +5,8 @@
 package store
 
 import (
+	"encoding/json"
 	"errors"
-	"fmt"
 	"github.com/jinzhu/gorm"
 	"golang.org/x/crypto/bcrypt"
 	he "httpentity"
@@ -136,6 +136,58 @@ func (o *User) Subentity(name string, req he.Request) he.Entity {
 	return nil
 }
 
+func (o *User) patchPassword(patch *jsonpatch.Patch) HTTPError {
+	// this is in the running for the grossest code I've ever
+	// written, but I think it's the best way to do it --lukeshu
+	type patchop struct {
+		Op    string
+		Path  string
+		Value string
+	}
+	str, err := json.Marshal(patch)
+	if err != nil {
+		panic(err)
+	}
+	var ops []patchop
+	err = json.Unmarshal(str, &ops)
+	if err != nil {
+		return nil
+	}
+	out_ops := make([]patchop, 0, len(ops))
+	checkedpass := false
+	for _, op := range ops {
+		if op.Path == "/password" {
+			switch op.Op {
+			case "test":
+				if !o.CheckPassword(op.Value) {
+					return httpErrorf(409, "old password didn't match")
+				}
+				checkedpass = true
+			case "replace":
+				if !checkedpass {
+					return httpErrorf(409, "you must submit and old password (using 'test') before setting a new one")
+				}
+				o.SetPassword(op.Value)
+			default:
+				return httpErrorf(415, "you may only 'set' or 'replace' the password")
+			}
+		} else {
+			out_ops = append(out_ops, op)
+		}
+	}
+	str, err = json.Marshal(out_ops)
+	if err != nil {
+		panic(err)
+	}
+	var out jsonpatch.JSONPatch
+	err = json.Unmarshal(str, &out)
+	if err != nil {
+		panic(out)
+	}
+	*patch = out
+	return nil
+}
+
 func (o *User) Methods() map[string]func(he.Request) he.Response {
 	return map[string]func(he.Request) he.Response{
 		"GET": func(req he.Request) he.Response {
@@ -164,12 +216,16 @@ func (o *User) Methods() map[string]func(he.Request) he.Response {
 			// TODO: permissions
 			patch, ok := req.Entity.(jsonpatch.Patch)
 			if !ok {
-				return he.StatusUnsupportedMediaType(heutil.NetString("415: PATCH request must have a patch media type"))
+				return httpErrorf(415, "PATCH request must have a patch media type").Response()
+			}
+			httperr := o.patchPassword(&patch)
+			if httperr != nil {
+				return httperr.Response()
 			}
 			var new_user User
 			err := patch.Apply(o, &new_user)
 			if err != nil {
-				return he.StatusConflict(heutil.NetString(fmt.Sprintf("409 Conflict: %v", err)))
+				return httpErrorf(409, "%v", err).Response()
 			}
 			// TODO: check that .Id didn't change.
 			*o = new_user
