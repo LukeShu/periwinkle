@@ -58,7 +58,7 @@
 					debugger;
 					$timeout(function(){
 						debugger;
-						userService.session_id = response.data.session_id;
+						userService.setSession(response.data.session_id);
 						userService.user_id = response.data.user_id;
 						if(userService.loginRedir.has) {
 							var redir = userService.loginRedir.path;

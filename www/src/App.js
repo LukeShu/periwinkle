@@ -30,13 +30,9 @@
 	periwinkleApp.factory('httpRequestInterceptor', ['$cookies', function ($cookies) {
 		return {
 			request: function (config) {
-				config.headers['X-XSRF-TOKEN'] = $cookies['session_id'];
+				config.headers['X-XSRF-TOKEN'] = $cookies.get('app_set_session_id');
 				//debugger;
 				return config;
-			},'response': function (response) {
-				var cookies = response.headers("Set-Cookie");
-				debugger;
-				return response;
 			}
 		};
 	}]);
