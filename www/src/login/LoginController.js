@@ -37,8 +37,6 @@
 			$scope.toolbar.warn.message = userService.loginRedir.message;
 		}
 		
-		debugger;
-		
 		//public functions
 		this.login = function($event) {
 			//http login api call

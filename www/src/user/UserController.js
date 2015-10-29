@@ -27,12 +27,10 @@
 		self.username = 'Richard Wisniewski';
 		self.email = 'rwisniew@purdue.edu';
 		self.sessionID = "0x1234567890";
-
-		self.userData = null;
 		
 		self.groups = [];
 		
-		self.reload = function() {
+		var __load = function() {
 			//http call point at /v1/users/"user_id"
 			//on success set userData to reponse.data
 			//fail : debugger ;
@@ -51,7 +49,8 @@
 			}).then(
 				function success(response) {
 					//do work with response
-					self.userData = response.data;
+					self.username = response.data.user_id;
+					self.addresses = response.data.addresses;
 					$scope.loading.is = false;
 					debugger;
 				},
@@ -71,20 +70,22 @@
 		};
 		
 		//check and load
-		userService.validate(
-			function success() {
-				self.reload();
-			},
-			function fail(status) {
-				debugger;
-			},
-			function noSession_cb() {
-				debugger;
-				userService.loginRedir.has = true;
-				userService.loginRedir.path = $location.path();
-				userService.loginRedir.message = "You will be redirected back to your user once you log in. ";
-				$location.path('/login');
-			}
-		);
+		self.load = function() {
+			userService.validate(
+				function success() {
+					__load();
+				},
+				function fail(status) {
+					debugger;
+				},
+				function noSession_cb() {
+					debugger;
+					userService.loginRedir.has = true;
+					userService.loginRedir.path = $location.path();
+					userService.loginRedir.message = "You will be redirected back to your user once you log in. ";
+					$location.path('/login');
+				}
+			);
+		};
 	}
 })();
