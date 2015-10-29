@@ -265,7 +265,7 @@ func newDirUsers() t_dirUsers {
 				Username             string `json:"username"`
 				Email                string `json:"email"`
 				Password             string `json:"password"`
-				PasswordVerification string `json:"password_verification,omitempty`
+				PasswordVerification string `json:"password_verification,omitempty"`
 			}
 			var entity postfmt
 			httperr := safeDecodeJSON(req.Entity, &entity)
@@ -304,7 +304,7 @@ func (d t_dirUsers) Subentity(name string, req he.Request) he.Entity {
 			Username             string `json:"username"`
 			Email                string `json:"email"`
 			Password             string `json:"password"`
-			PasswordVerification string `json:"password_verification,omitempty`
+			PasswordVerification string `json:"password_verification,omitempty"`
 		}
 		var entity postfmt
 		httperr := safeDecodeJSON(req.Entity, &entity)
