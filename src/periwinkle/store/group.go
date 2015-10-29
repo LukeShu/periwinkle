@@ -7,7 +7,7 @@ package store
 import (
 	"github.com/jinzhu/gorm"
 	he "httpentity"
-	"httpentity/util"
+	"httpentity/util" // heutil
 	"io"
 	"strings"
 )
@@ -55,8 +55,8 @@ func GetGroupById(db *gorm.DB, id string) *Group {
 func GetUsersInGroup(db *gorm.DB, groupId string) *[]User {
 	var users []User
 	err := db.Joins("inner join user_addresses on user_addresses.user_id = users.id").Joins(
-	"inner join subscriptions on subscriptions.address_id = user_addresses.id").Where(
-	"subscriptions.group_id = ?", groupId).Find(&users)
+		"inner join subscriptions on subscriptions.address_id = user_addresses.id").Where(
+		"subscriptions.group_id = ?", groupId).Find(&users)
 	if err != nil {
 		panic("could not get users in group")
 	}
@@ -114,11 +114,11 @@ func (o *Group) Methods() map[string]func(he.Request) he.Response {
 	return map[string]func(he.Request) he.Response{
 		"GET": func(req he.Request) he.Response {
 			return he.StatusOK(o)
-	},
+		},
 		"PUT": func(req he.Request) he.Response {
 			db := req.Things["db"].(*gorm.DB)
 			sess := req.Things["session"].(*Session)
-			users := GetUsersInGroup(db,  o.Id)
+			users := GetUsersInGroup(db, o.Id)
 			flag := false
 			for _, user := range *users {
 				if sess.UserId == user.Id {
@@ -127,8 +127,8 @@ func (o *Group) Methods() map[string]func(he.Request) he.Response {
 				}
 			}
 			if !flag {
-                                return he.StatusForbidden(heutil.NetString("Unauthorized user"))
-                        }
+				return he.StatusForbidden(heutil.NetString("Unauthorized user"))
+			}
 
 			var new_group Group
 			err := safeDecodeJSON(req.Entity, &new_group)

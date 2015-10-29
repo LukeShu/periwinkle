@@ -4,7 +4,7 @@ package senders
 
 // import "net/smtp"
 
-// being passed a 
+// being passed a
 
 func sendEmail(message []byte) {
 	panic("TODO")
