@@ -57,7 +57,6 @@
 					//do work with response
 					debugger;
 					userService.session_id = response.data.session_id;
-					userService.setCookie();
 					userService.user_id = response.data.user_id;
 					if(userService.loginRedir.has) {
 						var redir = userService.loginRedir.path;
