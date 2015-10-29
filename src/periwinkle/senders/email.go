@@ -2,10 +2,31 @@
 
 package senders
 
-// import "net/smtp"
+import (
+	"io"
+	"io/ioutil"
+	"net/smtp"
+	"net/mail"
+)
 
 // being passed a
 
-func sendEmail(message []byte) {
-	panic("TODO")
+func sendEmail(r io.Reader) {
+
+	m, err := mail.ReadMessage(r)
+	if err != nil {
+		panic(err)
+	}
+
+	header := m.Header
+	auth := smtp.PlainAuth("", "TODO@TODO.com", "password", "mail.example.com")
+	from := header.Get("From")
+	to   := []string{header.Get("To")}
+	// sbj  := header.Get("Subject")
+	body, _ := ioutil.ReadAll(m.Body)
+	err = smtp.SendMail("addr", auth, from, []string(to), body)
+	if err != nil {
+		panic(err)
+	}
+
 }
