@@ -86,33 +86,6 @@ func (u *User) CheckPassword(password string) bool {
 	return err == nil
 }
 
-var BadPasswordErr = errors.New("Password was incorrect")
-
-func (u *User) UpdatePassword(db *gorm.DB, newPass string, oldPass string) error {
-	if !u.CheckPassword(oldPass) {
-		return BadPasswordErr
-	}
-	if err := u.SetPassword(newPass); err != nil {
-		return err
-	}
-	u.Save(db)
-	return nil
-}
-
-func (u *User) UpdateEmail(db *gorm.DB, newEmail string, pw string) {
-	if !u.CheckPassword(pw) {
-		panic("Password was incorrect")
-	}
-	for _, addr := range u.Addresses {
-		if addr.Medium == "email" {
-			addr.Address = newEmail
-			if err := db.Save(&addr).Error; err != nil {
-				panic(err)
-			}
-		}
-	}
-}
-
 func NewUser(db *gorm.DB, name string, password string, email string) *User {
 	o := User{
 		Id:        name,
