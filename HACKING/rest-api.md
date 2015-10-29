@@ -26,7 +26,9 @@ the request shall be interpreted as a request of the type specified by
 that field, instead of a `POST` request.  Similarly, if a `POST`
 request has a `_xsrf_token` field in the submitted document, the
 request shall be interpretted as if it had the `X-XSRF-TOKEN` HTTP
-header set to that value.
+header set to that value.  Finally, if a `POST` request has a `_body`
+field, then the content of just that field will be treated as the
+submitted document body.
 
 > Rationale: HTML forms may only submit `GET` and `POST` requests;
 > which is silly, and requires work-arounds to allow browsers to
