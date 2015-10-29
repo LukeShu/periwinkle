@@ -160,6 +160,7 @@
 					$scope.loading.is = false;
 					//show alert
 					var dialog = null;
+					debugger;
 					switch(status_code){
 						case 409:
 							dialog = $mdDialog.alert()
