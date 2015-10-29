@@ -28,8 +28,8 @@
 	});
 	
 	periwinkleApp.config(['$httpProvider', function($httpProvider) {
-		$httpProvider.defualts.xsrfCookieName = 'session_id';
-		$httpProvider.useLegacyPromiceExtensions(false);
+		$httpProvider.defaults.xsrfCookieName = 'session_id';
+		$httpProvider.useLegacyPromiseExtensions(false);
 	}]);
 	
 	periwinkleApp.config(['$translateProvider', function($translateProvider) {
