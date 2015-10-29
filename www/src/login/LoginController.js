@@ -36,7 +36,8 @@
 			$scope.toolbar.warn.exists = true;
 			$scope.toolbar.warn.message = userService.loginRedir.message;
 		} else {
-			var cookie = $cookies.get("app_set_session_id")
+			var cookie = $cookies.get("app_set_session_id");
+			debugger;
 			if(cookie != null && cookie != "") {
 				//the user may have a session
 				$scope.loading.is = true;
@@ -75,19 +76,15 @@
 			}).then(
 				function success(response) {
 					//do work with response
-					debugger;
-					$timeout(function(){
-						debugger;
-						userService.setSession(response.data.session_id);
-						userService.user_id = response.data.user_id;
-						if(userService.loginRedir.has) {
-							var redir = userService.loginRedir.path;
-							userService.loginRedir = null;
-							$location.path(redir).replace();
-						} else {
-							$location.path('/user').replace();
-						}
-					 });
+					userService.setSession(response.data.session_id);
+					userService.user_id = response.data.user_id;
+					if(userService.loginRedir.has) {
+						var redir = userService.loginRedir.path;
+						userService.loginRedir = null;
+						$location.path(redir).replace();
+					} else {
+						$location.path('/user').replace();
+					}
 				},
 				function fail(response) {
 					//do work with response
