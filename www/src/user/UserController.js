@@ -77,7 +77,6 @@
 					debugger;
 				},
 				function noSession_cb() {
-					debugger;
 					userService.loginRedir.has = true;
 					userService.loginRedir.path = $location.path();
 					userService.loginRedir.message = "You will be redirected back to your user once you log in. ";

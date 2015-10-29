@@ -59,14 +59,12 @@
 				}).then(
 					function success(response) {
 						//do work with response
-						debugger;
 						userService.reset();
 						$location.path('/login').replace();
 					},
 					function fail(response) {
 						//do work with response
 						//show error to user
-						debugger;
 						$scope.loading.is = false;
 						//show alert
 					}

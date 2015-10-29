@@ -35,7 +35,6 @@
 				responseType: 'json'
 			}).then(
 				function success(response) {
-					debugger;
 					if(!response.data) {
 						//the user isnt logged in
 						self.reset();

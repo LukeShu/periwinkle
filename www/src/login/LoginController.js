@@ -38,7 +38,6 @@
 			$scope.toolbar.warn.message = userService.loginRedir.message;
 		} else {
 			var cookie = $cookies.get("app_set_session_id");
-			debugger;
 			if(cookie != null && cookie != "") {
 				//the user may have a session
 				$scope.loading.is = true;
