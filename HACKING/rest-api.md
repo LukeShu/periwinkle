@@ -9,10 +9,8 @@ The HTTP resources use the
 
 For actions requiring authentication, there will be a session token
 (see below for how to get a token).  All requests that require
-authentication must submit an HTTP cookie `session_id` set to the
-token value.  Further, for requests that have a document that is
-submitted (i.e., `POST`, `PUT`, and `PATCH`) the document must include
-a `session_id` field that is also set to the token value.
+authentication must set both the [HTTP cookie][RFC-6265] `session_id`
+and the HTTP header `X-XSRF-TOKEN` to the session token value.
 
 > Rationale: The double-submission of the token for requests with a
 > body is to protect from CSRF attacks.  This cannot be done for `GET`
@@ -25,11 +23,10 @@ a `session_id` field that is also set to the token value.
 
 If a `POST` request has a `_method` field in the submitted document,
 the request shall be interpreted as a request of the type specified by
-that field, instead of a `POST` request.  Even if the specified
-`_method` does not have a document that is submitted (e.g., `DELETE`),
-because it started as a `POST` request, the submitted document it must
-still contain the `session_id` attribute (if it wishes for the session
-to be recognized by the server).
+that field, instead of a `POST` request.  Similarly, if a `POST`
+request has a `_xsrf_token` field in the submitted document, the
+request shall be interpretted as if it had the `X-XSRF-TOKEN` HTTP
+header set to that value.
 
 > Rationale: HTML forms may only submit `GET` and `POST` requests;
 > which is silly, and requires work-arounds to allow browsers to
@@ -87,6 +84,8 @@ is returned.
 	"RFC 2616: Hypertext Transfer Protocol -- HTTP/1.1"
 [RFC-5789]: https://tools.ietf.org/html/rfc5789
 	"RFC 5789: PATCH Method for HTTP"
+[RFC-6265]: https://tools.ietf.org/html/rfc6265
+	"RFC 6265: HTTP State Management Mechanism"
 [RFC-6902]: https://tools.ietf.org/html/rfc6902
 	"RFC 6902: JavaScript Object Notation (JSON) Patch"
 [RFC-7159]: https://tools.ietf.org/html/rfc7159
@@ -127,17 +126,6 @@ is returned.
 		Twilio, which really surprises me.  But I'm sure it will still
 		come in to use.
 
-	* `/session` [`POST`, `DELETE`]
-
-		A `POST` request containing valid `login` and `password` will
-		create a session; returning a HTTP 200 ("Found") containing
-		`session_id`, as well as setting the `session_id` cookie.  If
-		the `login` and `password` do not match a user, an HTTP 403
-		("Forbidden") response is returned.
-
-		A `DELETE` request ends the current session (if there is one),
-		and returns an HTTP 204 ("No Content") response.
-
 	* `/s/%{identifier}` [`GET`]
 
 		The `/s/` directory is for shortened URLs; a `GET` request to
@@ -145,56 +133,69 @@ is returned.
 		Permanently") redirect to the appropriate full URL; otherwise
 		it will return an HTTP 404 ("Not Found").
 
-	* `/msgs/%{msgid}` [`GET:{json,mbox}`]
+	* `/v1`
 
-		Will return an HTTP 200 ("Found") with the message having the
-		specified `Message-ID`; if it is found in the message store;
-		or an HTTP 404 ("Not Found") otherwise.
+		* `/v1/session` [`POST`, `DELETE`]
 
-		TODO: It is undecided if authentication should be required to
-		access messages.
+			A `POST` request containing valid `login` and `password` will
+			create a session; returning a HTTP 200 ("Found") containing
+			`session_id`, as well as setting the `session_id` cookie.  If
+			the `login` and `password` do not match a user, an HTTP 403
+			("Forbidden") response is returned.
 
-	* `/users` [`POST`]
+			A `DELETE` request ends the current session (if there is one),
+			and returns an HTTP 204 ("No Content") response.
 
-		Will attempt to create a user. On success, an HTTP 201
-		("Created"), with the `Location` header set to the created
-		`/user/%{alias}`, and the response document with a list of
-		URLs the resource is accessable at, differentiated by file
-		extension.
+		* `/v1/msgs/%{msgid}` [`GET:{json,mbox}`]
 
-		If the user can't be created, it will return an HTTP 409
-		("Conflict") with a response document explaining the conflict.
+			Will return an HTTP 200 ("Found") with the message having the
+			specified `Message-ID`; if it is found in the message store;
+			or an HTTP 404 ("Not Found") otherwise.
 
-		The submitted document must include "username", "email", and
-		"password" fields, and may optionally include a
-		"password_verification" field.
+			TODO: It is undecided if authentication should be required to
+			access messages.
 
-		* `/users/%{alias}` [`GET`, `PUT`, `PATCH`, `DELETE`]
+		* `/v1/users` [`POST`]
 
-			A `PUT` request totally replaces the user; the format is
-			the same as when creating a user, except that it excludes
-			any anti-spam type measures associated with original
-			account creation.
+			Will attempt to create a user. On success, an HTTP 201
+			("Created"), with the `Location` header set to the created
+			`/v1/user/%{alias}`, and the response document with a list
+			of URLs the resource is accessable at, differentiated by
+			file extension.
+
+			If the user can't be created, it will return an HTTP 409
+			("Conflict") with a response document explaining the conflict.
+
+			The submitted document must include "username", "email", and
+			"password" fields, and may optionally include a
+			"password_verification" field.
+
+			* `/v1/users/%{alias}` [`GET`, `PUT`, `PATCH`, `DELETE`]
+
+				A `PUT` request totally replaces the user; the format is
+				the same as when creating a user, except that it excludes
+				any anti-spam type measures associated with original
+				account creation.
+
+				TODO: everything else
+
+		* `/v1/groups` [`POST`, `GET`]
+
+			`POST` creates a group, `GET` lists groups that the user is
+			allowed to see.
 
 			TODO: everything else
 
-	* `/groups` [`POST`, `GET`]
+		* `/v1/groups/%{alias}` [`GET`, `PUT`, `PATCH`, `DELETE`]
 
-		`POST` creates a group, `GET` lists groups that the user is
-		allowed to see.
+			A `PUT` request totally replaces the group; the format is the
+			same as when creating a a group.
 
-		TODO: everything else
+			TODO: everything else
 
-	* `/groups/%{alias}` [`GET`, `PUT`, `PATCH`, `DELETE`]
+			* `/v1/groups/%{alias}/log` [`GET`]
 
-		A `PUT` request totally replaces the group; the format is the
-		same as when creating a a group.
-
-		TODO: everything else
-
-		* `/groups/%{alias}/log` [`GET`]
-
-			Returns an HTTP 200 response containing a list of
-			`Message-ID`s, if the group alias points to a valid group
-			that the user is allowed to se; otherwise returns HTTP 403
-			("Forbidden")
+				Returns an HTTP 200 response containing a list of
+				`Message-ID`s, if the group alias points to a valid group
+				that the user is allowed to se; otherwise returns HTTP 403
+				("Forbidden")
