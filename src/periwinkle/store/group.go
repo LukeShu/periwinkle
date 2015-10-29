@@ -74,6 +74,7 @@ func GetGroupByAddress(db *gorm.DB, address string) *Group {
 	return &o
 }
 
+/*
 func getGroupAddressesByMediumAndGroupId(db *gorm.DB, medium string, groupId string) *[]GroupAddress {
 	var o GroupAddress
 	if result := db.Where("medium =? and group_id =?", medium, groupId).Find(&o); result.Error != nil {
@@ -95,6 +96,7 @@ func getGroupAddressesByMedium(db *gorm.DB, medium string) *[]GroupAddress {
 	}
 	return &o
 }
+*/
 
 func NewGroup(db *gorm.DB, name string) *Group {
 	o := Group{Id: name}
