@@ -4,9 +4,9 @@
 
 	angular
 		.module('login')
-		.controller('LoginController', ['$cookies', '$http', '$scope', '$interval', '$location', '$mdDialog', '$filter', 'UserService', LoginController]); 
+		.controller('LoginController', ['$cookies', '$http', '$scope', '$interval', '$location', '$mdDialog', '$filter', 'UserService', '$timeout', LoginController]); 
 
-	function LoginController($cookies, $http, $scope, $interval, $location, $mdDialog, $filter, userService) {
+	function LoginController($cookies, $http, $scope, $interval, $location, $mdDialog, $filter, userService, $timeout) {
 		//gives us an anchor to the outer object from within sub objects or functions
 		var self = this;
 		//clears the toolbar and such so we can set it up for this view
@@ -56,16 +56,18 @@
 				function success(response) {
 					//do work with response
 					debugger;
-					userService.session_id = response.data.session_id;
-					userService.setCookie();
-					userService.user_id = response.data.user_id;
-					if(userService.loginRedir.has) {
-						var redir = userService.loginRedir.path;
-						userService.loginRedir = null;
-						$location.path(redir).replace();
-					} else {
-						$location.path('/user').replace();
-					}
+					$timeout(function(){
+						debugger;
+						userService.session_id = response.data.session_id;
+						userService.user_id = response.data.user_id;
+						if(userService.loginRedir.has) {
+							var redir = userService.loginRedir.path;
+							userService.loginRedir = null;
+							$location.path(redir).replace();
+						} else {
+							$location.path('/user').replace();
+						}
+					 });
 				},
 				function fail(response) {
 					//do work with response

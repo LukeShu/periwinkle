@@ -27,8 +27,18 @@
 			.accentPalette('teal');
 	});
 	
-	periwinkleApp.config(['$httpProvider', function($httpProvider) {
-		$httpProvider.useLegacyPromiseExtensions(false);
+	periwinkleApp.factory('httpRequestInterceptor', ['$cookies', function ($cookies) {
+		return {
+			request: function (config) {
+				config.headers['X-XSRF-TOKEN'] = $cookies['session_id'];
+				debugger;
+				return config;
+			}
+		};
+	}]);
+
+	periwinkleApp.config(['$httpProvider', function ($httpProvider) {
+	  $httpProvider.interceptors.push('httpRequestInterceptor');
 	}]);
 	
 	periwinkleApp.config(['$translateProvider', function($translateProvider) {
