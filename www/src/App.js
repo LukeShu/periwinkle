@@ -27,7 +27,7 @@
 			.accentPalette('teal');
 	});
 	
-	myapp.factory('httpRequestInterceptor', ['$cookies', function ($cookies) {
+	periwinkleApp.factory('httpRequestInterceptor', ['$cookies', function ($cookies) {
 		return {
 			request: function (config) {
 				config.headers['X-XSRF-TOKEN'] = $cookies['session_id'];
@@ -36,7 +36,7 @@
 		};
 	}]);
 
-	myapp.config(function ($httpProvider) {
+	periwinkleApp.config(function ($httpProvider) {
 	  $httpProvider.interceptors.push('httpRequestInterceptor');
 	});
 	
