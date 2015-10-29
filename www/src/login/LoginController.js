@@ -59,7 +59,7 @@
 		}
 		
 		//public functions
-		this.login = function($event) {
+		this.login = function() {
 			//http login api call
 			$scope.loading.is = true;
 			$http({
@@ -104,7 +104,6 @@
 								.content($translate('LOGIN.ERRORS.403.CONTENT'))
 								.ariaLabel('Invalid login')
 								.ok('Got it!')
-						        .targetEvent($event);
 							break;
 						case 500:
 							dialog = $mdDialog.alert()
@@ -114,7 +113,6 @@
 								.content($translate('ERRORS.500.CONTENT'))
 								.ariaLabel('Server Error')
 								.ok('Got it!')
-						        .targetEvent($event);
 							break;
 						default:
 							dialog = $mdDialog.alert()
@@ -124,8 +122,11 @@
 								.content($translate('ERRORS.DEFAULT.CONTENT'))
 								.ariaLabel('Unexpected Response from Server')
 								.ok('Got it!')
-						        .targetEvent($event);
 					}
+					dialog = dialog
+						.openFrom('#login-button')
+						.closeTo('#login-button')
+						.clickOutsideToClose(true);
 					$mdDialog.show(dialog);
 				}
 			);

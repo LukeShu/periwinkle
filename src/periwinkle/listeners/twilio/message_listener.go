@@ -11,6 +11,8 @@ import (
 	"periwinkle/listeners/util"
 	"strings"
 	"time"
+	"periwinkle/cfg"
+	"periwinkle/store"
 )
 
 func Main() error {
@@ -25,6 +27,12 @@ func Main() error {
 	cur_time_sec = 0
 
 	for {
+
+		group_addr := store.GetGroupAddressesByMedium(cfg.DB, "twilio")
+		
+		for _, v := range *group_addr {  
+
+
 		// clear the array
 		if cur_time_sec != time.Now().UTC().Unix() {
 			for j := 0; j != len(arr_temp); j++ {
@@ -36,7 +44,7 @@ func Main() error {
 		cur_time_sec = cur_time.Unix()
 
 		// gets url for received  Twilio messages for a given date
-		url := "https://api.twilio.com/2010-04-01/Accounts/" + account_sid + "/Messages.json?To=+17653569541&DateSent>=" + strings.Split(cur_time.String(), " ")[0]
+		url := "https://api.twilio.com/2010-04-01/Accounts/" + account_sid + "/Messages.json?To=" + v.Address + "&DateSent>=" + strings.Split(cur_time.String(), " ")[0]
 
 		client := &http.Client{}
 
@@ -104,4 +112,5 @@ func Main() error {
 			}
 		}
 	}
+}
 }

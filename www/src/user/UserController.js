@@ -24,6 +24,38 @@
 			}
 		};
 
+		self.info = {
+			status: {
+				loading: false,
+				error:	''
+			},
+			title:		'USER.INFO.TITLE',
+			addresses:	[],
+			fullName:	'',
+			set_fullName:	function() {
+				//open dialogue
+			},
+			edit_address:	function(index) {
+				
+			},
+			save_edit_address:	function(index) {
+				
+			}
+		};
+		self.groups = {
+			status:		{
+				loading:	false,
+				error:		''
+			},
+			list:		[],
+			'new':		function() {
+				
+			},
+			new_data:	{
+				//new group data
+			}
+		};
+		
 		self.username = 'Richard Wisniewski';
 		self.email = 'rwisniew@purdue.edu';
 		self.sessionID = "0x1234567890";
@@ -59,6 +91,21 @@
 					$scope.loading.is = false;
 				}
 			);
+			$http({
+				method:	'GET',
+				url:	'/v1/groups',
+				responseType:	'json'
+			}).then(
+				function success(response) {
+					self.groups = reponse.data;
+					debugger;
+					$scope.loading.is = false;
+				},
+				function fail(response) {
+					debugger;
+					$scope.loading.is = false;
+				}
+			);
 		};
 		self.createGroup = function() {
 			
@@ -69,8 +116,10 @@
 		
 		//check and load
 		self.load = function() {
+			$scope.loading.is = true;
 			userService.validate(
 				function success() {
+					$scope.loading.is = false;
 					__load();
 				},
 				function fail(status) {
