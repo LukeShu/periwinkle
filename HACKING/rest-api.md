@@ -12,14 +12,8 @@ For actions requiring authentication, there will be a session token
 authentication must set both the [HTTP cookie][RFC-6265] `session_id`
 and the HTTP header `X-XSRF-TOKEN` to the session token value.
 
-> Rationale: The double-submission of the token for requests with a
-> body is to protect from CSRF attacks.  This cannot be done for `GET`
-> or `DELETE` requests, which is OK.  It is OK for `GET` requests
-> because if the API is implemented correctly, they are not vulnerable
-> to CSRF attacks.  It is OK for `DELETE` requests, because modern web
-> browsers will not perform cross-domain `DELETE` requests unless
-> explicitly enabled by the server using the
-> `Access-Control-Allow-Origin` HTTP header.
+> Rationale: The double-submission of the token as both a cookie and a
+> header is to protect from CSRF attacks.
 
 If a `POST` request has a `_method` field in the submitted document,
 the request shall be interpreted as a request of the type specified by
@@ -32,7 +26,9 @@ submitted document body.
 
 > Rationale: HTML forms may only submit `GET` and `POST` requests;
 > which is silly, and requires work-arounds to allow browsers to
-> emulate other request types with `POST` requests.
+> emulate other request types with `POST` requests, as well as setting
+> HTTP headers.  The `_body` field is an option because it isn't
+> always appropriate for the root-element to be a map.
 
 Unless otherwise specified, response documents always support the JSON
 format ([RFC-7159][], [ECMA-404][]); however, other document formats
@@ -54,31 +50,32 @@ Unless otherwise specified, `POST` and `PUT` requests may be in the
 following formats:
  - JSON (`Content-Type: application/json`)
  - [form-data][RFC-2388] (`Content-Type: multipart/form-data`)
- - [x-www-form-urlencoded][x-www-form-urlencoded] (`Content-Type: application/x-www-form-urlencoded`)
+ - [form-urlencoded][form-urlencoded] (`Content-Type: application/x-www-form-urlencoded`)
 
 Unless otherwise specified, `PATCH` requests may be in the following
 formats:
  - [JSON Patch][RFC-6902] (`Content-Type: application/json-patch+json`)
  - [JSON Merge Patch][RFC-7368] (`Content-Type: application/merge-patch+json`)
 
-For requests in which information is submitted to the server (that is,
-everything but `GET` and `DELETE` requests), the document may be
-submitted in either JSON format or  format; as
-specified by the HTTP `Content-Type` header (with values of
- and `` respectively).
-
-> Rationale: JSON is a pleasure to work with. `form-data` is also
-> supported in order to support submitting requests from HTML forms.
+> Rationale: JSON is a pleasure to work with. `form-data` and
+> `form-urlencoded` are also supported in order to support submitting
+> requests from HTML forms.
 
 If a submitted document's `Content-Type` is not one that is supported,
 an HTTP 415 ("Unsupported Media Type") response is returned.  If a
-submitted document is of a supported type, but the document structure
-does not match the expected format, then an HTTP 400 ("Bad Request")
-response is returned.  If the request method is not supported for a
-path, an HTTP 405 ("Method Not Allowed") response is returned.  If the
-request's `Accept` HTTP header, or the file extension specifies a
-format that is not supported, an HTTP 406 ("Not Acceptable") response
-is returned.
+`PATCH` or `PUT` request submits a document that is of a supported
+type, but has fields that don't match the expected ones, then an HTTP
+415 ("Unsupported Media Type") response is returned.  similarly, if a
+`PATCH` request tries to access fields that don't exist, then an HTTP
+415 ("Unsupported Media Type") is returned.  If the request method is
+not supported for a path, an HTTP 405 ("Method Not Allowed") response
+is returned.  If the request's `Accept` HTTP header, or the file
+extension specifies a format that is not supported, an HTTP 406 ("Not
+Acceptable") response is returned.  If the request does not have an
+`Accept` HTTP header, and there are multiple possible representations
+for a type, or if the `Accept` header specifies equal preference for
+multiple of the possible representations, then an HTTP 300 ("Multiple
+Choices") response is returned, containing a list of possibilities.
 
 [RFC-2388]: https://tools.ietf.org/html/rfc2388
 	"Returning Values from Forms: multipart/form-data"
@@ -100,7 +97,7 @@ is returned.
 	"RFC 7368: JSON Merge Patch"
 [ECMA-404]: http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf
 	"ECMA-404: The JSON Data Interchange Format"
-[x-www-form-urlencoded]: http://www.w3.org/html/wg/drafts/html/master/semantics.html#application/x-www-form-urlencoded-encoding-algorithm
+[form-urlencoded]: http://www.w3.org/html/wg/drafts/html/master/semantics.html#application/x-www-form-urlencoded-encoding-algorithm
 	"HTML5.1: x-www-form-urlencoded encoding Algorithm"
 
 # File-extenson / MIME-type mapping
@@ -161,9 +158,9 @@ is returned.
 
 			Will attempt to create a user. On success, an HTTP 201
 			("Created"), with the `Location` header set to the created
-			`/v1/user/%{alias}`, and the response document with a list
-			of URLs the resource is accessable at, differentiated by
-			file extension.
+			`/v1/user/%{id}`, and the response document with a list of
+			URLs the resource is accessable at, differentiated by file
+			extension.
 
 			If the user can't be created, it will return an HTTP 409
 			("Conflict") with a response document explaining the conflict.
@@ -172,14 +169,23 @@ is returned.
 			"password" fields, and may optionally include a
 			"password_verification" field.
 
-			* `/v1/users/%{alias}` [`GET`, `PUT`, `PATCH`, `DELETE`]
+			* `/v1/users/%{id}` [`GET`, `PUT`, `PATCH`, `DELETE`]
 
 				A `PUT` request totally replaces the user; the format is
 				the same as when creating a user, except that it excludes
 				any anti-spam type measures associated with original
 				account creation.
 
-				TODO: everything else
+				A `PATCH` request may be in either patch format, *but*
+				the password can only be changed by a a JSON Patch,
+				not a JSON Merge Patch.  Further, when changing the
+				password, the patch must first perform a `test` to
+				verify the old value of the password, then perform a
+				`replace` to set the new password.  A `replace`
+				without a `test` first will fail with HTTP 415
+				("Unsupported Media Type").
+
+				TODO: document the structure of the user.
 
 		* `/v1/groups` [`POST`, `GET`]
 

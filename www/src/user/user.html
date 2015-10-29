@@ -9,7 +9,7 @@
 		<span flex=""></span>
 		<md-menu>
 			<md-button aria-label="menu" class="md-icon-button" ng-click="openMenu($mdOpenMenu, $event)" >
-				<md-icon md-svg-src="assets/svg/menu.svg"></md-icon>
+				<md-icon md-svg-src="assets/svg/more_vert.svg"></md-icon>
 			</md-button>
 			<md-menu-content>
 				<md-menu-item>
@@ -26,7 +26,8 @@
 		</md-menu>
 	</md-toolbar>
 	
-	<md-card-content>
+	<md-card-content style="padding-right: 0;">
+		<h3 style="margin-bottom: 0;">Contact Addresses</h3>
 		<ul style="list-style: none; padding: 0; margin: 0;">
 			<li ng-repeat="address in user.addresses">
 			<div layout="row" layout-align="space-between center">
@@ -37,7 +38,6 @@
 			</div>
 			</li>
 		</ul>
-		<p>Session: {{user.sessionID}}</p>
 	</md-card-content>
 </md-card>
 </div>
@@ -50,7 +50,7 @@
 		<span flex=""></span>
 		<md-menu>
 			<md-button aria-label="menu" class="md-icon-button" ng-click="openMenu($mdOpenMenu, $event)" >
-				<md-icon md-svg-src="assets/svg/menu.svg"></md-icon>
+				<md-icon md-svg-src="assets/svg/more_vert.svg"></md-icon>
 			</md-button>
 			<md-menu-content>
 				<md-menu-item>

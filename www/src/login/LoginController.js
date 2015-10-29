@@ -4,9 +4,9 @@
 
 	angular
 		.module('login')
-		.controller('LoginController', ['$cookies', '$http', '$scope', '$interval', '$location', '$mdDialog', '$filter', 'UserService', LoginController]); 
+		.controller('LoginController', ['$cookies', '$http', '$scope', '$interval', '$location', '$mdDialog', '$filter', 'UserService', '$timeout', LoginController]); 
 
-	function LoginController($cookies, $http, $scope, $interval, $location, $mdDialog, $filter, userService) {
+	function LoginController($cookies, $http, $scope, $interval, $location, $mdDialog, $filter, userService, $timeout) {
 		//gives us an anchor to the outer object from within sub objects or functions
 		var self = this;
 		//clears the toolbar and such so we can set it up for this view
@@ -34,7 +34,28 @@
 		//for login redir;
 		if(userService.loginRedir.has == true) {
 			$scope.toolbar.warn.exists = true;
+			$scope.toolbar.warn.prefix = "YOU ARE NOT LOGGED IN";
 			$scope.toolbar.warn.message = userService.loginRedir.message;
+		} else {
+			var cookie = $cookies.get("app_set_session_id");
+			if(cookie != null && cookie != "") {
+				//the user may have a session
+				$scope.loading.is = true;
+				userService.validate(
+					function success() {
+						//user is logged in
+						$location.path('/user').replace();
+					},
+					function fail(status) {
+						//TODO: uh oh!
+					},
+					function noSession() {
+						//the user isn't logged in
+						userService.reset();
+						$scope.loading.is = false;
+					}
+				);
+			}
 		}
 		
 		//public functions
@@ -55,8 +76,7 @@
 			}).then(
 				function success(response) {
 					//do work with response
-					debugger;
-					userService.session_id = response.data.session_id;
+					userService.setSession(response.data.session_id);
 					userService.user_id = response.data.user_id;
 					if(userService.loginRedir.has) {
 						var redir = userService.loginRedir.path;

@@ -42,5 +42,5 @@
 </md-toolbar>
 
 <md-toolbar class="md-warn md-toolbar-tools" ng-if="toolbar.warn.exists">
-	<p>{{ toolbar.warn.message | translate }}</p>
+	<p>{{ toolbar.warn.prefix | translate}}<span ng-if="toolbar.warn.prefix != ''">:</span> {{ toolbar.warn.message | translate }}</p>
 </md-toolbar>
