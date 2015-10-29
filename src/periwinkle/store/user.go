@@ -6,7 +6,6 @@ package store
 
 import (
 	"encoding/json"
-	"errors"
 	"github.com/jinzhu/gorm"
 	"golang.org/x/crypto/bcrypt"
 	he "httpentity"
@@ -86,7 +85,7 @@ func (u *User) CheckPassword(password string) bool {
 	return err == nil
 }
 
-func NewUser(db *gorm.DB, name string, password string, email string) *User {
+func NewUser(db *gorm.DB, name string, password string, email string) User {
 	o := User{
 		Id:        name,
 		FullName:  "",
@@ -98,7 +97,7 @@ func NewUser(db *gorm.DB, name string, password string, email string) *User {
 	if err := db.Create(&o).Error; err != nil {
 		panic(err)
 	}
-	return &o
+	return o
 }
 
 func (o *User) Save(db *gorm.DB) {
@@ -257,11 +256,8 @@ func newDirUsers() t_dirUsers {
 			entity.Username = strings.ToLower(entity.Username)
 
 			user := NewUser(db, entity.Username, entity.Password, entity.Email)
-			if user == nil {
-				return putil.HTTPErrorf(409, "either that username or password is already taken").Response()
-			} else {
-				return he.StatusCreated(r, entity.Username, req)
-			}
+			req.Things["user"] = user
+			return he.StatusCreated(r, user.Id, req)
 		},
 	}
 	return r
@@ -272,26 +268,17 @@ func (d t_dirUsers) Methods() map[string]func(he.Request) he.Response {
 }
 
 func (d t_dirUsers) Subentity(name string, req he.Request) he.Entity {
+	name = strings.ToLower(name)
 	sess := req.Things["session"].(*Session)
 	if sess == nil && req.Method == "POST" {
-		type postfmt struct {
-			Username             string `json:"username"`
-			Email                string `json:"email"`
-			Password             string `json:"password"`
-			PasswordVerification string `json:"password_verification,omitempty"`
-		}
-		var entity postfmt
-		httperr := safeDecodeJSON(req.Entity, &entity)
-		if httperr != nil {
+		user, ok := req.Things["user"].(User)
+		if !ok {
 			return nil
 		}
-		db := req.Things["db"].(*gorm.DB)
-		user := GetUserById(db, entity.Username)
-		if !user.CheckPassword(entity.Password) {
-			return nil
-		} else {
-			return user
+		if user.Id == name {
+			return &user
 		}
+		return nil
 	} else if sess.UserId != name {
 		return nil
 	}
