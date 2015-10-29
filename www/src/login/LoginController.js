@@ -123,9 +123,10 @@
 								.ariaLabel('Unexpected Response from Server')
 								.ok('Got it!')
 					}
-					dialog
+					dialog = dialog
 						.openFrom('#login-button')
-						.closeTo('#login-button');
+						.closeTo('#login-button')
+						.clickOutsideToClose(true);
 					$mdDialog.show(dialog);
 				}
 			);
