@@ -36,9 +36,9 @@
 		};
 	}]);
 
-	periwinkleApp.config(function ($httpProvider) {
+	periwinkleApp.config(['$httpProvider', function ($httpProvider) {
 	  $httpProvider.interceptors.push('httpRequestInterceptor');
-	});
+	}]);
 	
 	periwinkleApp.config(['$translateProvider', function($translateProvider) {
 		$translateProvider
