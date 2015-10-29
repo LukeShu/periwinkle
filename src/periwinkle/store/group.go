@@ -5,7 +5,6 @@
 package store
 
 import (
-	"fmt"
 	"github.com/jinzhu/gorm"
 	he "httpentity"
 	"httpentity/util"
@@ -75,7 +74,7 @@ func GetGroupByAddress(db *gorm.DB, address string) *Group {
 	return &o
 }
 
-func getGroupAddressesByMediumAndGroupId(db *gorm.DB, medium string, groupId string) *GroupAddress {
+func getGroupAddressesByMediumAndGroupId(db *gorm.DB, medium string, groupId string) *[]GroupAddress {
 	var o GroupAddress
 	if result := db.Where("medium =? and group_id =?", medium, groupId).Find(&o); result.Error != nil {
 		if result.RecordNotFound() {
@@ -86,7 +85,7 @@ func getGroupAddressesByMediumAndGroupId(db *gorm.DB, medium string, groupId str
 	return &o
 }
 
-func getGroupAddressesByMedium(db *gorm.DB, medium string) *GroupAddress {
+func getGroupAddressesByMedium(db *gorm.DB, medium string) *[]GroupAddress {
 	var o GroupAddress
 	if result := db.Where("medium =?", medium).Find(&o); result.Error != nil {
 		if result.RecordNotFound() {
@@ -167,17 +166,22 @@ func newDirGroups() t_dirGroups {
 	r.methods = map[string]func(he.Request) he.Response{
 		"POST": func(req he.Request) he.Response {
 			db := req.Things["db"].(*gorm.DB)
-			badbody := he.StatusUnsupportedMediaType(heutil.NetString(fmt.Sprintf("submitted body not what expected")))
-			hash, ok := req.Entity.(map[string]interface{}); if !ok { return badbody }
-			groupname, ok := hash["groupname"].(string)    ; if !ok { return badbody }
+			type postfmt struct {
+				Groupname string `json:"grouponame"`
+			}
+			var entity postfmt
+			httperr := safeDecodeJSON(req.Entity, &entity)
+			if httperr != nil {
+				return httperr.Response()
+			}
 
-			groupname = strings.ToLower(groupname)
+			entity.Groupname = strings.ToLower(entity.Groupname)
 
-			group := NewGroup(db, groupname)
+			group := NewGroup(db, entity.Groupname)
 			if group == nil {
 				return he.StatusConflict(heutil.NetString("a group with that name already exists"))
 			} else {
-				return he.StatusCreated(r, groupname, req)
+				return he.StatusCreated(r, entity.Groupname, req)
 			}
 		},
 	}
