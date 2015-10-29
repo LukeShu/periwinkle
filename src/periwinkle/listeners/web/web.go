@@ -10,6 +10,7 @@ import (
 	"net/http"
 	"periwinkle/cfg"
 	"periwinkle/store"
+	"periwinkle/senders"
 	"time"
 )
 
@@ -46,6 +47,10 @@ func Main() error {
 		Stacktrace:  cfg.Debug,
 		LogRequest:  cfg.Debug,
 	})
+
+	mux.Handle("/webui/twilio/sms", http.HandlerFunc(senders.Url_handler))
+
+
 	// The static web UI
 	mux.Handle("/webui/", http.StripPrefix("/webui/", http.FileServer(cfg.WebUiDir)))
 	// External API callbacks
