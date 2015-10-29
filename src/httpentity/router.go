@@ -66,8 +66,8 @@ func (r *Router) finish(req Request, u *url.URL, res *Response) {
 			const size = 64 << 10
 			buf := make([]byte, size)
 			buf = buf[:runtime.Stack(buf, false)]
-			reason = fmt.Sprintf("%v\n\n%s", err, string(buf))
-			fmt.Fprintf(os.Stderr, "%v\n\n%s", err, string(buf))
+			reason = fmt.Sprintf("^%T(%#v) => %v\n\n%s\n", err, err, err, string(buf))
+			fmt.Fprint(os.Stderr, reason)
 		}
 		*res = statusInternalServerError(reason)
 	}
