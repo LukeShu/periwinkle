@@ -20,10 +20,6 @@
 		};
 		self.reset();
 		
-		self.setCookie = function() {
-			$http.defaults.xsrfCookieName = 'session_id';
-		}
-		
 		self.validate = function(success_cb, fail_cb, noSession_cb) {
 			$http({
 				method:	'GET',
