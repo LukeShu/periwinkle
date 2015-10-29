@@ -26,6 +26,7 @@
 			};
 			$scope.toolbar.warn = {
 				exists:		false,
+				prefix:		'',
 				message:	''
 			};
 			$scope.expandMenu = {

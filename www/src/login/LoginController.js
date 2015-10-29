@@ -34,6 +34,7 @@
 		//for login redir;
 		if(userService.loginRedir.has == true) {
 			$scope.toolbar.warn.exists = true;
+			$scope.toolbar.warn.prefix = "YOU ARE NOT LOGGED IN";
 			$scope.toolbar.warn.message = userService.loginRedir.message;
 		} else {
 			var cookie = $cookies.get("app_set_session_id");
