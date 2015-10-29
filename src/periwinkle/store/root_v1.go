@@ -26,8 +26,6 @@ func (d t_dirRoot) Subentity(name string, request he.Request) he.Entity {
 		return dirGroups
 	case "msgs":
 		return dirMessages
-	case "s":
-		return dirShortUrls
 	case "session":
 		return fileSession
 	case "users":

@@ -10,7 +10,7 @@ import (
 )
 
 var _ he.Entity = &ShortUrl{}
-var dirShortUrls he.Entity = newDirShortUrls()
+var DirShortUrls he.Entity = newDirShortUrls()
 
 // Model /////////////////////////////////////////////////////////////
 
