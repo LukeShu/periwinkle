@@ -27,6 +27,11 @@
 			.accentPalette('teal');
 	});
 	
+	periwinkleApp.config(['$httpProvider', function($httpProvider) {
+		$httpProvider.defualts.xsrfCookieName = 'session_id';
+		$httpProvider.useLegacyPromiceExtensions(false);
+	}]);
+	
 	periwinkleApp.config(['$translateProvider', function($translateProvider) {
 		$translateProvider
 			.translations('en', localised.en)
