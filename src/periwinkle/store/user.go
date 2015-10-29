@@ -13,6 +13,7 @@ import (
 	"httpentity/util"
 	"io"
 	"jsonpatch"
+	"periwinkle/util" // putil
 	"strings"
 )
 
@@ -136,7 +137,7 @@ func (o *User) Subentity(name string, req he.Request) he.Entity {
 	return nil
 }
 
-func (o *User) patchPassword(patch *jsonpatch.Patch) HTTPError {
+func (o *User) patchPassword(patch *jsonpatch.Patch) putil.HTTPError {
 	// this is in the running for the grossest code I've ever
 	// written, but I think it's the best way to do it --lukeshu
 	type patchop struct {
@@ -160,16 +161,16 @@ func (o *User) patchPassword(patch *jsonpatch.Patch) HTTPError {
 			switch op.Op {
 			case "test":
 				if !o.CheckPassword(op.Value) {
-					return httpErrorf(409, "old password didn't match")
+					return putil.HTTPErrorf(409, "old password didn't match")
 				}
 				checkedpass = true
 			case "replace":
 				if !checkedpass {
-					return httpErrorf(409, "you must submit and old password (using 'test') before setting a new one")
+					return putil.HTTPErrorf(409, "you must submit and old password (using 'test') before setting a new one")
 				}
 				o.SetPassword(op.Value)
 			default:
-				return httpErrorf(415, "you may only 'set' or 'replace' the password")
+				return putil.HTTPErrorf(415, "you may only 'set' or 'replace' the password")
 			}
 		} else {
 			out_ops = append(out_ops, op)
@@ -219,7 +220,7 @@ func (o *User) Methods() map[string]func(he.Request) he.Response {
 			}
 			patch, ok := req.Entity.(jsonpatch.Patch)
 			if !ok {
-				return httpErrorf(415, "PATCH request must have a patch media type").Response()
+				return putil.HTTPErrorf(415, "PATCH request must have a patch media type").Response()
 			}
 			httperr := o.patchPassword(&patch)
 			if httperr != nil {
@@ -228,7 +229,7 @@ func (o *User) Methods() map[string]func(he.Request) he.Response {
 			var new_user User
 			err := patch.Apply(o, &new_user)
 			if err != nil {
-				return httpErrorf(409, "%v", err).Response()
+				return putil.HTTPErrorf(409, "%v", err).Response()
 			}
 			if o.Id != new_user.Id {
 				return he.StatusConflict(heutil.NetString("Cannot change user id"))
@@ -283,7 +284,7 @@ func newDirUsers() t_dirUsers {
 
 			user := NewUser(db, entity.Username, entity.Password, entity.Email)
 			if user == nil {
-				return httpErrorf(409, "either that username or password is already taken").Response()
+				return putil.HTTPErrorf(409, "either that username or password is already taken").Response()
 			} else {
 				return he.StatusCreated(r, entity.Username, req)
 			}

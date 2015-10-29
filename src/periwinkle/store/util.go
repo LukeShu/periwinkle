@@ -12,6 +12,7 @@ import (
 	"io"
 	"jsondiff"
 	"math/big"
+	"periwinkle/util" // putil
 )
 
 func Schema(db *gorm.DB) {
@@ -43,15 +44,15 @@ func SchemaDrop(db *gorm.DB) {
 	db.DropTable(&Captcha{})
 }
 
-func safeDecodeJSON(in interface{}, out interface{}) HTTPError {
+func safeDecodeJSON(in interface{}, out interface{}) putil.HTTPError {
 	decoder, ok := in.(*json.Decoder)
 	if !ok {
-		return httpErrorf(415, "PUT and POST requests must have a document media type")
+		return putil.HTTPErrorf(415, "PUT and POST requests must have a document media type")
 	}
 	var tmp interface{}
 	err := decoder.Decode(&tmp)
 	if err != nil {
-		return httpErrorf(415, "Couldn't parse: %v", err)
+		return putil.HTTPErrorf(415, "Couldn't parse: %v", err)
 	}
 	str, err := json.Marshal(tmp)
 	if err != nil {
@@ -59,7 +60,7 @@ func safeDecodeJSON(in interface{}, out interface{}) HTTPError {
 	}
 	err = json.Unmarshal(str, out)
 	if err != nil {
-		return httpErrorf(415, "Request body didn't have expected structure (field had wrong data type): %v", err)
+		return putil.HTTPErrorf(415, "Request body didn't have expected structure (field had wrong data type): %v", err)
 	}
 	if !jsondiff.Equal(tmp, out) {
 		diff, err := jsondiff.NewJSONPatch(tmp, out)
@@ -70,7 +71,7 @@ func safeDecodeJSON(in interface{}, out interface{}) HTTPError {
 			"message": "Request body didn't have expected structure (extra or missing fields).  The included diff would make the request acceptable.",
 			"diff":    diff,
 		}
-		return httpError(he.StatusUnsupportedMediaType(entity))
+		return putil.RawHTTPError(he.StatusUnsupportedMediaType(entity))
 	}
 	return nil
 }

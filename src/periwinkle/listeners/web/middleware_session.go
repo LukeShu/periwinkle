@@ -26,21 +26,9 @@ func (p session) Before(req *he.Request) {
 	}
 	session_id := cookie.Value
 
-	if req.Entity != nil {
-		hash, ok := req.Entity.(map[string]interface{})
-		if !ok {
-			return
-		}
-
-		session_id_body, ok := hash["session_id"].(string)
-		delete(hash, "session_id")
-		if !ok {
-			return
-		}
-
-		if session_id_body != session_id {
-			return
-		}
+	header := req.Headers.Get("X-XSRF-TOKEN")
+	if header != session_id {
+		return
 	}
 
 	// It's not worth panicing if we have database errors here.

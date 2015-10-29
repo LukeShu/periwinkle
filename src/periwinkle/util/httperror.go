@@ -1,6 +1,6 @@
 // Copyright 2015 Luke Shumaker
 
-package store
+package putil
 
 import (
 	"fmt"
@@ -14,19 +14,19 @@ type HTTPError interface {
 	Response() he.Response
 }
 
-type httpError he.Response
+type RawHTTPError he.Response
 
-func (e httpError) Error() string {
+func (e RawHTTPError) Error() string {
 	return fmt.Sprintf("%v", he.Response(e).Entity)
 }
 
-func (e httpError) Response() he.Response {
+func (e RawHTTPError) Response() he.Response {
 	return he.Response(e)
 }
 
-func httpErrorf(code int16, format string, a ...interface{}) HTTPError {
+func HTTPErrorf(code int16, format string, a ...interface{}) HTTPError {
 	// TODO: long-term: This printf is gross
-	return httpError(he.Response{
+	return RawHTTPError(he.Response{
 		Status:  code,
 		Headers: http.Header{},
 		Entity:  heutil.NetString(fmt.Sprintf("%d: %s", code, fmt.Sprintf(format, a...))),
