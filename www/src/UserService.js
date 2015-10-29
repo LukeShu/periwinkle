@@ -20,7 +20,7 @@
 		};
 		self.reset();
 		
-		self.setSession(session) {
+		self.setSession = function(session) {
 			self.session_id = session;
 			$cookies.put('app_set_session_id', session);
 		}
