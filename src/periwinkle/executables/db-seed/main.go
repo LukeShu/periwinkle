@@ -8,5 +8,6 @@ import (
 )
 
 func main() {
-	store.Schema(cfg.DB)
+	store.DbSchema(cfg.DB)
+	store.DbSeed(cfg.DB)
 }

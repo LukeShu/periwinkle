@@ -11,7 +11,10 @@ type Medium struct {
 	Id string
 }
 
-func (o Medium) schema(db *gorm.DB) {
-	db.CreateTable(&o)
-	db.Create(&Medium{"email"}) // TODO: should probably not be hard-coded into the schema
+func (o Medium) dbSchema(db *gorm.DB) error {
+	return db.CreateTable(&o).Error
+}
+
+func (o Medium) dbSeed(db *gorm.DB) error {
+	return db.Create(&Medium{"email"}).Error
 }

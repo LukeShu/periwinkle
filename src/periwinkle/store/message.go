@@ -23,10 +23,11 @@ type Message struct {
 	// cached fields??????
 }
 
-func (o Message) schema(db *gorm.DB) {
-	table := db.CreateTable(&o)
-	table.AddForeignKey("group_id", "groups(id)", "RESTRICT", "RESTRICT")
-	table.AddUniqueIndex("filename_idx", "unique")
+func (o Message) dbSchema(db *gorm.DB) error {
+	return db.CreateTable(&o).
+		AddForeignKey("group_id", "groups(id)", "RESTRICT", "RESTRICT").
+		AddUniqueIndex("filename_idx", "unique").
+		Error
 }
 
 func NewMessage(unique maildir.Unique) *Message {

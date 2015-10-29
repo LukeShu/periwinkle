@@ -13,35 +13,58 @@ import (
 	"jsondiff"
 	"math/big"
 	"periwinkle/util" // putil
+	"strings"
 )
 
-func Schema(db *gorm.DB) {
-	// TODO: error detection
-	(Captcha{}).schema(db)
-	(Medium{}).schema(db)
-	(Group{}).schema(db)
-	(GroupAddress{}).schema(db) // must come after Group and Medium
-	(Message{}).schema(db)      // must come after Group
-	(User{}).schema(db)
-	(Session{}).schema(db) // must come after User
-	(ShortUrl{}).schema(db)
-	(UserAddress{}).schema(db)  // must come after User and Medium
-	(Subscription{}).schema(db) // must come after Group and UserAddress
+type errorList []error
+
+func (errs errorList) Error() string {
+	strs := make([]string, len(errs))
+	for i, err := range errs {
+		strs[i] = err.Error()
+	}
+	return " - " + strings.Join(strs, "\n - ")
 }
 
-func SchemaDrop(db *gorm.DB) {
-	// This must be in the reverse order of Schema()
-	// TODO: error detection
-	db.DropTable(&Subscription{})
-	db.DropTable(&UserAddress{})
-	db.DropTable(&ShortUrl{})
-	db.DropTable(&Session{})
-	db.DropTable(&User{})
-	db.DropTable(&Message{})
-	db.DropTable(&GroupAddress{})
-	db.DropTable(&Group{})
-	db.DropTable(&Medium{})
-	db.DropTable(&Captcha{})
+func errHelper(errs *[]error, err error) {
+	if err != nil {
+		*errs = append(*errs, err)
+	}
+}
+
+func DbSchema(db *gorm.DB) error {
+	errs := []error{}
+	errHelper(&errs, (Captcha{}).dbSchema(db))
+	errHelper(&errs, (Medium{}).dbSchema(db))
+	errHelper(&errs, (Group{}).dbSchema(db))
+	errHelper(&errs, (GroupAddress{}).dbSchema(db)) // must come after Group and Medium
+	errHelper(&errs, (Message{}).dbSchema(db))      // must come after Group
+	errHelper(&errs, (User{}).dbSchema(db))
+	errHelper(&errs, (Session{}).dbSchema(db)) // must come after User
+	errHelper(&errs, (ShortUrl{}).dbSchema(db))
+	errHelper(&errs, (UserAddress{}).dbSchema(db))  // must come after User and Medium
+	errHelper(&errs, (Subscription{}).dbSchema(db)) // must come after Group and UserAddress
+	return errorList(errs)
+}
+
+func DbDrop(db *gorm.DB) error {
+	// This must be in the reverse order of DbSchema()
+	errs := []error{}
+	errHelper(&errs, db.DropTable(&Subscription{}).Error)
+	errHelper(&errs, db.DropTable(&UserAddress{}).Error)
+	errHelper(&errs, db.DropTable(&ShortUrl{}).Error)
+	errHelper(&errs, db.DropTable(&Session{}).Error)
+	errHelper(&errs, db.DropTable(&User{}).Error)
+	errHelper(&errs, db.DropTable(&Message{}).Error)
+	errHelper(&errs, db.DropTable(&GroupAddress{}).Error)
+	errHelper(&errs, db.DropTable(&Group{}).Error)
+	errHelper(&errs, db.DropTable(&Medium{}).Error)
+	errHelper(&errs, db.DropTable(&Captcha{}).Error)
+	return errorList(errs)
+}
+
+func DbSeed(db *gorm.DB) error {
+	return (Medium{}).dbSeed(db)
 }
 
 func safeDecodeJSON(in interface{}, out interface{}) putil.HTTPError {

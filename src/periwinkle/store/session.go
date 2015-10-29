@@ -24,9 +24,10 @@ type Session struct {
 	LastUsed time.Time `json:"-"`
 }
 
-func (o Session) schema(db *gorm.DB) {
-	table := db.CreateTable(&o)
-	table.AddForeignKey("user_id", "users(id)", "RESTRICT", "RESTRICT")
+func (o Session) dbSchema(db *gorm.DB) error {
+	return db.CreateTable(&o).
+		AddForeignKey("user_id", "users(id)", "RESTRICT", "RESTRICT").
+		Error
 }
 
 func NewSession(db *gorm.DB, user *User, password string) *Session {

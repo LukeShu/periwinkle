@@ -23,8 +23,8 @@ type Captcha struct {
 	Expiration time.Time
 }
 
-func (o Captcha) schema(db *gorm.DB) {
-	db.CreateTable(&o)
+func (o Captcha) dbSchema(db *gorm.DB) error {
+	return db.CreateTable(&o).Error
 }
 
 func NewCaptcha() *Captcha {

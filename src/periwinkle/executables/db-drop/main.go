@@ -8,5 +8,5 @@ import (
 )
 
 func main() {
-	store.SchemaDrop(cfg.DB)
+	store.DbDrop(cfg.DB)
 }

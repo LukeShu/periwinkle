@@ -23,8 +23,8 @@ type Group struct {
 	Addresses []GroupAddress
 }
 
-func (o Group) schema(db *gorm.DB) {
-	db.CreateTable(&o)
+func (o Group) dbSchema(db *gorm.DB) error {
+	return db.CreateTable(&o).Error
 }
 
 type GroupAddress struct {
@@ -34,11 +34,12 @@ type GroupAddress struct {
 	Address string
 }
 
-func (o GroupAddress) schema(db *gorm.DB) {
-	table := db.CreateTable(&o)
-	table.AddForeignKey("group_id", "groups(id)", "RESTRICT", "RESTRICT")
-	table.AddForeignKey("medium", "media(id)", "RESTRICT", "RESTRICT")
-	table.AddUniqueIndex("uniqueness_idx", "medium", "address")
+func (o GroupAddress) dbSchema(db *gorm.DB) error {
+	return db.CreateTable(&o).
+		AddForeignKey("group_id", "groups(id)", "RESTRICT", "RESTRICT").
+		AddForeignKey("medium", "media(id)", "RESTRICT", "RESTRICT").
+		AddUniqueIndex("uniqueness_idx", "medium", "address").
+		Error
 }
 
 func GetGroupById(db *gorm.DB, id string) *Group {

@@ -30,8 +30,8 @@ type User struct {
 	Addresses []UserAddress `json:"addresses"`
 }
 
-func (o User) schema(db *gorm.DB) {
-	db.CreateTable(&o)
+func (o User) dbSchema(db *gorm.DB) error {
+	return db.CreateTable(&o).Error
 }
 
 type UserAddress struct {
@@ -41,11 +41,12 @@ type UserAddress struct {
 	Address string `json:"address"`
 }
 
-func (o UserAddress) schema(db *gorm.DB) {
-	table := db.CreateTable(&o)
-	table.AddForeignKey("user_id", "users(id)", "RESTRICT", "RESTRICT")
-	table.AddForeignKey("medium", "media(id)", "RESTRICT", "RESTRICT")
-	table.AddUniqueIndex("uniqueness_idx", "medium", "address")
+func (o UserAddress) dbSchema(db *gorm.DB) error {
+	return db.CreateTable(&o).
+		AddForeignKey("user_id", "users(id)", "RESTRICT", "RESTRICT").
+		AddForeignKey("medium", "media(id)", "RESTRICT", "RESTRICT").
+		AddUniqueIndex("uniqueness_idx", "medium", "address").
+		Error
 }
 
 func GetUserById(db *gorm.DB, id string) *User {

@@ -19,9 +19,10 @@ type ShortUrl struct {
 	Dest string //*url.URL // TODO: figure out how to have (un)marshalling happen automatically
 }
 
-func (o ShortUrl) schema(db *gorm.DB) {
-	table := db.CreateTable(&o)
-	table.AddUniqueIndex("dest_idx", "dest")
+func (o ShortUrl) dbSchema(db *gorm.DB) error {
+	return db.CreateTable(&o).
+		AddUniqueIndex("dest_idx", "dest").
+		Error
 }
 
 func NewShortURL(db *gorm.DB, u *url.URL) *ShortUrl {
