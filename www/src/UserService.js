@@ -4,9 +4,9 @@
 
 	angular
 		.module('periwinkle.UserService', [])
-		.service('UserService', ['$http', UserService]);
+		.service('UserService', ['$http', '$httpProvider', UserService]);
 		
-	function UserService ($http) {
+	function UserService ($http, $httpProvider) {
 		var self = this;
 		
 		self.reset = function() {
@@ -19,6 +19,10 @@
 			};
 		};
 		self.reset();
+		
+		self.setCookie = function() = {
+			$httpProvider.defaults.xsrfCookieName = 'session_id';
+		}
 		
 		self.validate = function(success_cb, fail_cb, noSession_cb) {
 			$http({
