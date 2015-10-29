@@ -39,10 +39,13 @@ func route(entity Entity, req Request, upath string) (ret Response) {
 		if method_allowed {
 			ret = handler(req)
 		} else {
-			ret = statusMethodNotAllowed(methods2string(methods))
+			if callmethod == "OPTIONS" {
+				ret = StatusOK(nil)
+			} else {
+				ret = statusMethodNotAllowed(methods2string(methods))
+			}
 		}
 		if callmethod == "OPTIONS" {
-			ret.Status = 200
 			ret.Headers.Set("Allow", methods2string(methods))
 		}
 	} else {
