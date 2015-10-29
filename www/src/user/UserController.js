@@ -52,13 +52,11 @@
 					self.username = response.data.user_id;
 					self.addresses = response.data.addresses;
 					$scope.loading.is = false;
-					debugger;
 				},
 				function fail(response) {
 					//do work with response
 					//show error to user
 					$scope.loading.is = false;
-					debugger;
 				}
 			);
 		};
