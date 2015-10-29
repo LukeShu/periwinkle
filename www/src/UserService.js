@@ -20,7 +20,7 @@
 		};
 		self.reset();
 		
-		self.setCookie = function() = {
+		self.setCookie = function() {
 			$httpProvider.defaults.xsrfCookieName = 'session_id';
 		}
 		
