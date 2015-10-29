@@ -298,14 +298,21 @@ func (d t_dirUsers) Methods() map[string]func(he.Request) he.Response {
 
 func (d t_dirUsers) Subentity(name string, req he.Request) he.Entity {
 	sess := req.Things["session"].(*Session)
-	if sess == nil {
+	if sess == nil && req.Method == "POST" {
+		type postfmt struct {
+			Username             string `json:"username"`
+			Email                string `json:"email"`
+			Password             string `json:"password"`
+			PasswordVerification string `json:"password_verification,omitempty`
+		}
+		var entity postfmt
+		httperr := safeDecodeJSON(req.Entity, &entity)
+		if httperr != nil {
+			return nil
+		}
 		db := req.Things["db"].(*gorm.DB)
-		hash, ok := req.Entity.(map[string]interface{}); if !ok { return nil }
-		username, ok := hash["username"].(string)      ; if !ok { return nil }
-		password, ok := hash["password"].(string)      ; if !ok { return nil }
-		var user *User
-		user = GetUserById(db, username)
-		if !user.CheckPassword(password) {
+		user := GetUserById(db, entity.Username)
+		if !user.CheckPassword(entity.Password) {
 			return nil
 		} else {
 			return user
