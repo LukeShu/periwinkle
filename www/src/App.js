@@ -31,6 +31,7 @@
 		return {
 			request: function (config) {
 				config.headers['X-XSRF-TOKEN'] = $cookies['session_id'];
+				debugger;
 				return config;
 			}
 		};
