@@ -17,6 +17,7 @@
 				path:		null,
 				message:	null
 			};
+			$cookies.put('app_set_session_id', "");
 		};
 		self.reset();
 		
@@ -40,7 +41,7 @@
 					}	else {
 						//they are
 						self.user_id = response.data.user_id;
-						self.session_id = response.data.session_id;
+						self.setSession(response.data.session_id);
 						success_cb();
 					}
 				},
