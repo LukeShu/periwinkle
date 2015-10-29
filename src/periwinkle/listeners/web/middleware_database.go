@@ -19,6 +19,8 @@ func (p database) Before(req *he.Request) {
 }
 
 func (p database) After(req he.Request, res *he.Response) {
+	transaction := req.Things["db"].(*gorm.DB)
+
 	defer func() {
 		if obj := recover(); obj != nil {
 			switch err := obj.(type) {
@@ -27,8 +29,14 @@ func (p database) After(req he.Request, res *he.Response) {
 					*res = he.StatusConflict(heutil.NetString(err.Error()))
 					return
 				}
-			case mysql.MySQLError:
-				// TODO: detect constraint falure for MySQL
+			case *mysql.MySQLError:
+				// TODO: this list of error numbers might not be complete
+				// see https://mariadb.com/kb/en/mariadb/mariadb-error-codes/
+				switch err.Number {
+				case 1022, 1062, 1169, 1216, 1217, 1451, 1452, 1557, 1761, 1762, 1834:
+					*res = he.StatusConflict(heutil.NetString(err.Error()))
+					return
+				}
 			}
 			// we didn't intercept the error, so pass it along
 			panic(obj)
@@ -36,10 +44,10 @@ func (p database) After(req he.Request, res *he.Response) {
 	}()
 
 	if obj := recover(); obj != nil {
+		transaction.Rollback()
 		panic(obj)
 	}
 
-	transaction := req.Things["db"].(*gorm.DB)
 	err := transaction.Commit().Error
 	if err != nil {
 		panic(err)
