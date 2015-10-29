@@ -59,6 +59,21 @@
 					$scope.loading.is = false;
 				}
 			);
+			$http({
+				method:	'GET',
+				url:	'/v1/groups',
+				responseType:	'json'
+			}).then(
+				function success(response) {
+					self.groups = reponse.data;
+					debugger;
+					$scope.loading.is = false;
+				},
+				function fail(response) {
+					debugger;
+					$scope.loading.is = false;
+				}
+			);
 		};
 		self.createGroup = function() {
 			
@@ -69,8 +84,10 @@
 		
 		//check and load
 		self.load = function() {
+			$scope.loading.is = true;
 			userService.validate(
-				function success() {
+				function success() 
+					$scope.loading.is = false;
 					__load();
 				},
 				function fail(status) {
