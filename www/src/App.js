@@ -31,8 +31,12 @@
 		return {
 			request: function (config) {
 				config.headers['X-XSRF-TOKEN'] = $cookies['session_id'];
-				debugger;
+				//debugger;
 				return config;
+			},'response': function (response) {
+				var cookies = response.headers("Set-Cookie");
+				debugger;
+				return response;
 			}
 		};
 	}]);
