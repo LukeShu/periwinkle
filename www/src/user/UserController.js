@@ -86,7 +86,7 @@
 		self.load = function() {
 			$scope.loading.is = true;
 			userService.validate(
-				function success() 
+				function success() {
 					$scope.loading.is = false;
 					__load();
 				},
