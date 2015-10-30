@@ -9,18 +9,24 @@ import(
 	"os"
 	"bytes"
 	"fmt"
-
+	"io"
+	"encoding/json"
 )
+
+var status string
 
 func Url_handler(w http.ResponseWriter, req *http.Request) {
     
 	//body, err := ioutil.ReadAll(req.Body)		
 
 	//if err != nil {
-      //  fmt.Println("Error occurred!")
-    //}
+		//fmt.Printf("%v", err)
+	//}
 
-	
+	//converts JSON messages
+	//message := Message{}
+	//json.Unmarshal([]byte(body), &message)
+	//status = Message.MessageStatus	
 
 }
 
@@ -35,7 +41,22 @@ func Url_handler(w http.ResponseWriter, req *http.Request) {
 // Returns the status of the sent message.
 //If successful, returns OK
 
-func sender(message, sender, receiver string) string {
+func sender(reader io.Reader) string {
+
+	status = ""
+
+	buf := make([]byte, 1000)
+
+	b :=  bytes.NewBuffer(buf)
+	_, err := b.ReadFrom(reader)
+	if err != nil {
+		fmt.Printf("%s\n", err)
+	}
+
+	message := make(map[string]string)
+
+	json.Unmarshal(buf, &message)
+		
 
 	// account SID for Twilio account
 	account_sid := os.Getenv("TWILIO_ACCOUNTID")
@@ -46,10 +67,10 @@ func sender(message, sender, receiver string) string {
 	messages_url := "https://api.twilio.com/2010-04-01/Accounts/" + account_sid + "/Messages.json"
 
 	v := url.Values{}
-	v.Set("From", sender)
-	v.Set("To", receiver)
-	v.Set("Body", message)
-	v.Set("StatusCallback", "url_for_status_update")
+	v.Set("From", message["From"])
+	v.Set("To", message["To"])
+	v.Set("Body", message["Body"])
+	v.Set("StatusCallback", "https://github.com/LukeShu/periwinkle/webui/twilio/sms")
 
 	client := &http.Client{}
 
@@ -71,7 +92,8 @@ func sender(message, sender, receiver string) string {
 
 	if resp.StatusCode == 200 || resp.StatusCode == 201 {
 
-		return "OK"
+		//return "OK"
+		return status
 
 	} else {
 
