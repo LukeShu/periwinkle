@@ -10,6 +10,8 @@ import (
 	"httpentity/util" // heutil
 	"io"
 	"strings"
+        "jsonpatch"
+	"periwinkle/util" // putil
 )
 
 var _ he.Entity = &Group{}
@@ -19,8 +21,8 @@ var dirGroups he.Entity = newDirGroups()
 // Model /////////////////////////////////////////////////////////////
 
 type Group struct {
-	Id        string
-	Addresses []GroupAddress
+	Id        string `json:"group_id"`
+	Addresses []GroupAddress `json:"addresses"`
 }
 
 func (o Group) dbSchema(db *gorm.DB) error {
@@ -28,10 +30,10 @@ func (o Group) dbSchema(db *gorm.DB) error {
 }
 
 type GroupAddress struct {
-	Id      int64
-	GroupId string
-	Medium  string
-	Address string
+	Id      int64 `json:"group_address_id"`
+	GroupId string `json:"group_id"`
+	Medium  string `json:"medium"`
+	Address string `json:"address"`
 }
 
 func (o GroupAddress) dbSchema(db *gorm.DB) error {
@@ -107,6 +109,12 @@ func NewGroup(db *gorm.DB, name string) *Group {
 	return &o
 }
 
+func (o *Group) Save(db *gorm.DB) {
+        if err := db.Save(o).Error; err != nil {
+                panic(err)
+        }
+}
+
 func (o *Group) Subentity(name string, req he.Request) he.Entity {
 	panic("TODO: API: (*Group).Subentity()")
 }
@@ -140,12 +148,40 @@ func (o *Group) Methods() map[string]func(he.Request) he.Response {
 				return he.StatusConflict(heutil.NetString("Cannot change group id"))
 			}
 			*o = new_group
-			//o.Save(db)
+			o.Save(db)
 			return he.StatusOK(o)
 		},
-		"PATCH": func(req he.Request) he.Response {
-			panic("TODO: API: (*Group).Methods()[\"PATCH\"]")
-		},
+                "PATCH": func(req he.Request) he.Response {
+                        db := req.Things["db"].(*gorm.DB)
+                        sess := req.Things["session"].(*Session)
+                        users := GetUsersInGroup(db, o.Id)
+                        flag := false
+                        for _, user := range *users {
+                                if sess.UserId == user.Id {
+                                        flag = true
+                                        break
+                                }
+                        }
+                        if !flag {
+                                return he.StatusForbidden(heutil.NetString("Unauthorized user"))
+                        }
+
+			patch, ok := req.Entity.(jsonpatch.Patch)
+                        if !ok {
+                                return putil.HTTPErrorf(415, "PATCH request must have a patch media type").Response()
+                        }
+                        var new_group Group
+                        err := patch.Apply(o, &new_group)
+                        if err != nil {
+                                return putil.HTTPErrorf(409, "%v", err).Response()
+                        }
+                        if o.Id != new_group.Id {
+                                return he.StatusConflict(heutil.NetString("Cannot change user id"))
+                        }
+                        *o = new_group
+                        o.Save(db)
+                        return he.StatusOK(o)
+                },
 		"DELETE": func(req he.Request) he.Response {
 			panic("TODO: API: (*Group).Methods()[\"DELETE\"]")
 		},
