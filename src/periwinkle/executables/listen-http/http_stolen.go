@@ -5,8 +5,8 @@
 package main
 
 import (
-	"time"
 	"net"
+	"time"
 )
 
 // tcpKeepAliveListener sets TCP keep-alive timeouts on accepted

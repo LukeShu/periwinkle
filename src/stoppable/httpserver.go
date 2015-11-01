@@ -53,4 +53,3 @@ func (ss *HTTPServer) Stop() {
 	ss.Server.SetKeepAlivesEnabled(false)
 	ss.Socket.Close()
 }
-

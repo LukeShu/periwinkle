@@ -9,9 +9,9 @@ import (
 	he "httpentity"
 	"httpentity/util" // heutil
 	"io"
-	"strings"
-        "jsonpatch"
+	"jsonpatch"
 	"periwinkle/util" // putil
+	"strings"
 )
 
 var _ he.Entity = &Group{}
@@ -21,7 +21,7 @@ var dirGroups he.Entity = newDirGroups()
 // Model /////////////////////////////////////////////////////////////
 
 type Group struct {
-	Id        string `json:"group_id"`
+	Id        string         `json:"group_id"`
 	Addresses []GroupAddress `json:"addresses"`
 }
 
@@ -30,7 +30,7 @@ func (o Group) dbSchema(db *gorm.DB) error {
 }
 
 type GroupAddress struct {
-	Id      int64 `json:"group_address_id"`
+	Id      int64  `json:"group_address_id"`
 	GroupId string `json:"group_id"`
 	Medium  string `json:"medium"`
 	Address string `json:"address"`
@@ -77,7 +77,6 @@ func GetGroupByAddress(db *gorm.DB, address string) *Group {
 	return &o
 }
 
-
 func GetGroupAddressesByMediumAndGroupId(db *gorm.DB, medium string, groupId string) *[]GroupAddress {
 	var o []GroupAddress
 	if result := db.Where("medium =? and group_id =?", medium, groupId).Find(&o); result.Error != nil {
@@ -100,7 +99,6 @@ func GetGroupAddressesByMedium(db *gorm.DB, medium string) *[]GroupAddress {
 	return &o
 }
 
-
 func NewGroup(db *gorm.DB, name string) *Group {
 	o := Group{Id: name}
 	if err := db.Create(&o).Error; err != nil {
@@ -110,9 +108,9 @@ func NewGroup(db *gorm.DB, name string) *Group {
 }
 
 func (o *Group) Save(db *gorm.DB) {
-        if err := db.Save(o).Error; err != nil {
-                panic(err)
-        }
+	if err := db.Save(o).Error; err != nil {
+		panic(err)
+	}
 }
 
 func (o *Group) Subentity(name string, req he.Request) he.Entity {
@@ -151,37 +149,37 @@ func (o *Group) Methods() map[string]func(he.Request) he.Response {
 			o.Save(db)
 			return he.StatusOK(o)
 		},
-                "PATCH": func(req he.Request) he.Response {
-                        db := req.Things["db"].(*gorm.DB)
-                        sess := req.Things["session"].(*Session)
-                        users := GetUsersInGroup(db, o.Id)
-                        flag := false
-                        for _, user := range *users {
-                                if sess.UserId == user.Id {
-                                        flag = true
-                                        break
-                                }
-                        }
-                        if !flag {
-                                return he.StatusForbidden(heutil.NetString("Unauthorized user"))
-                        }
+		"PATCH": func(req he.Request) he.Response {
+			db := req.Things["db"].(*gorm.DB)
+			sess := req.Things["session"].(*Session)
+			users := GetUsersInGroup(db, o.Id)
+			flag := false
+			for _, user := range *users {
+				if sess.UserId == user.Id {
+					flag = true
+					break
+				}
+			}
+			if !flag {
+				return he.StatusForbidden(heutil.NetString("Unauthorized user"))
+			}
 
 			patch, ok := req.Entity.(jsonpatch.Patch)
-                        if !ok {
-                                return putil.HTTPErrorf(415, "PATCH request must have a patch media type").Response()
-                        }
-                        var new_group Group
-                        err := patch.Apply(o, &new_group)
-                        if err != nil {
-                                return putil.HTTPErrorf(409, "%v", err).Response()
-                        }
-                        if o.Id != new_group.Id {
-                                return he.StatusConflict(heutil.NetString("Cannot change user id"))
-                        }
-                        *o = new_group
-                        o.Save(db)
-                        return he.StatusOK(o)
-                },
+			if !ok {
+				return putil.HTTPErrorf(415, "PATCH request must have a patch media type").Response()
+			}
+			var new_group Group
+			err := patch.Apply(o, &new_group)
+			if err != nil {
+				return putil.HTTPErrorf(409, "%v", err).Response()
+			}
+			if o.Id != new_group.Id {
+				return he.StatusConflict(heutil.NetString("Cannot change user id"))
+			}
+			*o = new_group
+			o.Save(db)
+			return he.StatusOK(o)
+		},
 		"DELETE": func(req he.Request) he.Response {
 			panic("TODO: API: (*Group).Methods()[\"DELETE\"]")
 		},

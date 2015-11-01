@@ -10,8 +10,8 @@ import (
 	"net"
 	"net/http"
 	"periwinkle/cfg"
-	"periwinkle/store"
 	"periwinkle/senders"
+	"periwinkle/store"
 	"stoppable"
 )
 
