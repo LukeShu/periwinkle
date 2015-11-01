@@ -56,17 +56,11 @@ func sender(reader io.Reader) string {
 
 	messages_url := "https://api.twilio.com/2010-04-01/Accounts/" + account_sid + "/Messages.json"
 
-	host_name, err := os.Hostname()
-	if err != nil {
-		fmt.Printf("%v", err)
-		return "Error"
-	}
-
 	v := url.Values{}
 	v.Set("From", message["From"])
 	v.Set("To", message["To"])
 	v.Set("Body", message["Body"])
-	v.Set("StatusCallback", "http://"+host_name+cfg.WebAddr+"/webui/twilio/sms")
+	v.Set("StatusCallback", "http://"+cfg.WebRoot+"/callbacks/twilio-sms")
 
 	client := &http.Client{}
 

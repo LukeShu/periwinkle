@@ -18,6 +18,16 @@ const IncomingMail maildir.Maildir = "/srv/periwinkle/Maildir"
 const WebUiDir http.Dir = "./www"
 const Debug bool = true
 
+var WebRoot = getWebroot()
+
+func getWebroot() string {
+	hostname, err := os.Hostname()
+	if err != nil {
+		panic(err)
+	}
+	return hostname + ":8080"
+}
+
 var DB *gorm.DB = getConnection()
 
 func getConnection() *gorm.DB {
