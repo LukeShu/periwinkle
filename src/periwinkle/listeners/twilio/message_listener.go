@@ -30,8 +30,8 @@ func Main() error {
 
 		group_addr := store.GetGroupAddressesByMedium(cfg.DB, "twilio")
 		
+		if len(*group_addr) > 0 {
 		for _, v := range *group_addr {  
-
 
 		// clear the array
 		if cur_time_sec != time.Now().UTC().Unix() {
@@ -111,6 +111,6 @@ func Main() error {
 				}
 			}
 		}
-	}
+	}}
 }
 }
