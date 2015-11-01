@@ -1,0 +1,3 @@
+[submodule "nshd"]
+	path = src/parabola.nshd
+	url = http://projects.parabola.nu/~lukeshu/nshd.git
