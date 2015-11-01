@@ -17,7 +17,7 @@ import (
 
 var server stoppable.HTTPServer
 
-func Main(socket net.Listener) error {
+func Start(socket net.Listener) {
 	std_decoders := map[string]func(io.Reader, map[string]string) (interface{}, error){
 		"application/x-www-form-urlencoded": heutil.DecoderFormUrlEncoded,
 		"multipart/form-data":               heutil.DecoderFormData,
@@ -62,9 +62,13 @@ func Main(socket net.Listener) error {
 		Server: http.Server{Handler: mux},
 		Socket: socket,
 	}
-	return server.Serve()
+	server.Start()
 }
 
 func Stop() {
 	server.Stop()
+}
+
+func Wait() error {
+	return server.Wait()
 }

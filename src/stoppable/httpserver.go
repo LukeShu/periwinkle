@@ -5,14 +5,11 @@
 //
 // It is a _much_ simpler package than "graceful" or "httpdown".
 //
-// From the main goroutine:
-//
 //     srv := stoppable.HTTPServer{Server: myserver, Socket: mylistener}
-//     err := srv.Serve() // blocks until done
-//
-// From another goroutine:
-//
+//     srv.Start() // does not block
 //     srv.Stop() // does not block
+//     err := srv.Wait() // blocks
+
 package stoppable
 
 import (
@@ -25,6 +22,7 @@ type HTTPServer struct {
 	Server http.Server
 	Socket net.Listener
 	wg     sync.WaitGroup
+	err    error
 }
 
 func (ss *HTTPServer) handleConnStateChange(conn net.Conn, state http.ConnState) {
@@ -36,20 +34,24 @@ func (ss *HTTPServer) handleConnStateChange(conn net.Conn, state http.ConnState)
 	}
 }
 
-// Blocks until the server is done.
-func (ss *HTTPServer) Serve() (err error) {
+// Does not block.
+func (ss *HTTPServer) Start() {
 	ss.Server.ConnState = ss.handleConnStateChange
 	ss.wg.Add(1)
 	go func() {
 		defer ss.wg.Done()
-		err = ss.Server.Serve(ss.Socket)
+		ss.err = ss.Server.Serve(ss.Socket)
 	}()
-	ss.wg.Wait()
-	return
 }
 
 // Does not block.
 func (ss *HTTPServer) Stop() {
 	ss.Server.SetKeepAlivesEnabled(false)
 	ss.Socket.Close()
+}
+
+// Blocks.
+func (ss *HTTPServer) Wait() error {
+	ss.wg.Wait()
+	return ss.err
 }

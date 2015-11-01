@@ -107,10 +107,15 @@ func main() {
 
 	sd.Notify(false, "READY=1")
 
+	web.Start(socket)
 	go func() {
-		err := web.Main(socket)
-		fmt.Fprintln(os.Stderr, err)
-		done <- 1
+		err := web.Wait()
+		if err != nil {
+			fmt.Fprintln(os.Stderr, err)
+			done <- 1
+		} else {
+			done <- 0
+		}
 	}()
 
 	for {
