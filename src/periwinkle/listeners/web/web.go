@@ -1,20 +1,23 @@
 // Copyright 2015 Luke Shumaker
+// Copyright 2015 Zhandos Suleimenov
 
 package web
 
 import (
-	"fmt"
 	he "httpentity"
 	"httpentity/util"
 	"io"
+	"net"
 	"net/http"
 	"periwinkle/cfg"
 	"periwinkle/store"
 	"periwinkle/senders"
-	"time"
+	"stoppable"
 )
 
-func Main() error {
+var server stoppable.HTTPServer
+
+func Main(socket net.Listener) error {
 	std_decoders := map[string]func(io.Reader, map[string]string) (interface{}, error){
 		"application/x-www-form-urlencoded": heutil.DecoderFormUrlEncoded,
 		"multipart/form-data":               heutil.DecoderFormData,
@@ -48,22 +51,20 @@ func Main() error {
 		LogRequest:  cfg.Debug,
 	})
 
-	mux.Handle("/webui/twilio/sms", http.HandlerFunc(senders.Url_handler))
-
-
 	// The static web UI
 	mux.Handle("/webui/", http.StripPrefix("/webui/", http.FileServer(cfg.WebUiDir)))
+
 	// External API callbacks
-	//mux.Handle("/callbacks/MY_CALLBACK", pkg.MY_CALLBACK); // FOR FUTURE USE
+	mux.Handle("/callbacks/twilio-sms", http.HandlerFunc(senders.Url_handler))
 
 	// Now actually run.
-	server := &http.Server{
-		Addr:           cfg.WebAddr,
-		Handler:        mux,
-		ReadTimeout:    10 * time.Second,
-		WriteTimeout:   10 * time.Second,
-		MaxHeaderBytes: 1 << 20,
+	server = stoppable.HTTPServer{
+		Server: http.Server{Handler: mux},
+		Socket: socket,
 	}
-	err := server.ListenAndServe()
-	panic(fmt.Sprintf("Could not start HTTP server: %v", err))
+	return server.Serve()
+}
+
+func Stop() {
+	server.Stop()
 }
