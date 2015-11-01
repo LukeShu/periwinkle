@@ -26,14 +26,3 @@ func (ln tcpKeepAliveListener) Accept() (c net.Conn, err error) {
 	tc.SetKeepAlivePeriod(3 * time.Minute)
 	return tc, nil
 }
-
-// Listen listens on the TCP network address addr.
-//
-// Based on "net/http".(*Server).ListenAndServe()
-func listen(addr string) (net.Listener, error) {
-	ln, err := net.Listen("tcp", addr)
-	if err != nil {
-		return nil, err
-	}
-	return tcpKeepAliveListener{ln.(*net.TCPListener)}, nil
-}
