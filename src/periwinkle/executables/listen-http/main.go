@@ -25,7 +25,10 @@ be the type; otherwise it is taken as an address.  The default address
 for "tcp", "tcp4", and "tcp6" is ":8080"; the default "unix" address
 is "/dev/stdin"; "systemd" doesn't have an address.  If the address is
 given, the type is assumed to be "unix" if it contains a slash, or
-"tcp" otherwise.
+"tcp" otherwise.  If no arguments are given, "tcp" is used.
+
+If one argument is given, and it starts with a "-" or is "help", then
+this message is displayed.
 `, os.Args[0])
 }
 
@@ -37,6 +40,10 @@ func parse_args() net.Listener {
 		stype = "tcp"
 		saddr = ":8080"
 	case 1:
+		if strings.HasPrefix(os.Args[1], "-") {
+			usage(os.Stdout)
+			os.Exit(0)
+		}
 		switch os.Args[1] {
 		case "tcp", "tcp4", "tcp6":
 			stype = os.Args[1]
@@ -46,6 +53,9 @@ func parse_args() net.Listener {
 			saddr = "/dev/stdin"
 		case "systemd":
 			stype = os.Args[1]
+		case "help":
+			usage(os.Stdout)
+			os.Exit(0)
 		default:
 			switch {
 			case strings.ContainsRune(os.Args[1], '/'):
