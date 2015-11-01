@@ -1,26 +1,25 @@
 // Copyright 2015 Davis Webb
+// Copyright 2015 Zhandos Suleimenov
 
 package senders
 
-import(
-	"periwinkle/cfg"
+import (
+	"bytes"
+	"encoding/json"
+	"fmt"
+	"io"
+	"io/ioutil"
 	"net/http"
 	"net/url"
 	"os"
-	"bytes"
-	"fmt"
-	"io/ioutil"
-	"io"
-	"encoding/json"
+	"periwinkle/cfg"
 	"time"
 )
 
 var message_status, error_code string
 
-
 func Url_handler(w http.ResponseWriter, req *http.Request) {
-    
-	body, err := ioutil.ReadAll(req.Body)		
+	body, err := ioutil.ReadAll(req.Body)
 	if err != nil {
 		fmt.Printf("%v", err)
 	}
@@ -31,25 +30,16 @@ func Url_handler(w http.ResponseWriter, req *http.Request) {
 	}
 
 	message_status = values.Get("MessageStatus")
-	error_code = values.Get("ErrorCode")	
-
+	error_code = values.Get("ErrorCode")
 }
 
-
-
-
-
-
-
-
-// Returns the status of the message: queued, sending, sent, delivered, undelivered, failed.
-//If an error occurs, it returns Error.
-
+// Returns the status of the message: queued, sending, sent,
+// delivered, undelivered, failed.  If an error occurs, it returns
+// Error.
 func sender(reader io.Reader) string {
-
 	message_status = ""
 	error_code = ""
-	body, err := ioutil.ReadAll(reader)		
+	body, err := ioutil.ReadAll(reader)
 	if err != nil {
 		fmt.Printf("%v", err)
 		return "Error"
@@ -57,7 +47,6 @@ func sender(reader io.Reader) string {
 
 	message := make(map[string]string)
 	json.Unmarshal(body, &message)
-		
 
 	// account SID for Twilio account
 	account_sid := os.Getenv("TWILIO_ACCOUNTID")
@@ -77,7 +66,7 @@ func sender(reader io.Reader) string {
 	v.Set("From", message["From"])
 	v.Set("To", message["To"])
 	v.Set("Body", message["Body"])
-	v.Set("StatusCallback", "http://" + host_name + cfg.WebAddr + "/webui/twilio/sms")
+	v.Set("StatusCallback", "http://"+host_name+cfg.WebAddr+"/webui/twilio/sms")
 
 	client := &http.Client{}
 
@@ -103,17 +92,13 @@ func sender(reader io.Reader) string {
 		if error_code != "" {
 			fmt.Printf("%v\n", error_code)
 		}
-		if message_status == "queued" || message_status == "sending" || message_status == "sent" { 
+		if message_status == "queued" || message_status == "sending" || message_status == "sent" {
 			time.Sleep(time.Second)
 		}
 
 		return message_status
-
 	} else {
 		fmt.Printf("%v\n", resp.Status)
 		return "Error"
-
 	}
 }
-
-
