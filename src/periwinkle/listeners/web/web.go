@@ -34,21 +34,23 @@ func Start(socket net.Listener) {
 	mux := http.NewServeMux()
 	// The main REST API
 	mux.Handle("/v1/", &he.Router{
-		Prefix:      "/v1/",
-		Root:        store.DirRoot,
-		Decoders:    std_decoders,
-		Middlewares: std_middlewares,
-		Stacktrace:  cfg.Debug,
-		LogRequest:  cfg.Debug,
+		Prefix:         "/v1/",
+		Root:           store.DirRoot,
+		Decoders:       std_decoders,
+		Middlewares:    std_middlewares,
+		Stacktrace:     cfg.Debug,
+		LogRequest:     cfg.Debug,
+		TrustForwarded: cfg.TrustForwarded,
 	})
 	// URL shortener service
 	mux.Handle("/s/", &he.Router{
-		Prefix:      "/s/",
-		Root:        store.DirShortUrls,
-		Decoders:    std_decoders,
-		Middlewares: std_middlewares,
-		Stacktrace:  cfg.Debug,
-		LogRequest:  cfg.Debug,
+		Prefix:         "/s/",
+		Root:           store.DirShortUrls,
+		Decoders:       std_decoders,
+		Middlewares:    std_middlewares,
+		Stacktrace:     cfg.Debug,
+		LogRequest:     cfg.Debug,
+		TrustForwarded: cfg.TrustForwarded,
 	})
 
 	// The static web UI

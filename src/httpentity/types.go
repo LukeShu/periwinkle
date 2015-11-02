@@ -29,12 +29,13 @@ import (
 // A Router represents the root of an Entity tree, and handles reading
 // and writing messages to the network socket.
 type Router struct {
-	Prefix      string
-	Root        Entity
-	Decoders    map[string]func(io.Reader, map[string]string) (interface{}, error)
-	Middlewares []Middleware
-	Stacktrace  bool
-	LogRequest  bool
+	Prefix         string
+	Root           Entity
+	Decoders       map[string]func(io.Reader, map[string]string) (interface{}, error)
+	Middlewares    []Middleware
+	Stacktrace     bool
+	LogRequest     bool
+	TrustForwarded bool // whether to trust X-Forwarded-Scheme/Forwarded:scheme=
 }
 
 ////////////////////////////////////////////////////////////////////////////////

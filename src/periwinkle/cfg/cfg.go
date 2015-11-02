@@ -17,6 +17,7 @@ import (
 const IncomingMail maildir.Maildir = "/srv/periwinkle/Maildir"
 const WebUiDir http.Dir = "./www"
 const Debug bool = true
+const TrustForwarded = true // whether to trust X-Forwarded: or Forwarded: HTTP headers
 
 var WebRoot = getWebroot()
 

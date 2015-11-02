@@ -38,6 +38,22 @@ func (h *Router) serveHTTP(w http.ResponseWriter, r *http.Request) (res Response
 	if r.TLS != nil {
 		req.Scheme = "https"
 	}
+	if h.TrustForwarded {
+		if scheme := req.Headers.Get("X-Forwarded-Scheme"); scheme != "" {
+			req.Scheme = scheme
+		}
+		if str := req.Headers.Get("Forwarded"); str != "" {
+			parts := strings.Split(str, ";")
+			for i := range parts {
+				ary := strings.SplitN(parts[i], "=", 2)
+				if len(ary) == 2 {
+					if strings.EqualFold("scheme", ary[0]) {
+						req.Scheme = ary[1]
+					}
+				}
+			}
+		}
+	}
 	u, mimetype := normalizeURL(r.URL)
 	if mimetype != "" {
 		// the file extension overrides the Accept: header
