@@ -27,6 +27,7 @@ func Main() error {
 	cur_time_sec = 0
 
 	for {
+		time.Sleep(time.Second)
 		group_addr := store.GetGroupAddressesByMedium(cfg.DB, "twilio")
 
 		if len(*group_addr) > 0 {
