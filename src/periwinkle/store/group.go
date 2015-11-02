@@ -104,7 +104,7 @@ func NewGroup(db *gorm.DB, name string) *Group {
 	if err := db.Create(&o).Error; err != nil {
 		panic(err)
 	}
-	return &o
+	return o
 }
 
 func (o *Group) Save(db *gorm.DB) {
