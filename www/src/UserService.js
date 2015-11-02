@@ -23,9 +23,9 @@
 		
 		self.setSession = function(session) {
 			self.session_id = session;
-			var expireDate = new Date();
-			expireDate.setDate(expireDate.getDate() + 1);
-			$cookies.put('app_set_session_id', session, {'expires': expireDate});
+			//var expireDate = new Date();
+			//expireDate.setDate(expireDate.getDate() + 1);
+			$cookies.put('app_set_session_id', session); //, {'expires': expireDate});
 		}
 		
 		self.validate = function(success_cb, fail_cb, noSession_cb) {
