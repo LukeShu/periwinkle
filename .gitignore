@@ -4,5 +4,3 @@
 /.var.*
 *.sqlite
 /.rm/
-
-!/src/parabola.nshd

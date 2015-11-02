@@ -8,7 +8,7 @@ import (
 	"net"
 	"os"
 	"os/signal"
-	sd "parabola.nshd/src/sd_daemon"
+	sd "sd_daemon"
 	"periwinkle/listeners/web"
 	"strconv"
 	"strings"

@@ -17,7 +17,6 @@ deps += github.com/jinzhu/gorm
 deps += github.com/mattbaird/jsonpatch
 deps += github.com/mattn/go-sqlite3
 deps += golang.org/x/crypto/bcrypt
-deps += parabola.nshd
 
 default: all
 .PHONY: default
