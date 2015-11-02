@@ -26,10 +26,11 @@
 
 		self.info = {
 			status: {
-				loading: false,
+				loading: true,
 				error:	''
 			},
 			title:		'USER.INFO.TITLE',
+			username:	'',
 			addresses:	[],
 			fullName:	'',
 			set_fullName:	function() {
@@ -44,7 +45,7 @@
 		};
 		self.groups = {
 			status:		{
-				loading:	false,
+				loading:	true,
 				error:		''
 			},
 			list:		[],
@@ -67,7 +68,7 @@
 			//on success set userData to reponse.data
 			//fail : debugger ;
 			//http user profile api call
-			$scope.loading.is = true;
+			self.info.status.loading = true;
 			$http({
 				method: 'GET',
 				url: '/v1/users/' + userService.user_id, 
@@ -81,29 +82,30 @@
 			}).then(
 				function success(response) {
 					//do work with response
-					self.username = response.data.user_id;
-					self.addresses = response.data.addresses;
-					$scope.loading.is = false;
+					self.info.username = response.data.user_id;
+					self.info.addresses = response.data.addresses;
+					self.info.status.loading = false;
 				},
 				function fail(response) {
 					//do work with response
 					//show error to user
-					$scope.loading.is = false;
+					self.info.status.loading = false;
 				}
 			);
+			self.groups.status.loading = true;
 			$http({
 				method:	'GET',
 				url:	'/v1/groups',
 				responseType:	'json'
 			}).then(
 				function success(response) {
-					self.groups = reponse.data;
+					self.groups.list = reponse.data;
 					debugger;
-					$scope.loading.is = false;
+					self.groups.status.loading = false;
 				},
 				function fail(response) {
 					debugger;
-					$scope.loading.is = false;
+					self.groups.status.loading = false;
 				}
 			);
 		};
