@@ -230,6 +230,18 @@ func (d t_dirGroups) Methods() map[string]func(he.Request) he.Response {
 }
 
 func (d t_dirGroups) Subentity(name string, req he.Request) he.Entity {
-	db := req.Things["db"].(*gorm.DB)
+        name = strings.ToLower(name)
+        sess := req.Things["session"].(*Session)
+        if sess == nil && req.Method == "POST" {
+                group, ok := req.Things["group"].(Group)
+                if !ok {
+                        return nil
+                }
+                if group.Id == name {
+                        return &group
+                }
+                return nil
+        }
+        db := req.Things["db"].(*gorm.DB)
 	return GetGroupById(db, name)
 }
