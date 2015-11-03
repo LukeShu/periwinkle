@@ -63,14 +63,29 @@ func GetGroupById(db *gorm.DB, id string) *Group {
 }
 
 func GetUsersInGroup(db *gorm.DB, groupId string) *[]User {
+	groupAddresses := GetGroupAddressByGroupId(db, groupId)
 	var users []User
-	err := db.Joins("inner join user_addresses on user_addresses.user_id = users.id").Joins(
-		"inner join subscriptions on subscriptions.address_id = user_addresses.id").Where(
-		"subscriptions.group_id = ?", groupId).Find(&users)
-	if err != nil {
-		panic("could not get users in group")
+	for _, groupAddr := range *groupAddresses {
+		users = append(users, *GetUserById(db, groupAddr.UserId))
 	}
+
+	/*             No longer using this as it is super innificient but keep it just in case
+	err := db.Joins("inner join user_addresses on user_addresses.user_id = users.id").Joins(
+	"inner join subscriptions on subscriptions.address_id = user_addresses.id").Where(
+	"subscriptions.group_id = ?", groupId).Find(&users) 
+	*/
 	return &users
+}
+
+func GetGroupAddressByGroupId(db *gorm.DB, groupId string) *[]GroupAddress {
+        var o []GroupAddress
+        if result := db.Where("group_id =?", groupId).Find(&o); result.Error != nil {
+                if result.RecordNotFound() {
+                        return nil
+                }
+                panic(result.Error)
+        }
+        return &o
 }
 
 func GetGroupByAddress(db *gorm.DB, address string) *Group {
@@ -87,6 +102,17 @@ func GetGroupByAddress(db *gorm.DB, address string) *Group {
 func GetGroupAddressesByMediumAndGroupId(db *gorm.DB, medium string, groupId string) *[]GroupAddress {
 	var o []GroupAddress
 	if result := db.Where("medium =? and group_id =?", medium, groupId).Find(&o); result.Error != nil {
+		if result.RecordNotFound() {
+			return nil
+		}
+		panic(result.Error)
+	}
+	return &o
+}
+
+func GetGroupByUserId(db *gorm.DB, id string) *Group {
+	var o Group
+	if result := db.Where("user_id", id).First(&o); result.Error != nil {
 		if result.RecordNotFound() {
 			return nil
 		}
