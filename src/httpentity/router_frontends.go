@@ -39,7 +39,8 @@ func (h *Router) serveHTTP(w http.ResponseWriter, r *http.Request) (res Response
 		req.Scheme = "https"
 	}
 	if h.TrustForwarded {
-		if scheme := req.Headers.Get("X-Forwarded-Scheme"); scheme != "" {
+		if scheme := req.Headers.Get("X-Forwarded-Proto"); scheme != "" {
+			fmt.Printf("X-Forwarded-TrustForwarded: %v\n", h.TrustForwarded)
 			req.Scheme = scheme
 		}
 		if str := req.Headers.Get("Forwarded"); str != "" {
@@ -47,7 +48,7 @@ func (h *Router) serveHTTP(w http.ResponseWriter, r *http.Request) (res Response
 			for i := range parts {
 				ary := strings.SplitN(parts[i], "=", 2)
 				if len(ary) == 2 {
-					if strings.EqualFold("scheme", ary[0]) {
+					if strings.EqualFold("proto", ary[0]) {
 						req.Scheme = ary[1]
 					}
 				}

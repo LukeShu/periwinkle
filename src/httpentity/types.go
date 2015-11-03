@@ -33,9 +33,16 @@ type Router struct {
 	Root           Entity
 	Decoders       map[string]func(io.Reader, map[string]string) (interface{}, error)
 	Middlewares    []Middleware
+
+	// Whether to include stacktraces in HTTP 500 responses
 	Stacktrace     bool
+
+	// Whether to log requests to stderr
 	LogRequest     bool
-	TrustForwarded bool // whether to trust X-Forwarded-Scheme/Forwarded:scheme=
+
+	// Whether to trust `X-Forwarded-Scheme:` and RFC 7239
+	// `Forwarded: proto=`
+	TrustForwarded bool
 }
 
 ////////////////////////////////////////////////////////////////////////////////
