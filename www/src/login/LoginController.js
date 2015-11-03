@@ -72,8 +72,7 @@
 				data: {
 					username: self.username,
 					password: self.password
-				},
-				responseType: 'json'
+				}
 			}).then(
 				function success(response) {
 					//do work with response
@@ -146,8 +145,7 @@
 					username: self.username,
 					password: self.password,
 					email: self.email
-				},
-				responseType: 'json'
+				}
 			}).then(
 				function success(response) {
 					//do work with response

@@ -32,8 +32,7 @@
 		self.validate = function(success_cb, fail_cb, noSession_cb) {
 			$http({
 				method:	'GET',
-				url:	'/v1/session',
-				responseType: 'json'
+				url:	'/v1/session'
 			}).then(
 				function success(response) {
 					if(!response.data) {

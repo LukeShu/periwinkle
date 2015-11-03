@@ -85,8 +85,7 @@
 				},
 				data: {
 					session_id: userService.session_id
-				},
-				responseType: 'json'
+				}
 			}).then(
 				function success(response) {
 					//do work with response
@@ -103,8 +102,7 @@
 			self.groups.status.loading = true;
 			$http({
 				method:	'GET',
-				url:	'/v1/groups',
-				responseType:	'json'
+				url:	'/v1/groups'
 			}).then(
 				function success(response) {
 					self.groups.list = reponse.data;
@@ -165,8 +163,7 @@
 				},
 				data: {
 					'grouponame': self.groupname
-				},
-				responseType: 'json'
+				}
 			}).then(
 				function success(response) {
 					$mdDialog.hide(self.groupname);
