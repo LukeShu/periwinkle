@@ -1,0 +1,30 @@
+<!-- // Copyright 2015 Richard Wisniewski -->
+<md-dialog aria-label="Mango (Fruit)"  ng-cloak>
+<form>
+
+	<md-toolbar>
+		<div class="md-toolbar-tools">
+			<h1>New Group</h1>
+		</div>
+	</md-toolbar>
+	
+	<md-dialog-content style="max-width: 15em; max-height: 10em;">
+		<div class="md-dialog-content">
+			<md-input-container>
+				<label>New Group Name</label>
+				<input ng-model="group.name" type="text" />
+			</md-input-container>
+		</div>
+	</md-dialog-content>
+	
+	<div class="md-actions" layout="row">
+		<md-button ng-click="group.cancel()">
+			Cancel
+		</md-button>
+		<md-button ng-click="group.create()">
+			Create
+		</md-button>
+	</div>
+
+</form>
+</md-dialog>

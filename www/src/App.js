@@ -10,6 +10,7 @@
 		'pascalprecht.translate',
 		'validation.match',
 		'ngSanitize',
+		'ngStorage', 
 		//periwinkle modules
 		'validation.xregex',
 		'periwinkle.UserService',

@@ -4,9 +4,9 @@
 
 	angular
 		.module('user')
-		.controller('UserController', ['$cookies', '$http', '$scope', '$interval', 'UserService', '$location', UserController]);
+		.controller('UserController', ['$cookies', '$http', '$scope', '$interval', 'UserService', '$location', '$mdDialog', UserController]);
 
-	function UserController($cookies, $http, $scope, $interval, userService, $location) {
+	function UserController($cookies, $http, $scope, $interval, userService, $location, $mdDialog) {
 		//gives us an anchor to the outer object from within sub objects or functions
 		var self = this;
 		//clears the toolbar and such so we can set it up for this view
@@ -55,6 +55,20 @@
 			new_data:	{
 				//new group data
 			}
+		};
+		
+		self.groups.new = function(ev) {
+			$mdDialog.show({
+				controller: NewGroupController,
+				templateUrl: 'src/user/new_group.html',
+				parent: angular.element(document.body),
+				targetEvent: ev,
+				clickOutsideToClose:true
+			});
+		};
+		
+		self.groups.join = function() {
+		
 		};
 		
 		var __load = function() {
@@ -130,4 +144,13 @@
 			);
 		};
 	}
+	
+	function NewGroupController($scope, $mdDialog) {
+		var self = $scope.group = this;
+		self.groupname = '';
+		self.cancel = function() {
+			$mdDialog.cancel();
+		};
+	}
+	
 })();

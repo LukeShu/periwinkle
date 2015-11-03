@@ -4,29 +4,30 @@
 
 	angular
 		.module('periwinkle.UserService', [])
-		.service('UserService', ['$http', '$cookies', UserService]);
+		.service('UserService', ['$http', '$cookies', '$localStorage', UserService]);
 		
-	function UserService ($http, $cookies) {
+	function UserService ($http, $cookies, $localStorage) {
 		var self = this;
-		
-		self.reset = function() {
-			self.user_id = '';
-			self.session_id = '';
-			self.loginRedir = {
-				has:		false,
-				path:		null,
-				message:	null
-			};
-			$cookies.put('app_set_session_id', "");
-		};
-		self.reset();
 		
 		self.setSession = function(session) {
 			self.session_id = session;
 			//var expireDate = new Date();
 			//expireDate.setDate(expireDate.getDate() + 1);
 			$cookies.put('app_set_session_id', session); //, {'expires': expireDate});
-		}
+		};
+		self.getSession = function() {
+			return $cookies.get('app_set_session_id');
+		};
+		
+		self.reset = function() {
+			self.user_id = '';
+			self.loginRedir = {
+				has:		false,
+				path:		null,
+				message:	null
+			};
+		};
+		self.reset();
 		
 		self.validate = function(success_cb, fail_cb, noSession_cb) {
 			$http({
