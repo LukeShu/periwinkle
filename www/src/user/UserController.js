@@ -59,11 +59,11 @@
 		
 		self.groups.new = function(ev) {
 			$mdDialog.show({
-				controller: NewGroupController,
-				templateUrl: 'src/user/new_group.html',
-				parent: angular.element(document.body),
-				targetEvent: ev,
-				clickOutsideToClose:true
+				controller:				NewGroupController,
+				templateUrl:			'src/user/new_group.html',
+				parent:					angular.element(document.body),
+				targetEvent:			ev,
+				clickOutsideToClose:	true
 			});
 		};
 		
@@ -145,11 +145,38 @@
 		};
 	}
 	
-	function NewGroupController($scope, $mdDialog) {
+	function NewGroupController($scope, $mdDialog, $http) {
 		var self = $scope.group = this;
+		$scope.loading = false;
+		$scope.title = 'New Group';
+		$scope.errors = [];
 		self.groupname = '';
 		self.cancel = function() {
 			$mdDialog.cancel();
+		};
+		self.create = function() {
+			$scope.loading = true;
+			$scope.title = 'Creating Group...';
+			$http({
+				method: 'POST',
+				url: '/v1/groups',
+				headers: {
+					'Content-Type': 'application/json'
+				},
+				data: {
+					'grouponame': self.groupname
+				},
+				responseType: 'json'
+			}).then(
+				function success(response) {
+					$mdDialog.hide(self.groupname);
+				},
+				function fail(response) {
+					debugger;
+					$scope.loading = false;
+					$scope.title = 'Fail';
+				}
+			);
 		};
 	}
 	
