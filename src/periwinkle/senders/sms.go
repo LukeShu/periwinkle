@@ -36,13 +36,12 @@ func Url_handler(w http.ResponseWriter, req *http.Request) {
 // Returns the status of the message: queued, sending, sent,
 // delivered, undelivered, failed.  If an error occurs, it returns
 // Error.
-func sender(reader io.Reader) string {
+func sender(reader io.Reader) (status string, err error) {
 	message_status = ""
 	error_code = ""
 	body, err := ioutil.ReadAll(reader)
 	if err != nil {
-		fmt.Printf("%v", err)
-		return "Error"
+		return
 	}
 
 	message := make(map[string]string)
@@ -66,8 +65,7 @@ func sender(reader io.Reader) string {
 
 	req, err := http.NewRequest("POST", messages_url, bytes.NewBuffer([]byte(v.Encode())))
 	if err != nil {
-		fmt.Printf("%v\n", err)
-		return "Error"
+		return
 	}
 	req.SetBasicAuth(account_sid, auth_token)
 	req.Header.Add("Accept", "application/json")
@@ -76,12 +74,10 @@ func sender(reader io.Reader) string {
 	resp, err := client.Do(req)
 	defer resp.Body.Close()
 	if err != nil {
-		fmt.Printf("%v\n", err)
-		return "Error"
+		return
 	}
 
 	if resp.StatusCode == 200 || resp.StatusCode == 201 {
-
 		time.Sleep(time.Second)
 		if error_code != "" {
 			fmt.Printf("%v\n", error_code)
@@ -89,10 +85,11 @@ func sender(reader io.Reader) string {
 		if message_status == "queued" || message_status == "sending" || message_status == "sent" {
 			time.Sleep(time.Second)
 		}
-
-		return message_status
+		status = message_status
+		err = nil
+		return
 	} else {
-		fmt.Printf("%v\n", resp.Status)
-		return "Error"
+		err = fmt.Errorf("%s", resp.Status)
+		return
 	}
 }
