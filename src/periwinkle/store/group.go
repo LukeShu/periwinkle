@@ -34,6 +34,7 @@ type GroupAddress struct {
 	GroupId string `json:"group_id"`
 	Medium  string `json:"medium"`
 	Address string `json:"address"`
+	UserId 	string `json:"user_id"`
 }
 
 func (o GroupAddress) dbSchema(db *gorm.DB) error {
@@ -101,6 +102,20 @@ func GetGroupAddressesByMedium(db *gorm.DB, medium string) *[]GroupAddress {
 
 func NewGroup(db *gorm.DB, name string) *Group {
 	o := Group{Id: name}
+	if err := db.Create(&o).Error; err != nil {
+		panic(err)
+	}
+	return &o
+}
+
+func NewGroupAddress(db *gorm.DB, id int64, group_id string, medium string, address string, user_id string) *GroupAddress {
+	o := GroupAddress{
+		Id      	:id,
+		GroupId 	:group_id,
+		Medium  	:medium,
+		Address 	:address,
+		UserId 		:user_id,
+	}
 	if err := db.Create(&o).Error; err != nil {
 		panic(err)
 	}
