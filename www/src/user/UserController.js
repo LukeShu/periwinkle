@@ -41,7 +41,16 @@
 			},
 			save_edit_address:	function(index) {
 				
-			}
+			},
+			change_password:	function(ev) {
+				$mdDialog.show({
+					controller:				ChangePasswordController,
+					templateUrl:			'src/user/change_password.html',
+					parent:					angular.element(document.body),
+					targetEvent:			ev,
+					clickOutsideToClose:	true
+				});
+			} 
 		};
 		self.groups = {
 			status:		{
@@ -181,14 +190,31 @@
 	}
 	
 	function ChangePasswordController($scope, $mdDialog, $http) {
-		var self = this;
+		var self $scope.password= this;
 		
 		$scope.loading = false;
-		$scope.title = 'New Group';
+		$scope.title = 'Change Password';
 		$scope.errors = [];
 		
 		self.oldPassword = '';
 		self.newPassword = ['',''];
+		
+		self.cancel = function() {
+			$mdDialog.cancel();
+		};
+		self.create = function() {
+			$scope.loading = true;
+			$scope.title = 'Creating Group...';
+			$http({
+			}).then(
+				function success(response) {
+					
+				},
+				function fail(response) {
+					
+				}
+			);
+		};
 	}
 	
 })();
