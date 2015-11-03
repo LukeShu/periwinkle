@@ -42,7 +42,7 @@
 			save_edit_address:	function(index) {
 				
 			},
-			change_password:	function(ev) {
+			changePassword:	function(ev) {
 				$mdDialog.show({
 					controller:				ChangePasswordController,
 					templateUrl:			'src/user/change_password.html',
