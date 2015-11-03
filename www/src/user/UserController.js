@@ -105,7 +105,7 @@
 				url:	'/v1/groups'
 			}).then(
 				function success(response) {
-					self.groups.list = reponse.data;
+					self.groups.list = response.data;
 					debugger;
 					self.groups.status.loading = false;
 				},
@@ -165,7 +165,7 @@
 					'Content-Type': 'application/json'
 				},
 				data: {
-					'grouponame': self.groupname
+					'groupname': self.groupname
 				}
 			}).then(
 				function success(response) {
