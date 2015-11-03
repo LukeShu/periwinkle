@@ -9,8 +9,6 @@ import (
 	"net/smtp"
 )
 
-// being passed a
-
 func sendEmail(r io.Reader) {
 
 	m, err := mail.ReadMessage(r)
@@ -24,7 +22,7 @@ func sendEmail(r io.Reader) {
 	to := []string{header.Get("To")}
 	// sbj  := header.Get("Subject")
 	body, _ := ioutil.ReadAll(m.Body)
-	err = smtp.SendMail("addr", auth, from, []string(to), body)
+	err = smtp.SendMail("mail.example.com:25", auth, from, []string(to), body)
 	if err != nil {
 		panic(err)
 	}
