@@ -146,6 +146,9 @@ func GetGroupAddressesByMedium(db *gorm.DB, medium string) *[]GroupAddress {
 }
 
 func NewGroup(db *gorm.DB, name string) *Group {
+	if name == "" {
+		panic("name can't be empty")
+	}
 	o := Group{Id: name}
 	if err := db.Create(&o).Error; err != nil {
 		panic(err)
@@ -291,13 +294,17 @@ func newDirGroups() t_dirGroups {
 				return httperr.Response()
 			}
 
+			if entity.Groupname == "" {
+				return he.StatusUnsupportedMediaType(heutil.NetString("groupname can't be emtpy"))
+			}
+
 			entity.Groupname = strings.ToLower(entity.Groupname)
 
 			group := NewGroup(db, entity.Groupname)
 			if group == nil {
 				return he.StatusConflict(heutil.NetString("a group with that name already exists"))
 			} else {
-				return he.StatusCreated(r, entity.Groupname, req)
+				return he.StatusCreated(r, group.Id, req)
 			}
 		},
 	}
