@@ -29,6 +29,12 @@ func (o Group) dbSchema(db *gorm.DB) error {
 	return db.CreateTable(&o).Error
 }
 
+func (o Group) dbSeed(db *gorm.DB) error {
+	errs := []error{}
+	errHelper(&errs, db.Create(&Group{"test", []GroupAddress{{0,"test","twilio","add_twilio_phone_number", "test_user"}}}).Error)
+	return errorList(errs)
+}
+
 type GroupAddress struct {
 	Id      int64  `json:"group_address_id"`
 	GroupId string `json:"group_id"`
@@ -219,7 +225,7 @@ func newDirGroups() t_dirGroups {
 		"POST": func(req he.Request) he.Response {
 			db := req.Things["db"].(*gorm.DB)
 			type postfmt struct {
-				Groupname string `json:"grouponame"`
+				Groupname string `json:"groupname"`
 			}
 			var entity postfmt
 			httperr := safeDecodeJSON(req.Entity, &entity)

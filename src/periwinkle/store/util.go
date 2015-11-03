@@ -64,7 +64,10 @@ func DbDrop(db *gorm.DB) error {
 }
 
 func DbSeed(db *gorm.DB) error {
-	return (Medium{}).dbSeed(db)
+	errs := []error{}
+	errHelper(&errs, (Medium{}).dbSeed(db))
+	errHelper(&errs, (Group{}).dbSeed(db))
+	return errorList(errs)
 }
 
 func safeDecodeJSON(in interface{}, out interface{}) putil.HTTPError {
