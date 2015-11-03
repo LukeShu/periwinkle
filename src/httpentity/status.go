@@ -20,6 +20,9 @@ func StatusOK(entity NetEntity) Response {
 
 // For when you've created a document with a new URL.
 func StatusCreated(parent Entity, child_name string, req Request) Response {
+	if child_name == "" {
+		panic("can't call StatusCreated with an empty child name")
+	}
 	child := parent.Subentity(child_name, req)
 	if child == nil {
 		panic("called StatusCreated, but the subentity doesn't exist")
