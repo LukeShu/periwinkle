@@ -88,6 +88,17 @@ func GetGroupAddressesByMediumAndGroupId(db *gorm.DB, medium string, groupId str
 	return &o
 }
 
+func GetGroupByUserId(db *gorm.DB, id string) *Group {
+	var o Group
+	if result := db.Where("user_id", id).First(&o); result.Error != nil {
+		if result.RocordNotFound() {
+			return nil
+		}
+		panic(result.Error)
+	}
+	return &o
+}
+
 func GetGroupAddressesByMedium(db *gorm.DB, medium string) *[]GroupAddress {
 	var o []GroupAddress
 	if result := db.Where("medium =?", medium).Find(&o); result.Error != nil {
