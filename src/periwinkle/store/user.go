@@ -212,7 +212,9 @@ func (o *User) Methods() map[string]func(he.Request) he.Response {
 			return he.StatusOK(o)
 		},
 		"DELETE": func(req he.Request) he.Response {
-			panic("TODO: API: (*User).Methods()[\"DELETE\"]")
+                        db := req.Things["db"].(*gorm.DB)
+			db.Delete(o)
+			return he.StatusGone(heutil.NetString("User has been deleted"))
 		},
 	}
 }

@@ -15,7 +15,7 @@ import (
 // function returns  a phone number and Status
 //if successful, returns a new phone number and OK
 
-func newPhoneNum() (string, error) {
+func NewPhoneNum() (string, error) {
 
 	// account SID for Twilio account
 	account_sid := os.Getenv("TWILIO_ACCOUNTID")
