@@ -145,10 +145,13 @@
 	
 	function NewGroupController($scope, $mdDialog, $http) {
 		var self = $scope.group = this;
+		
 		$scope.loading = false;
 		$scope.title = 'New Group';
 		$scope.errors = [];
+		
 		self.groupname = '';
+		
 		self.cancel = function() {
 			$mdDialog.cancel();
 		};
@@ -175,6 +178,17 @@
 				}
 			);
 		};
+	}
+	
+	function ChangePasswordController($scope, $mdDialog, $http) {
+		var self = this;
+		
+		$scope.loading = false;
+		$scope.title = 'New Group';
+		$scope.errors = [];
+		
+		self.oldPassword = '';
+		self.newPassword = ['',''];
 	}
 	
 })();
