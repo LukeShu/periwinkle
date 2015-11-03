@@ -57,12 +57,6 @@
 			}
 		};
 		
-		self.username = 'Richard Wisniewski';
-		self.email = 'rwisniew@purdue.edu';
-		self.sessionID = "0x1234567890";
-		
-		self.groups = [];
-		
 		var __load = function() {
 			//http call point at /v1/users/"user_id"
 			//on success set userData to reponse.data
