@@ -40,7 +40,6 @@ func (h *Router) serveHTTP(w http.ResponseWriter, r *http.Request) (res Response
 	}
 	if h.TrustForwarded {
 		if scheme := req.Headers.Get("X-Forwarded-Proto"); scheme != "" {
-			fmt.Printf("X-Forwarded-TrustForwarded: %v\n", h.TrustForwarded)
 			req.Scheme = scheme
 		}
 		if str := req.Headers.Get("Forwarded"); str != "" {
