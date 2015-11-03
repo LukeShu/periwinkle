@@ -121,6 +121,19 @@ func GetGroupByUserId(db *gorm.DB, id string) *Group {
 	return &o
 }
 
+func GetGroupsByUserId(db *gorm.DB, id string) *[]Group {
+	var o []Group
+	if result := db.Where("user_id", id).Find(&o); result.Error != nil {
+		if result.RecordNotFound() {
+			return nil
+		}
+		panic(result.Error)
+	}
+	return &o
+}
+
+
+
 func GetGroupAddressesByMedium(db *gorm.DB, medium string) *[]GroupAddress {
 	var o []GroupAddress
 	if result := db.Where("medium =?", medium).Find(&o); result.Error != nil {
@@ -228,7 +241,9 @@ func (o *Group) Methods() map[string]func(he.Request) he.Response {
 			return he.StatusOK(o)
 		},
 		"DELETE": func(req he.Request) he.Response {
-			panic("TODO: API: (*Group).Methods()[\"DELETE\"]")
+                        db := req.Things["db"].(*gorm.DB)
+                        db.Delete(o)
+                        return he.StatusGone(heutil.NetString("Group has been deleted"))
 		},
 	}
 }
@@ -248,6 +263,23 @@ type t_dirGroups struct {
 func newDirGroups() t_dirGroups {
 	r := t_dirGroups{}
 	r.methods = map[string]func(he.Request) he.Response{
+		"GET": func(req he.Request) he.Response {
+			return he.StatusNoContent()
+			/*
+			db := req.Things["db"].(*gorm.DB)
+			type getfmt struct { 
+				UserId string `json:"userid"`
+			}
+			var entity getfmt
+			httperr := safeDecodeJSON(req.Entity, &entity)
+			if httperr != nil {
+                                return httperr.Response()
+			}
+			entity.UserId = strings.ToLower(entity.UserId)
+			groups := GetGroupsByUserId(db, entity.UserId)
+			return he.StatusOK(groups)
+			*/
+		},
 		"POST": func(req he.Request) he.Response {
 			db := req.Things["db"].(*gorm.DB)
 			type postfmt struct {
