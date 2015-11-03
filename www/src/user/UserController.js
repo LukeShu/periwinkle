@@ -124,12 +124,6 @@
 				}
 			);
 		};
-		self.createGroup = function() {
-			
-		};
-		self.joinGroup = function() {
-			
-		};
 		
 		//check and load
 		self.load = function() {
@@ -190,7 +184,7 @@
 	}
 	
 	function ChangePasswordController($scope, $mdDialog, $http) {
-		var self $scope.password= this;
+		var self = $scope.password = this;
 		
 		$scope.loading = false;
 		$scope.title = 'Change Password';
