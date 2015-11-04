@@ -16,5 +16,8 @@ func (o Medium) dbSchema(db *gorm.DB) error {
 }
 
 func (o Medium) dbSeed(db *gorm.DB) error {
-	return db.Create(&Medium{"email"}).Error
+	errs := []error{}
+	errHelper(&errs, db.Create(&Medium{"email"}).Error)
+	errHelper(&errs, db.Create(&Medium{"twilio"}).Error)
+	return errorList(errs)
 }
