@@ -20,6 +20,9 @@ func StatusOK(entity NetEntity) Response {
 
 // For when you've created a document with a new URL.
 func StatusCreated(parent Entity, child_name string, req Request) Response {
+	if child_name == "" {
+		panic("can't call StatusCreated with an empty child name")
+	}
 	child := parent.Subentity(child_name, req)
 	if child == nil {
 		panic("called StatusCreated, but the subentity doesn't exist")
@@ -34,11 +37,11 @@ func StatusCreated(parent Entity, child_name string, req Request) Response {
 		panic("called StatusCreated, but GET on subentity doesn't return an entity")
 	}
 	mimetypes := encoders2mimetypes(response.Entity.Encoders())
-	u, _ := url.Parse("")
+	u, _ := url.Parse("") // create a blank dummy url.URL
 	return Response{
 		Status:  201,
 		Headers: response.Headers,
-		// XXX: .entity gets modified by (*Router).route()
+		// XXX: .Entity gets modified by (*Router).route()
 		// filled in the rest of the way by Route()
 		Entity: mimetypes2net(u, mimetypes),
 	}

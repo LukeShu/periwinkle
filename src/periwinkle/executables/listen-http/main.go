@@ -5,10 +5,10 @@ package main
 import (
 	"fmt"
 	"io"
+	sd "lukeshu.com/git/go/libsystemd.git/sd_daemon"
 	"net"
 	"os"
 	"os/signal"
-	sd "sd_daemon"
 	"periwinkle/listeners/web"
 	"strconv"
 	"strings"

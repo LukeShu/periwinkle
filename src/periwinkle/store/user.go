@@ -86,6 +86,9 @@ func (u *User) CheckPassword(password string) bool {
 }
 
 func NewUser(db *gorm.DB, name string, password string, email string) User {
+	if name == "" {
+		panic("name can't be empty")
+	}
 	o := User{
 		Id:        name,
 		FullName:  "",
@@ -212,7 +215,7 @@ func (o *User) Methods() map[string]func(he.Request) he.Response {
 			return he.StatusOK(o)
 		},
 		"DELETE": func(req he.Request) he.Response {
-                        db := req.Things["db"].(*gorm.DB)
+			db := req.Things["db"].(*gorm.DB)
 			db.Delete(o)
 			return he.StatusGone(heutil.NetString("User has been deleted"))
 		},
@@ -246,6 +249,10 @@ func newDirUsers() t_dirUsers {
 			httperr := safeDecodeJSON(req.Entity, &entity)
 			if httperr != nil {
 				return httperr.Response()
+			}
+
+			if entity.Username == "" || entity.Email == "" || entity.Password == "" {
+				return he.StatusUnsupportedMediaType(heutil.NetString("username, email, and password can't be emtpy"))
 			}
 
 			if entity.PasswordVerification != "" {

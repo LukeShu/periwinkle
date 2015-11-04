@@ -4,6 +4,7 @@
 	angular.module('validation.match', []);
 
 	angular.module('validation.match').directive('match', match);
+	//angular.module('validation.match').directive('noMatch', match);
 
 	function match ($parse) {
 		return {

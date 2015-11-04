@@ -3,14 +3,14 @@
 package main
 
 import (
-	"periwinkle/listeners/twilio"
 	"fmt"
+	"periwinkle/listeners/twilio"
 )
 
 func main() {
 	testNumber, err := twilio.NewPhoneNum()
 
-	if err!=nil{
+	if err != nil {
 		fmt.Printf("ERROR CHECK!\n")
 	}
 
