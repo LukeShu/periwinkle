@@ -69,5 +69,11 @@
 				);
 			}
 		};
+
+		$scope.loadWatcher = null;
+		$scope.$watch('$viewContentLoaded', function(){
+			if(loadWatcher)
+				loadWatcher();
+		});
 	}
 })();

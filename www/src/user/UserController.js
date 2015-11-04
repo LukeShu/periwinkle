@@ -123,8 +123,7 @@
 
 		//check and load
 		self.load = function() {
-			debugger;
-			//$scope.loading.is = true;
+			$scope.loading.is = true;
 			userService.validate(
 				function success() {
 					$scope.loading.is = false;
@@ -142,11 +141,6 @@
 				}
 			);
 		};
-
-		$scope.$on('$stateChangeSuccess', function () {
-  		// do something
-			self.load();
-		});
 	}
 
 	function NewGroupController($scope, $mdDialog, $http) {
