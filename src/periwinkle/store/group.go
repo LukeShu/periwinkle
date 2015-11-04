@@ -122,14 +122,22 @@ func GetGroupByUserId(db *gorm.DB, id string) *Group {
 }
 
 func GetGroupsByUserId(db *gorm.DB, id string) *[]Group {
-	var o []Group
+	var o []GroupAddress
 	if result := db.Where("user_id", id).Find(&o); result.Error != nil {
 		if result.RecordNotFound() {
 			return nil
 		}
 		panic(result.Error)
 	}
-	return &o
+
+	g := make([]Group, len(o))
+	for i, group := range o {
+		a := GetGroupById(db, group.GroupId)
+		if a != nil {
+			g[i] = *a
+		}
+	}
+	return &g
 }
 
 
@@ -264,21 +272,22 @@ func newDirGroups() t_dirGroups {
 	r := t_dirGroups{}
 	r.methods = map[string]func(he.Request) he.Response{
 		"GET": func(req he.Request) he.Response {
-			return he.StatusNoContent()
-			/*
+			//return he.StatusNoContent()
+
 			db := req.Things["db"].(*gorm.DB)
 			type getfmt struct { 
 				UserId string `json:"userid"`
 			}
 			var entity getfmt
-			httperr := safeDecodeJSON(req.Entity, &entity)
-			if httperr != nil {
-                                return httperr.Response()
-			}
 			entity.UserId = strings.ToLower(entity.UserId)
 			groups := GetGroupsByUserId(db, entity.UserId)
-			return he.StatusOK(groups)
-			*/
+			generic := make([]interface{}, len(*groups))
+			for i, group := range *groups {
+				generic[i] = group.Id
+			}
+			
+			return he.StatusOK(heutil.NetList(generic))
+
 		},
 		"POST": func(req he.Request) he.Response {
 			db := req.Things["db"].(*gorm.DB)
