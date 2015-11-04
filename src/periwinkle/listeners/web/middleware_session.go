@@ -43,7 +43,10 @@ func (p session) Before(req *he.Request) {
 	}
 	sess = store.GetSessionById(db, session_id)
 	if sess != nil {
-		sess.Save(db)
+		func() {
+			defer recover()
+			sess.Save(db)
+		}()
 	}
 }
 
