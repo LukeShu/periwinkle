@@ -6,14 +6,13 @@
 package maildir
 
 import (
-	"inotify"
-	"inotify/inutil"
+	"lukeshu.com/git/go/libgnulinux.git/inotify"
 	"periwinkle/cfg"
 )
 
 func Main() error {
 	md := cfg.IncomingMail
-	in, err := inutil.WatcherInit()
+	in, err := inotify.WatcherInit()
 	if err != nil {
 		return err
 	}

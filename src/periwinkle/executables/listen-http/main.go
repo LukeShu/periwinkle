@@ -8,7 +8,7 @@ import (
 	"net"
 	"os"
 	"os/signal"
-	sd "sd_daemon"
+	sd "lukeshu.com/git/go/libsystemd.git/sd_daemon"
 	"periwinkle/listeners/web"
 	"strconv"
 	"strings"
