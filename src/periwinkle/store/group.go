@@ -31,7 +31,7 @@ func (o Group) dbSchema(db *gorm.DB) error {
 
 func (o Group) dbSeed(db *gorm.DB) error {
 	errs := []error{}
-	errHelper(&errs, db.Create(&Group{"test", []GroupAddress{{0,"test","twilio","add_twilio_phone_number", "test_user"}}}).Error)
+	errHelper(&errs, db.Create(&Group{"test", []GroupAddress{{0, "test", "twilio", "add_twilio_phone_number", "test_user"}}}).Error)
 	return errorList(errs)
 }
 
@@ -40,7 +40,7 @@ type GroupAddress struct {
 	GroupId string `json:"group_id"`
 	Medium  string `json:"medium"`
 	Address string `json:"address"`
-	UserId 	string `json:"user_id"`
+	UserId  string `json:"user_id"`
 }
 
 func (o GroupAddress) dbSchema(db *gorm.DB) error {
@@ -68,24 +68,18 @@ func GetUsersInGroup(db *gorm.DB, groupId string) *[]User {
 	for _, groupAddr := range *groupAddresses {
 		users = append(users, *GetUserById(db, groupAddr.UserId))
 	}
-
-	/*             No longer using this as it is super innificient but keep it just in case
-	err := db.Joins("inner join user_addresses on user_addresses.user_id = users.id").Joins(
-	"inner join subscriptions on subscriptions.address_id = user_addresses.id").Where(
-	"subscriptions.group_id = ?", groupId).Find(&users) 
-	*/
 	return &users
 }
 
 func GetGroupAddressByGroupId(db *gorm.DB, groupId string) *[]GroupAddress {
-        var o []GroupAddress
-        if result := db.Where("group_id =?", groupId).Find(&o); result.Error != nil {
-                if result.RecordNotFound() {
-                        return nil
-                }
-                panic(result.Error)
-        }
-        return &o
+	var o []GroupAddress
+	if result := db.Where("group_id =?", groupId).Find(&o); result.Error != nil {
+		if result.RecordNotFound() {
+			return nil
+		}
+		panic(result.Error)
+	}
+	return &o
 }
 
 func GetGroupByAddress(db *gorm.DB, address string) *Group {
@@ -132,8 +126,6 @@ func GetGroupsByUserId(db *gorm.DB, id string) *[]Group {
 	return &o
 }
 
-
-
 func GetGroupAddressesByMedium(db *gorm.DB, medium string) *[]GroupAddress {
 	var o []GroupAddress
 	if result := db.Where("medium =?", medium).Find(&o); result.Error != nil {
@@ -158,11 +150,11 @@ func NewGroup(db *gorm.DB, name string) *Group {
 
 func NewGroupAddress(db *gorm.DB, id int64, group_id string, medium string, address string, user_id string) *GroupAddress {
 	o := GroupAddress{
-		Id      	:id,
-		GroupId 	:group_id,
-		Medium  	:medium,
-		Address 	:address,
-		UserId 		:user_id,
+		Id:      id,
+		GroupId: group_id,
+		Medium:  medium,
+		Address: address,
+		UserId:  user_id,
 	}
 	if err := db.Create(&o).Error; err != nil {
 		panic(err)
@@ -244,9 +236,9 @@ func (o *Group) Methods() map[string]func(he.Request) he.Response {
 			return he.StatusOK(o)
 		},
 		"DELETE": func(req he.Request) he.Response {
-                        db := req.Things["db"].(*gorm.DB)
-                        db.Delete(o)
-                        return he.StatusGone(heutil.NetString("Group has been deleted"))
+			db := req.Things["db"].(*gorm.DB)
+			db.Delete(o)
+			return he.StatusGone(heutil.NetString("Group has been deleted"))
 		},
 	}
 }
@@ -268,20 +260,18 @@ func newDirGroups() t_dirGroups {
 	r.methods = map[string]func(he.Request) he.Response{
 		"GET": func(req he.Request) he.Response {
 			return he.StatusNoContent()
-			/*
-			db := req.Things["db"].(*gorm.DB)
-			type getfmt struct { 
-				UserId string `json:"userid"`
-			}
-			var entity getfmt
-			httperr := safeDecodeJSON(req.Entity, &entity)
-			if httperr != nil {
-                                return httperr.Response()
-			}
-			entity.UserId = strings.ToLower(entity.UserId)
-			groups := GetGroupsByUserId(db, entity.UserId)
-			return he.StatusOK(groups)
-			*/
+			// db := req.Things["db"].(*gorm.DB)
+			// type getfmt struct {
+			// 	UserId string `json:"userid"`
+			// }
+			// var entity getfmt
+			// httperr := safeDecodeJSON(req.Entity, &entity)
+			// if httperr != nil {
+			// 	return httperr.Response()
+			// }
+			// entity.UserId = strings.ToLower(entity.UserId)
+			// groups := GetGroupsByUserId(db, entity.UserId)
+			// return he.StatusOK(groups)
 		},
 		"POST": func(req he.Request) he.Response {
 			db := req.Things["db"].(*gorm.DB)
@@ -316,18 +306,18 @@ func (d t_dirGroups) Methods() map[string]func(he.Request) he.Response {
 }
 
 func (d t_dirGroups) Subentity(name string, req he.Request) he.Entity {
-        name = strings.ToLower(name)
-        sess := req.Things["session"].(*Session)
-        if sess == nil && req.Method == "POST" {
-                group, ok := req.Things["group"].(Group)
-                if !ok {
-                        return nil
-                }
-                if group.Id == name {
-                        return &group
-                }
-                return nil
-        }
-        db := req.Things["db"].(*gorm.DB)
+	name = strings.ToLower(name)
+	sess := req.Things["session"].(*Session)
+	if sess == nil && req.Method == "POST" {
+		group, ok := req.Things["group"].(Group)
+		if !ok {
+			return nil
+		}
+		if group.Id == name {
+			return &group
+		}
+		return nil
+	}
+	db := req.Things["db"].(*gorm.DB)
 	return GetGroupById(db, name)
 }
