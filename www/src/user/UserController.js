@@ -4,9 +4,9 @@
 
 	angular
 	.module('user')
-	.controller('UserController', ['$cookies', '$http', '$scope', '$interval', 'UserService', '$location', '$mdDialog', UserController]);
+	.controller('UserController', ['$cookies', '$http', '$scope', '$interval', 'UserService', '$location', '$mdDialog', '$timeout', UserController]);
 
-	function UserController($cookies, $http, $scope, $interval, userService, $location, $mdDialog) {
+	function UserController($cookies, $http, $scope, $interval, userService, $location, $mdDialog, $timeout) {
 		//gives us an anchor to the outer object from within sub objects or functions
 		var self = this;
 		//clears the toolbar and such so we can set it up for this view
@@ -142,7 +142,7 @@
 			);
 		};
 
-		self.load();
+		$timeout(self.load);
 	}
 
 	function NewGroupController($scope, $mdDialog, $http) {
