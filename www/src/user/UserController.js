@@ -50,6 +50,31 @@
 					targetEvent:			ev,
 					clickOutsideToClose:	true
 				});
+			},
+			load:	function() {
+				self.info.status.loading = true;
+				$http({
+					method: 'GET',
+					url: '/v1/users/' + userService.user_id,
+					headers: {
+						'Content-Type': 'application/json'
+					},
+					data: {
+						session_id: userService.session_id
+					}
+				}).then(
+					function success(response) {
+						//do work with response
+						self.info.username = response.data.user_id;
+						self.info.addresses = response.data.addresses;
+						self.info.status.loading = false;
+					},
+					function fail(response) {
+						//do work with response
+						//show error to user
+						self.info.status.loading = false;
+					}
+				);
 			}
 		};
 		self.groups = {
@@ -58,80 +83,53 @@
 				error:		''
 			},
 			list:		[],
-			'new':		function() {
+			'new':	function(ev) {
+				$mdDialog.show({
+					controller:				NewGroupController,
+					templateUrl:			'src/user/new_group.html',
+					parent:					angular.element(document.body),
+					targetEvent:			ev,
+					clickOutsideToClose:	true
+				}).then(
+					function (response) {
+						//the dialog responded before closing
+						self.groups.load();
+					}, function () {
+						//the dialog was cancelled
+					}
+				);
+			},
+			'join':	function() {
 
 			},
-			new_data:	{
-				//new group data
+			load:	function() {
+				self.groups.status.loading = true;
+				$http({
+					method:	'GET',
+					url:	'/v1/groups'
+				}).then(
+					function success(response) {
+						self.groups.list = response.data;
+						debugger;
+						self.groups.status.loading = false;
+					},
+					function fail(response) {
+						debugger;
+						self.groups.status.loading = false;
+					}
+				);
 			}
-		};
-
-		self.groups.new = function(ev) {
-			$mdDialog.show({
-				controller:				NewGroupController,
-				templateUrl:			'src/user/new_group.html',
-				parent:					angular.element(document.body),
-				targetEvent:			ev,
-				clickOutsideToClose:	true
-			});
-		};
-
-		self.groups.join = function() {
-
-		};
-
-		var __load = function() {
-			//http call point at /v1/users/"user_id"
-			//on success set userData to reponse.data
-			//fail : debugger ;
-			//http user profile api call
-			self.info.status.loading = true;
-			$http({
-				method: 'GET',
-				url: '/v1/users/' + userService.user_id,
-				headers: {
-					'Content-Type': 'application/json'
-				},
-				data: {
-					session_id: userService.session_id
-				}
-			}).then(
-				function success(response) {
-					//do work with response
-					self.info.username = response.data.user_id;
-					self.info.addresses = response.data.addresses;
-					self.info.status.loading = false;
-				},
-				function fail(response) {
-					//do work with response
-					//show error to user
-					self.info.status.loading = false;
-				}
-			);
-			self.groups.status.loading = true;
-			$http({
-				method:	'GET',
-				url:	'/v1/groups'
-			}).then(
-				function success(response) {
-					self.groups.list = response.data;
-					debugger;
-					self.groups.status.loading = false;
-				},
-				function fail(response) {
-					debugger;
-					self.groups.status.loading = false;
-				}
-			);
 		};
 
 		//check and load
 		self.load = function() {
-			$scope.loading.is = true;
+			debugger;
+			//$scope.loading.is = true;
 			userService.validate(
 				function success() {
 					$scope.loading.is = false;
-					__load();
+					self.info.load();
+					self.groups.load();
 				},
 				function fail(status) {
 					debugger;
@@ -172,7 +170,8 @@
 				}
 			}).then(
 				function success(response) {
-					$mdDialog.hide(self.groupname);
+					debugger;
+					$mdDialog.hide(self.name);
 				},
 				function fail(response) {
 					debugger;
@@ -220,6 +219,7 @@
 			}).then(
 				function success(response) {
 					debugger;
+					$mdDialog.hide("success");
 				},
 				function fail(response) {
 					debugger;

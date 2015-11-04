@@ -1,5 +1,5 @@
 <!-- // Copyright 2015 Richard Wisniewski -->
-<div layout="row" layout-wrap style="max-width: 31cm; margin-left: auto; margin-right: auto;" ng-init="user.load();">
+<div layout="row" layout-wrap style="max-width: 31cm; margin-left: auto; margin-right: auto;" onload="user.load();">
 
 <div flex="50" flex-sm="100">
 <md-card id="user">
@@ -26,7 +26,7 @@
 			</md-menu-content>
 		</md-menu>
 	</md-toolbar>
-	
+
 	<md-card-content style="padding-right: 0;">
 		<h3 style="margin-bottom: 0;">Contact Addresses</h3>
 		<ul style="list-style: none; padding: 0; margin: 0;">
@@ -74,6 +74,6 @@
 		<p ng-if="!user.groups.list.length">{{ "NO_GROUPS" | translate }}</p>
 	</md-card-content>
 </md-card>
-</div>	
+</div>
 
 </div>

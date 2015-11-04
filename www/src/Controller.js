@@ -5,12 +5,10 @@
 	angular
 		.module('periwinkle')
 		.controller('PeriwinkleController', ['$scope', '$http', 'UserService', '$location', PeriwinkleController]);
-		
+
 	function PeriwinkleController ($scope, $http, userService, $location) {
 		var self = this;
-		
-		$scope.redir_on_login = null;
-		
+
 		var reset = function() {
 			$scope.sidenav = {
 				exists: false,
@@ -38,12 +36,12 @@
 			$scope.originalEvent = null;
 		}
 		$scope.reset = reset;
-		
+
 		$scope.openMenu = function($mdOpenMenu, ev) {
 			$scope.originalEvent = ev;
 			$mdOpenMenu(ev);
 		};
-		
+
 		$scope.logout = function () {
 			$scope.loading.is = true;
 			if(userService.session_id && userService.session_id != "") {
