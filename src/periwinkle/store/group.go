@@ -21,8 +21,9 @@ var dirGroups he.Entity = newDirGroups()
 // Model /////////////////////////////////////////////////////////////
 
 type Group struct {
-	Id        string         `json:"group_id"`
-	Addresses []GroupAddress `json:"addresses"`
+	Id            string         `json:"group_id"`
+	Addresses     []GroupAddress `json:"addresses"`
+	Subscriptions []Subscription `json:"subscriptions"`
 }
 
 func (o Group) dbSchema(db *gorm.DB) error {
@@ -30,9 +31,14 @@ func (o Group) dbSchema(db *gorm.DB) error {
 }
 
 func (o Group) dbSeed(db *gorm.DB) error {
-	errs := []error{}
-	errHelper(&errs, db.Create(&Group{"test", []GroupAddress{{0, "test", "twilio", "add_twilio_phone_number", "test_user"}}}).Error)
-	return errorList(errs)
+	return db.Create(&Group{
+		Id: "test",
+		Addresses: []GroupAddress{{
+			Medium:  "twilio",
+			Address: "add_twilio_phone_number",
+		}},
+		Subscriptions: []Subscription{},
+	}).Error
 }
 
 type GroupAddress struct {
@@ -40,7 +46,6 @@ type GroupAddress struct {
 	GroupId string `json:"group_id"`
 	Medium  string `json:"medium"`
 	Address string `json:"address"`
-	UserId  string `json:"user_id"`
 }
 
 func (o GroupAddress) dbSchema(db *gorm.DB) error {
@@ -59,89 +64,62 @@ func GetGroupById(db *gorm.DB, id string) *Group {
 		}
 		panic(result.Error)
 	}
+	db.Model(&o).Related(&o.Addresses)
+	db.Model(&o).Related(&o.Subscriptions)
 	return &o
 }
 
-func GetUsersInGroup(db *gorm.DB, groupId string) *[]User {
-	groupAddresses := GetGroupAddressByGroupId(db, groupId)
-	var users []User
-	for _, groupAddr := range *groupAddresses {
-		users = append(users, *GetUserById(db, groupAddr.UserId))
-	}
-	return &users
-}
-
-func GetGroupAddressByGroupId(db *gorm.DB, groupId string) *[]GroupAddress {
+func GetGroupAddressByGroupId(db *gorm.DB, groupId string) []GroupAddress {
 	var o []GroupAddress
-	if result := db.Where("group_id =?", groupId).Find(&o); result.Error != nil {
+	if result := db.Where("group_id = ?", groupId).Find(&o); result.Error != nil {
 		if result.RecordNotFound() {
 			return nil
 		}
 		panic(result.Error)
 	}
-	return &o
+	return o
 }
 
-func GetGroupByAddress(db *gorm.DB, address string) *Group {
-	var o Group
-	if result := db.Joins("inner join groups on group_addresses.group_id = groups.id").Where("group_addresses.address = ?", address).Find(&o); result.Error != nil {
+func GetGroupsByMember(db *gorm.DB, user User) []Group {
+	// turn the User's list of addresses into a list of address IDs
+	user_address_ids := make([]int64, len(user.Addresses))
+	for i, user_address := range user.Addresses {
+		user_address_ids[i] = user_address.Id
+	}
+	// use the list of address IDs to get a list of subscriptions
+	var subscriptions []Subscription
+	if result := db.Where("address_id IN (?)", user_address_ids).Find(&subscriptions); result.Error != nil {
 		if result.RecordNotFound() {
 			return nil
 		}
 		panic(result.Error)
 	}
-	return &o
+	// turn the list of subscriptions into a list of group IDs
+	group_ids := make([]string, len(subscriptions))
+	for i, subscription := range subscriptions {
+		group_ids[i] = subscription.GroupId
+	}
+	// use the list of group IDs to get the groups
+	var groups []Group
+	if result := db.Where(group_ids).Find(&groups); result.Error != nil {
+		if result.RecordNotFound() {
+			return nil
+		}
+		panic(result.Error)
+	}
+	// return them
+	return groups
 }
 
-func GetGroupAddressesByMediumAndGroupId(db *gorm.DB, medium string, groupId string) *[]GroupAddress {
+func GetGroupAddressesByMedium(db *gorm.DB, medium string) []GroupAddress {
 	var o []GroupAddress
-	if result := db.Where("medium =? and group_id =?", medium, groupId).Find(&o); result.Error != nil {
+	if result := db.Where("medium = ?", medium).Find(&o); result.Error != nil {
 		if result.RecordNotFound() {
 			return nil
 		}
 		panic(result.Error)
 	}
-	return &o
-}
-
-func GetGroupByUserId(db *gorm.DB, id string) *Group {
-	var o Group
-	if result := db.Where("user_id=?", id).First(&o); result.Error != nil {
-		if result.RecordNotFound() {
-			return nil
-		}
-		panic(result.Error)
-	}
-	return &o
-}
-
-func GetGroupsByUserId(db *gorm.DB, id string) *[]Group {
-	var o []GroupAddress
-	if result := db.Where("user_id=?", id).Find(&o); result.Error != nil {
-		if result.RecordNotFound() {
-			return nil
-		}
-		panic(result.Error)
-	}
-	g := make([]Group, len(o))
-	for i, group := range o {
-		a := GetGroupById(db, group.GroupId)
-		if a != nil {
-			g[i] = *a
-		}
-	}
-	return &g
-}
-
-func GetGroupAddressesByMedium(db *gorm.DB, medium string) *[]GroupAddress {
-	var o []GroupAddress
-	if result := db.Where("medium =?", medium).Find(&o); result.Error != nil {
-		if result.RecordNotFound() {
-			return nil
-		}
-		panic(result.Error)
-	}
-	return &o
+	return o
 }
 
 func NewGroup(db *gorm.DB, name string) *Group {
@@ -149,20 +127,6 @@ func NewGroup(db *gorm.DB, name string) *Group {
 		panic("name can't be empty")
 	}
 	o := Group{Id: name}
-	if err := db.Create(&o).Error; err != nil {
-		panic(err)
-	}
-	return &o
-}
-
-func NewGroupAddress(db *gorm.DB, id int64, group_id string, medium string, address string, user_id string) *GroupAddress {
-	o := GroupAddress{
-		Id:      id,
-		GroupId: group_id,
-		Medium:  medium,
-		Address: address,
-		UserId:  user_id,
-	}
 	if err := db.Create(&o).Error; err != nil {
 		panic(err)
 	}
@@ -186,18 +150,6 @@ func (o *Group) Methods() map[string]func(he.Request) he.Response {
 		},
 		"PUT": func(req he.Request) he.Response {
 			db := req.Things["db"].(*gorm.DB)
-			sess := req.Things["session"].(*Session)
-			users := GetUsersInGroup(db, o.Id)
-			flag := false
-			for _, user := range *users {
-				if sess.UserId == user.Id {
-					flag = true
-					break
-				}
-			}
-			if !flag {
-				return he.StatusForbidden(heutil.NetString("Unauthorized user"))
-			}
 
 			var new_group Group
 			err := safeDecodeJSON(req.Entity, &new_group)
@@ -213,18 +165,6 @@ func (o *Group) Methods() map[string]func(he.Request) he.Response {
 		},
 		"PATCH": func(req he.Request) he.Response {
 			db := req.Things["db"].(*gorm.DB)
-			sess := req.Things["session"].(*Session)
-			users := GetUsersInGroup(db, o.Id)
-			flag := false
-			for _, user := range *users {
-				if sess.UserId == user.Id {
-					flag = true
-					break
-				}
-			}
-			if !flag {
-				return he.StatusForbidden(heutil.NetString("Unauthorized user"))
-			}
 
 			patch, ok := req.Entity.(jsonpatch.Patch)
 			if !ok {
@@ -268,9 +208,14 @@ func newDirGroups() t_dirGroups {
 		"GET": func(req he.Request) he.Response {
 			db := req.Things["db"].(*gorm.DB)
 			sess := req.Things["session"].(*Session)
-			groups := GetGroupsByUserId(db, sess.UserId)
-			generic := make([]interface{}, len(*groups))
-			for i, group := range *groups {
+			var groups []Group
+			if sess == nil {
+				groups = []Group{}
+			} else {
+				groups = GetGroupsByMember(db, *GetUserById(db, sess.UserId))
+			}
+			generic := make([]interface{}, len(groups))
+			for i, group := range groups {
 				generic[i] = group.Id
 			}
 			return he.StatusOK(heutil.NetList(generic))
@@ -309,17 +254,8 @@ func (d t_dirGroups) Methods() map[string]func(he.Request) he.Response {
 
 func (d t_dirGroups) Subentity(name string, req he.Request) he.Entity {
 	name = strings.ToLower(name)
-	sess := req.Things["session"].(*Session)
-	if sess == nil && req.Method == "POST" {
-		group, ok := req.Things["group"].(Group)
-		if !ok {
-			return nil
-		}
-		if group.Id == name {
-			return &group
-		}
-		return nil
-	}
 	db := req.Things["db"].(*gorm.DB)
+	// TODO: permissions check
+	//sess := req.Things["session"].(*Session)
 	return GetGroupById(db, name)
 }

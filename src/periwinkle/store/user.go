@@ -34,10 +34,11 @@ func (o User) dbSchema(db *gorm.DB) error {
 }
 
 type UserAddress struct {
-	Id      int64  `json:"-"`
-	UserId  string `json:"-"`
-	Medium  string `json:"medium"`
-	Address string `json:"address"`
+	Id            int64          `json:"-"`
+	UserId        string         `json:"-"`
+	Medium        string         `json:"medium"`
+	Address       string         `json:"address"`
+	Subscriptions []Subscription `json:"-"`
 }
 
 func (o UserAddress) dbSchema(db *gorm.DB) error {

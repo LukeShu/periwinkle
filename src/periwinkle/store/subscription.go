@@ -8,8 +8,9 @@ import (
 )
 
 type Subscription struct {
-	//Id        int64
-	AddressId int64
+	Address   UserAddress
+	AddressId int64 `json:"-"`
+	Group     Group
 	GroupId   string
 }
 
