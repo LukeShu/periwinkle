@@ -142,7 +142,7 @@
 			);
 		};
 
-		load();
+		self.load();
 	}
 
 	function NewGroupController($scope, $mdDialog, $http) {
