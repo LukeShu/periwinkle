@@ -1,10 +1,10 @@
-﻿// Copyright 2015 Richard Wisniewski
+// Copyright 2015 Richard Wisniewski
 (function(){
 	'use strict';
 
 	angular
-		.module('user')
-		.controller('UserController', ['$cookies', '$http', '$scope', '$interval', 'UserService', '$location', '$mdDialog', UserController]);
+	.module('user')
+	.controller('UserController', ['$cookies', '$http', '$scope', '$interval', 'UserService', '$location', '$mdDialog', UserController]);
 
 	function UserController($cookies, $http, $scope, $interval, userService, $location, $mdDialog) {
 		//gives us an anchor to the outer object from within sub objects or functions
@@ -142,6 +142,11 @@
 				}
 			);
 		};
+
+		$scope.$on('$stateChangeSuccess', function () {
+  		// do something
+			self.load();
+		});
 	}
 
 	function NewGroupController($scope, $mdDialog, $http) {
