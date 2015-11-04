@@ -1,9 +1,9 @@
 (function() {
 	'use strict';
 
-	angular.module('validation.match', []);
+	angular.module('validation.anti-match', []);
 
-	angular.module('validation.match').directive('match', match);
+	angular.module('validation.anti-match').directive('antiMatch', match);
 	//angular.module('validation.match').directive('noMatch', match);
 
 	function match ($parse) {
@@ -18,7 +18,7 @@
 					return;
 				}
 
-				var matchGetter = $parse(attrs.match);
+				var matchGetter = $parse(attrs.antiMatch);
 				var caselessGetter = $parse(attrs.matchCaseless);
 				var noMatchGetter = $parse(attrs.notMatch);
 
@@ -26,15 +26,15 @@
 					ctrl.$$parseAndValidate();
 				});
 
-				ctrl.$validators.antiMatch = function(){
+				ctrl.$validators.match = function(){
 					var match = getMatchValue();
 					var notMatch = noMatchGetter(scope);
 					var value;
 
 					if(caselessGetter(scope)){
-						value = angular.lowercase(ctrl.$viewValue) === angular.lowercase(match);
+						value = angular.lowercase(ctrl.$viewValue) !== angular.lowercase(match);
 					}else{
-						value = ctrl.$viewValue === match;
+						value = ctrl.$viewValue !== match;
 					}
 					value ^= notMatch;
 					return !!value;

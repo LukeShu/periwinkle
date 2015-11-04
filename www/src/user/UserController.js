@@ -37,10 +37,10 @@
 				//open dialogue
 			},
 			edit_address:	function(index) {
-				
+
 			},
 			save_edit_address:	function(index) {
-				
+
 			},
 			changePassword:	function(ev) {
 				$mdDialog.show({
@@ -50,7 +50,7 @@
 					targetEvent:			ev,
 					clickOutsideToClose:	true
 				});
-			} 
+			}
 		};
 		self.groups = {
 			status:		{
@@ -59,13 +59,13 @@
 			},
 			list:		[],
 			'new':		function() {
-				
+
 			},
 			new_data:	{
 				//new group data
 			}
 		};
-		
+
 		self.groups.new = function(ev) {
 			$mdDialog.show({
 				controller:				NewGroupController,
@@ -75,11 +75,11 @@
 				clickOutsideToClose:	true
 			});
 		};
-		
+
 		self.groups.join = function() {
-		
+
 		};
-		
+
 		var __load = function() {
 			//http call point at /v1/users/"user_id"
 			//on success set userData to reponse.data
@@ -88,7 +88,7 @@
 			self.info.status.loading = true;
 			$http({
 				method: 'GET',
-				url: '/v1/users/' + userService.user_id, 
+				url: '/v1/users/' + userService.user_id,
 				headers: {
 					'Content-Type': 'application/json'
 				},
@@ -124,7 +124,7 @@
 				}
 			);
 		};
-		
+
 		//check and load
 		self.load = function() {
 			$scope.loading.is = true;
@@ -145,16 +145,16 @@
 			);
 		};
 	}
-	
+
 	function NewGroupController($scope, $mdDialog, $http) {
 		var self = $scope.group = this;
-		
+
 		$scope.loading = false;
 		$scope.title = 'New Group';
 		$scope.errors = [];
-		
-		self.groupname = '';
-		
+
+		self.name = '';
+
 		self.cancel = function() {
 			$mdDialog.cancel();
 		};
@@ -168,7 +168,7 @@
 					'Content-Type': 'application/json'
 				},
 				data: {
-					'groupname': self.groupname
+					'groupname': self.name
 				}
 			}).then(
 				function success(response) {
@@ -182,17 +182,17 @@
 			);
 		};
 	}
-	
-	function ChangePasswordController($scope, $mdDialog, $http) {
+
+	function ChangePasswordController($scope, $mdDialog, $http, UserService) {
 		var self = $scope.password = this;
-		
+
 		$scope.loading = false;
 		$scope.title = 'Change Password';
 		$scope.errors = [];
-		
+
 		self.oldPassword = '';
 		self.newPassword = ['',''];
-		
+
 		self.cancel = function() {
 			$mdDialog.cancel();
 		};
@@ -200,15 +200,32 @@
 			$scope.loading = true;
 			$scope.title = 'Creating Group...';
 			$http({
+				method: 'PATCH',
+				url: '/v1/users/' + UserService.user_id,
+				headers: {
+					'Content-Type': 'application/json-patch+json'
+				},
+				data: [
+					{
+						'op':		'test',
+						'path':		'/password',
+						'value':	self.oldPassword
+					},
+					{
+						'op':		'replace',
+						'path':		'/password',
+						'value':	self.newPassword[0]
+					}
+				]
 			}).then(
 				function success(response) {
-					
+					debugger;
 				},
 				function fail(response) {
-					
+					debugger;
 				}
 			);
 		};
 	}
-	
+
 })();

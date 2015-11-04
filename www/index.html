@@ -9,7 +9,6 @@
 	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.7/angular-cookies.js"></script>
 	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.7/angular-messages.js"></script>
 	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.7/angular-sanitize.js"></script>
-	<script src="https://cdn.jsdelivr.net/ngstorage/0.3.6/ngStorage.min.js"></script>
 	<!-- Angular Material -->
 	<script src="https://ajax.googleapis.com/ajax/libs/angular_material/1.0.0-rc1/angular-material.min.js"></script>
 	<link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/angular_material/1.0.0-rc1/angular-material.min.css"/>
@@ -21,6 +20,7 @@
 	<script src="src/libs/xregexp-all-min.js"></script>
 	<!-- Form field equality checker -->
 	<script src="src/libs/angular-validation-match.js"></script>
+	<script src="src/libs/angular-validation-anti-match.js"></script>
 	<script src="src/libs/angular-validation-xregex.js"></script>
 	<!-- Angular Translate -->
 	<script src="src/libs/angular-translate.min.js"></script>
@@ -40,7 +40,7 @@
 	<script src="src/dashboard/DashboardController.js"></script>
 	<script src="src/user/User.js"></script>
 	<script src="src/user/UserController.js"></script>
-	
+
 	<meta name="viewport" content="initial-scale=1" />
 	<meta name="theme-color" content="#673AB7">
 	<meta name="viewport" content="width=device-width">
@@ -49,18 +49,18 @@
 </head>
 <body>
 	<!-- head -->
-	<div ng-include="'src/head.html'"></div>	
+	<div ng-include="'src/head.html'"></div>
 	<!-- body -->
 	<md-content id="content" class="md-padding">
 		<div ng-view></div>
 	</md-content>
-	
+
 	<div ng-if="loading.is" ng-include="'src/loader.html'" style="z-index: 12; position: absolute; top: 0mm; left: 0mm; width: 100%; height: 100%;"></div>
-	
+
 	<!-- Warning for no-js users -->
 	<div ng-if="false" style="border-color: black; border-width: .5mm; margin-left: auto; margin-right: auto; margin-top: 5em; padding: 1em; text-align: center;">
 		<p>This site requires javascript to funciton.  <br/>Please enable it to proceed.</p>
 	<div>
-	
+
 </body>
 </html>
