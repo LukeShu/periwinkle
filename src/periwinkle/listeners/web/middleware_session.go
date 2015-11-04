@@ -26,9 +26,14 @@ func (p session) Before(req *he.Request) {
 	}
 	session_id := cookie.Value
 
-	header := req.Headers.Get("X-XSRF-TOKEN")
-	if header != session_id {
-		return
+	switch req.Method {
+	case "OPTIONS", "GET", "HEAD":
+		// do nothing
+	default:
+		header := req.Headers.Get("X-XSRF-TOKEN")
+		if header != session_id {
+			return
+		}
 	}
 
 	// It's not worth panicing if we have database errors here.

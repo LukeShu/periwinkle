@@ -9,8 +9,10 @@ The HTTP resources use the
 
 For actions requiring authentication, there will be a session token
 (see below for how to get a token).  All requests that require
-authentication must set both the [HTTP cookie][RFC-6265] `session_id`
-and the HTTP header `X-XSRF-TOKEN` to the session token value.
+authentication must set the [HTTP cookie][RFC-6265] `session_id` and
+the HTTP header `X-XSRF-TOKEN` to the session token value; with the
+exception that `OPTIONS`, `HEAD`, and `GET` requests don't require the
+`X-XSRF-TOKEN` header to be set.
 
 > Rationale: The double-submission of the token as both a cookie and a
 > header is to protect from CSRF attacks.
