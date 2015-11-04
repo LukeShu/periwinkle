@@ -106,7 +106,7 @@ func GetGroupAddressesByMediumAndGroupId(db *gorm.DB, medium string, groupId str
 
 func GetGroupByUserId(db *gorm.DB, id string) *Group {
 	var o Group
-	if result := db.Where("user_id", id).First(&o); result.Error != nil {
+	if result := db.Where("user_id=?", id).First(&o); result.Error != nil {
 		if result.RecordNotFound() {
 			return nil
 		}
@@ -117,13 +117,12 @@ func GetGroupByUserId(db *gorm.DB, id string) *Group {
 
 func GetGroupsByUserId(db *gorm.DB, id string) *[]Group {
 	var o []GroupAddress
-	if result := db.Where("user_id", id).Find(&o); result.Error != nil {
+	if result := db.Where("user_id=?", id).Find(&o); result.Error != nil {
 		if result.RecordNotFound() {
 			return nil
 		}
 		panic(result.Error)
 	}
-
 	g := make([]Group, len(o))
 	for i, group := range o {
 		a := GetGroupById(db, group.GroupId)
@@ -268,12 +267,8 @@ func newDirGroups() t_dirGroups {
 	r.methods = map[string]func(he.Request) he.Response{
 		"GET": func(req he.Request) he.Response {
 			db := req.Things["db"].(*gorm.DB)
-			type getfmt struct { 
-				UserId string `json:"userid"`
-			}
-			var entity getfmt
-			entity.UserId = strings.ToLower(entity.UserId)
-			groups := GetGroupsByUserId(db, entity.UserId)
+			sess := req.Things["session"].(*Session)
+			groups := GetGroupsByUserId(db, sess.UserId)
 			generic := make([]interface{}, len(*groups))
 			for i, group := range *groups {
 				generic[i] = group.Id
