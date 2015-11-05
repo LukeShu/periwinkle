@@ -232,11 +232,15 @@
 
 		self.oldPassword = '';
 		self.newPassword = ['',''];
+		var isCancel = false;
 
 		self.cancel = function() {
+			isCancel = true;
 			$mdDialog.cancel();
 		};
 		self.create = function() {
+			if(isCancel)
+				return;
 			$scope.loading = true;
 			$scope.title = 'Changing Password...';
 			$http({
@@ -250,11 +254,6 @@
 						'op':		'test',
 						'path':		'/password',
 						'value':	self.oldPassword
-					},
-					{
-						'op':		'replace',
-						'path':		'/password',
-						'value':	self.newPassword[0]
 					}
 				]
 			}).then(
