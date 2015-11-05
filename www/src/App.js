@@ -12,6 +12,7 @@
 		'ngSanitize',
 		//periwinkle modules
 		'validation.anti-match',
+		'focusOn',
 		'validation.xregex',
 		'periwinkle.UserService',
 		'login',

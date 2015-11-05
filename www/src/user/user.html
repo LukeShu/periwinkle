@@ -31,12 +31,18 @@
 		<h3 style="margin-bottom: 0;">Contact Addresses</h3>
 		<ul style="list-style: none; padding: 0; margin: 0;">
 			<li ng-repeat="address in user.info.addresses">
-			<div layout="row" layout-align="space-between center">
-				<p>{{address.medium | translate}}:  {{address.address}}</p>
-				<md-button class="md-button md-primary" aria-label="change" ng-click="user.change(address)">
-					{{ "USER.EMAIL_CHANGE" | translate }}
-				</md-button>
-			</div>
+				<div ng-if="!address.editing" layout="row" layout-align="space-between center">
+					<p><span style="font-weight: bold;">{{address.medium | translate}}:</span>  {{address.address}}</p>
+					<md-button class="md-button md-primary" aria-label="change" ng-click="user.info.edit_address($index)">
+						{{ "USER.EMAIL_CHANGE" | translate }}
+					</md-button>
+				</div>
+				<form ng-if="address.editing" name="editAddressForm">
+					<md-input-container style="padding-right: 1em;">
+						<label>{{ address.medium | translate }}</label>
+						<input name="address" ng-model="address.new_address" type="text" focus-on="edit_address" ng-blur="user.info.save_edit_address($index)" require ></input>
+					</md-input-container>
+				</form>
 			</li>
 		</ul>
 	</md-card-content>
@@ -71,10 +77,7 @@
 		<ul ng-if="user.groups.list.length" style="list-style: none; padding: 0; margin: 0;">
 			<li ng-repeat="group in user.groups.list">
 			<div layout="row" layout-align="space-between center">
-				<p>{{ group }}</p>
-				<md-button class="md-button md-primary" aria-label="change" ng-click="user.group.change($index)">
-					{{ "USER.GROUP_EDIT" | translate }}
-				</md-button>
+				<p style="font-weight: bold" onclick="user.groups.edit($index)">{{ group }}</p>
 			</div>
 			</li>
 		</ul>

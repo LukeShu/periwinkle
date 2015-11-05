@@ -4,9 +4,9 @@
 
 	angular
 	.module('user')
-	.controller('UserController', ['$cookies', '$http', '$scope', '$interval', 'UserService', '$location', '$mdDialog', '$timeout', UserController]);
+	.controller('UserController', ['$cookies', '$http', '$scope', '$interval', 'UserService', '$location', '$mdDialog', '$timeout', 'focus', UserController]);
 
-	function UserController($cookies, $http, $scope, $interval, userService, $location, $mdDialog, $timeout) {
+	function UserController($cookies, $http, $scope, $interval, userService, $location, $mdDialog, $timeout, focus) {
 		//gives us an anchor to the outer object from within sub objects or functions
 		var self = this;
 		//clears the toolbar and such so we can set it up for this view
@@ -37,10 +37,12 @@
 				//open dialogue
 			},
 			edit_address:	function(index) {
-
+				self.info.addresses[index].new_address = self.info.addresses[index].address;
+				self.info.addresses[index].editing = true;
+				focus('edit_address');
 			},
 			save_edit_address:	function(index) {
-
+				debugger;
 			},
 			changePassword:	function(ev) {
 				$mdDialog.show({
@@ -67,6 +69,11 @@
 						//do work with response
 						self.info.username = response.data.user_id;
 						self.info.addresses = response.data.addresses;
+						var i;
+						for (i in self.info.addresses) {
+							self.info.addresses[i].new_address = '';
+							self.info.addresses[i].editing = false;
+						}
 						self.info.status.loading = false;
 					},
 					function fail(response) {
@@ -100,6 +107,9 @@
 				);
 			},
 			'join':	function() {
+
+			},
+			edit:	function(index) {
 
 			},
 			load:	function() {
