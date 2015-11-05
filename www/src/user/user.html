@@ -68,8 +68,15 @@
 		</md-menu>
 	</md-toolbar>
 	<md-card-content>
-		<ul ng-if="user.groups.list.length">
-			<li ng-repeat="group in user.groups.list">{{ group }}</li>
+		<ul ng-if="user.groups.list.length" style="list-style: none; padding: 0; margin: 0;">
+			<li ng-repeat="group in user.groups.list">
+			<div layout="row" layout-align="space-between center">
+				<p>{{ group }}</p>
+				<md-button class="md-button md-primary" aria-label="change" ng-click="user.group.change($index)">
+					{{ "USER.GROUP_EDIT" | translate }}
+				</md-button>
+			</div>
+			</li>
 		</ul>
 		<p ng-if="!user.groups.list.length">{{ "NO_GROUPS" | translate }}</p>
 	</md-card-content>
