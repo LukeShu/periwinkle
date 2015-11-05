@@ -293,16 +293,19 @@
 
 		self.mediums = [
 			{
-				name:	'email'
+				name:	'email',
+				type:	'email'
 			},
 			{
-				name:	'sms'
+				name:	'sms',
+				type:	'tel'
 			},
 			{
-				name:	'mms'
+				name:	'mms',
+				type:	'tel'
 			}
 		];
-		self.medium = self.mediums[0].name;
+		self.medium = 0;
 		self.address = '';
 
 		self.test = function() {
