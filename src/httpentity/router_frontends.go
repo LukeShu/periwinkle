@@ -6,9 +6,14 @@ import (
 	"net/http"
 	"net/url"
 	"strings"
+	"fmt"
+	"os"
 )
 
 func (r *Router) Route(req Request, u *url.URL) (res Response) {
+	if r.LogRequest {
+		fmt.Fprintf(os.Stderr, "Route: %s %s %q\n", req.Scheme, req.Method, u.String())
+	}
 	u, mimetype := normalizeURL(u)
 	if mimetype != "" {
 		// the file extension overrides the Accept: header
@@ -37,6 +42,9 @@ func (h *Router) serveHTTP(w http.ResponseWriter, r *http.Request) (res Response
 	}
 	if r.TLS != nil {
 		req.Scheme = "https"
+	}
+	if h.LogRequest {
+		fmt.Fprintf(os.Stderr, "ServeHTTP: %s %s %q\n", req.Scheme, req.Method, r.URL.String())
 	}
 	if h.TrustForwarded {
 		if scheme := req.Headers.Get("X-Forwarded-Proto"); scheme != "" {
