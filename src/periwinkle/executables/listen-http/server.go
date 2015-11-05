@@ -15,7 +15,7 @@ import (
 	"stoppable"
 )
 
-func makeServer(socket net.Listener) stoppable.HTTPServer {
+func makeServer(socket net.Listener) *stoppable.HTTPServer {
 	std_decoders := map[string]func(io.Reader, map[string]string) (interface{}, error){
 		"application/x-www-form-urlencoded": heutil.DecoderFormUrlEncoded,
 		"multipart/form-data":               heutil.DecoderFormData,
@@ -58,7 +58,7 @@ func makeServer(socket net.Listener) stoppable.HTTPServer {
 	mux.Handle("/callbacks/twilio-sms", http.HandlerFunc(handlers.SmsHttpCallback))
 
 	// Make the server
-	return stoppable.HTTPServer{
+	return &stoppable.HTTPServer{
 		Server: http.Server{Handler: mux},
 		Socket: socket,
 	}

@@ -153,6 +153,7 @@ func main() {
 	sd.Notify(false, "READY=1")
 
 	server := makeServer(socket)
+	server.Start()
 	go func() {
 		err := server.Wait()
 		if err != nil {
