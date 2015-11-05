@@ -54,7 +54,7 @@
 						data: [
 							{
 								'op':		'replace',
-								'path':		'/addresses[index]',
+								'path':		'/addresses[' + index + ']',
 								'value':	self.info.addresses[index].new_address
 							}
 						]
