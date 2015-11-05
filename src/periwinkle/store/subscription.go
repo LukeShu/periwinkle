@@ -35,11 +35,6 @@ func GetSubscriptionsGroupById(db *gorm.DB, groupId string) []Subscription {
 	return o
 }
 
-
-
-
-
-
 type t_dirSubscriptions struct {
 	methods map[string]func(he.Request) he.Response
 }
@@ -55,11 +50,9 @@ func newDirSubscriptions() t_dirSubscriptions {
 	return r
 }
 
-
 func (d t_dirSubscriptions) Methods() map[string]func(he.Request) he.Response {
 	return d.methods
 }
-
 
 func (d t_dirSubscriptions) Subentity(user_id string, group_name string, req he.Request) he.Entity {
 	//group_name = strings.ToLower(group_name)

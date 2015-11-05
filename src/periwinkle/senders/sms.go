@@ -6,16 +6,16 @@ package senders
 
 import (
 	"bytes"
-	"strings"
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"net/mail"
 	"net/url"
 	"os"
 	"periwinkle/cfg"
-	"time"
-	"net/mail"
 	"periwinkle/store"
+	"strings"
+	"time"
 )
 
 var message_status, error_code string
@@ -41,15 +41,13 @@ func Url_handler(w http.ResponseWriter, req *http.Request) {
 func sender(message mail.Message, to string) (status string, err error) {
 	message_status = ""
 	error_code = ""
-	
+
 	group := message.Header.Get("From")
 	user := store.GetUserByAddress(cfg.DB, "email", message.Header.Get("From"))
-	
+
 	sms_from := group // TODO: numberFor(group)
 	sms_to := strings.Split(to, "@")[0]
-	sms_body := user.FullName + ":" + message.Header.Get("Subject") 
-
-
+	sms_body := user.FullName + ":" + message.Header.Get("Subject")
 
 	// account SID for Twilio account
 	account_sid := os.Getenv("TWILIO_ACCOUNTID")
@@ -63,7 +61,7 @@ func sender(message mail.Message, to string) (status string, err error) {
 	v.Set("From", sms_from)
 	v.Set("To", sms_to)
 	v.Set("Body", sms_body)
-	v.Set("StatusCallback", "http://" + cfg.WebRoot + "/callbacks/twilio-sms")
+	v.Set("StatusCallback", "http://"+cfg.WebRoot+"/callbacks/twilio-sms")
 
 	client := &http.Client{}
 

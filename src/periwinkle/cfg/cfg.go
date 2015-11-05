@@ -1,4 +1,4 @@
- // Copyright 2015 Mark Pundman
+// Copyright 2015 Mark Pundman
 // Copyright 2015 Luke Shumaker
 // Copyright 2015 Davis Webb
 

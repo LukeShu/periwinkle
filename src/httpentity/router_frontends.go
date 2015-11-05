@@ -3,11 +3,11 @@
 package httpentity
 
 import (
+	"fmt"
 	"net/http"
 	"net/url"
-	"strings"
-	"fmt"
 	"os"
+	"strings"
 )
 
 func (r *Router) Route(req Request, u *url.URL) (res Response) {

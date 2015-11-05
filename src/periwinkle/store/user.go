@@ -57,7 +57,7 @@ func (u *User) populate(db *gorm.DB) {
 	}
 	var subscriptions []Subscription
 	if result := db.Where("address_id in (?)", address_ids).Find(&subscriptions); result.Error != nil {
-                if !result.RecordNotFound() {
+		if !result.RecordNotFound() {
 			panic(result.Error)
 		}
 	}
