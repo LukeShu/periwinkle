@@ -1,6 +1,6 @@
 // Copyright 2015 Davis Webb
 
-package senders
+package handlers
 
 import (
 	"io"
@@ -9,8 +9,7 @@ import (
 	"net/smtp"
 )
 
-func sendEmail(r io.Reader) {
-
+func HandleEmail(r io.Reader, name string) int {
 	m, err := mail.ReadMessage(r)
 	if err != nil {
 		panic(err)
@@ -26,5 +25,5 @@ func sendEmail(r io.Reader) {
 	if err != nil {
 		panic(err)
 	}
-
+	panic("TODO")
 }

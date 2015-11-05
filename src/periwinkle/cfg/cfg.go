@@ -23,6 +23,8 @@ const TrustForwarded = true // whether to trust X-Forwarded: or Forwarded: HTTP 
 var TwilioAccountId = os.Getenv("TWILIO_ACCOUNTID")
 var TwilioAuthToken = os.Getenv("TWILIO_TOKEN")
 
+var GroupDomain = "periwinkle.lol"
+
 var WebRoot = getWebroot()
 
 func getWebroot() string {
@@ -51,11 +53,7 @@ func getConnection() *gorm.DB {
 
 type DomainHandler func(io.Reader, string) int
 
-var DomainHandlers = map[string]DomainHandler{
-	"sms.gateway":    nil, // TODO
-	"mms.gateway":    nil, // TODO
-	"periwinkle.lol": nil, // TODO
-}
+var DomainHandlers map[string]DomainHandler // set in email_handlers/init.go because import-cycles
 
 var DefaultDomainHandler DomainHandler = bounce
 

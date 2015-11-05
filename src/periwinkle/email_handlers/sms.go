@@ -2,11 +2,12 @@
 // Copyright 2015 Zhandos Suleimenov
 // Copyright 2015 Luke Shumaker
 
-package senders
+package handlers
 
 import (
 	"bytes"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"net/http"
 	"net/mail"
@@ -20,7 +21,11 @@ import (
 
 var message_status, error_code string
 
-func Url_handler(w http.ResponseWriter, req *http.Request) {
+func HandleSMS(r io.Reader, name string) int {
+	panic("TODO")
+}
+
+func SmsHttpCallback(w http.ResponseWriter, req *http.Request) {
 	body, err := ioutil.ReadAll(req.Body)
 	if err != nil {
 		fmt.Printf("%v", err)
