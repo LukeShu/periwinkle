@@ -1,1 +1,15 @@
-// Copyright 2015 Richard Wisniewski
+/* Copyright 2015 Luke Shumaker */
+
+body {
+	display: table;
+	width: 100%;
+	height: 100%;
+}
+
+body > * {
+	display: table-row;
+}
+
+#banner {
+	height: 64px; /* mirrors the angular-material.css rule for ".md-toolbar-tools" */
+}
