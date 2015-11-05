@@ -19,7 +19,7 @@ import (
 	"time"
 )
 
-var message_status, error_code string
+var message_status, error_code string // TODO: bad globals
 
 func HandleSMS(r io.Reader, name string) int {
 	panic("TODO")
