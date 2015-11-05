@@ -1,27 +1,20 @@
 // Copyright 2015 Zhandos Suleimenov
 
-package twilio
+package main
 
 import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"net/http"
-	"os"
 	"periwinkle/cfg"
-	"periwinkle/listeners/util"
 	"periwinkle/store"
+	"periwinkle/util"
 	"strings"
 	"time"
 )
 
-func Main() error {
-	// account SID for Twilio account
-	account_sid := os.Getenv("TWILIO_ACCOUNTID")
-
-	// Authorization token for Twilio account
-	auth_token := os.Getenv("TWILIO_TOKEN")
-
+func main() {
 	var arr_temp [1000]string
 	var cur_time_sec int64
 	cur_time_sec = 0
@@ -42,12 +35,12 @@ func Main() error {
 			cur_time_sec = cur_time.Unix()
 
 			// gets url for received  Twilio messages for a given date
-			url := "https://api.twilio.com/2010-04-01/Accounts/" + account_sid + "/Messages.json?To=" + v.Address + "&DateSent>=" + strings.Split(cur_time.String(), " ")[0]
+			url := "https://api.twilio.com/2010-04-01/Accounts/" + cfg.TwilioAccountId + "/Messages.json?To=" + v.Address + "&DateSent>=" + strings.Split(cur_time.String(), " ")[0]
 
 			client := &http.Client{}
 
 			req, _ := http.NewRequest("GET", url, nil)
-			req.SetBasicAuth(account_sid, auth_token)
+			req.SetBasicAuth(cfg.TwilioAccountId, cfg.TwilioAuthToken)
 
 			resp, err := client.Do(req)
 
@@ -92,8 +85,7 @@ func Main() error {
 						for j := 0; j != len(arr_temp); j++ {
 							if arr_temp[j] == "" {
 								arr_temp[j] = m_sid
-								//TODO adding the message to sqrl
-								listener_util.MessageBuilder{
+								putil.MessageBuilder{
 									Headers: map[string]string{
 										"To":      message.Messages[i].To,
 										"From":    message.Messages[i].From,

@@ -1,6 +1,6 @@
 // Copyright 2015 Luke Shumaker
 
-package web
+package main
 
 import (
 	"github.com/go-sql-driver/mysql"

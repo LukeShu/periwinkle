@@ -19,7 +19,6 @@ deps += github.com/jinzhu/gorm
 deps += github.com/mattbaird/jsonpatch
 deps += github.com/mattn/go-sqlite3
 deps += golang.org/x/crypto/bcrypt
-deps += lukeshu.com/git/go/libgnulinux.git/inotify
 deps += lukeshu.com/git/go/libsystemd.git/sd_daemon
 
 default: all

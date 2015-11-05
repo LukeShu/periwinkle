@@ -1,7 +1,7 @@
 // Copyright 2015 Luke Shumaker
 // Copyright 2015 Zhandos Suleimenov
 
-package web
+package main
 
 import (
 	he "httpentity"
@@ -15,9 +15,7 @@ import (
 	"stoppable"
 )
 
-var server stoppable.HTTPServer
-
-func Start(socket net.Listener) {
+func makeServer(socket net.Listener) stoppable.HTTPServer {
 	std_decoders := map[string]func(io.Reader, map[string]string) (interface{}, error){
 		"application/x-www-form-urlencoded": heutil.DecoderFormUrlEncoded,
 		"multipart/form-data":               heutil.DecoderFormData,
@@ -59,18 +57,9 @@ func Start(socket net.Listener) {
 	// External API callbacks
 	mux.Handle("/callbacks/twilio-sms", http.HandlerFunc(senders.Url_handler))
 
-	// Now actually run.
-	server = stoppable.HTTPServer{
+	// Make the server
+	return stoppable.HTTPServer{
 		Server: http.Server{Handler: mux},
 		Socket: socket,
 	}
-	server.Start()
-}
-
-func Stop() {
-	server.Stop()
-}
-
-func Wait() error {
-	return server.Wait()
 }

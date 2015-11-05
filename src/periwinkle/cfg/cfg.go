@@ -9,9 +9,9 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jinzhu/gorm"
 	_ "github.com/mattn/go-sqlite3"
+	"io"
 	"maildir"
 	"net/http"
-	"io"
 	"os"
 )
 
@@ -19,6 +19,9 @@ const IncomingMail maildir.Maildir = "/srv/periwinkle/Maildir"
 const WebUiDir http.Dir = "./www"
 const Debug bool = true
 const TrustForwarded = true // whether to trust X-Forwarded: or Forwarded: HTTP headers
+
+var TwilioAccountId = os.Getenv("TWILIO_ACCOUNTID")
+var TwilioAuthToken = os.Getenv("TWILIO_TOKEN")
 
 var WebRoot = getWebroot()
 

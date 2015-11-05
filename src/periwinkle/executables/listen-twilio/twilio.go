@@ -1,6 +1,6 @@
 // Copyright 2015 Zhandos Suleimenov
 
-package twilio
+package main
 
 import (
 	"bytes"

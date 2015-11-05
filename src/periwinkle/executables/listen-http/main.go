@@ -9,7 +9,6 @@ import (
 	"net"
 	"os"
 	"os/signal"
-	"periwinkle/listeners/web"
 	"strconv"
 	"strings"
 	"syscall"
@@ -153,9 +152,9 @@ func main() {
 
 	sd.Notify(false, "READY=1")
 
-	web.Start(socket)
+	server := makeServer(socket)
 	go func() {
-		err := web.Wait()
+		err := server.Wait()
 		if err != nil {
 			fmt.Fprintln(os.Stderr, err)
 			done <- 1
@@ -170,7 +169,7 @@ func main() {
 			switch sig {
 			case syscall.SIGTERM:
 				sd.Notify(false, "STOPPING=1")
-				web.Stop()
+				server.Stop()
 			case syscall.SIGHUP:
 				sd.Notify(false, "RELOADING=1")
 				// TODO: reload configuration file
