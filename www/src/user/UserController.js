@@ -82,7 +82,7 @@
 					clickOutsideToClose:	true
 				});
 			},
-			newAddress:	function() {
+			newAddress:	function(ev) {
 				$mdDialog.show({
 					controller:				NewAddressController,
 					templateUrl:			'src/user/new_address.html',
