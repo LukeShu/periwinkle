@@ -1,5 +1,5 @@
 <!-- // Copyright 2015 Richard Wisniewski -->
-<md-dialog aria-label="New Group"  ng-cloak>
+<md-dialog aria-label="New Address"  ng-cloak>
 
 	<md-toolbar>
 		<div class="md-toolbar-tools">
@@ -7,21 +7,29 @@
 		</div>
 	</md-toolbar>
 
-	<form ng-if="!loading" ng-submit="group.create()">
+	<form ng-if="!loading" ng-submit="address.create()">
 		<md-dialog-content style="max-width: 150mm; max-height: 100mm;">
 			<div class="md-dialog-content">
 				<md-input-container>
-					<label>New Group Name</label>
-					<input ng-model="group.name" type="text" />
+					<label>Medium</label>
+					<md-select ng-model="address.medium">
+						<md-option ng-repeat="medium in address.mediums" value="medium">
+							{{ medium.name }}
+						</md-option>
+					</md-select>
+				</md-input-container>
+				<md-input-container>
+					<label>Address</label>
+					<input ng-model="address.address" ng-type="address.medium.type" />
 				</md-input-container>
 			</div>
 		</md-dialog-content>
 
 		<div class="md-actions" layout="row">
-			<md-button ng-click="group.cancel()">
+			<md-button ng-click="address.cancel()">
 				Cancel
 			</md-button>
-			<md-button ng-click="group.create()">
+			<md-button ng-click="address.create()">
 				Create
 			</md-button>
 		</div>

@@ -82,6 +82,22 @@
 					clickOutsideToClose:	true
 				});
 			},
+			newAddress:	function() {
+				$mdDialog.show({
+					controller:				NewAddressController,
+					templateUrl:			'src/user/new_address.html',
+					parent:					angular.element(document.body),
+					targetEvent:			ev,
+					clickOutsideToClose:	true
+				}).then(
+					function (response) {
+						//the dialog responded before closing
+						self.info.load();
+					}, function () {
+						//the dialog was cancelled
+					}
+				);
+			},
 			load:	function() {
 				self.info.status.loading = true;
 				$http({
@@ -265,6 +281,59 @@
 					debugger;
 				}
 			);
+		};
+	}
+
+	function NewAddressController($scope, $mdDialog, $http) {
+		var self = $scope.address = this;
+
+		$scope.loading = false;
+		$scope.title = 'New Address';
+		$scope.errors = [];
+
+		self.mediums = [
+			{
+				name:	'email',
+				type:	'email'
+			},
+			{
+				name:	'sms',
+				type:	'tel'
+			},
+			{
+				name:	'mms',
+				type:	'tel'
+			}
+		];
+		self.medium = self.mediums[0];
+		self.address = '';
+
+		self.cancel = function() {
+			$mdDialog.cancel();
+		};
+		self.create = function() {
+			$scope.loading = true;
+			$scope.title = 'Creating Address...';
+			// $http({
+			// 	method: 'POST',
+			// 	url: '/v1/groups',
+			// 	headers: {
+			// 		'Content-Type': 'application/json'
+			// 	},
+			// 	data: {
+			// 		'groupname': self.name
+			// 	}
+			// }).then(
+			// 	function success(response) {
+			// 		debugger;
+			// 		$mdDialog.hide(self.name);
+			// 	},
+			// 	function fail(response) {
+			// 		debugger;
+			// 		$scope.loading = false;
+			// 		$scope.title = 'Fail';
+			// 	}
+			// );
 		};
 	}
 

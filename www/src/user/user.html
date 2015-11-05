@@ -28,7 +28,12 @@
 	</md-toolbar>
 
 	<md-card-content style="padding-right: 0;">
-		<h3 style="margin-bottom: 0;">Contact Addresses</h3>
+		<div layout="row" layout-align="space-between center">
+			<h3 style="margin-bottom: 0;">Contact Addresses</h3>
+			<md-button class="md-button md-primary" aria-label="change" ng-click="user.info.newAddress()">
+				New
+			</md-button>
+		</div>
 		<ul style="list-style: none; padding: 0; margin: 0;">
 			<li ng-repeat="address in user.info.addresses">
 				<p ng-if="address.loading">Saving...</p>
