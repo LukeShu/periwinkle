@@ -140,9 +140,9 @@ func (o *User) patchPassword(patch *jsonpatch.Patch) putil.HTTPError {
 	// this is in the running for the grossest code I've ever
 	// written, but I think it's the best way to do it --lukeshu
 	type patchop struct {
-		Op    string
-		Path  string
-		Value string
+		Op    string `json:"op"`
+		Path  string `json:"path"`
+		Value string `json:"value"`
 	}
 	str, err := json.Marshal(patch)
 	if err != nil {
