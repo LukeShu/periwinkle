@@ -308,6 +308,10 @@
 		self.medium = self.mediums[0];
 		self.address = '';
 
+		self.test = function() {
+			debugger;
+		};
+
 		self.cancel = function() {
 			$mdDialog.cancel();
 		};

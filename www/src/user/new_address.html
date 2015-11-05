@@ -13,19 +13,22 @@
 				<md-input-container>
 					<label>Medium</label>
 					<md-select ng-model="address.medium">
-						<md-option ng-repeat="medium in address.mediums" value="medium">
+						<md-option ng-repeat="medium in address.mediums" value="$index">
 							{{ medium.name }}
 						</md-option>
 					</md-select>
 				</md-input-container>
 				<md-input-container>
 					<label>Address</label>
-					<input ng-model="address.address" ng-type="address.medium.type" />
+					<input ng-model="address.address" ng-type="address.mediums[address.medium].type" />
 				</md-input-container>
 			</div>
 		</md-dialog-content>
 
 		<div class="md-actions" layout="row">
+			<md-button ng-click="address.test()">
+				Test
+			</md-button>
 			<md-button ng-click="address.cancel()">
 				Cancel
 			</md-button>
