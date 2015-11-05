@@ -44,3 +44,15 @@ func getConnection() *gorm.DB {
 	db.LogMode(Debug)
 	return &db
 }
+
+type DomainHandler func() int
+
+var DomainHandlers = map[string]DomainHandler{
+	"sms.gateway":    nil, // TODO
+	"mms.gateway":    nil, // TODO
+	"periwinkle.lol": nil, // TODO
+}
+
+var DefaultDomainHandler DomainHandler = func() int {
+	return 1
+}
