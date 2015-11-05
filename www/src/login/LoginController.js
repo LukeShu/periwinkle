@@ -1,4 +1,5 @@
 ﻿// Copyright 2015 Richard Wisniewski
+// Copyright 2015 Luke Shumaker
 (function(){
 	'use strict';
 
@@ -92,6 +93,7 @@
 					var status_code = response.status;
 					var reason = response.data;
 					var $translate = $filter('translate');
+					var $escape = $filter('escapeHTML');
 					$scope.loading.is = false;
 					//show alert
 					var dialog = null;
@@ -101,7 +103,7 @@
 								.parent(angular.element(document.querySelector('#content')))
 								.clickOutsideToClose(true)
 								.title($translate('LOGIN.ERRORS.403.TITLE'))
-								.content($translate('LOGIN.ERRORS.403.CONTENT'))
+								.content($translate('LOGIN.ERRORS.403.CONTENT')+"<pre>"+$escape(reason)+"</pre>")
 								.ariaLabel('Invalid login')
 								.ok('Got it!')
 							break;
@@ -110,7 +112,7 @@
 								.parent(angular.element(document.querySelector('#content')))
 								.clickOutsideToClose(true)
 								.title($translate('ERRORS.500.TITLE'))
-								.content($translate('ERRORS.500.CONTENT'))
+								.content($translate('ERRORS.500.CONTENT')+"<pre>"+$escape(reason)+"</pre>")
 								.ariaLabel('Server Error')
 								.ok('Got it!')
 							break;
@@ -119,7 +121,7 @@
 								.parent(angular.element(document.querySelector('#content')))
 								.clickOutsideToClose(true)
 								.title($translate('ERRORS.DEFAULT.TITLE'))
-								.content($translate('ERRORS.DEFAULT.CONTENT'))
+								.content($translate('ERRORS.DEFAULT.CONTENT')+status_code+"<pre>"+$escape(reason)+"</pre>")
 								.ariaLabel('Unexpected Response from Server')
 								.ok('Got it!')
 					}
@@ -157,6 +159,7 @@
 					var status_code = response.status;
 					var reason = response.data;
 					var $translate = $filter('translate');
+					var $escape = $filter('escapeHTML');
 					$scope.loading.is = false;
 					//show alert
 					var dialog = null;
@@ -167,7 +170,7 @@
 								.parent(angular.element(document.querySelector('#content')))
 								.clickOutsideToClose(true)
 								.title($translate('SIGNUP.ERRORS.409.TITLE'))
-								.content($translate('SIGNUP.ERRORS.409.CONTENT'))
+								.content($translate('SIGNUP.ERRORS.409.CONTENT')+"<pre>"+$escape(reason)+"</pre>")
 								.ariaLabel('User Creation Error')
 								.ok('Got it!')
 						        .targetEvent(ev);
@@ -177,7 +180,7 @@
 								.parent(angular.element(document.querySelector('#content')))
 								.clickOutsideToClose(true)
 								.title($translate('ERRORS.500.TITLE'))
-								.content($translate('ERRORS.500.CONTENT'))
+								.content($translate('ERRORS.500.CONTENT')+"<pre>"+$escape(reason)+"</pre>")
 								.ariaLabel('Server Error')
 								.ok('Got it!')
 						        .targetEvent(ev);
@@ -187,7 +190,7 @@
 								.parent(angular.element(document.querySelector('#content')))
 								.clickOutsideToClose(true)
 								.title($translate('ERRORS.DEFAULT.TITLE'))
-								.content($translate('ERRORS.DEFAULT.CONTENT'))
+								.content($translate('ERRORS.DEFAULT.CONTENT')+status_code+"<pre>"+$escape(reason)+"</pre>")
 								.ariaLabel('Unexpected Response from Server')
 								.ok('Got it!')
 						        .targetEvent(ev);

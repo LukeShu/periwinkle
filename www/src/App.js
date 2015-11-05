@@ -1,4 +1,5 @@
 // Copyright 2015 Richard Wisniewski
+// Copyright 2015 Luke Shumaker
 (function(){
 	'use strict';
 
@@ -75,7 +76,15 @@
 				redirectTo:	'/login'
 			});
 		}
-	]);
+	])
+
+	.filter('escapeHTML', function() {
+		var div = document.createElement('div');
+		return function(text) {
+			div.textContent = text;
+			return div.innerHTML;
+		}
+	});
 
 	//user this plugin instead of the browsers regex (for unicode support)
 	XRegExp.install('natives');
