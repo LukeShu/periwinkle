@@ -233,7 +233,7 @@
 		};
 		self.create = function() {
 			$scope.loading = true;
-			$scope.title = 'Creating Group...';
+			$scope.title = 'Changing Password...';
 			$http({
 				method: 'PATCH',
 				url: '/v1/users/' + UserService.user_id,
