@@ -42,7 +42,31 @@
 				focus('edit_address');
 			},
 			save_edit_address:	function(index) {
-				debugger;
+				self.info.addresses[index].editing = false;
+				if(self.info.addresses[index].address !== self.info.addresses[index].new_address) {
+					self.info.addresses[index].loading = true;
+					$http({
+						method: 'PATCH',
+						url: '/v1/users/' + userService.user_id,
+						headers: {
+							'Content-Type': 'application/json-patch+json'
+						},
+						data: [
+							{
+								'op':		'replace',
+								'path':		'/addresses[index]',
+								'value':	self.info.addresses[index].new_address
+							}
+						]
+					}).then(
+						function success (response) {
+							debugger;
+						},
+						function fail (response) {
+							debugger;
+						}
+					);
+				}
 			},
 			changePassword:	function(ev) {
 				$mdDialog.show({
@@ -73,6 +97,7 @@
 						for (i in self.info.addresses) {
 							self.info.addresses[i].new_address = '';
 							self.info.addresses[i].editing = false;
+							self.info.addresses[i].loading = false;
 						}
 						self.info.status.loading = false;
 					},
