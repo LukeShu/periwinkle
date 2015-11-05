@@ -7,7 +7,7 @@ package store
 import (
 	"github.com/jinzhu/gorm"
 	he "httpentity"
-	"httpentity/util" // heutil
+	//"httpentity/util" // heutil
 )
 
 type Subscription struct {
@@ -44,7 +44,7 @@ func newDirSubscriptions() t_dirSubscriptions {
 	r.methods = map[string]func(he.Request) he.Response{
 		"GET": func(req he.Request) he.Response {
 			panic("Not yet implemented")
-			return he.StatusOK(heutil.NetString("Not yet implemented"))
+			//return he.StatusOK(heutil.NetString("Not yet implemented"))
 		},
 	}
 	return r
