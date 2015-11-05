@@ -17,7 +17,7 @@ func main() {
 		os.Exit(postfixpipe.EX_USAGE)
 	}
 	parts := strings.SplitN(recipient, "@", 2)
-	//user := parts[0]
+	user := parts[0]
 	domain := "localhost"
 	if len(parts) == 2 {
 		domain = parts[1]
@@ -27,8 +27,8 @@ func main() {
 
 	handler, ok := cfg.DomainHandlers[domain]
 	if ok {
-		os.Exit(handler())
+		os.Exit(handler(os.Stdin, user))
 	} else {
-		os.Exit(cfg.DefaultDomainHandler())
+		os.Exit(cfg.DefaultDomainHandler(os.Stdin, recipient))
 	}
 }

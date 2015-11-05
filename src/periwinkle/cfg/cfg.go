@@ -1,4 +1,4 @@
-// Copyright 2015 Mark Pundman
+ // Copyright 2015 Mark Pundman
 // Copyright 2015 Luke Shumaker
 // Copyright 2015 Davis Webb
 
@@ -11,6 +11,7 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 	"maildir"
 	"net/http"
+	"io"
 	"os"
 )
 
@@ -45,7 +46,7 @@ func getConnection() *gorm.DB {
 	return &db
 }
 
-type DomainHandler func() int
+type DomainHandler func(io.Reader, string) int
 
 var DomainHandlers = map[string]DomainHandler{
 	"sms.gateway":    nil, // TODO
@@ -53,6 +54,8 @@ var DomainHandlers = map[string]DomainHandler{
 	"periwinkle.lol": nil, // TODO
 }
 
-var DefaultDomainHandler DomainHandler = func() int {
+var DefaultDomainHandler DomainHandler = bounce
+
+func bounce(io.Reader, string) int {
 	return 1
 }
