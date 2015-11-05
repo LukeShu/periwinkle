@@ -251,12 +251,9 @@
 		var isCancel = false;
 
 		self.cancel = function() {
-			isCancel = true;
 			$mdDialog.cancel();
 		};
-		self.create = function() {
-			if(isCancel)
-				return;
+		self.change = function() {
 			$scope.loading = true;
 			$scope.title = 'Changing Password...';
 			$http({

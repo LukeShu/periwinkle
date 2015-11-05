@@ -69,5 +69,19 @@
 				);
 			}
 		};
+
+		$scope.showError(title, body, more) {
+			$mdDialog.show({
+				controller:				ErrorDialogController,
+				templateUrl:			'src/error_dialog.html',
+				parent:					angular.element(document.body),
+				targetEvent:			ev,
+				clickOutsideToClose:	true
+			})
+		}
+	}
+
+	function ErrorDialogController ($scope, $mdDialog, title, body, more) {
+
 	}
 })();

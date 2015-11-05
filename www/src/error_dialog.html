@@ -1,0 +1,20 @@
+<!-- // Copyright 2015 Richard Wisniewski -->
+<md-dialog aria-label="Error"  ng-cloak>
+
+	<md-dialog-content>
+		{{ body | translate }}
+		<pre ng-show="showMore">
+			{{ more | escape }}
+		</pre>
+	</md-dialog-content>
+
+	<div class="md-actions" layout="row">
+		<md-button ng-click="details()">
+			Details
+		</md-button>
+		<span flex=""></span>
+		<md-button ng-click="finish()">
+			OK
+		</md-button>
+	</div>
+</md-dialog>
