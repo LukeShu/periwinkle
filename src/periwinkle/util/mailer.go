@@ -39,4 +39,6 @@ func (b MessageBuilder) Done() {
 	encoder.Write([]byte(b.Body))
 	encoder.Close()
 	writer.Close()
+	// TODO: Acknowledge, add to the database and such; probably
+	// share code with periwinkle/email_handlers/email
 }
