@@ -1,4 +1,4 @@
-﻿// Copyright 2015 Richard Wisniewski
+// Copyright 2015 Richard Wisniewski
 var _it = {
 	CONTACT_ADMIN:	"Si prega di contattare un amministratore."
 };

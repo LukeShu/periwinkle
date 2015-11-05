@@ -1,4 +1,4 @@
-﻿// Copyright 2015 Richard Wisniewski
+// Copyright 2015 Richard Wisniewski
 // Copyright 2015 Luke Shumaker
 (function(){
 	'use strict';
