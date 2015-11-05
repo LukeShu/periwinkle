@@ -24,19 +24,20 @@
 				</md-input-container>
 			</div>
 		</md-dialog-content>
-
-		<div class="md-actions" layout="row">
-			<md-button ng-click="address.test()">
-				Test
-			</md-button>
-			<md-button ng-click="address.cancel()">
-				Cancel
-			</md-button>
-			<md-button ng-click="address.create()">
-				Create
-			</md-button>
-		</div>
+		<div style="clear: both;"></div>
 	</form>
+
+	<div class="md-actions" layout="row">
+		<md-button ng-click="address.test()">
+			Test
+		</md-button>
+		<md-button ng-click="address.cancel()">
+			Cancel
+		</md-button>
+		<md-button ng-click="address.create()">
+			Create
+		</md-button>
+	</div>
 
 	<div ng-if="loading" ng-include="'src/loader.html'" style="z-index: 12; width: 100%; height: 100%;"></div>
 </md-dialog>
