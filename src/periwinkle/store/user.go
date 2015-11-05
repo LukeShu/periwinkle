@@ -49,6 +49,28 @@ func (o UserAddress) dbSchema(db *gorm.DB) error {
 		Error
 }
 
+func (u *User) populate(db *gorm.DB) {
+	db.Model(u).Related(&u.Addresses)
+	address_ids := make([]int64, len(u.Addresses))
+	for i, address := range u.Addresses {
+		address_ids[i] = address.Id
+	}
+	var subscriptions []Subscription
+	if result := db.Where("address_id in (?)", address_ids).Find(&subscriptions); result.Error != nil {
+                if !result.RecordNotFound() {
+			panic(result.Error)
+		}
+	}
+
+	for _, subscription := range subscriptions {
+		for j, address := range u.Addresses {
+			if address.Id == subscription.AddressId {
+				u.Addresses[j].Subscriptions = append(u.Addresses[j].Subscriptions, subscription)
+			}
+		}
+	}
+}
+
 func GetUserById(db *gorm.DB, id string) *User {
 	id = strings.ToLower(id)
 	var o User
@@ -58,7 +80,7 @@ func GetUserById(db *gorm.DB, id string) *User {
 		}
 		panic(result.Error)
 	}
-	db.Model(&o).Related(&o.Addresses)
+	o.populate(db)
 	return &o
 }
 
@@ -71,7 +93,7 @@ func GetUserByAddress(db *gorm.DB, medium string, address string) *User {
 		}
 		panic(result.Error)
 	}
-	db.Model(&o).Related(&o.Addresses)
+	o.populate(db)
 	return &o
 }
 
