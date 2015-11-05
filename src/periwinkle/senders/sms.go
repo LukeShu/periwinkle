@@ -1,19 +1,21 @@
 // Copyright 2015 Davis Webb
 // Copyright 2015 Zhandos Suleimenov
+// Copyright 2015 Luke Shumaker
 
 package senders
 
 import (
 	"bytes"
-	"encoding/json"
+	"strings"
 	"fmt"
-	"io"
 	"io/ioutil"
 	"net/http"
 	"net/url"
 	"os"
 	"periwinkle/cfg"
 	"time"
+	"net/mail"
+	"periwinkle/store"
 )
 
 var message_status, error_code string
@@ -36,16 +38,18 @@ func Url_handler(w http.ResponseWriter, req *http.Request) {
 // Returns the status of the message: queued, sending, sent,
 // delivered, undelivered, failed.  If an error occurs, it returns
 // Error.
-func sender(reader io.Reader) (status string, err error) {
+func sender(message mail.Message, to string) (status string, err error) {
 	message_status = ""
 	error_code = ""
-	body, err := ioutil.ReadAll(reader)
-	if err != nil {
-		return
-	}
+	
+	group := message.Header.Get("From")
+	user := store.GetUserByAddress(cfg.DB, "email", message.Header.Get("From"))
+	
+	sms_from := group // TODO: numberFor(group)
+	sms_to := strings.Split(to, "@")[0]
+	sms_body := user.FullName + ":" + message.Header.Get("Subject") 
 
-	message := make(map[string]string)
-	json.Unmarshal(body, &message)
+
 
 	// account SID for Twilio account
 	account_sid := os.Getenv("TWILIO_ACCOUNTID")
@@ -56,10 +60,10 @@ func sender(reader io.Reader) (status string, err error) {
 	messages_url := "https://api.twilio.com/2010-04-01/Accounts/" + account_sid + "/Messages.json"
 
 	v := url.Values{}
-	v.Set("From", message["From"])
-	v.Set("To", message["To"])
-	v.Set("Body", message["Body"])
-	v.Set("StatusCallback", "http://"+cfg.WebRoot+"/callbacks/twilio-sms")
+	v.Set("From", sms_from)
+	v.Set("To", sms_to)
+	v.Set("Body", sms_body)
+	v.Set("StatusCallback", "http://" + cfg.WebRoot + "/callbacks/twilio-sms")
 
 	client := &http.Client{}
 
@@ -80,7 +84,7 @@ func sender(reader io.Reader) (status string, err error) {
 	if resp.StatusCode == 200 || resp.StatusCode == 201 {
 		time.Sleep(time.Second)
 		if error_code != "" {
-			fmt.Printf("%v\n", error_code)
+			return message_status, fmt.Errorf("%s", error_code)
 		}
 		if message_status == "queued" || message_status == "sending" || message_status == "sent" {
 			time.Sleep(time.Second)
