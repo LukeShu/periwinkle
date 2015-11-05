@@ -7,7 +7,7 @@
 		</div>
 	</md-toolbar>
 	
-	<form ng-if="!loading">
+	<form ng-if="!loading" ng-submit="group.create()">
 		<md-dialog-content style="max-width: 150mm; max-height: 100mm;">
 			<div class="md-dialog-content">
 				<md-input-container>

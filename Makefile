@@ -7,6 +7,8 @@ Q = @
 # packages is the list of packages that we actually wrote and need built
 packages = $(sort $(shell find src -type d -name '*.*' -prune -o -type f -name '*.go' -printf '%h\n'|cut -d/ -f2-))
 
+subdirs = src/postfixpipe
+
 # set deps to be a list of import strings of external packages we need to import
 deps += bitbucket.org/ww/goautoneg
 deps += github.com/dchest/captcha
@@ -43,14 +45,21 @@ goext = go c s S cc cpp cxx h hh hpp hxx
 gosrc_cmd = find -L src -name '.*' -prune -o \( -type f \( -false $(foreach e,$(goext),-o -name '*.$e') \) -o -type d \) -print
 gosrc = $(shell $(gosrc_cmd))
 
+all: build
+.PHONY: all
+
+include $(addsuffix /Makefile,$(subdirs))
+
 # Iterate over external dependencies, and create a rule to download it
 $(foreach d,$(deps),$(eval src/$d: $(NET); GOPATH='$(topdir)' go get -d -u $d || $(call DIRFAIL,$@)))
 
-all: bin
-.PHONY: all
+generate: $(generate)
+.PHONY: generate
 
-#$(info $(gosrc) $(addprefix src/,$(deps)) $(addprefix .var.,$(cgo_variables)))
-bin: $(gosrc) $(addprefix src/,$(deps)) $(addprefix .var.,$(cgo_variables))
+build: bin
+.PHONY: build
+
+bin: $(gosrc) $(generate) $(addprefix src/,$(deps)) $(addprefix .var.,$(cgo_variables))
 	GOPATH='$(topdir)' go install $(packages) || $(call DIRFAIL,bin)
 	$(Q)true $(foreach f,$^, && test $@ -nt $f ) || { \
 		echo "# There's a discrepancy between Make and Go's dependency" && \

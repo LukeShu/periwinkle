@@ -125,12 +125,12 @@ func GetGroupAddressesByMedium(db *gorm.DB, medium string) []GroupAddress {
 func GetAllGroups(db *gorm.DB) []Group {
 	var o []Group
 	if result := db.Find(&o); result.Error != nil {
-                if result.RecordNotFound() {
-                        return nil
-                }
-                panic(result.Error)
+		if result.RecordNotFound() {
+			return nil
+		}
+		panic(result.Error)
 	}
-	return o;
+	return o
 }
 
 func NewGroup(db *gorm.DB, name string) *Group {
@@ -223,8 +223,8 @@ func newDirGroups() t_dirGroups {
 			if sess == nil {
 				groups = []Group{}
 			} else {
-				groups = GetAllGroups(db) 
-//				groups = GetGroupsByMember(db, *GetUserById(db, sess.UserId))
+				groups = GetAllGroups(db)
+				// groups = GetGroupsByMember(db, *GetUserById(db, sess.UserId))
 			}
 			generic := make([]interface{}, len(groups))
 			for i, group := range groups {
