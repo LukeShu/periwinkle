@@ -54,9 +54,14 @@
 						data: [
 							{
 								'op':		'replace',
-								'path':		'/addresses[' + index + ']',
+								'path':		'/addresses/' + index + '/address',
 								'value':	self.info.addresses[index].new_address
-							}
+							},
+							{
+								'op':		'test',
+								'path':		'/addresses/' + index + '/address',
+								'value':	self.info.addresses[index].new_address
+							},
 						]
 					}).then(
 						function success (response) {
