@@ -7,14 +7,13 @@ import (
 	he "httpentity"
 	"httpentity/util"
 	"io"
+	"log"
 	"net"
 	"net/http"
 	"periwinkle/cfg"
 	"periwinkle/email_handlers"
-	"sync"
 	"periwinkle/store"
 	"stoppable"
-	"fmt"
 )
 
 func makeServer(socket net.Listener) *stoppable.HTTPServer {
@@ -30,7 +29,6 @@ func makeServer(socket net.Listener) *stoppable.HTTPServer {
 		MiddlewareDatabase,
 		MiddlewareSession,
 	}
-
 	mux := http.NewServeMux()
 	// The main REST API
 	mux.Handle("/v1/", &he.Router{
@@ -56,13 +54,16 @@ func makeServer(socket net.Listener) *stoppable.HTTPServer {
 	// The static web UI
 	mux.Handle("/webui/", http.StripPrefix("/webui/", http.FileServer(cfg.WebUiDir)))
 
+	smsCallbackServer := handlers.SmsCallbackServer{}
+	go func() {
+		err := smsCallbackServer.Serve()
+		if err != nil {
+			log.Printf("Could not serve SmsCallbackServer: %v\n", err)
+		}
+	}()
+
 	// External API callbacks
-	SMShandler := handlers.SmsCallbackServer{sync.Mutex{}, make(map[string]net.Conn)}
-	err := SMShandler.Serve()
-	if err != nil {
-		fmt.Printf("Could not serve SmsCallbackServer:%s\n", err)
-	}
-	mux.Handle("/callbacks/twilio-sms", http.HandlerFunc(SMShandler.ServeHTTP))
+	mux.Handle("/callbacks/twilio-sms", http.HandlerFunc(smsCallbackServer.ServeHTTP))
 
 	// Make the server
 	return &stoppable.HTTPServer{
