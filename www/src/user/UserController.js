@@ -578,8 +578,8 @@
 			var list = [];
 			for (i in addresses) {
 				var item = {
-					medium:	address[i].medium.toLowerCase(),
-					address: address[i].address
+					medium:	addresses[i].medium.toLowerCase(),
+					address: addresses[i].address
 				};
 				list.push(item);
 			}
