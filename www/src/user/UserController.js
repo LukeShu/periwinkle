@@ -154,7 +154,7 @@
 					clickOutsideToClose:	true
 				}).then(
 					function hide (message) {
-						if(message ! "success") {
+						if(message !== "success") {
 							//errors
 							var status_code = response.status;
 							var reason = response.data;
