@@ -48,7 +48,7 @@ localised.en = {
 	USER: {
 		USER:						"User",
 		EMAIL_CHANGE:				"Change",
-		EMAIL_DELETE:				"Delete"
+		EMAIL_DELETE:				"Delete",
 		CHANGE_PASSWORD:			"Change Password",
 		DELETE:						"Delete Account",
 		BEGIN_EDIT:					"Begin Editing",
