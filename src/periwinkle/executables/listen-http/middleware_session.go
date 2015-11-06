@@ -3,40 +3,53 @@
 package main
 
 import (
+	"log"
 	"github.com/jinzhu/gorm"
 	he "httpentity"
 	"periwinkle/store"
 	"time"
 )
 
-func MiddlewareSession(req he.Request, handle func(he.Request) he.Response) he.Response {
+func getsession(req he.Request) *store.Session {
 	cookie := req.Cookie("session_id")
 	if cookie == nil {
-		return handle(req)
+		return nil
 	}
 	session_id := cookie.Value
-
+	log.Println("cookie: ", session_id)
 	switch req.Method {
 	case "OPTIONS", "GET", "HEAD":
 		// do nothing
 	default:
 		header := req.Headers.Get("X-XSRF-TOKEN")
+		log.Println("header: ", header)
 		if header != session_id {
-			return handle(req)
+			return nil
 		}
 	}
+	log.Println("trying: ", session_id)
 
 	// It's not worth panicing if we have database errors here.
-	if db, dbok := req.Things["db"].(*gorm.DB); dbok {
-		sess := store.GetSessionById(db, session_id)
-		if sess != nil {
-			sess.LastUsed = time.Now()
-			req.Things["session"] = sess
-			func() {
-				defer recover()
-				sess.Save(db)
-			}()
-		}
+	db, ok := req.Things["db"].(*gorm.DB)
+	if !ok {
+		return nil
 	}
+	log.Println("dbok")
+	sess := store.GetSessionById(db, session_id)
+	if sess != nil {
+		log.Println("got session")
+		sess.LastUsed = time.Now()
+		func() {
+			defer recover()
+			sess.Save(db)
+		}()
+	}
+	return sess
+}
+
+
+func MiddlewareSession(req he.Request, handle func(he.Request) he.Response) he.Response {
+	log.Println("session mw")
+	req.Things["session"] = getsession(req)
 	return handle(req)
 }
