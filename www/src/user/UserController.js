@@ -69,7 +69,6 @@
 						},
 						function fail (response) {
 							debugger;
-							//TODO: fail messages
 							var status_code = response.status;
 							var reason = response.data;
 							$scope.loading.is = false;
@@ -115,7 +114,16 @@
 						},
 						function fail (response) {
 							debugger;
-							//TODO: fail messages
+							var status_code = response.status;
+							var reason = response.data;
+							//show alert
+							switch(status_code){
+								case 500:
+									$scope.showError('GENERAL.ERRORS.500.TITLE', 'GENERAL.ERRORS.500.CONTENT', reason, 'body', 'body');
+									break;
+								default:
+									$scope.showError('GENERAL.ERRORS.DEFAULT.TITLE', 'GENERAL.ERRORS.DEFAULT.CONTENT', reason, 'body', 'body');
+							}
 						}
 					);
 				}
@@ -141,7 +149,16 @@
 					},
 					function fail (response) {
 						debugger;
-						//TODO: fail messages
+						var status_code = response.status;
+						var reason = response.data;
+						//show alert
+						switch(status_code){
+							case 500:
+								$scope.showError('GENERAL.ERRORS.500.TITLE', 'GENERAL.ERRORS.500.CONTENT', reason, 'body', 'body');
+								break;
+							default:
+								$scope.showError('GENERAL.ERRORS.DEFAULT.TITLE', 'GENERAL.ERRORS.DEFAULT.CONTENT', reason, 'body', 'body');
+						}
 					}
 				);
 			},
@@ -171,7 +188,7 @@
 						}
 					},
 					function cancel() {
-
+						//Do nothing?
 					}
 				);
 			},
@@ -185,7 +202,22 @@
 				}).then(
 					function (response) {
 						//the dialog responded before closing
-						self.info.load();
+						if(message !== "success") {
+							//errors
+							var status_code = response.status;
+							var reason = response.data;
+							//show alert
+							switch(status_code){
+								case 500:
+									$scope.showError('GENERAL.ERRORS.500.TITLE', 'GENERAL.ERRORS.500.CONTENT', reason, '#new-address-fab', '#new-address-fab');
+									break;
+								default:
+									$scope.showError('GENERAL.ERRORS.DEFAULT.TITLE', 'GENERAL.ERRORS.DEFAULT.CONTENT', reason, '#new-address-fab', '#new-address-fab');
+							}
+						} else {
+							//succeeded
+							self.info.load();
+						}
 					}, function () {
 						//the dialog was cancelled
 					}
@@ -214,15 +246,20 @@
 								session_id: userService.session_id
 							}
 						}).then(
-							// 410 is success - therefore success is a type
-							// of fail so the real success is in the fail
-							// block
 							function success(response) {
 								$location.path('/login');
 							},
 							function fail(response) {
-								debugger;
-								//TODO: fail messages
+								var status_code = response.status;
+								var reason = response.data;
+								//show alert
+								switch(status_code){
+									case 500:
+										$scope.showError('GENERAL.ERRORS.500.TITLE', 'GENERAL.ERRORS.500.CONTENT', reason, '#user-info-menu', '#user-info-menu');
+										break;
+									default:
+										$scope.showError('GENERAL.ERRORS.DEFAULT.TITLE', 'GENERAL.ERRORS.DEFAULT.CONTENT', reason, '#user-info-menu', '#user-info-menu');
+								}
 							}
 						);
 					},
@@ -264,6 +301,16 @@
 						//do work with response
 						//show error to user
 						self.info.status.loading = false;
+						var status_code = response.status;
+						var reason = response.data;
+						//show alert
+						switch(status_code){
+							case 500:
+								$scope.showError('GENERAL.ERRORS.500.TITLE', 'GENERAL.ERRORS.500.CONTENT', reason, 'body', 'body');
+								break;
+							default:
+								$scope.showError('GENERAL.ERRORS.DEFAULT.TITLE', 'GENERAL.ERRORS.DEFAULT.CONTENT', reason, 'body', 'body');
+						}
 					}
 				);
 			}
@@ -284,7 +331,22 @@
 				}).then(
 					function (response) {
 						//the dialog responded before closing
-						self.groups.load();
+						if(message !== "success") {
+							//errors
+							var status_code = response.status;
+							var reason = response.data;
+							//show alert
+							switch(status_code){
+								case 500:
+									$scope.showError('GENERAL.ERRORS.500.TITLE', 'GENERAL.ERRORS.500.CONTENT', reason, '#new-address-fab', '#new-address-fab');
+									break;
+								default:
+									$scope.showError('GENERAL.ERRORS.DEFAULT.TITLE', 'GENERAL.ERRORS.DEFAULT.CONTENT', reason, '#new-address-fab', '#new-address-fab');
+							}
+						} else {
+							//succeeded
+							self.groups.load();
+						}
 					}, function () {
 						//the dialog was cancelled
 					}
@@ -308,7 +370,16 @@
 					},
 					function fail(response) {
 						self.groups.status.loading = false;
-						//TODO: fail message
+						var status_code = response.status;
+						var reason = response.data;
+						//show alert
+						switch(status_code){
+							case 500:
+								$scope.showError('GENERAL.ERRORS.500.TITLE', 'GENERAL.ERRORS.500.CONTENT', reason, 'body', 'body');
+								break;
+							default:
+								$scope.showError('GENERAL.ERRORS.DEFAULT.TITLE', 'GENERAL.ERRORS.DEFAULT.CONTENT', reason, 'body', 'body');
+						}
 					}
 				);
 			}
@@ -325,7 +396,16 @@
 				},
 				function fail(status) {
 					debugger;
-					//TODO: fail messages
+					var status_code = response.status;
+					var reason = response.data;
+					//show alert
+					switch(status_code){
+						case 500:
+							$scope.showError('GENERAL.ERRORS.500.TITLE', 'GENERAL.ERRORS.500.CONTENT', reason, 'body', 'body');
+							break;
+						default:
+							$scope.showError('GENERAL.ERRORS.DEFAULT.TITLE', 'GENERAL.ERRORS.DEFAULT.CONTENT', reason, 'body', 'body');
+					}
 				},
 				function noSession_cb() {
 					userService.loginRedir.has = true;
@@ -365,12 +445,10 @@
 				}
 			}).then(
 				function success(response) {
-					$mdDialog.hide(self.name);
+					$mdDialog.hide("success");
 				},
 				function fail(response) {
-					$scope.loading = false;
-					$scope.title = 'USER.NEW_GROUP.TITLE.FAIL';
-					//TODO: fail messages
+					$mdDialog.hide(response);
 				}
 			);
 		};
@@ -421,6 +499,7 @@
 						$scope.title = 'USER.CHANGE_PASSWORD.ERRORS.409.TITLE';
 						$scope.error = 'USER.CHANGE_PASSWORD.ERRORS.409.CONTENT';
 						self.oldPassword = '';
+						self.newPassword = ['', ''];
 					} else {
 						$mdDialog.hide(response);
 					}
@@ -477,11 +556,10 @@
 				]
 			}).then(
 				function success (response) {
-					self.info.load();
+					$mdDialog.hide("success");
 				},
 				function fail (response) {
-					debugger;
-					//TODO: fail messages.
+					$mdDialog.hide(response);
 				}
 			);
 		};
