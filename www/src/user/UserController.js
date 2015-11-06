@@ -65,11 +65,24 @@
 						]
 					}).then(
 						function success (response) {
-							debugger;
 							self.info.load();
 						},
 						function fail (response) {
 							debugger;
+							//TODO: fail messages
+							var status_code = response.status;
+							var reason = response.data;
+							$scope.loading.is = false;
+							switch(status_code){
+								case 403:
+									$scope.showError('LOGIN.LOGIN.ERRORS.403.TITLE', 'LOGIN.LOGIN.ERRORS.403.CONTENT', '', '#login-button', '#login-button');
+									break;
+								case 500:
+									$scope.showError('GENERAL.ERRORS.500.TITLE', 'GENERAL.ERRORS.500.CONTENT', reason, '#login-button', '#login-button');
+									break;
+								default:
+									$scope.showError('GENERAL.ERRORS.DEFAULT.TITLE', 'GENERAL.ERRORS.DEFAULT.CONTENT', reason, '#login-button', '#login-button');
+							}
 						}
 					);
 				}
@@ -98,11 +111,11 @@
 						]
 					}).then(
 						function success (response) {
-							debugger;
 							self.info.load();
 						},
 						function fail (response) {
 							debugger;
+							//TODO: fail messages
 						}
 					);
 				}
@@ -124,11 +137,11 @@
 					]
 				}).then(
 					function success (response) {
-						debugger;
 						self.info.load();
 					},
 					function fail (response) {
 						debugger;
+						//TODO: fail messages
 					}
 				);
 			},
@@ -184,13 +197,11 @@
 							// of fail so the real success is in the fail
 							// block
 							function success(response) {
-								debugger;
+								$location.path('/login');
 							},
 							function fail(response) {
-								if(response.status == 410) {
-									$location.path('/login');
-								}
 								debugger;
+								//TODO: fail messages
 							}
 						);
 					},
@@ -213,7 +224,6 @@
 				}).then(
 					function success(response) {
 						//do work with response
-						debugger;
 						self.info.username = response.data.user_id;
 						self.info.addresses = response.data.addresses;
 						self.info.fullName.text = response.data.fullname;
@@ -273,12 +283,11 @@
 				}).then(
 					function success(response) {
 						self.groups.list = response.data;
-						debugger;
 						self.groups.status.loading = false;
 					},
 					function fail(response) {
-						debugger;
 						self.groups.status.loading = false;
+						//TODO: fail message
 					}
 				);
 			}
@@ -295,6 +304,7 @@
 				},
 				function fail(status) {
 					debugger;
+					//TODO: fail messages
 				},
 				function noSession_cb() {
 					userService.loginRedir.has = true;
@@ -334,13 +344,12 @@
 				}
 			}).then(
 				function success(response) {
-					debugger;
 					$mdDialog.hide(self.name);
 				},
 				function fail(response) {
-					debugger;
 					$scope.loading = false;
 					$scope.title = 'USER.NEW_GROUP.TITLE.FAIL';
+					//TODO: fail messages
 				}
 			);
 		};
@@ -383,11 +392,21 @@
 				]
 			}).then(
 				function success(response) {
-					debugger;
 					$mdDialog.hide("success");
 				},
 				function fail(response) {
 					debugger;
+					//TODO: fail messages
+					switch(status_code){
+						case 409:
+							$scope.showError('LOGIN.LOGIN.ERRORS.403.TITLE', 'LOGIN.LOGIN.ERRORS.403.CONTENT', '', '#login-button', '#login-button');
+							break;
+						case 500:
+							$scope.showError('GENERAL.ERRORS.500.TITLE', 'GENERAL.ERRORS.500.CONTENT', reason, '#login-button', '#login-button');
+							break;
+						default:
+							$scope.showError('GENERAL.ERRORS.DEFAULT.TITLE', 'GENERAL.ERRORS.DEFAULT.CONTENT', reason, '#login-button', '#login-button');
+					}
 				}
 			);
 		};
@@ -417,10 +436,6 @@
 		self.medium = 0;
 		self.address = '';
 
-		self.test = function() {
-			debugger;
-		};
-
 		self.cancel = function() {
 			$mdDialog.cancel();
 		};
@@ -445,11 +460,11 @@
 				]
 			}).then(
 				function success (response) {
-					debugger;
 					self.info.load();
 				},
 				function fail (response) {
 					debugger;
+					//TODO: fail messages.
 				}
 			);
 		};
