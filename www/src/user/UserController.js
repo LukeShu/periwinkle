@@ -147,8 +147,8 @@
 				for (i in self.info.addresses) {
 					if(i != index) {
 						var item = {
-							medium:	self.info.address[i].medium.toLowerCase(),
-							address: self.info.address[i].address
+							medium:	self.info.addresses[i].medium.toLowerCase(),
+							address: self.info.addresses[i].address
 						};
 						list.push(item);
 					}
