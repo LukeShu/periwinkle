@@ -15,7 +15,7 @@
 			<md-menu-content>
 				<md-menu-item>
 					<md-button ng-if="!user.info.status.editing" aria-label="Edit profile" ng-click="user.info.toggleEditing(originalEvent)">
-						<span >{{ "USER.BEING_EDIT" | translate }}<span>
+						<span >{{ "USER.BEGIN_EDIT" | translate }}<span>
 					</md-button>
 					<md-button ng-if="user.info.status.editing" aria-label="Edit profile" ng-click="user.info.toggleEditing(originalEvent)">
 						<span >{{ "USER.STOP_EDIT" | translate }}<span>
