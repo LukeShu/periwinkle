@@ -6,24 +6,24 @@
 		<form name="loginForm" ng-submit="login.login()">
 		<md-card-content layout="column">
 			<md-input-container>
-				<label>{{ "USERNAME_EMAIL" | translate }}</label>
+				<label>{{ "GENERAL.USERNAME_EMAIL" | translate }}</label>
 				<input ng-model="login.username" type="text" name="username" required></input>
 				<div ng-messages="loginForm.username.$error" role="alert" ng-if="!loginForm.username.$untouched">
-					<div ng-message="required">{{ "REQUIRED_FIELD" | translate }}</div>
+					<div ng-message="required">{{ "GENERAL.FORM.REQUIRED_FIELD" | translate }}</div>
 				</div>
 			</md-input-container>
 			<md-input-container>
-				<label>{{ "PASSWORD" | translate }}</label>
+				<label>{{ "GENERAL.PASSWORD" | translate }}</label>
 				<input ng-model="login.password" name="password" type="password" required></input>
 				<div ng-messages="loginForm.password.$error" role="alert" ng-if="!loginForm.password.$untouched">
-					<div ng-message="required">{{ "REQUIRED_FIELD" | translate }}</div>
+					<div ng-message="required">{{ "GENERAL.FORM.REQUIRED_FIELD" | translate }}</div>
 				</div>
 			</md-input-container>
 			<div style="clear:both;"></div>
 		</md-card-content>
 		<div layout="row" layout-align="end center">
 			<md-button id="login-button"class="md-button md-primary" ng-disabled="loginForm.$invalid && loginForm.$dirty" aria-label="Sign Up">
-				{{ "LOGIN" | translate }}
+				{{ "LOGIN.LOGIN.LOGIN" | translate }}
 			</md-button>
 		</div>
 		</form>
@@ -31,10 +31,10 @@
 
 	<md-card layout="row" layout-align="space-between center">
 		<md-card-content>
-			<p>{{ "SIGNUP.NOT_A_USER" | translate }}</p>
+			<p>{{ "LOGIN.SIGNUP.NOT_A_USER" | translate }}</p>
 		</md-card-content>
 		<md-button class="md-button md-primary" aria-label="Sign Up" ng-click="login.togleSignup()">
-			{{ "SIGNUP.SIGNUP" | translate }}
+			{{ "LOGIN.SIGNUP.SIGNUP" | translate }}
 		</md-button>
 	</md-card>
 </div>
@@ -44,50 +44,50 @@
 	<form name="signupForm" ng-submit="login.signup($event)">
 		<md-card-content layout="column">
 			<md-input-container>
-				<label>{{ "USERNAME" | translate }}</label>
+				<label>{{ "GENERAL.USERNAME" | translate }}</label>
 				<input ng-model="login.username" type="text" name="username" required xreg-pattern="^[0-9_\-\pL]+$"></input>
 				<div ng-messages="signupForm.username.$error" role="alert" ng-if="!signupForm.username.$untouched">
-					<div ng-message="required">{{ "REQUIRED_FIELD" | translate }}</div>
+					<div ng-message="required">{{ "GENERAL.FORM.REQUIRED_FIELD" | translate }}</div>
 					<div ng-message="xregPattern">{{  }}</div>
 				</div>
 			</md-input-container>
 			<md-input-container>
-				<label>{{ "EMAIL" | translate }}</label>
+				<label>{{ "GENERAL.EMAIL" | translate }}</label>
 				<input ng-model="login.email" name="email" type="email" ng-change="signupForm.confirmEmail.$validate();" xreg-pattern="^.+@.+\..+$" required></input>
 				<div ng-messages="signupForm.email.$error" role="alert" ng-if="!signupForm.email.$untouched">
-					<div ng-message="required">{{ "REQUIRED_FIELD" | translate }}</div>
+					<div ng-message="required">{{ "GENERAL.FORM.REQUIRED_FIELD" | translate }}</div>
 					<div ng-message="xregPattern">That is not a valid email address.</div>
 				</div>
 			</md-input-container>
 			<md-input-container>
-				<label>{{ "SIGNUP.CONFIRM_EMAIL" | translate }}</label>
+				<label>{{ "LOGIN.SIGNUP.CONFIRM_EMAIL" | translate }}</label>
 				<input ng-model="login.confirmEmail" name="confirm_email" type="email" data-match="signupForm.email" xreg-pattern="^.+@.+\..+$" required></input>
 				<div ng-messages="signupForm.confirm_email.$error" role="alert" ng-if="!signupForm.confirm_email.$untouched">
-						<div ng-message="required">{{ "REQUIRED_FIELD" | translate }}</div>
+						<div ng-message="required">{{ "GENERAL.FORM.REQUIRED_FIELD" | translate }}</div>
 						<div ng-message="xregPattern">That is not a valid email address.</div>
-						<div ng-message="match">{{ "SIGNUP.CONFIRM_EMAIL_NO_MATCH" | translate }}</div>
+						<div ng-message="match">{{ "LOGIN.SIGNUP.CONFIRM_EMAIL_NO_MATCH" | translate }}</div>
 				</div>
 			</md-input-container>
 			<md-input-container>
-				<label>{{ "PASSWORD" | translate }}</label>
+				<label>{{ "GENERAL.PASSWORD" | translate }}</label>
 				<input ng-model="login.password" type="password" name="password" ng-change="signupForm.confirmPassword.$validate();" required></input>
 				<div ng-messages="signupForm.password.$error" role="alert" ng-if="!signupForm.password.$untouched">
-					<div ng-message="required">{{ "REQUIRED_FIELD" | translate }}</div>
+					<div ng-message="required">{{ "GENERAL.FORM.REQUIRED_FIELD" | translate }}</div>
 				</div>
 			</md-input-container>
 			<md-input-container>
-				<label>{{ "SIGNUP.CONFIRM_PASSWORD" | translate }}</label>
+				<label>{{ "LOGIN.SIGNUP.CONFIRM_PASSWORD" | translate }}</label>
 				<input ng-model="login.confirmPassword" name="confirm_password" data-match="signupForm.password" type="password" required></input>
 				<div ng-messages="signupForm.confirm_password.$error" role="alert" ng-if="!signupForm.confirm_password.$untouched">
-						<div ng-message="required">{{ "REQUIRED_FIELD" | translate }}</div>
-						<div ng-message="match">{{ "SIGNUP.CONFIRM_PASSWORD_NO_MATCH" | translate }}</div>
+						<div ng-message="required">{{ "GENERAL.FORM.REQUIRED_FIELD" | translate }}</div>
+						<div ng-message="match">{{ "LOGIN.SIGNUP.CONFIRM_PASSWORD_NO_MATCH" | translate }}</div>
 				</div>
 			</md-input-container>
 			<div style="clear:both;"></div>
 		</md-card-content>
 		<div layout="row" layout-align="end center">
-			<md-button class="md-button md-primary" ng-disabled="signupForm.$invalid && signupForm.$dirty" aria-label="Sign Up">
-				{{ "SIGNUP.SIGNUP" | translate }}
+			<md-button id="signup-button" class="md-button md-primary" ng-disabled="signupForm.$invalid && signupForm.$dirty" aria-label="Sign Up">
+				{{ "LOGIN.SIGNUP.SIGNUP" | translate }}
 			</md-button>
 		</div>
 	</form>
@@ -95,10 +95,10 @@
 
 	<md-card layout="row" layout-align="space-between center">
 		<md-card-content>
-			<p>{{ "SIGNUP.ALREADY_USER" | translate }}</p>
+			<p>{{ "LOGIN.SIGNUP.ALREADY_USER" | translate }}</p>
 		</md-card-content>
 		<md-button class="md-button md-primary" aria-label="Sign Up" ng-click="login.togleSignup()">
-			{{ "LOGIN" | translate }}
+			{{ "LOGIN.LOGIN.LOGIN" | translate }}
 		</md-button>
 	</md-card>
 </div>

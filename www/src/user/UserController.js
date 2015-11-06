@@ -11,7 +11,7 @@
 		var self = this;
 		//clears the toolbar and such so we can set it up for this view
 		$scope.reset();
-		$scope.toolbar.title = "USER.USER";
+		$scope.toolbar.title = "USER.INFO.USER";
 		//set up public fields
 
 		$scope.toolbar.buttons = [{
@@ -166,6 +166,7 @@
 						.ok('Yes')
 						.cancel('No')
 						.openFrom('#info_menu')
+						.closeTo('#info_menu')
 				).then(
 					function ok() {
 						$scope.loading.is = true;
@@ -298,7 +299,7 @@
 				function noSession_cb() {
 					userService.loginRedir.has = true;
 					userService.loginRedir.path = $location.path();
-					userService.loginRedir.message = "You will be redirected back to your user once you log in. ";
+					userService.loginRedir.message = 'USER.REDIR';
 					$location.path('/login');
 				}
 			);

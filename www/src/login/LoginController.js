@@ -21,7 +21,7 @@
 		self.captcha_key = '';
 		self.isSignup = false;
 		//prep the toolbar
-		$scope.toolbar.title = 'LOGIN';
+		$scope.toolbar.title = 'LOGIN.LOGIN.LOGIN';
 		/*$scope.toolbar.buttons = [{
 			label: "Signup",
 			img_src: "assets/svg/phone.svg",
@@ -35,7 +35,7 @@
 		//for login redir;
 		if(userService.loginRedir.has == true) {
 			$scope.toolbar.warn.exists = true;
-			$scope.toolbar.warn.prefix = "YOU ARE NOT LOGGED IN";
+			$scope.toolbar.warn.prefix = 'LOGIN.LOGIN.MESSAGE';
 			$scope.toolbar.warn.message = userService.loginRedir.message;
 		} else {
 			var cookie = userService.getSession();
@@ -98,13 +98,13 @@
 					//show alert
 					switch(status_code){
 						case 403:
-							$scope.showError('LOGIN.ERRORS.403.TITLE', 'LOGIN.ERRORS.403.CONTENT', '', '#login-button', '#login-button');
+							$scope.showError('LOGIN.LOGIN.ERRORS.403.TITLE', 'LOGIN.LOGIN.ERRORS.403.CONTENT', '', '#login-button', '#login-button');
 							break;
 						case 500:
-							$scope.showError('ERRORS.500.TITLE', 'ERRORS.500.CONTENT', reason, '#login-button', '#login-button');
+							$scope.showError('GENERAL.ERRORS.500.TITLE', 'GENERAL.ERRORS.500.CONTENT', reason, '#login-button', '#login-button');
 							break;
 						default:
-							$scope.showError('ERRORS.DEFAULT.TITLE', 'ERRORS.DEFAULT.CONTENT', reason, '#login-button', '#login-button');
+							$scope.showError('GENERAL.ERRORS.DEFAULT.TITLE', 'GENERAL.ERRORS.DEFAULT.CONTENT', reason, '#login-button', '#login-button');
 					}
 				}
 			);
@@ -138,38 +138,15 @@
 					var $escape = $filter('escapeHTML');
 					$scope.loading.is = false;
 					//show alert
-					var dialog = null;
-					debugger;
 					switch(status_code){
 						case 409:
-							dialog = $mdDialog.alert()
-								.parent(angular.element(document.querySelector('#content')))
-								.clickOutsideToClose(true)
-								.title($translate('SIGNUP.ERRORS.409.TITLE'))
-								.content($translate('SIGNUP.ERRORS.409.CONTENT')+"<pre>"+$escape(reason)+"</pre>")
-								.ariaLabel('User Creation Error')
-								.ok('Got it!')
-						        .targetEvent(ev);
+							$scope.showError('LOGIN.SIGNUP.ERRORS.409.TITLE', 'LOGIN.SIGNUP.ERRORS.409.CONTENT', '', '#signup-button', '#signup-button');
 							break;
 						case 500:
-							dialog = $mdDialog.alert()
-								.parent(angular.element(document.querySelector('#content')))
-								.clickOutsideToClose(true)
-								.title($translate('ERRORS.500.TITLE'))
-								.content($translate('ERRORS.500.CONTENT')+"<pre>"+$escape(reason)+"</pre>")
-								.ariaLabel('Server Error')
-								.ok('Got it!')
-						        .targetEvent(ev);
+							$scope.showError('GENERAL.ERRORS.500.TITLE', 'GENERAL.ERRORS.500.CONTENT', '', '#signup-button', '#signup-button');
 							break;
 						default:
-							dialog = $mdDialog.alert()
-								.parent(angular.element(document.querySelector('#content')))
-								.clickOutsideToClose(true)
-								.title($translate('ERRORS.DEFAULT.TITLE'))
-								.content($translate('ERRORS.DEFAULT.CONTENT')+status_code+"<pre>"+$escape(reason)+"</pre>")
-								.ariaLabel('Unexpected Response from Server')
-								.ok('Got it!')
-						        .targetEvent(ev);
+							$scope.showError('GENERAL.ERRORS.DEFAULT.TITLE', 'GENERAL.ERRORS.DEFAULT.CONTENT', '', '#signup-button', '#signup-button');
 					}
 					$mdDialog.show(dialog);
 				}
@@ -182,9 +159,9 @@
 				self.username = '';
 			self.password = '';
 			if(self.isSignup) {
-				$scope.toolbar.title = 'SIGNUP.SIGNUP';
+				$scope.toolbar.title = 'LOGIN.SIGNUP.SIGNUP';
 			} else {
-				$scope.toolbar.title = 'LOGIN';
+				$scope.toolbar.title = 'LOGIN.LOGIN.LOGIN';
 			}
 		}
 	}
