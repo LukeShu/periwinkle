@@ -12,8 +12,8 @@ import (
 	"httpentity/util" // heutil
 	"io"
 	"jsonpatch"
-	"strings"
 	"log"
+	"strings"
 )
 
 var _ he.Entity = &User{}
@@ -80,7 +80,6 @@ func (u *User) populate(db *gorm.DB) {
 		log.Printf("\n%#v\n", u.Addresses[i].Subscriptions)
 	}
 }
-
 
 func GetUserById(db *gorm.DB, id string) *User {
 	id = strings.ToLower(id)

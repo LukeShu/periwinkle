@@ -6,20 +6,20 @@ package handlers
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
 	"github.com/jinzhu/gorm"
 	"io"
+	"io/ioutil"
 	"net/http"
 	"net/mail"
 	"net/url"
 	"os"
-	"encoding/json"
 	"periwinkle/cfg"
 	"periwinkle/store"
+	"periwinkle/twilio"
 	"strings"
 	"time"
-	"periwinkle/twilio"
-	"io/ioutil"
 )
 
 func HandleSMS(r io.Reader, name string, db *gorm.DB) uint8 {
@@ -30,12 +30,11 @@ func HandleSMS(r io.Reader, name string, db *gorm.DB) uint8 {
 // delivered, undelivered, failed.  If an error occurs, it returns
 // Error.
 func sender(message mail.Message, to string) (status string, err error) {
-	
 	group := message.Header.Get("From")
 	user := store.GetUserByAddress(cfg.DB, "email", message.Header.Get("From"))
 
-	sms_from := group // TODO: numberFor(group)
-	sms_to := strings.Split(to, "@")[1]  //test 0 or 1
+	sms_from := group                   // TODO: numberFor(group)
+	sms_to := strings.Split(to, "@")[1] //test 0 or 1
 	sms_body := user.FullName + ":" + message.Header.Get("Subject")
 
 	// account SID for Twilio account
@@ -70,18 +69,18 @@ func sender(message mail.Message, to string) (status string, err error) {
 
 	if resp.StatusCode == 200 || resp.StatusCode == 201 {
 
-	body, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		fmt.Printf("%v", err)
-	}
+		body, err := ioutil.ReadAll(resp.Body)
+		if err != nil {
+			fmt.Printf("%v", err)
+		}
 
-	message := twilio.Message{}
-	json.Unmarshal([]byte(body), &message)
-	sms_status, err := SmsWaitForCallback(message.Sid)
-	
-	if err != nil {
-		fmt.Printf("%s", err)
-	}
+		message := twilio.Message{}
+		json.Unmarshal([]byte(body), &message)
+		sms_status, err := SmsWaitForCallback(message.Sid)
+
+		if err != nil {
+			fmt.Printf("%s", err)
+		}
 
 		time.Sleep(time.Second)
 		if sms_status.ErrorCode != "" {

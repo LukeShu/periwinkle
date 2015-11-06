@@ -9,10 +9,10 @@ import (
 	"net/http"
 	"periwinkle/cfg"
 	"periwinkle/store"
-	"periwinkle/util"
+	"periwinkle/twilio"
+	"periwinkle/util" // putil
 	"strings"
 	"time"
-	"periwinkle/twilio"
 )
 
 func main() {

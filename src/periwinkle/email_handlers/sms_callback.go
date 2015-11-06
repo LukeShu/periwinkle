@@ -5,26 +5,26 @@
 package handlers
 
 import (
-	"net/http"
-	"sync"
-	"net"
-	"fmt"
-	"os"
-	"encoding/json"
-	"io/ioutil"
 	"bufio"
+	"encoding/json"
+	"fmt"
+	"io/ioutil"
+	"net"
+	"net/http"
 	"net/url"
+	"os"
+	"sync"
 )
 
-type SmsStatus struct{
+type SmsStatus struct {
 	MessageStatus string
-	ErrorCode string
-	MessageSid string
+	ErrorCode     string
+	MessageSid    string
 }
 
 type SmsCallbackServer struct {
 	connsLock sync.Mutex
-	conns map[string]net.Conn
+	conns     map[string]net.Conn
 }
 
 // server
@@ -107,4 +107,3 @@ func SmsWaitForCallback(MessageSid string) (status SmsStatus, err error) {
 	err = json.Unmarshal([]byte(status_json), &status)
 	return
 }
-
