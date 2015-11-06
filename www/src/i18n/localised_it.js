@@ -51,8 +51,10 @@ localised.it = {
 		CHANGE_PASSWORD:			"Cambia Password",
 		DELETE:						"Elimina account"
 	},
-	GROUPS:			"Gruppi",
-	NO_GROUPS:		"Non sei in nessun gruppo al momento.",
+	GROUPS: {
+		GROUPS:			"Gruppi",
+		NO_GROUPS:		"Non sei in nessun gruppo al momento."
+	},
 	OK:				"OK",
 	SIGNOUT:		"Esci"
 };

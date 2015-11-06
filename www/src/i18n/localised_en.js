@@ -60,15 +60,15 @@ localised.en = {
 	},
 	GROUPS:	{
 		NEW:	"New Group",
-		JOIN:	"Join Group"
+		JOIN:	"Join Group",
+		GROUPS:			"Groups",
+		NO_GROUPS:		"You are not currently in any groups."
 	},
 	MEDIUMS: {
 		EMAIL:		"Email",
 		SMS:		"SMS",
 		MMS:		"MMS"
 	},
-	GROUPS:			"Groups",
-	NO_GROUPS:		"You are not currently in any groups.",
 	OK:				"OK",
 	SIGNOUT:		"Sign out"
 };
