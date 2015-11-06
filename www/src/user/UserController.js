@@ -267,6 +267,11 @@
 						'op':		'test',
 						'path':		'/password',
 						'value':	self.oldPassword
+					},
+					{
+						'op':		'replace',
+						'path':		'/password',
+						'value':	self.newPassword[0]
 					}
 				]
 			}).then(

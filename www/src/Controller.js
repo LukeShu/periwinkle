@@ -4,9 +4,9 @@
 
 	angular
 		.module('periwinkle')
-		.controller('PeriwinkleController', ['$scope', '$http', 'UserService', '$location', PeriwinkleController]);
+		.controller('PeriwinkleController', ['$scope', '$http', 'UserService', '$location', '$mdDialog', PeriwinkleController]);
 
-	function PeriwinkleController ($scope, $http, userService, $location) {
+	function PeriwinkleController ($scope, $http, userService, $location, $mdDialog) {
 		var self = this;
 
 		var reset = function() {
@@ -70,18 +70,34 @@
 			}
 		};
 
-		$scope.showError = function(title, body, more) {
+		$scope.showError = function(title, body, more, from, to) {
 			$mdDialog.show({
 				controller:				ErrorDialogController,
 				templateUrl:			'src/error_dialog.html',
 				parent:					angular.element(document.body),
 				targetEvent:			ev,
-				clickOutsideToClose:	true
-			})
+				clickOutsideToClose:	true,
+				openFrom:				from,
+				closeTo:				to,
+				locals:	{
+					'title': title,
+					'body': body,
+					'more': more
+				}
+			});
 		}
 	}
 
 	function ErrorDialogController ($scope, $mdDialog, title, body, more) {
-
+		$scope.title = title;
+		$scope.body = body;
+		$scope.more = more;
+		$scope.showMore = false;
+		$scope.details = function() {
+			$scope.showMore = ! $scope.showMore;
+		};
+		$scope.finish = function() {
+			$mdDialog.hide();
+		}
 	}
 })();

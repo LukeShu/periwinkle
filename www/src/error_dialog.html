@@ -1,15 +1,16 @@
 <!-- // Copyright 2015 Richard Wisniewski -->
 <md-dialog aria-label="Error"  ng-cloak>
+	<h1>{{ title |translate }}</h1>
 
 	<md-dialog-content>
 		{{ body | translate }}
-		<pre ng-show="showMore">
+		<pre ng-show="showMore" ng-if="more != ''">
 			{{ more | escape }}
 		</pre>
 	</md-dialog-content>
 
 	<div class="md-actions" layout="row">
-		<md-button ng-click="details()">
+		<md-button ng-if="more != ''" ng-click="details()">
 			Details
 		</md-button>
 		<span flex=""></span>
