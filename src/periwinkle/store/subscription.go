@@ -7,14 +7,15 @@ package store
 import (
 	"github.com/jinzhu/gorm"
 	he "httpentity"
+	"io"
 	"httpentity/util" // heutil
 	"strings"
 )
 
 type Subscription struct {
-	Address   UserAddress
+	Address   UserAddress `json:"addresses"`
 	AddressId int64 `json:"-"`
-	Group     Group
+	Group     Group `json:"group"`
 	GroupId   string `json:"group_id"`
 }
 
@@ -35,6 +36,20 @@ func GetSubscriptionsGroupById(db *gorm.DB, groupId string) []Subscription {
 	}
 	return o
 }
+
+func (o *Subscription) Methods() map[string]func(he.Request) he.Response {
+	return map[string]func(he.Request) he.Response{
+		"GET": func(req he.Request) he.Response {
+			return he.StatusOK(o)
+		},
+		"DELETE": func(req he.Request) he.Response {
+			db := req.Things["db"].(*gorm.DB)
+			db.Delete(o)
+			return he.StatusGone(heutil.NetString("Subscription has been deleted"))
+		},
+	}
+}
+
 
 type t_dirSubscriptions struct {
 	methods map[string]func(he.Request) he.Response
@@ -69,6 +84,10 @@ func newDirSubscriptions() t_dirSubscriptions {
 		},
 	}
 	return r
+}
+
+func (o *Subscription) Encoders() map[string]func(io.Writer) error {
+	return defaultEncoders(o)
 }
 
 func (d t_dirSubscriptions) Methods() map[string]func(he.Request) he.Response {
