@@ -74,7 +74,8 @@ localised.en = {
 				"409": {
 					TITLE:		"Password Change Failed",
 					CONTENT:	"You did not enter your current password correctly"
-				}
+				},
+				SOMETHING:	'something'
 			}
 		},
 		NEW_ADDRESS: {
