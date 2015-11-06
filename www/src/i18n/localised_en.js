@@ -56,16 +56,20 @@ localised.en = {
 		NEW_GROUP:	{
 			TITLE: {
 				MAIN:		"New Group",
-				CREATING:	"Creating Group...",
-				FAIL:		"Fail"
+				CREATING:	"Creating Group..."
 			},
-			GROUP_NAME:		"New Group Name"
+			GROUP_NAME:		"New Group Name",
+			ERRORS:	{
+				"409": {
+					TITLE:		"That group name is already in use.",
+					CONTENT:	"You cannot use that name for your new group because another group is already using it."
+				}
+			},
 		},
 		CHANGE_PASSWORD:	{
 			TITLE: {
 				MAIN:		"Change Password",
-				CREATING:	"Changing Password...",
-				FAIL:		"Fail"
+				CREATING:	"Changing Password..."
 			},
 			ERRORS:	{
 				"409": {
@@ -80,8 +84,7 @@ localised.en = {
 		NEW_ADDRESS: {
 			TITLE: {
 				MAIN:		"New Address",
-				CREATING:	"Adding Address",
-				FAIL:		"Fail"
+				CREATING:	"Adding Address"
 			},
 			MEDIUM:		"Medium",
 			ADDRESS:	"Address"

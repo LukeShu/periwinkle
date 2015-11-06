@@ -11,6 +11,7 @@
 		<form ng-submit="group.create()">
 			<md-dialog-content style="max-width: 150mm; max-height: 100mm;">
 				<div class="md-dialog-content">
+					<p style="color: red;" ng-if="error != ''">{{ error | translate }}</p>
 					<md-input-container>
 						<label>{{ "USER.NEW_GROUP.GROUP_NAME"}}</label>
 						<input ng-model="group.name" type="text" />

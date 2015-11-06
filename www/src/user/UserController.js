@@ -424,7 +424,7 @@
 
 		$scope.loading = false;
 		$scope.title = 'USER.NEW_GROUP.TITLE.MAIN';
-		$scope.errors = [];
+		$scope.error = '';
 
 		self.name = '';
 
@@ -448,7 +448,13 @@
 					$mdDialog.hide("success");
 				},
 				function fail(response) {
-					$mdDialog.hide(response);
+					if(response.status == 409) {
+						$scope.loading = false;
+						$scope.title = 'USER.NEW_GROUP.ERRORS.409.TITLE';
+						$scope.error = 'USER.NEW_GROUP.ERRORS.409.CONTENT';
+					} else {
+						$mdDialog.hide(response);
+					}
 				}
 			);
 		};
