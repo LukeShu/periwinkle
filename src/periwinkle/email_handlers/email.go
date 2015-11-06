@@ -4,6 +4,7 @@
 package handlers
 
 import (
+	"fmt"
 	"github.com/jinzhu/gorm"
 	"io"
 	"io/ioutil"
@@ -103,13 +104,21 @@ func HandleEmail(r io.Reader, name string, db *gorm.DB) uint8 {
 		i++
 	}
 
+	// format the message
+	msg822 := []byte{}
+	for k, v := range msg.Header {
+		msg822 = append(msg822, []byte(fmt.Sprintf("%s: %s\r\n", k, v))...)
+	}
+	msg822 = append(msg822, []byte("\r\n")...)
+	body, _ := ioutil.ReadAll(msg.Body) // TODO: error handling
+	msg822 = append(msg822, body...)
+
 	// send the message out
-	body, _ := ioutil.ReadAll(msg.Body)
 	err = smtp.SendMail("localhost:25",
 		smtp.PlainAuth("", "", "", ""),
 		msg.Header.Get("From"),
 		forward_ary,
-		body)
+		msg822)
 	if err != nil {
 		log.Println("Error sending:", err)
 		return postfixpipe.EX_UNAVAILABLE
