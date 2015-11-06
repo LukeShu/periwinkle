@@ -7,6 +7,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"net/url"
 	"os"
@@ -37,7 +38,7 @@ func NewPhoneNum() (string, error) {
 	req, err := http.NewRequest("GET", availNum_url, nil)
 
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 		return "", err
 	}
 
@@ -46,7 +47,7 @@ func NewPhoneNum() (string, error) {
 	resp, err := client.Do(req)
 	defer resp.Body.Close()
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 		return "", err
 	}
 
@@ -54,13 +55,13 @@ func NewPhoneNum() (string, error) {
 
 		url, err := resp.Location()
 		if err != nil {
-			fmt.Println(err)
+			log.Println(err)
 			return "", err
 		}
 
 		req, err = http.NewRequest("GET", url.String(), nil)
 		if err != nil {
-			fmt.Println(err)
+			log.Println(err)
 			return "", err
 		}
 
@@ -68,7 +69,7 @@ func NewPhoneNum() (string, error) {
 		resp, err = client.Do(req)
 		defer resp.Body.Close()
 		if err != nil {
-			fmt.Println(err)
+			log.Println(err)
 			return "", err
 		}
 
@@ -87,7 +88,7 @@ func NewPhoneNum() (string, error) {
 
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 		return "", err
 	}
 
@@ -104,7 +105,7 @@ func NewPhoneNum() (string, error) {
 
 		req, err = http.NewRequest("POST", newPhoneNum_url, bytes.NewBuffer([]byte(val.Encode())))
 		if err != nil {
-			fmt.Println(err)
+			log.Println(err)
 			return "", err
 		}
 
@@ -115,7 +116,7 @@ func NewPhoneNum() (string, error) {
 		resp, err = client.Do(req)
 		defer resp.Body.Close()
 		if err != nil {
-			fmt.Println(err)
+			log.Println(err)
 			return "", err
 		}
 
@@ -125,15 +126,15 @@ func NewPhoneNum() (string, error) {
 
 		body, err = ioutil.ReadAll(resp.Body)
 		if err != nil {
-			fmt.Println(err)
+			log.Println(err)
 			return "", err
 		}
-		fmt.Println(string(body))
+		log.Println(string(body))
 		return number, nil
 
 	}
 
-	fmt.Println("There are no available phone numbers!!!")
+	log.Println("There are no available phone numbers!!!")
 	return "", fmt.Errorf("There are no available phone numbers!!!")
 
 }

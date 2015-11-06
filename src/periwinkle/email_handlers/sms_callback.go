@@ -9,10 +9,10 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"log"
 	"net"
 	"net/http"
 	"net/url"
-	"os"
 	"sync"
 )
 
@@ -39,15 +39,14 @@ func (server *SmsCallbackServer) Serve() (err error) {
 	for {
 		conn, err := listener.Accept()
 		if err != nil {
-			fmt.Fprintf(os.Stderr, "Accept: %v\n", err)
+			log.Println("Accept:", err)
 			continue
 		}
 		go func() {
 			reader := bufio.NewReader(conn)
 			message_sid, _, err := reader.ReadLine()
 			if err != nil {
-				defer conn.Close()
-				fmt.Fprintf(os.Stderr, "read: %v\n", err)
+				log.Println("Read:", err)
 			}
 			server.connsLock.Lock()
 			server.conns[string(message_sid)] = conn
@@ -61,12 +60,12 @@ func (server *SmsCallbackServer) ServeHTTP(w http.ResponseWriter, req *http.Requ
 	status := SmsStatus{}
 	body, err := ioutil.ReadAll(req.Body)
 	if err != nil {
-		fmt.Printf("%v", err)
+		log.Println(err)
 	}
 
 	values, err := url.ParseQuery(string(body))
 	if err != nil {
-		fmt.Printf("%v", err)
+		log.Println(err)
 	}
 
 	status.MessageStatus = values.Get("MessageStatus")

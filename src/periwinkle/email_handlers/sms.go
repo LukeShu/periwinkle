@@ -11,6 +11,7 @@ import (
 	"github.com/jinzhu/gorm"
 	"io"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"net/mail"
 	"net/url"
@@ -71,7 +72,7 @@ func sender(message mail.Message, to string) (status string, err error) {
 
 		body, err := ioutil.ReadAll(resp.Body)
 		if err != nil {
-			fmt.Printf("%v", err)
+			log.Println(err)
 		}
 
 		message := twilio.Message{}
@@ -79,7 +80,7 @@ func sender(message mail.Message, to string) (status string, err error) {
 		sms_status, err := SmsWaitForCallback(message.Sid)
 
 		if err != nil {
-			fmt.Printf("%s", err)
+			log.Println(err)
 		}
 
 		time.Sleep(time.Second)
