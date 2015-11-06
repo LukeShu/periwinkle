@@ -18,6 +18,10 @@ import (
 
 func HandleEmail(r io.Reader, name string, db *gorm.DB) uint8 {
 	mdWriter := cfg.Mailstore.NewMail()
+	if mdWriter == nil {
+		log.Printf("Could not open maildir for writing: %s\n", cfg.Mailstore)
+		return postfixpipe.EX_IOERR
+	}
 	defer func() {
 		if mdWriter != nil {
 			mdWriter.Cancel()
