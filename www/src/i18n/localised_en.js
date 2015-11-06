@@ -67,11 +67,9 @@ localised.en = {
 				CREATING:	"Changing Password...",
 				FAIL:		"Fail"
 			},
-			FOO:	{
-				"409": {
-					TITLE:		"Password Change Failed",
-					CONTENT:	"You did not enter your current password correctly"
-				}
+			ERROR409:	{
+				TITLE:		"Password Change Failed",
+				CONTENT:	"You did not enter your current password correctly"
 			},
 			OLD_PASSWORD:	"Current Password",
 			NEW_PASSWORD:	"New Password",
