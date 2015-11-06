@@ -23,14 +23,14 @@ type SmsStatus struct {
 }
 
 type SmsCallbackServer struct {
-	connsLock sync.Mutex
-	conns     map[string]net.Conn
+	ConnsLock sync.Mutex
+	Conns     map[string]net.Conn
 }
 
 // server
 func (server *SmsCallbackServer) Serve() (err error) {
-	if server.conns == nil {
-		server.conns = make(map[string]net.Conn)
+	if server.Conns == nil {
+		server.Conns = make(map[string]net.Conn)
 	}
 	listener, err := net.Listen("tcp", ":42586")
 	if err != nil {
@@ -49,9 +49,9 @@ func (server *SmsCallbackServer) Serve() (err error) {
 				defer conn.Close()
 				fmt.Fprintf(os.Stderr, "read: %v\n", err)
 			}
-			server.connsLock.Lock()
-			server.conns[string(message_sid)] = conn
-			server.connsLock.Unlock()
+			server.ConnsLock.Lock()
+			server.Conns[string(message_sid)] = conn
+			server.ConnsLock.Unlock()
 		}()
 	}
 }
@@ -74,16 +74,16 @@ func (server *SmsCallbackServer) ServeHTTP(w http.ResponseWriter, req *http.Requ
 	status.MessageSid = values.Get("MessageSid")
 	status_json, err := json.Marshal(status)
 
-	server.connsLock.Lock()
-	conn, ok := server.conns[status.MessageSid]
+	server.ConnsLock.Lock()
+	conn, ok := server.Conns[status.MessageSid]
 	if !ok {
 		return
 	}
 	defer conn.Close()
 	_, err = conn.Write(status_json)
 	// TODO: check err
-	delete(server.conns, status.MessageSid)
-	server.connsLock.Unlock()
+	delete(server.Conns, status.MessageSid)
+	server.ConnsLock.Unlock()
 
 	// TODO: respond to the HTTP request (empty body or whatever)
 }

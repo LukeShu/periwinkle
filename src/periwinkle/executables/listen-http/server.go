@@ -10,9 +10,11 @@ import (
 	"net"
 	"net/http"
 	"periwinkle/cfg"
-	//"periwinkle/email_handlers"
+	"periwinkle/email_handlers"
+	"sync"
 	"periwinkle/store"
 	"stoppable"
+	"fmt"
 )
 
 func makeServer(socket net.Listener) *stoppable.HTTPServer {
@@ -55,7 +57,12 @@ func makeServer(socket net.Listener) *stoppable.HTTPServer {
 	mux.Handle("/webui/", http.StripPrefix("/webui/", http.FileServer(cfg.WebUiDir)))
 
 	// External API callbacks
-	//mux.Handle("/callbacks/twilio-sms", http.HandlerFunc(handlers.ServeHTTP))
+	SMShandler := handlers.SmsCallbackServer{sync.Mutex{}, make(map[string]net.Conn)}
+	err := SMShandler.Serve()
+	if err != nil {
+		fmt.Printf("Could not serve SmsCallbackServer:%s\n", err)
+	}
+	mux.Handle("/callbacks/twilio-sms", http.HandlerFunc(SMShandler.ServeHTTP))
 
 	// Make the server
 	return &stoppable.HTTPServer{
