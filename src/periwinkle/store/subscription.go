@@ -7,16 +7,16 @@ package store
 import (
 	"github.com/jinzhu/gorm"
 	he "httpentity"
-	"io"
 	"httpentity/util" // heutil
+	"io"
 	"strings"
 )
 
 type Subscription struct {
 	Address   UserAddress `json:"addresses"`
-	AddressId int64 `json:"-"`
-	Group     Group `json:"group"`
-	GroupId   string `json:"group_id"`
+	AddressId int64       `json:"-"`
+	Group     Group       `json:"group"`
+	GroupId   string      `json:"group_id"`
 }
 
 func (o Subscription) dbSchema(db *gorm.DB) error {
@@ -49,7 +49,6 @@ func (o *Subscription) Methods() map[string]func(he.Request) he.Response {
 		},
 	}
 }
-
 
 type t_dirSubscriptions struct {
 	methods map[string]func(he.Request) he.Response

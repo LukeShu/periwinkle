@@ -51,12 +51,12 @@ func getConnection() *gorm.DB {
 	return &db
 }
 
-type DomainHandler func(io.Reader, string) int
+type DomainHandler func(io.Reader, string, *gorm.DB) int
 
 var DomainHandlers map[string]DomainHandler // set in email_handlers/init.go because import-cycles
 
 var DefaultDomainHandler DomainHandler = bounce
 
-func bounce(io.Reader, string) int {
+func bounce(io.Reader, string, *gorm.DB) int {
 	return 1
 }
