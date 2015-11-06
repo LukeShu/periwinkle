@@ -30,13 +30,17 @@ func normalizeURL(u1 *url.URL) (u *url.URL, mimetype string) {
 }
 
 // assumes that the url has already been passed to normalizeURL()
-func (r *Router) route(req Request, u *url.URL) (res Response) {
+func (r *Router) route(req Request, u *url.URL) Response {
 	if r.LogRequest {
 		log.Printf("route %s %q %#v\n", req.Method, u.String(), req)
 	}
-	// do the routing
-	res = route(r.Root, req, strings.TrimPrefix(u.Path, r.Prefix))
 
+	entity := findEntity(r.Root, req, strings.TrimPrefix(u.Path, r.Prefix))
+	if entity == nil {
+		return statusNotFound()
+	}
+
+	res := r.handleEntity(entity, req)
 	// make sure the Location: header is absolute
 	if l := res.Headers.Get("Location"); l != "" {
 		u2, _ := u.Parse(l)
@@ -54,7 +58,7 @@ func (r *Router) route(req Request, u *url.URL) (res Response) {
 		}
 	}
 
-	return
+	return res
 }
 
 // assumes that the url has already been passed to normalizeURL()

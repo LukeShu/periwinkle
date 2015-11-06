@@ -24,9 +24,9 @@ func makeServer(socket net.Listener) *stoppable.HTTPServer {
 		"application/merge-patch+json":      heutil.DecoderJSONMergePatch,
 	}
 	std_middlewares := []he.Middleware{
-		postHack{},
-		database{},
-		session{},
+		MiddlewarePostHack,
+		MiddlewareDatabase,
+		MiddlewareSession,
 	}
 
 	mux := http.NewServeMux()

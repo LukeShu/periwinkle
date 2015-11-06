@@ -20,11 +20,6 @@ func (r *Router) Route(req Request, u *url.URL) (res Response) {
 	}
 
 	defer r.finish(req, u, &res)
-
-	for _, middleware := range r.Middlewares {
-		middleware.Before(&req)
-		defer middleware.After(req, &res)
-	}
 	res = r.route(req, u)
 	return
 }
@@ -79,10 +74,6 @@ func (h *Router) serveHTTP(w http.ResponseWriter, r *http.Request) (res Response
 	}
 
 	// run the request
-	for _, middleware := range h.Middlewares {
-		middleware.Before(&req)
-		defer middleware.After(req, &res)
-	}
 	res = h.route(req, u)
 
 	return

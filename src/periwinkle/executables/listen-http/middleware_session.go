@@ -9,20 +9,10 @@ import (
 	"time"
 )
 
-type session struct{}
-
-func (p session) Before(req *he.Request) {
-	var sess *store.Session = nil
-	defer func() {
-		if sess != nil {
-			sess.LastUsed = time.Now()
-		}
-		req.Things["session"] = sess
-	}()
-
+func MiddlewareSession(req he.Request, handle func(he.Request) he.Response) he.Response {
 	cookie := req.Cookie("session_id")
 	if cookie == nil {
-		return
+		return handle(req)
 	}
 	session_id := cookie.Value
 
@@ -32,22 +22,21 @@ func (p session) Before(req *he.Request) {
 	default:
 		header := req.Headers.Get("X-XSRF-TOKEN")
 		if header != session_id {
-			return
+			return handle(req)
 		}
 	}
 
 	// It's not worth panicing if we have database errors here.
-	db, ok := req.Things["db"].(*gorm.DB)
-	if !ok {
-		return
+	if db, dbok := req.Things["db"].(*gorm.DB); dbok {
+		sess := store.GetSessionById(db, session_id)
+		if sess != nil {
+			sess.LastUsed = time.Now()
+			req.Things["session"] = sess
+			func() {
+				defer recover()
+				sess.Save(db)
+			}()
+		}
 	}
-	sess = store.GetSessionById(db, session_id)
-	if sess != nil {
-		func() {
-			defer recover()
-			sess.Save(db)
-		}()
-	}
+	return handle(req)
 }
-
-func (p session) After(req he.Request, res *he.Response) {}
