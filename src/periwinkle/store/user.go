@@ -65,10 +65,14 @@ func (u *User) populate(db *gorm.DB) {
 		address_ids[i] = address.Id
 	}
 	var subscriptions []Subscription
-	if result := db.Where("address_id in (?)", address_ids).Find(&subscriptions); result.Error != nil {
-		if !result.RecordNotFound() {
-			panic(result.Error)
+	if len(address_ids) > 0 {
+		if result := db.Where("address_id IN (?)", address_ids).Find(&subscriptions); result.Error != nil {
+			if !result.RecordNotFound() {
+				panic(result.Error)
+			}
 		}
+	} else {
+		subscriptions = make([]Subscription, 0)
 	}
 	for i := range u.Addresses {
 		u.Addresses[i].Subscriptions = []Subscription{}
@@ -275,8 +279,10 @@ func (user *User) Methods() map[string]func(he.Request) he.Response {
 
 			*user = new_user
 			user.Save(db)
-			if err = db.Where("id IN (?)", delete_address_ids).Delete(UserAddress{}).Error; err != nil {
-				panic(err)
+			if len(delete_address_ids) > 0) {
+				if err = db.Where("id IN (?)", delete_address_ids).Delete(UserAddress{}).Error; err != nil {
+					panic(err)
+				}
 			}
 			return he.StatusOK(user)
 		},

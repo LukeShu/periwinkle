@@ -72,7 +72,11 @@ func HandleEmail(r io.Reader, name string, db *gorm.DB) uint8 {
 
 	// fetch all of those addresses
 	var address_list []store.UserAddress
-	db.Where("id in (?)", address_ids).Find(&address_list)
+	if len(address_ids) > 0 {
+		db.Where("id IN (?)", address_ids).Find(&address_list)
+	} else {
+		address_list = make([]store.UserAddress, 0)
+	}
 
 	// convert that list into a set
 	forward_set := make(map[string]bool, len(address_list))
