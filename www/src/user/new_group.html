@@ -12,7 +12,7 @@
 			<md-dialog-content style="max-width: 150mm; max-height: 100mm;">
 				<div class="md-dialog-content">
 					<md-input-container>
-						<label>New Group Name</label>
+						<label>{{ "USER.NEW_GROUP.GROUP_NAME"}}</label>
 						<input ng-model="group.name" type="text" />
 					</md-input-container>
 				</div>
@@ -25,10 +25,10 @@
 
 		<div class="md-actions" layout="row">
 			<md-button ng-click="group.cancel()">
-				Cancel
+				{{ "GENERAL.FORM.RESPONSE.CANCEL" | translate }}
 			</md-button>
 			<md-button ng-click="group.create()">
-				Create
+				{{ "GENERAL.FORM.RESPONSE.CREATE" | translate }}
 			</md-button>
 		</div>
 	</div>

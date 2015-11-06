@@ -37,7 +37,7 @@
 
 	<md-card-content style="padding-right: 0;">
 		<div>
-			<p ng-if="user.info.fullName.loading">Saving...</p>
+			<p ng-if="user.info.fullName.loading">{{ "USER.INFO.SAVING" | translate }}</p>
 			<div ng-if="!user.info.fullName.loading">
 				<div ng-if="!user.info.fullName.editing" layout="row" layout-align="start center">
 					<md-menu ng-if="user.info.status.editing">
@@ -78,7 +78,7 @@
 		</div>
 		<ul style="list-style: none; padding: 0; margin: 0;">
 			<li ng-repeat="address in user.info.addresses">
-				<p ng-if="address.loading">Saving...</p>
+				<p ng-if="address.loading">{{ "USER.INFO.SAVING" | translate }}</p>
 				<div ng-if="!address.loading">
 					<div ng-if="!address.editing" layout="row" layout-align="start center">
 						<md-menu ng-if="user.info.status.editing">

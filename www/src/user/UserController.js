@@ -30,7 +30,7 @@
 				error:		'',
 				editing:	false
 			},
-			title:		'USER.INFO.TITLE',
+			title:		'USER.INFO.USER',
 			username:	'',
 			addresses:	[],
 			fullName:	{
@@ -312,7 +312,7 @@
 		var self = $scope.group = this;
 
 		$scope.loading = false;
-		$scope.title = 'New Group';
+		$scope.title = 'USER.NEW_GROUP.TITLE.MAIN';
 		$scope.errors = [];
 
 		self.name = '';
@@ -322,7 +322,7 @@
 		};
 		self.create = function() {
 			$scope.loading = true;
-			$scope.title = 'Creating Group...';
+			$scope.title = 'USER.NEW_GROUP.TITLE.CREATING';
 			$http({
 				method: 'POST',
 				url: '/v1/groups',
@@ -340,7 +340,7 @@
 				function fail(response) {
 					debugger;
 					$scope.loading = false;
-					$scope.title = 'Fail';
+					$scope.title = 'USER.NEW_GROUP.TITLE.FAIL';
 				}
 			);
 		};
@@ -350,7 +350,7 @@
 		var self = $scope.password = this;
 
 		$scope.loading = false;
-		$scope.title = 'Change Password';
+		$scope.title = 'USER.CHANGE_PASSWORD.TITLE.MAIN';
 		$scope.errors = [];
 
 		self.oldPassword = '';
@@ -362,7 +362,7 @@
 		};
 		self.change = function() {
 			$scope.loading = true;
-			$scope.title = 'Changing Password...';
+			$scope.title = 'USER.CHANGE_PASSWORD.TITLE.CREATING';
 			$http({
 				method: 'PATCH',
 				url: '/v1/users/' + UserService.user_id,
@@ -397,20 +397,20 @@
 		var self = $scope.address = this;
 
 		$scope.loading = false;
-		$scope.title = 'New Address';
+		$scope.title = 'USER.NEW_ADDRESS.TITLE.MAIN';
 		$scope.errors = [];
 
 		self.mediums = [
 			{
-				name:	'email',
+				name:	'EMAIL',
 				type:	'email'
 			},
 			{
-				name:	'sms',
+				name:	'SMS',
 				type:	'tel'
 			},
 			{
-				name:	'mms',
+				name:	'MMS',
 				type:	'tel'
 			}
 		];
@@ -426,7 +426,7 @@
 		};
 		self.create = function() {
 			$scope.loading = true;
-			$scope.title = 'Creating Address...';
+			$scope.title = 'USER.NEW_ADDRESS.TITLE.CREATING';
 			$http({
 				method: 'PATCH',
 				url: '/v1/users/' + UserService.user_id,
@@ -438,7 +438,7 @@
 						'op':		'add',
 						'path':		'/addresses',
 						'value':	{
-							medium:	self.mediums[self.medium].name,
+							medium:	self.mediums[self.medium].name.toLowerCase(),
 							address: self.address
 						}
 					}

@@ -44,7 +44,8 @@ localised.en = {
 			FULL_NAME:					"Full Name",
 			NO_FULL_NAME:				"No name set. ",
 			CHANGE_NAME:				"Change Name",
-			ADDRESSES:					"Contact Addresses"
+			ADDRESSES:					"Contact Addresses",
+			SAVING:						"Saving..."
 		},
 		GROUPS:	{
 			NEW:	"New Group",
@@ -52,6 +53,33 @@ localised.en = {
 			GROUPS:			"Groups",
 			NO_GROUPS:		"You are not currently in any groups."
 		},
+		NEW_GROUP:	{
+			TITLE: {
+				MAIN:		"New Group",
+				CREATING:	"Creating Group...",
+				FAIL:		"Fail"
+			},
+			GROUP_NAME:		"New Group Name"
+		},
+		CHANGE_PASSWORD:	{
+			TITLE: {
+				MAIN:		"Change Password",
+				CREATING:	"Changing Password...",
+				FAIL:		"Fail"
+			},
+			OLD_PASSWORD:	"Current Password",
+			NEW_PASSWORD:	"New Password",
+			CONFIRM:		"Confirm Password"
+		},
+		NEW_ADDRESS: {
+			TITLE: {
+				MAIN:		"New Address",
+				CREATING:	"Adding Address",
+				FAIL:		"Fail"
+			},
+			MEDIUM:		"Medium",
+			ADDRESS:	"Address"
+		}
 		REDIR:	"You will be redirected back to your user once you log in. "
 	},
 	GENERAL: {
@@ -59,9 +87,17 @@ localised.en = {
 		USERNAME:		"Username",
 		EMAIL:			"Email",
 		PASSWORD:		"Password",
-		OK:				"OK",
 		FORM: {
-			REQUIRED_FIELD:	"This field is required.",
+			ERROR: {
+				REQUIRED_FIELD:	"This field is required."
+			},
+			RESPONSE: {
+				OK:			"OK",
+				CANCEL:		"Cancel",
+				CHANGE:		"Change",
+				CREATE:		"Create",
+				ADD:		"Add"
+			}
 		},
 		ERRORS:	{
 			"500": {

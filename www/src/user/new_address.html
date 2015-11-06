@@ -12,7 +12,7 @@
 			<md-dialog-content style="max-width: 150mm; max-height: 100mm;">
 				<div class="md-dialog-content">
 					<md-input-container>
-						<label>Medium</label>
+						<label>{{ "USER.NEW_ADDRESS.MEDIUM" | translate }}</label>
 						<md-select ng-model="address.medium">
 							<md-option ng-repeat="medium in address.mediums" ng-value="$index">
 								{{ medium.name }}
@@ -20,7 +20,7 @@
 						</md-select>
 					</md-input-container>
 					<md-input-container>
-						<label>Address</label>
+						<label>{{ "USER.NEW_ADDRESS.ADDRESS" | translate }}</label>
 						<input ng-model="address.address" ng-attr-type="address.mediums[0].type" />
 					</md-input-container>
 				</div>
@@ -33,10 +33,10 @@
 
 		<div class="md-actions" layout="row">
 			<md-button ng-click="address.cancel()">
-				Cancel
+				{{ "GENERAL.FORM.RESPONSE.CANCEL" | translate }}
 			</md-button>
 			<md-button ng-click="address.create()">
-				Create
+				{{ "GENERAL.FORM.RESPONSE.ADD" | translate }}
 			</md-button>
 		</div>
 	</div>
