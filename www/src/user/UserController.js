@@ -16,7 +16,7 @@
 
 		$scope.toolbar.buttons = [{
 			aria_label: "LogOut",
-			label:	"SIGNOUT"
+			label:	"GENERAL.SIGNOUT"
 		}];
 		$scope.toolbar.onclick = function(index) {
 			if(index == 0) {
