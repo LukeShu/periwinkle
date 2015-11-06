@@ -61,13 +61,13 @@ localised.en = {
 			},
 			GROUP_NAME:		"New Group Name"
 		},
-		CHANGE_PASSWORD:	{
+		CHANGE_PASS:	{
 			TITLE: {
 				MAIN:		"Change Password",
 				CREATING:	"Changing Password...",
 				FAIL:		"Fail"
 			},
-			'ERRORS':	{
+			ERRORS:	{
 				"409": {
 					TITLE:		"Password Change Failed",
 					CONTENT:	"You did not enter your current password correctly"
