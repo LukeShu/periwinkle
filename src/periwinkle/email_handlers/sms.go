@@ -7,6 +7,7 @@ package handlers
 import (
 	"bytes"
 	"fmt"
+	"github.com/jinzhu/gorm"
 	"io"
 	"net/http"
 	"net/mail"
@@ -20,9 +21,8 @@ import (
 	"periwinkle/twilio"
 	"io/ioutil"
 )
-
-func HandleSMS(r io.Reader, name string) int {
-	return 0 //IDK
+func HandleSMS(r io.Reader, name string, db *gorm.DB) int {
+	panic("TODO")
 }
 
 // Returns the status of the message: queued, sending, sent,

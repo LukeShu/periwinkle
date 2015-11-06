@@ -14,7 +14,7 @@
 			</md-button>
 			<md-menu-content>
 				<md-menu-item>
-					<md-button aria-label="delete account" ng-click="user.delete()">
+					<md-button aria-label="delete account" ng-click="user.info.delete()">
 						{{ "USER.DELETE" | translate }}
 					</md-button>
 				</md-menu-item>
@@ -40,9 +40,23 @@
 				<div ng-if="!address.loading">
 					<div ng-if="!address.editing" layout="row" layout-align="space-between center">
 						<p><span style="font-weight: bold;">{{address.medium | translate}}:</span>  {{address.address}}</p>
-						<md-button class="md-button md-primary" aria-label="change" ng-click="user.info.edit_address($index)">
-							{{ "USER.EMAIL_CHANGE" | translate }}
-						</md-button>
+						<md-menu>
+							<md-button aria-label="menu" class="md-icon-button" ng-click="openMenu($mdOpenMenu, $event)" >
+								<md-icon md-svg-src="assets/svg/more_horiz.svg"></md-icon>
+							</md-button>
+							<md-menu-content>
+								<md-menu-item>
+									<md-button class="md-button md-primary" aria-label="change" ng-click="user.info.edit_address($index)">
+										{{ "USER.EMAIL_CHANGE" | translate }}
+									</md-button>
+								</md-menu-item>
+								<md-menu-item>
+									<md-button class="md-button md-primary" aria-label="change" ng-click="user.info.delete_address($index)">
+										Delete
+									</md-button>
+								</md-menu-item>
+							</md-menu-container>
+						</md-menu>
 					</div>
 					<form ng-if="address.editing" name="editAddressForm">
 						<md-input-container style="padding-right: 1em;">

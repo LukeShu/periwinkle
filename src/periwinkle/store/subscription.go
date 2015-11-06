@@ -7,14 +7,16 @@ package store
 import (
 	"github.com/jinzhu/gorm"
 	he "httpentity"
-	//"httpentity/util" // heutil
+	"httpentity/util" // heutil
+	"io"
+	"strings"
 )
 
 type Subscription struct {
-	Address   UserAddress
-	AddressId int64 `json:"-"`
-	Group     Group
-	GroupId   string `json:"group_id"`
+	Address   UserAddress `json:"addresses"`
+	AddressId int64       `json:"-"`
+	Group     Group       `json:"group"`
+	GroupId   string      `json:"group_id"`
 }
 
 func (o Subscription) dbSchema(db *gorm.DB) error {
@@ -35,6 +37,19 @@ func GetSubscriptionsGroupById(db *gorm.DB, groupId string) []Subscription {
 	return o
 }
 
+func (o *Subscription) Methods() map[string]func(he.Request) he.Response {
+	return map[string]func(he.Request) he.Response{
+		"GET": func(req he.Request) he.Response {
+			return he.StatusOK(o)
+		},
+		"DELETE": func(req he.Request) he.Response {
+			db := req.Things["db"].(*gorm.DB)
+			db.Delete(o)
+			return he.StatusGone(heutil.NetString("Subscription has been deleted"))
+		},
+	}
+}
+
 type t_dirSubscriptions struct {
 	methods map[string]func(he.Request) he.Response
 }
@@ -43,11 +58,35 @@ func newDirSubscriptions() t_dirSubscriptions {
 	r := t_dirSubscriptions{}
 	r.methods = map[string]func(he.Request) he.Response{
 		"GET": func(req he.Request) he.Response {
-			panic("Not yet implemented")
-			//return he.StatusOK(heutil.NetString("Not yet implemented"))
+			db := req.Things["db"].(*gorm.DB)
+			type getfmt struct {
+				GroupId string `json:"groupid"`
+			}
+			var entity getfmt
+			httperr := safeDecodeJSON(req.Entity, &entity)
+			if httperr != nil {
+				return httperr.Response()
+			}
+
+			if entity.GroupId == "" {
+				return he.StatusUnsupportedMediaType(heutil.NetString("groupname can't be emtpy"))
+			}
+			entity.GroupId = strings.ToLower(entity.GroupId)
+			var subscriptions []Subscription
+			subscriptions = GetSubscriptionsGroupById(db, entity.GroupId)
+			generic := make([]interface{}, len(subscriptions))
+			for i, subscription := range subscriptions {
+				generic[i] = subscription.Address.Address
+			}
+
+			return he.StatusOK(heutil.NetList(generic))
 		},
 	}
 	return r
+}
+
+func (o *Subscription) Encoders() map[string]func(io.Writer) error {
+	return defaultEncoders(o)
 }
 
 func (d t_dirSubscriptions) Methods() map[string]func(he.Request) he.Response {

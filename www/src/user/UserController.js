@@ -56,22 +56,43 @@
 								'op':		'replace',
 								'path':		'/addresses/' + index + '/address',
 								'value':	self.info.addresses[index].new_address
-							},
-							{
-								'op':		'test',
-								'path':		'/addresses/' + index + '/address',
-								'value':	self.info.addresses[index].new_address
-							},
+							}
 						]
 					}).then(
 						function success (response) {
 							debugger;
+							self.info.load();
 						},
 						function fail (response) {
 							debugger;
 						}
 					);
 				}
+			},
+			delete_address: function(index) {
+				self.info.addresses[index].loading = true;
+				$http({
+					method: 'PATCH',
+					url: '/v1/users/' + userService.user_id,
+					headers: {
+						'Content-Type': 'application/json-patch+json'
+					},
+					data: [
+						{
+							'op':		'remove',
+							'path':		'/addresses/' + index + '/address',
+							'value':	self.info.addresses[index].new_address
+						}
+					]
+				}).then(
+					function success (response) {
+						debugger;
+						self.info.load();
+					},
+					function fail (response) {
+						debugger;
+					}
+				);
 			},
 			changePassword:	function(ev) {
 				$mdDialog.show({
@@ -98,6 +119,47 @@
 					}
 				);
 			},
+			delete: function(event) {
+				$mdDialog.show(
+					$mdDialog.confirm()
+						.title('Are you sure?')
+						.content('Are you sure you want to delete your account?')
+						.targetEvent(event)
+						.ok('Yes')
+						.cancel('No')
+						.openFrom('#info_menu')
+				).then(
+					function ok() {
+						$scope.loading.is = true;
+						$http({
+							method: 'DELETE',
+							url: '/v1/users/' + userService.user_id,
+							headers: {
+								'Content-Type': 'application/json'
+							},
+							data: {
+								session_id: userService.session_id
+							}
+						}).then(
+							// 410 is success - therefore success is a type
+							// of fail so the real success is in the fail
+							// block
+							function success(response) {
+								debugger;
+							},
+							function fail(response) {
+								if(response.status == 410) {
+									$location.path('/login');
+								}
+								debugger;
+							}
+						);
+					},
+					function cancel() {
+						//do nothing?
+					}
+				)
+			},
 			load:	function() {
 				self.info.status.loading = true;
 				$http({
@@ -112,6 +174,7 @@
 				}).then(
 					function success(response) {
 						//do work with response
+						debugger;
 						self.info.username = response.data.user_id;
 						self.info.addresses = response.data.addresses;
 						var i;
@@ -198,7 +261,7 @@
 			);
 		};
 
-		$timeout(self.load);
+		self.load();
 	}
 
 	function NewGroupController($scope, $mdDialog, $http) {
@@ -251,12 +314,9 @@
 		var isCancel = false;
 
 		self.cancel = function() {
-			isCancel = true;
 			$mdDialog.cancel();
 		};
-		self.create = function() {
-			if(isCancel)
-				return;
+		self.change = function() {
 			$scope.loading = true;
 			$scope.title = 'Changing Password...';
 			$http({
@@ -270,6 +330,11 @@
 						'op':		'test',
 						'path':		'/password',
 						'value':	self.oldPassword
+					},
+					{
+						'op':		'replace',
+						'path':		'/password',
+						'value':	self.newPassword[0]
 					}
 				]
 			}).then(
@@ -284,7 +349,7 @@
 		};
 	}
 
-	function NewAddressController($scope, $mdDialog, $http) {
+	function NewAddressController($scope, $mdDialog, $http, UserService) {
 		var self = $scope.address = this;
 
 		$scope.loading = false;
@@ -318,26 +383,31 @@
 		self.create = function() {
 			$scope.loading = true;
 			$scope.title = 'Creating Address...';
-			// $http({
-			// 	method: 'POST',
-			// 	url: '/v1/groups',
-			// 	headers: {
-			// 		'Content-Type': 'application/json'
-			// 	},
-			// 	data: {
-			// 		'groupname': self.name
-			// 	}
-			// }).then(
-			// 	function success(response) {
-			// 		debugger;
-			// 		$mdDialog.hide(self.name);
-			// 	},
-			// 	function fail(response) {
-			// 		debugger;
-			// 		$scope.loading = false;
-			// 		$scope.title = 'Fail';
-			// 	}
-			// );
+			$http({
+				method: 'PATCH',
+				url: '/v1/users/' + UserService.user_id,
+				headers: {
+					'Content-Type': 'application/json-patch+json'
+				},
+				data: [
+					{
+						'op':		'add',
+						'path':		'/addresses',
+						'value':	{
+							medium:	self.mediums[self.medium].name,
+							address: self.address
+						}
+					}
+				]
+			}).then(
+				function success (response) {
+					debugger;
+					self.info.load();
+				},
+				function fail (response) {
+					debugger;
+				}
+			);
 		};
 	}
 
