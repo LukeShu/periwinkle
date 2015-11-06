@@ -99,3 +99,4 @@ func (d t_dirSubscriptions) Subentity(user_id string, group_name string, req he.
 	//db := req.Things["db"].(*gorm.DB)
 	panic("Not yet implemented")
 }
+
