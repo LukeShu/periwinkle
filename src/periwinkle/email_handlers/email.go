@@ -15,12 +15,16 @@ import (
 func HandleEmail(r io.Reader, name string, db *gorm.DB) int {
 
 	msg, err := mail.ReadMessage(r)
+
 	if err != nil {
 		panic(err)
 	}
 	header := msg.Header
 
 	group := store.GetGroupById(db, name)
+	if group == nil {
+		panic("No group: " + name)
+	}
 	// TODO: check if group == nil
 	address_ids := make([]int64, len(group.Subscriptions))
 	for i := range group.Subscriptions {
@@ -64,19 +68,15 @@ func HandleEmail(r io.Reader, name string, db *gorm.DB) int {
 	for _, addr := range addresses {
 		delete(forward_set, addr.Address)
 	}
-	// TODO: remove things from the set
-	// to add something:
-	//     forward_set[something] = true
-	// to remove something:
-	//     delete(forward_set, something)
-	// convert the set back in to an array
+
 	forward_ary := make([]string, len(forward_set))
 	i := uint(0)
 	for addr := range forward_set {
 		forward_ary[i] = addr
 		i++
 	}
-	// msg.Bcc = format_to
+
+
 	auth := smtp.PlainAuth("", "", "", "")
 	from := header.Get("From")
 	body, _ := ioutil.ReadAll(msg.Body)
