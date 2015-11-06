@@ -13,7 +13,7 @@ localised.it = {
 			CONFIRM_PASSWORD:			"Conferma password",
 			CONFIRM_PASSWORD_NO_MATCH:	"Le tue password non corrispondono.",
 			USERNAME_INVALID:			"I nomi utente possono contenere solo lettere, numeri, _, o -.",
-			EMAIL_INVALID:				"That is not a valid email address.",
+			EMAIL_INVALID:				"Quello non è un indirizzo d'email valido.",
 			ERRORS:{
 				"409": {
 					TITLE:		"Utente Già Esiste",
@@ -23,7 +23,7 @@ localised.it = {
 		},
 		LOGIN: {
 			LOGIN:			"Accedi",
-			MESSAGE:		"Non puoi accedere questo risorso",
+			MESSAGE:		"Non puoi accedere a questa pagina",
 			ERRORS: {
 				"403": {
 					TITLE:		"Accesso Fallito",
@@ -40,56 +40,56 @@ localised.it = {
 			CHANGE_PASSWORD:			"Cambia Password",
 			DELETE:						"Elimina Account",
 			BEGIN_EDIT:					"Comincia a modificare",
-			STOP_EDIT:					"Finisce a modificare",
+			STOP_EDIT:					"Finisci di modificare",
 			FULL_NAME:					"Nome e Cognome",
-			NO_FULL_NAME:				"Non so che si chiama. ",
+			NO_FULL_NAME:				"Il nome non fornito. ",
 			CHANGE_NAME:				"Cambia nome",
-			ADDRESSES:					"Indirizzi di contatare",
-			SAVING:						"Salvando..."
+			ADDRESSES:					"Indirizzi di contatto",
+			SAVING:						"Salvataggio in corso..."
 		},
 		GROUPS:	{
 			NEW:	"Crea Gruppo",
-			JOIN:	"Unisci un gruppo",
+			JOIN:	"Unisciti a un gruppo",
 			GROUPS:			"Gruppi",
 			NO_GROUPS:		"Non sei in nessun gruppo al momento."
 		},
 		NEW_GROUP:	{
 			TITLE: {
 				MAIN:		"Crea Gruppo",
-				CREATING:	"Creando Group..."
+				CREATING:	"Creazione del gruppo in corso..."
 			},
-			GROUP_NAME:		"Come si chiamano",
+			GROUP_NAME:		"Nuovo Nome del Gruppo",
 			ERRORS:	{
 				"409": {
 					TITLE:		"Questo nome di gruppo è già usato.",
-					CONTENT:	"Non puoi usare questo nome per un nuovo gruppo perché un altro gruppo lo sta già usando.  "
+					CONTENT:	"Non puoi usare questo nome per un nuovo gruppo perché già in uso.  "
 				}
 			}
 		},
 		CHANGE_PASSWORD:	{
 			TITLE: {
 				MAIN:		"Cambia Password",
-				CREATING:	"Cambiando Password..."
+				CREATING:	"Cambiamento Password in corso..."
 			},
 			ERRORS:	{
 				"409": {
-					TITLE:		"Errore di Cambiare Password",
-					CONTENT:	"Non scriva la tua password corrente corregiamente.  "
+					TITLE:		"Cambiamento Password Falito",
+					CONTENT:	"La password inserita non è corretta.  "
 				}
 			},
 			OLD_PASSWORD:	"Password Corrente",
 			NEW_PASSWORD:	"Password Nuova",
-			CONFIRM:		"Confirma Password"
+			CONFIRM:		"Conferma Password"
 		},
 		NEW_ADDRESS: {
 			TITLE: {
-				MAIN:		"Aggiunge Indirizzo",
-				CREATING:	"Aggiungendo Indirizzo..."
+				MAIN:		"Aggiungi Indirizzo",
+				CREATING:	"L'aggiunta dell'Indirizzo in corso..."
 			},
 			MEDIUM:		"Mezzo",
 			ADDRESS:	"Indirizzo"
 		},
-		REDIR:	"Sposterai alla pagina del suo utente quando accedi.  "
+		REDIR:	"Sarai rediretto alla pagina del tuo utente quando accedi.  "
 	},
 	GENERAL: {
 		USERNAME_EMAIL:	"Nome utente o email",
@@ -105,7 +105,7 @@ localised.it = {
 				CANCEL:		"Cancella",
 				CHANGE:		"Cambia",
 				CREATE:		"Crea",
-				ADD:		"Aggiunge"
+				ADD:		"Aggiungi"
 			}
 		},
 		ERRORS:	{

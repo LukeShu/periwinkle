@@ -64,7 +64,7 @@ localised.en = {
 					TITLE:		"That group name is already in use.",
 					CONTENT:	"You cannot use that name for your new group because another group is already using it."
 				}
-			},
+			}
 		},
 		CHANGE_PASSWORD:	{
 			TITLE: {
