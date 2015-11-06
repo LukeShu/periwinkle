@@ -119,6 +119,47 @@
 					}
 				);
 			},
+			delete: function(event) {
+				$mdDialog.show(
+					$mdDialog.confirm()
+						.title('Are you sure?')
+						.content('Are you sure you want to delete your account?')
+						.targetEvent(event)
+						.ok('Yes')
+						.cancel('No')
+						.openFrom('#info_menu')
+				).then(
+					function ok() {
+						$scope.loading.is = true;
+						$http({
+							method: 'DELETE',
+							url: '/v1/users/' + userService.user_id,
+							headers: {
+								'Content-Type': 'application/json'
+							},
+							data: {
+								session_id: userService.session_id
+							}
+						}).then(
+							// 410 is success - therefore success is a type
+							// of fail so the real success is in the fail
+							// block
+							function success(response) {
+								debugger;
+							},
+							function fail(response) {
+								if(response.status == 410) {
+									$location.path('/login');
+								}
+								debugger;
+							}
+						);
+					},
+					function cancel() {
+						//do nothing?
+					}
+				)
+			},
 			load:	function() {
 				self.info.status.loading = true;
 				$http({
@@ -133,6 +174,7 @@
 				}).then(
 					function success(response) {
 						//do work with response
+						debugger;
 						self.info.username = response.data.user_id;
 						self.info.addresses = response.data.addresses;
 						var i;
