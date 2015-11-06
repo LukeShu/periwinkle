@@ -23,7 +23,7 @@ localised.en = {
 		},
 		LOGIN: {
 			LOGIN:			"Login",
-			MESSAGE:		"You are not logged in."
+			MESSAGE:		"You are not logged in.",
 			ERRORS: {
 				"403": {
 					TITLE:		"Login Failed",
