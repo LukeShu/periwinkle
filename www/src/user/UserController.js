@@ -161,7 +161,7 @@
 					},
 					data: [
 						{
-							'op':		'remove',
+							'op':		'replace',
 							'path':		'/addresses',
 							/* TODO: value should send in an array [] of all of the
 							 * values that are currently in it, minus the one below
@@ -596,7 +596,7 @@
 				},
 				data: [
 					{
-						'op':		'add',
+						'op':		'replace',
 						'path':		'/addresses',
 						'value':	list
 					}
