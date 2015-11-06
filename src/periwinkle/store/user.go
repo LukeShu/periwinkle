@@ -12,7 +12,6 @@ import (
 	"httpentity/util" // heutil
 	"io"
 	"jsonpatch"
-	"periwinkle/util" // putil
 	"strings"
 )
 
@@ -48,6 +47,14 @@ func (o UserAddress) dbSchema(db *gorm.DB) error {
 		AddForeignKey("medium", "media(id)", "RESTRICT", "RESTRICT").
 		AddUniqueIndex("uniqueness_idx", "medium", "address").
 		Error
+}
+
+func (addr UserAddress) AsEmailAddress() string {
+	if addr.Medium == "email" {
+		return addr.Address
+	} else {
+		return addr.Address + "@" + addr.Medium + ".gateway"
+	}
 }
 
 func (u *User) populate(db *gorm.DB) {
@@ -137,7 +144,7 @@ func (o *User) Subentity(name string, req he.Request) he.Entity {
 	return nil
 }
 
-func (o *User) patchPassword(patch *jsonpatch.Patch) putil.HTTPError {
+func (o *User) patchPassword(patch *jsonpatch.Patch) *he.Response {
 	// this is in the running for the grossest code I've ever
 	// written, but I think it's the best way to do it --lukeshu
 	type patchop struct {
@@ -161,19 +168,23 @@ func (o *User) patchPassword(patch *jsonpatch.Patch) putil.HTTPError {
 			switch op.Op {
 			case "test":
 				if !o.CheckPassword(op.Value) {
-					return putil.HTTPErrorf(409, "old password didn't match")
+					ret := he.StatusConflict(heutil.NetString("old password didn't match"))
+					return &ret
 				}
 				checkedpass = true
 			case "replace":
 				if !checkedpass {
-					return putil.HTTPErrorf(409, "you must submit and old password (using 'test') before setting a new one")
+					ret := he.StatusUnsupportedMediaType(heutil.NetString("you must submit and old password (using 'test') before setting a new one"))
+					return &ret
 				}
 				if o.CheckPassword(op.Value) {
-					return putil.HTTPErrorf(409, "that new password is the same as the old one")
+					ret := he.StatusConflict(heutil.NetString("that new password is the same as the old one"))
+					return &ret
 				}
 				o.SetPassword(op.Value)
 			default:
-				return putil.HTTPErrorf(415, "you may only 'set' or 'replace' the password")
+				ret := he.StatusUnsupportedMediaType(heutil.NetString("you may only 'set' or 'replace' the password"))
+				return &ret
 			}
 		} else {
 			out_ops = append(out_ops, op)
@@ -204,9 +215,9 @@ func (user *User) Methods() map[string]func(he.Request) he.Response {
 				return he.StatusForbidden(heutil.NetString("Unauthorized user"))
 			}
 			var new_user User
-			err := safeDecodeJSON(req.Entity, &new_user)
-			if err != nil {
-				return err.Response()
+			httperr := safeDecodeJSON(req.Entity, &new_user)
+			if httperr != nil {
+				return *httperr
 			}
 			if user.Id != new_user.Id {
 				return he.StatusConflict(heutil.NetString("Cannot change user id"))
@@ -227,16 +238,16 @@ func (user *User) Methods() map[string]func(he.Request) he.Response {
 			}
 			patch, ok := req.Entity.(jsonpatch.Patch)
 			if !ok {
-				return putil.HTTPErrorf(415, "PATCH request must have a patch media type").Response()
+				return he.StatusUnsupportedMediaType(heutil.NetString("PATCH request must have a patch media type"))
 			}
 			httperr := user.patchPassword(&patch)
 			if httperr != nil {
-				return httperr.Response()
+				return *httperr
 			}
 			var new_user User
 			err := patch.Apply(user, &new_user)
 			if err != nil {
-				return putil.HTTPErrorf(409, "%v", err).Response()
+				return he.StatusConflict(heutil.NetString(err.Error()))
 			}
 			if user.Id != new_user.Id {
 				return he.StatusConflict(heutil.NetString("Cannot change user id"))
@@ -269,7 +280,7 @@ func (user *User) Methods() map[string]func(he.Request) he.Response {
 		"DELETE": func(req he.Request) he.Response {
 			db := req.Things["db"].(*gorm.DB)
 			db.Delete(user)
-			return he.StatusGone(heutil.NetString("User has been deleted"))
+			return he.StatusNoContent()
 		},
 	}
 }
@@ -300,7 +311,7 @@ func newDirUsers() t_dirUsers {
 			var entity postfmt
 			httperr := safeDecodeJSON(req.Entity, &entity)
 			if httperr != nil {
-				return httperr.Response()
+				return *httperr
 			}
 
 			if entity.Username == "" || entity.Email == "" || entity.Password == "" {

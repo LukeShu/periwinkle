@@ -10,7 +10,6 @@ import (
 	"httpentity/util" // heutil
 	"io"
 	"jsonpatch"
-	"periwinkle/util" // putil
 	"strings"
 )
 
@@ -163,9 +162,9 @@ func (o *Group) Methods() map[string]func(he.Request) he.Response {
 			db := req.Things["db"].(*gorm.DB)
 
 			var new_group Group
-			err := safeDecodeJSON(req.Entity, &new_group)
-			if err != nil {
-				return err.Response()
+			httperr := safeDecodeJSON(req.Entity, &new_group)
+			if httperr != nil {
+				return *httperr
 			}
 			if o.Id != new_group.Id {
 				return he.StatusConflict(heutil.NetString("Cannot change group id"))
@@ -179,12 +178,12 @@ func (o *Group) Methods() map[string]func(he.Request) he.Response {
 
 			patch, ok := req.Entity.(jsonpatch.Patch)
 			if !ok {
-				return putil.HTTPErrorf(415, "PATCH request must have a patch media type").Response()
+				return he.StatusUnsupportedMediaType(heutil.NetString("PATCH request must have a patch media type"))
 			}
 			var new_group Group
 			err := patch.Apply(o, &new_group)
 			if err != nil {
-				return putil.HTTPErrorf(409, "%v", err).Response()
+				return he.StatusConflict(heutil.NetPrintf("%v", err))
 			}
 			if o.Id != new_group.Id {
 				return he.StatusConflict(heutil.NetString("Cannot change user id"))
@@ -196,7 +195,7 @@ func (o *Group) Methods() map[string]func(he.Request) he.Response {
 		"DELETE": func(req he.Request) he.Response {
 			db := req.Things["db"].(*gorm.DB)
 			db.Delete(o)
-			return he.StatusGone(heutil.NetString("Group has been deleted"))
+			return he.StatusNoContent()
 		},
 	}
 }
@@ -240,7 +239,7 @@ func newDirGroups() t_dirGroups {
 			var entity postfmt
 			httperr := safeDecodeJSON(req.Entity, &entity)
 			if httperr != nil {
-				return httperr.Response()
+				return *httperr
 			}
 
 			if entity.Groupname == "" {

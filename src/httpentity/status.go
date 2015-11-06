@@ -3,7 +3,6 @@
 package httpentity
 
 import (
-	"fmt"
 	"httpentity/util"
 	"net/http"
 	"net/url"
@@ -225,7 +224,7 @@ func statusInternalServerError(err interface{}) Response {
 		Headers: http.Header{
 			"Content-Type": {"text/plain; charset=utf-8"},
 		},
-		Entity: heutil.NetString(fmt.Sprintf("500 Internal Server Error: %v", err)),
+		Entity: heutil.NetPrintf("500 Internal Server Error: %v", err),
 	}
 }
 

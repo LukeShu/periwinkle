@@ -3,16 +3,15 @@
 package httpentity
 
 import (
-	"fmt"
+	"log"
 	"net/http"
 	"net/url"
-	"os"
 	"strings"
 )
 
 func (r *Router) Route(req Request, u *url.URL) (res Response) {
 	if r.LogRequest {
-		fmt.Fprintf(os.Stderr, "Route: %s %s %q\n", req.Scheme, req.Method, u.String())
+		log.Printf("Route: %s %s %q\n", req.Scheme, req.Method, u.String())
 	}
 	u, mimetype := normalizeURL(u)
 	if mimetype != "" {
@@ -44,7 +43,7 @@ func (h *Router) serveHTTP(w http.ResponseWriter, r *http.Request) (res Response
 		req.Scheme = "https"
 	}
 	if h.LogRequest {
-		fmt.Fprintf(os.Stderr, "ServeHTTP: %s %s %q\n", req.Scheme, req.Method, r.URL.String())
+		log.Printf("ServeHTTP: %s %s %q\n", req.Scheme, req.Method, r.URL.String())
 	}
 	if h.TrustForwarded {
 		if scheme := req.Headers.Get("X-Forwarded-Proto"); scheme != "" {

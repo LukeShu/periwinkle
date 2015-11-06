@@ -11,6 +11,10 @@ import (
 // A string that implements httpentity.NetEntity.
 type NetString string
 
+func NetPrintf(format string, a ...interface{}) NetString {
+	return NetString(fmt.Sprintf(format, a...))
+}
+
 func (s NetString) Encoders() map[string]func(out io.Writer) error {
 	return map[string]func(out io.Writer) error{
 		"text/plain":       s.text,

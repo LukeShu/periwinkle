@@ -7,68 +7,59 @@ import (
 	"github.com/jinzhu/gorm"
 	"io"
 	"io/ioutil"
+	"log"
 	"net/mail"
 	"net/smtp"
+	"periwinkle/cfg"
 	"periwinkle/store"
+	"postfixpipe"
 )
 
-func HandleEmail(r io.Reader, name string, db *gorm.DB) int {
-
+func HandleEmail(r io.Reader, name string, db *gorm.DB) (ret uint8) {
+	mdWriter := cfg.Mailstore.NewMail()
+	r = io.TeeReader(r, mdWriter)
 	msg, err := mail.ReadMessage(r)
-
 	if err != nil {
-		panic(err)
+		mdWriter.Cancel()
+		ret = postfixpipe.EX_NOINPUT
+		return
 	}
-	header := msg.Header
 
 	group := store.GetGroupById(db, name)
 	if group == nil {
-		panic("No group: " + name)
+		mdWriter.Cancel()
+		ret = postfixpipe.EX_NOUSER
+		return
 	}
-	// TODO: check if group == nil
+
+	// collect IDs of addresses subscribed to the group
 	address_ids := make([]int64, len(group.Subscriptions))
 	for i := range group.Subscriptions {
 		address_ids[i] = group.Subscriptions[i].AddressId
 	}
+
+	// fetch all of those addresses
 	var address_list []store.UserAddress
 	db.Where("id in (?)", address_ids).Find(&address_list)
-	// TODO: error handling
-	// convert forward_ary into a set
+
+	// convert that list into a set
 	forward_set := make(map[string]bool, len(address_list))
 	for _, addr := range address_list {
-		var str string
-		if addr.Medium == "email" {
-			str = addr.Address
-		} else {
-			str = addr.Address + "@" + addr.Medium + ".gateway"
-		}
-		forward_set[str] = true
-	}
-	/////////////////////////////////////////////////////////////////////
-	addresses, err := mail.ParseAddressList(header.Get("To"))
-	if err != nil {
-		panic(err)
-	}
-	for _, addr := range addresses {
-		delete(forward_set, addr.Address)
-	}
-	/////////////////////////////////////////////////////////////////////
-	addresses, err = mail.ParseAddressList(header.Get("From"))
-	if err != nil {
-		panic(err)
-	}
-	for _, addr := range addresses {
-		delete(forward_set, addr.Address)
-	}
-	/////////////////////////////////////////////////////////////////////
-	addresses, err = mail.ParseAddressList(header.Get("Cc"))
-	if err != nil {
-		panic(err)
-	}
-	for _, addr := range addresses {
-		delete(forward_set, addr.Address)
+		forward_set[addr.AsEmailAddress()] = true
 	}
 
+	// prune addresses that (should) already have the message
+	for _, header := range []string{"To", "From", "Cc"} {
+		addresses, err := msg.Header.AddressList(header)
+		if err != nil {
+			log.Fatalf("Parsing %q Header: %v\n", header, err)
+		}
+		for _, addr := range addresses {
+			delete(forward_set, addr.Address)
+		}
+	}
+
+	// convert the set into an array
 	forward_ary := make([]string, len(forward_set))
 	i := uint(0)
 	for addr := range forward_set {
@@ -76,13 +67,16 @@ func HandleEmail(r io.Reader, name string, db *gorm.DB) int {
 		i++
 	}
 
-
-	auth := smtp.PlainAuth("", "", "", "")
-	from := header.Get("From")
+	// send the message out
 	body, _ := ioutil.ReadAll(msg.Body)
-	err = smtp.SendMail("localhost:25", auth, from, forward_ary, body)
+	err = smtp.SendMail("localhost:25",
+		smtp.PlainAuth("", "", "", ""),
+		msg.Header.Get("From"),
+		forward_ary,
+		body)
 	if err != nil {
 		panic(err)
 	}
-	return 0
+	ret = postfixpipe.EX_OK
+	return
 }

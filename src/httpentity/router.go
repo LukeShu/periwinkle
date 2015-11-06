@@ -6,9 +6,9 @@ import (
 	"bitbucket.org/ww/goautoneg"
 	"fmt"
 	"httpentity/util"
+	"log"
 	"mime"
 	"net/url"
-	"os"
 	"path"
 	"runtime"
 	"strings"
@@ -32,7 +32,7 @@ func normalizeURL(u1 *url.URL) (u *url.URL, mimetype string) {
 // assumes that the url has already been passed to normalizeURL()
 func (r *Router) route(req Request, u *url.URL) (res Response) {
 	if r.LogRequest {
-		fmt.Fprintf(os.Stderr, "route %s %q %#v\n", req.Method, u.String(), req)
+		log.Printf("route %s %q %#v\n", req.Method, u.String(), req)
 	}
 	// do the routing
 	res = route(r.Root, req, strings.TrimPrefix(u.Path, r.Prefix))
@@ -66,8 +66,10 @@ func (r *Router) finish(req Request, u *url.URL, res *Response) {
 			const size = 64 << 10
 			buf := make([]byte, size)
 			buf = buf[:runtime.Stack(buf, false)]
-			reason = fmt.Sprintf("^%T(%#v) => %v\n\n%s\n", err, err, err, string(buf))
-			fmt.Fprint(os.Stderr, reason)
+			reason = fmt.Sprintf("%T(%#v) => %v\n\n%s\n", err, err, err, string(buf))
+			for _, line := range strings.Split(reason.(string), "\n") {
+				log.Println(line)
+			}
 		}
 		*res = statusInternalServerError(reason)
 	}

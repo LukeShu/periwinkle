@@ -6,7 +6,6 @@ package maildir
 import (
 	"crypto/rand"
 	"fmt"
-	"io"
 	"math/big"
 	"os"
 	"strings"
@@ -43,10 +42,22 @@ func newUnique() Unique {
 	return Unique(fmt.Sprintf("%v.%v.%v", now.Unix(), delivery_id, hostname))
 }
 
+type Writer interface {
+	Cancel() error
+	Close() error
+	Write([]byte) (int, error)
+}
+
 type mailWriter struct {
 	md     Maildir
 	unique Unique
 	file   *os.File
+}
+
+func (w *mailWriter) Cancel() (err error) {
+	defer syscall.Unlink(string(w.md) + "/tmp/" + string(w.unique))
+	err = w.file.Close()
+	return
 }
 
 func (w *mailWriter) Close() (err error) {
@@ -68,7 +79,7 @@ func (w *mailWriter) Write(p []byte) (n int, err error) {
 // Start the delivery of a new message to the maildir.  This function
 // returns an io.WriteCloser; when .Close() is called on it, the
 // message is delivered.
-func (md Maildir) NewMail() io.WriteCloser {
+func (md Maildir) NewMail() Writer {
 	unique := newUnique()
 	file, err := os.OpenFile(string(md)+"/tmp/"+string(unique), os.O_WRONLY|os.O_CREATE, 0666)
 	if err != nil {

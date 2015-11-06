@@ -30,9 +30,19 @@ func (o Message) dbSchema(db *gorm.DB) error {
 		Error
 }
 
-func NewMessage(unique maildir.Unique) *Message {
-	panic("TODO: SMTP+ORM: NewMessage()")
-	// TODO: sprint2: add the message to the outgoing mail queue
+func NewMessage(db *gorm.DB, id string, group Group, unique maildir.Unique) Message {
+	if id == "" {
+		panic("Message Id can't be emtpy")
+	}
+	o := Message{
+		Id:      id,
+		GroupId: group.Id,
+		Unique:  unique,
+	}
+	if err := db.Create(&o).Error; err != nil {
+		panic(err)
+	}
+	return o
 }
 
 func GetMessageById(db *gorm.DB, id string) *Message {

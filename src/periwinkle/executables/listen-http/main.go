@@ -5,7 +5,9 @@ package main
 import (
 	"fmt"
 	"io"
+	"log"
 	sd "lukeshu.com/git/go/libsystemd.git/sd_daemon"
+	"lukeshu.com/git/go/libsystemd.git/sd_daemon/lsb"
 	"net"
 	"os"
 	"os/signal"
@@ -55,7 +57,7 @@ func parse_args() net.Listener {
 	case 1:
 		if strings.HasPrefix(os.Args[1], "-") {
 			usage(os.Stdout)
-			os.Exit(0)
+			os.Exit(int(lsb.EXIT_SUCCESS))
 		}
 		switch os.Args[1] {
 		case "tcp", "tcp4", "tcp6":
@@ -72,7 +74,7 @@ func parse_args() net.Listener {
 			saddr = os.Args[1]
 		case "help":
 			usage(os.Stdout)
-			os.Exit(0)
+			os.Exit(int(lsb.EXIT_SUCCESS))
 		default:
 			if strings.ContainsRune(os.Args[1], '/') {
 				stype = "unix"
@@ -88,7 +90,7 @@ func parse_args() net.Listener {
 		saddr = os.Args[2]
 	default:
 		usage(os.Stderr)
-		os.Exit(1)
+		os.Exit(int(lsb.EXIT_FAILURE))
 	}
 
 	var socket net.Listener
@@ -118,8 +120,8 @@ func parse_args() net.Listener {
 		}
 	}
 	if err != nil {
-		fmt.Fprintln(os.Stderr, err)
-		os.Exit(1)
+		log.Println(err)
+		os.Exit(int(lsb.EXIT_FAILURE))
 	}
 	return socket
 }
@@ -157,7 +159,7 @@ func main() {
 	go func() {
 		err := server.Wait()
 		if err != nil {
-			fmt.Fprintln(os.Stderr, err)
+			log.Println(err)
 			done <- 1
 		} else {
 			done <- 0

@@ -6,7 +6,7 @@ sysexits_h=$1
 	declare -i n=0
 	IFS=
 	< "$sysexits_h" \
-	sed -r -e 's/#define EX_(\S+)\s/EX_\1 = /' -e '/#/d' |
+	sed -r -e 's/#define EX_(\S+)\s/EX_\1 uint8 = /' -e '/#/d' |
 	    while read -r line; do
 		    echo "$line"
 		    if [[ "$line" == " */" ]]; then

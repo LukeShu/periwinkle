@@ -12,7 +12,6 @@ import (
 	"io"
 	"jsondiff"
 	"math/big"
-	"periwinkle/util" // putil
 	"strings"
 )
 
@@ -70,15 +69,17 @@ func DbSeed(db *gorm.DB) error {
 	return errorList(errs)
 }
 
-func safeDecodeJSON(in interface{}, out interface{}) putil.HTTPError {
+func safeDecodeJSON(in interface{}, out interface{}) *he.Response {
 	decoder, ok := in.(*json.Decoder)
 	if !ok {
-		return putil.HTTPErrorf(415, "PUT and POST requests must have a document media type")
+		ret := he.StatusUnsupportedMediaType(heutil.NetString("PUT and POST requests must have a document media type"))
+		return &ret
 	}
 	var tmp interface{}
 	err := decoder.Decode(&tmp)
 	if err != nil {
-		return putil.HTTPErrorf(415, "Couldn't parse: %v", err)
+		ret := he.StatusUnsupportedMediaType(heutil.NetPrintf("Couldn't parse: %v", err))
+		return &ret
 	}
 	str, err := json.Marshal(tmp)
 	if err != nil {
@@ -86,7 +87,8 @@ func safeDecodeJSON(in interface{}, out interface{}) putil.HTTPError {
 	}
 	err = json.Unmarshal(str, out)
 	if err != nil {
-		return putil.HTTPErrorf(415, "Request body didn't have expected structure (field had wrong data type): %v", err)
+		ret := he.StatusUnsupportedMediaType(heutil.NetPrintf("Request body didn't have expected structure (field had wrong data type): %v", err))
+		return &ret
 	}
 	if !jsondiff.Equal(tmp, out) {
 		diff, err := jsondiff.NewJSONPatch(tmp, out)
@@ -97,7 +99,8 @@ func safeDecodeJSON(in interface{}, out interface{}) putil.HTTPError {
 			"message": "Request body didn't have expected structure (extra or missing fields).  The included diff would make the request acceptable.",
 			"diff":    diff,
 		}
-		return putil.RawHTTPError(he.StatusUnsupportedMediaType(entity))
+		ret := he.StatusUnsupportedMediaType(entity)
+		return &ret
 	}
 	return nil
 }

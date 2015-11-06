@@ -30,7 +30,7 @@ func (b MessageBuilder) Done() {
 	b.Headers["Content-Type"] = "text/plain; charset=\"utf-8\""
 	b.Headers["Content-Transfer-Encoding"] = "base64"
 
-	writer := cfg.IncomingMail.NewMail()
+	writer := cfg.Mailstore.NewMail()
 	for k, v := range b.Headers {
 		fmt.Fprintf(writer, "%s: %s\r\n", k, v)
 	}

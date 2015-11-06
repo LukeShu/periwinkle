@@ -3,7 +3,6 @@
 package httpentity
 
 import (
-	"fmt"
 	"httpentity/util"
 	"io"
 	"mime"
@@ -23,7 +22,7 @@ func (r Response) writeEntity(w io.Writer) error {
 func (req *Request) readEntity(router *Router, reader io.Reader, contenttype string) *Response {
 	mimetype, params, err := mime.ParseMediaType(contenttype)
 	if err != nil {
-		res := statusBadRequest(heutil.NetString(fmt.Sprintf("400 Bad Request: Could not parse Content-Type: %v", err)))
+		res := statusBadRequest(heutil.NetPrintf("400 Bad Request: Could not parse Content-Type: %v", err))
 		return &res
 	}
 	decoder, found_decoder := router.Decoders[mimetype]
@@ -33,7 +32,7 @@ func (req *Request) readEntity(router *Router, reader io.Reader, contenttype str
 	}
 	entity, err := decoder(reader, params)
 	if err != nil {
-		res := StatusUnsupportedMediaType(heutil.NetString(fmt.Sprintf("415 Unsupported Media Type: Error reading request body (%s): %v", mimetype, err)))
+		res := StatusUnsupportedMediaType(heutil.NetPrintf("415 Unsupported Media Type: Error reading request body (%s): %v", mimetype, err))
 		return &res
 	}
 	req.Entity = entity

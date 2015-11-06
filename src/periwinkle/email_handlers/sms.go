@@ -22,7 +22,7 @@ import (
 
 var message_status, error_code string // TODO: bad globals
 
-func HandleSMS(r io.Reader, name string, db *gorm.DB) int {
+func HandleSMS(r io.Reader, name string, db *gorm.DB) uint8 {
 	panic("TODO")
 }
 

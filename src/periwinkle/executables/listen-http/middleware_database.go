@@ -3,12 +3,10 @@
 package main
 
 import (
-	"github.com/go-sql-driver/mysql"
 	"github.com/jinzhu/gorm"
-	"github.com/mattn/go-sqlite3" // sqlite3
 	he "httpentity"
-	"httpentity/util"
 	"periwinkle/cfg"
+	"periwinkle/util" // putil
 )
 
 type database struct{}
@@ -23,18 +21,10 @@ func (p database) After(req he.Request, res *he.Response) {
 
 	defer func() {
 		if obj := recover(); obj != nil {
-			switch err := obj.(type) {
-			case sqlite3.Error:
-				if err.Code == sqlite3.ErrConstraint {
-					*res = he.StatusConflict(heutil.NetString(err.Error()))
-					return
-				}
-			case *mysql.MySQLError:
-				// TODO: this list of error numbers might not be complete
-				// see https://mariadb.com/kb/en/mariadb/mariadb-error-codes/
-				switch err.Number {
-				case 1022, 1062, 1169, 1216, 1217, 1451, 1452, 1557, 1761, 1762, 1834:
-					*res = he.StatusConflict(heutil.NetString(err.Error()))
+			if err, ok := obj.(error); ok {
+				perror := putil.ErrorToError(err)
+				if perror.HttpCode() != 500 {
+					*res = putil.ErrorToHTTP(perror)
 					return
 				}
 			}

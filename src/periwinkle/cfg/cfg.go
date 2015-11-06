@@ -5,17 +5,18 @@
 package cfg
 
 import (
-	"fmt"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jinzhu/gorm"
 	_ "github.com/mattn/go-sqlite3"
 	"io"
+	"log"
 	"maildir"
 	"net/http"
 	"os"
+	"postfixpipe"
 )
 
-const IncomingMail maildir.Maildir = "/srv/periwinkle/Maildir"
+const Mailstore maildir.Maildir = "/srv/periwinkle/Maildir"
 const WebUiDir http.Dir = "./www"
 const Debug bool = true
 const TrustForwarded = true // whether to trust X-Forwarded: or Forwarded: HTTP headers
@@ -40,7 +41,7 @@ var DB *gorm.DB = getConnection()
 func getConnection() *gorm.DB {
 	db, err := gorm.Open("mysql", "periwinkle:periwinkle@/periwinkle?charset=utf8&parseTime=True")
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Falling back to SQLite3\n")
+		log.Println("Falling back to SQLite3")
 		db, err = gorm.Open("sqlite3", "file:periwinkle.sqlite?cache=shared&mode=rwc")
 		if err != nil {
 			panic(err)
@@ -51,12 +52,10 @@ func getConnection() *gorm.DB {
 	return &db
 }
 
-type DomainHandler func(io.Reader, string, *gorm.DB) int
+type DomainHandler func(io.Reader, string, *gorm.DB) uint8
 
 var DomainHandlers map[string]DomainHandler // set in email_handlers/init.go because import-cycles
 
-var DefaultDomainHandler DomainHandler = bounce
-
-func bounce(io.Reader, string, *gorm.DB) int {
-	return 1
+var DefaultDomainHandler DomainHandler = func(io.Reader, string, *gorm.DB) uint8 {
+	return postfixpipe.EX_NOHOST
 }

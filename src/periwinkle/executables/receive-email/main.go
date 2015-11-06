@@ -3,34 +3,54 @@
 package main
 
 import (
-	"fmt"
+	"log"
 	"os"
 	"periwinkle/cfg"
+	"periwinkle/util" // putil
 	"postfixpipe"
 	"strings"
 )
 
 func main() {
-	recipient := postfixpipe.OriginalRecipient()
-	if recipient == "" {
-		fmt.Fprintln(os.Stderr, "ORIGINAL_RECIPIENT or RECIPIENT must be set")
-		os.Exit(postfixpipe.EX_USAGE)
-	}
-	parts := strings.SplitN(recipient, "@", 2)
-	user := parts[0]
-	domain := "localhost"
-	if len(parts) == 2 {
-		domain = parts[1]
-	}
+	var ret uint8
+	defer func() {
+		if obj := recover(); obj != nil {
+			log.Println(obj)
+			if err, ok := obj.(error); ok {
+				perror := putil.ErrorToError(err)
+				ret = perror.PostfixCode()
+			} else {
+				ret = postfixpipe.EX_UNAVAILABLE
+			}
+		}
+		os.Exit(int(ret))
+	}()
+	func() {
+		recipient := postfixpipe.OriginalRecipient()
+		if recipient == "" {
+			log.Println("ORIGINAL_RECIPIENT or RECIPIENT must be set")
+			os.Exit(int(postfixpipe.EX_USAGE))
+		}
+		parts := strings.SplitN(recipient, "@", 2)
+		user := parts[0]
+		domain := "localhost"
+		if len(parts) == 2 {
+			domain = parts[1]
+		}
+		domain = strings.ToLower(domain)
 
-	domain = strings.ToLower(domain)
+		transaction := cfg.DB.Begin()
+		defer func() {
+			if err := transaction.Commit().Error; err != nil {
+				panic(err)
+			}
+		}()
 
-	transaction := cfg.DB.Begin()
-
-	handler, ok := cfg.DomainHandlers[domain]
-	if ok {
-		os.Exit(handler(os.Stdin, user, transaction))
-	} else {
-		os.Exit(cfg.DefaultDomainHandler(os.Stdin, recipient, transaction))
-	}
+		handler, ok := cfg.DomainHandlers[domain]
+		if ok {
+			ret = handler(os.Stdin, user, transaction)
+		} else {
+			ret = cfg.DefaultDomainHandler(os.Stdin, recipient, transaction)
+		}
+	}()
 }

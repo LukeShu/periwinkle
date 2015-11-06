@@ -7,6 +7,6 @@ import (
 	"io"
 )
 
-func HandleMMS(r io.Reader, name string, db *gorm.DB) int {
+func HandleMMS(r io.Reader, name string, db *gorm.DB) uint8 {
 	panic("TODO")
 }

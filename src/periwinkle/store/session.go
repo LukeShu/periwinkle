@@ -94,7 +94,7 @@ func newFileSession() t_fileSession {
 			var entity postfmt
 			httperr := safeDecodeJSON(req.Entity, &entity)
 			if httperr != nil {
-				return httperr.Response()
+				return *httperr
 			}
 
 			var user *User

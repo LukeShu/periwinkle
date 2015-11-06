@@ -45,7 +45,7 @@ func (o *Subscription) Methods() map[string]func(he.Request) he.Response {
 		"DELETE": func(req he.Request) he.Response {
 			db := req.Things["db"].(*gorm.DB)
 			db.Delete(o)
-			return he.StatusGone(heutil.NetString("Subscription has been deleted"))
+			return he.StatusNoContent()
 		},
 	}
 }
@@ -65,7 +65,7 @@ func newDirSubscriptions() t_dirSubscriptions {
 			var entity getfmt
 			httperr := safeDecodeJSON(req.Entity, &entity)
 			if httperr != nil {
-				return httperr.Response()
+				return *httperr
 			}
 
 			if entity.GroupId == "" {
