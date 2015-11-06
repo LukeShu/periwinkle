@@ -279,7 +279,7 @@ func (user *User) Methods() map[string]func(he.Request) he.Response {
 
 			*user = new_user
 			user.Save(db)
-			if len(delete_address_ids) > 0) {
+			if len(delete_address_ids) > 0 {
 				if err = db.Where("id IN (?)", delete_address_ids).Delete(UserAddress{}).Error; err != nil {
 					panic(err)
 				}
