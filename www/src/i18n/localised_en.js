@@ -67,10 +67,6 @@ localised.en = {
 				CREATING:	"Changing Password...",
 				FAIL:		"Fail"
 			},
-			ERROR409:	{
-				TITLE:		"Password Change Failed",
-				CONTENT:	"You did not enter your current password correctly"
-			},
 			OLD_PASSWORD:	"Current Password",
 			NEW_PASSWORD:	"New Password",
 			CONFIRM:		"Confirm Password"
@@ -120,5 +116,11 @@ localised.en = {
 			MMS:		"MMS"
 		},
 		SIGNOUT:		"Sign out"
+	}
+};
+localised.en.USER.CHANGE_PASSWORD.ERRORS = ERRORS:	{
+	"409": {
+		TITLE:		"Password Change Failed",
+		CONTENT:	"You did not enter your current password correctly"
 	}
 };
