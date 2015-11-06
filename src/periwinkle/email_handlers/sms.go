@@ -21,20 +21,31 @@ import (
 	"periwinkle/twilio"
 	"strings"
 	"time"
+	"postfixpipe"
 )
 
 func HandleSMS(r io.Reader, name string, db *gorm.DB) uint8 {
-	panic("TODO")
+	message, err := mail.ReadMessage(r)
+	if err != nil {
+		return postfixpipe.EX_NOINPUT
+	}
+	status, err := sender(*message, name, db)
+	if err != nil {
+		log.Println(err)
+		return postfixpipe.EX_NOINPUT
+	}
+	log.Println(status)
+	return postfixpipe.EX_OK
 }
 
 // Returns the status of the message: queued, sending, sent,
 // delivered, undelivered, failed.  If an error occurs, it returns
 // Error.
-func sender(message mail.Message, to string) (status string, err error) {
-	group := message.Header.Get("From")
-	user := store.GetUserByAddress(cfg.DB, "email", message.Header.Get("From"))
+func sender(message mail.Message, to string, db *gorm.DB) (status string, err error) {
+	//group := message.Header.Get("From")
+	user := store.GetUserByAddress(db, "email", message.Header.Get("From"))
 
-	sms_from := group                   // TODO: numberFor(group)
+	sms_from := "+17653569541"   // TODO: group:numberFor(group)
 	sms_to := strings.Split(to, "@")[1] //test 0 or 1
 	sms_body := user.FullName + ":" + message.Header.Get("Subject")
 
@@ -72,7 +83,7 @@ func sender(message mail.Message, to string) (status string, err error) {
 
 		body, err := ioutil.ReadAll(resp.Body)
 		if err != nil {
-			log.Println(err)
+			return "", fmt.Errorf("%v", err)
 		}
 
 		message := twilio.Message{}
@@ -80,18 +91,27 @@ func sender(message mail.Message, to string) (status string, err error) {
 		sms_status, err := SmsWaitForCallback(message.Sid)
 
 		if err != nil {
-			log.Println(err)
+			return "", fmt.Errorf("%v", err)
 		}
-
-		time.Sleep(time.Second)
-		if sms_status.ErrorCode != "" {
+		
+		if sms_status.MessageStatus == "undelivered" || sms_status.MessageStatus == "failed" {
 			return sms_status.MessageStatus, fmt.Errorf("%s", sms_status.ErrorCode)
 		}
 		if sms_status.MessageStatus == "queued" || sms_status.MessageStatus == "sending" || sms_status.MessageStatus == "sent" {
 			time.Sleep(time.Second)
+			sms_status, err = SmsWaitForCallback(message.Sid)
+
+			if err != nil {
+				return "", fmt.Errorf("%s", err)
+			}
 		}
+
+		if sms_status.MessageStatus == "undelivered" || sms_status.MessageStatus == "failed" {
+			return sms_status.MessageStatus, fmt.Errorf("%s", sms_status.ErrorCode)
+		}
+
 		status = sms_status.MessageStatus
-		err = fmt.Errorf("%s", sms_status.ErrorCode)
+		err = nil
 		return status, err
 	} else {
 		err = fmt.Errorf("%s", resp.Status)
