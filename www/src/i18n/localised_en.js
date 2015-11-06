@@ -61,7 +61,7 @@ localised.en = {
 			},
 			GROUP_NAME:		"New Group Name"
 		},
-		CHANGE_PASS:	{
+		CHANGE_PASSWORD:	{
 			TITLE: {
 				MAIN:		"Change Password",
 				CREATING:	"Changing Password...",
