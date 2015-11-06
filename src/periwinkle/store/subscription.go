@@ -8,14 +8,15 @@ import (
 	"github.com/jinzhu/gorm"
 	he "httpentity"
 	"httpentity/util" // heutil
+	"io"
 	"strings"
 )
 
 type Subscription struct {
-	Address   UserAddress
-	AddressId int64 `json:"-"`
-	Group     Group
-	GroupId   string `json:"group_id"`
+	Address   UserAddress `json:"addresses"`
+	AddressId int64       `json:"-"`
+	Group     Group       `json:"group"`
+	GroupId   string      `json:"group_id"`
 }
 
 func (o Subscription) dbSchema(db *gorm.DB) error {
@@ -34,6 +35,19 @@ func GetSubscriptionsGroupById(db *gorm.DB, groupId string) []Subscription {
 		panic(result.Error)
 	}
 	return o
+}
+
+func (o *Subscription) Methods() map[string]func(he.Request) he.Response {
+	return map[string]func(he.Request) he.Response{
+		"GET": func(req he.Request) he.Response {
+			return he.StatusOK(o)
+		},
+		"DELETE": func(req he.Request) he.Response {
+			db := req.Things["db"].(*gorm.DB)
+			db.Delete(o)
+			return he.StatusGone(heutil.NetString("Subscription has been deleted"))
+		},
+	}
 }
 
 type t_dirSubscriptions struct {
@@ -69,6 +83,10 @@ func newDirSubscriptions() t_dirSubscriptions {
 		},
 	}
 	return r
+}
+
+func (o *Subscription) Encoders() map[string]func(io.Writer) error {
+	return defaultEncoders(o)
 }
 
 func (d t_dirSubscriptions) Methods() map[string]func(he.Request) he.Response {

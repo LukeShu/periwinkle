@@ -5,7 +5,7 @@
 
 	angular
 		.module('login')
-		.controller('LoginController', ['$cookies', '$http', '$scope', '$interval', '$location', '$mdDialog', '$filter', 'UserService', '$timeout', LoginController]); 
+		.controller('LoginController', ['$cookies', '$http', '$scope', '$interval', '$location', '$mdDialog', '$filter', 'UserService', '$timeout', LoginController]);
 
 	function LoginController($cookies, $http, $scope, $interval, $location, $mdDialog, $filter, userService, $timeout) {
 		//gives us an anchor to the outer object from within sub objects or functions
@@ -31,7 +31,7 @@
 				self.togleSignup();
 			}
 		}; */
-		
+
 		//for login redir;
 		if(userService.loginRedir.has == true) {
 			$scope.toolbar.warn.exists = true;
@@ -42,24 +42,26 @@
 			debugger;
 			if(cookie != null && cookie != "") {
 				//the user may have a session
-				$scope.loading.is = true;
-				userService.validate(
-					function success() {
-						//user is logged in
-						$location.path('/user').replace();
-					},
-					function fail(status) {
-						//TODO: uh oh!
-					},
-					function noSession() {
-						//the user isn't logged in
-						userService.reset();
-						$scope.loading.is = false;
-					}
-				);
+				$timeout(function() {
+					$scope.loading.is = true;
+					userService.validate(
+						function success() {
+							//user is logged in
+							$location.path('/user').replace();
+						},
+						function fail(status) {
+							//TODO: uh oh!
+						},
+						function noSession() {
+							//the user isn't logged in
+							userService.reset();
+							$scope.loading.is = false;
+						}
+					);
+				});
 			}
 		}
-		
+
 		//public functions
 		this.login = function() {
 			//http login api call
@@ -96,44 +98,20 @@
 					var $escape = $filter('escapeHTML');
 					$scope.loading.is = false;
 					//show alert
-					var dialog = null;
 					switch(status_code){
 						case 403:
-							dialog = $mdDialog.alert()
-								.parent(angular.element(document.querySelector('#content')))
-								.clickOutsideToClose(true)
-								.title($translate('LOGIN.ERRORS.403.TITLE'))
-								.content($translate('LOGIN.ERRORS.403.CONTENT')+"<pre>"+$escape(reason)+"</pre>")
-								.ariaLabel('Invalid login')
-								.ok('Got it!')
+							$scope.showError('LOGIN.ERRORS.403.TITLE', 'LOGIN.ERRORS.403.CONTENT', '', '#login-button', '#login-button');
 							break;
 						case 500:
-							dialog = $mdDialog.alert()
-								.parent(angular.element(document.querySelector('#content')))
-								.clickOutsideToClose(true)
-								.title($translate('ERRORS.500.TITLE'))
-								.content($translate('ERRORS.500.CONTENT')+"<pre>"+$escape(reason)+"</pre>")
-								.ariaLabel('Server Error')
-								.ok('Got it!')
+							$scope.showError('ERRORS.500.TITLE', 'ERRORS.500.CONTENT', reason, '#login-button', '#login-button');
 							break;
 						default:
-							dialog = $mdDialog.alert()
-								.parent(angular.element(document.querySelector('#content')))
-								.clickOutsideToClose(true)
-								.title($translate('ERRORS.DEFAULT.TITLE'))
-								.content($translate('ERRORS.DEFAULT.CONTENT')+status_code+"<pre>"+$escape(reason)+"</pre>")
-								.ariaLabel('Unexpected Response from Server')
-								.ok('Got it!')
+							$scope.showError('ERRORS.DEFAULT.TITLE', 'ERRORS.DEFAULT.CONTENT', reason, '#login-button', '#login-button');
 					}
-					dialog = dialog
-						.openFrom('#login-button')
-						.closeTo('#login-button')
-						.clickOutsideToClose(true);
-					$mdDialog.show(dialog);
 				}
 			);
 		}
-		
+
 		this.signup = function(ev) {
 			//http signup api call
 			$scope.loading.is = true;
@@ -199,7 +177,7 @@
 				}
 			);
 		}
-		
+
 		this.togleSignup = function () {
 			self.isSignup = !self.isSignup;
 			if(!(new RegExp("/^.+@.+\..+$/")).test(self.username))
