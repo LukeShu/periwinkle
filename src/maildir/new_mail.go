@@ -88,6 +88,7 @@ func (md Maildir) NewMail() Writer {
 	unique := newUnique()
 	file, err := os.OpenFile(string(md)+"/tmp/"+string(unique), os.O_WRONLY|os.O_CREATE, 0666)
 	if err != nil {
+		fmt.Println(err)
 		return nil
 	}
 	ret := &mailWriter{
