@@ -140,6 +140,10 @@
 						{
 							'op':		'remove',
 							'path':		'/addresses/' + index + '/address',
+							/* TODO: value should send in an array [] of all of the
+							 * values that are currently in it, minus the one below
+							 * that the user clicked to delete
+							 */
 							'value':	self.info.addresses[index].new_address
 						}
 					]
@@ -554,10 +558,15 @@
 					{
 						'op':		'add',
 						'path':		'/addresses',
-						'value':	{
+						'value':	[{  
+							/*TODO: add all of the other user addresses that are
+							 * currently in the array and add them this array as
+							 * the patch function does not go into the array and 
+							 * instead just replaces it
+							 */
 							medium:	self.mediums[self.medium].name.toLowerCase(),
 							address: self.address
-						}
+						}]
 					}
 				]
 			}).then(
