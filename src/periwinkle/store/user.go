@@ -243,18 +243,27 @@ func (user *User) Methods() map[string]func(he.Request) he.Response {
 			}
 			// some mucking around with private fields to make things match up
 			new_user.PwHash = user.PwHash
+			delete_address_ids := []int64{}
 			for o := range user.Addresses {
 				old_addr := &user.Addresses[o]
+				match := false
 				for n := range new_user.Addresses {
 					new_addr := &new_user.Addresses[n]
 					if new_addr.Medium == old_addr.Medium && new_addr.Address == old_addr.Address {
 						new_addr.Id = old_addr.Id
+						match = true
 					}
+				}
+				if !match {
+					delete_address_ids = append(delete_address_ids, old_addr.Id)
 				}
 			}
 			// save
 			*user = new_user
 			user.Save(db)
+			if err = db.Where("id IN (?)", delete_address_ids).Delete(UserAddress{}).Error; err != nil {
+				panic(err)
+			}
 			return he.StatusOK(user)
 		},
 		"DELETE": func(req he.Request) he.Response {
