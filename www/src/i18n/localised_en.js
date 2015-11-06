@@ -48,8 +48,24 @@ localised.en = {
 	USER: {
 		USER:						"User",
 		EMAIL_CHANGE:				"Change",
+		EMAIL_DELETE:				"Delete"
 		CHANGE_PASSWORD:			"Change Password",
-		DELETE:						"Delete Account"
+		DELETE:						"Delete Account",
+		BEGIN_EDIT:					"Begin Editing",
+		STOP_EDIT:					"Stop Editing",
+		FULL_NAME:					"Full Name",
+		NO_FULL_NAME:				"No name set. ",
+		CHANGE_NAME:				"Change Name",
+		ADDRESSES:					"Contact Addresses",
+	},
+	GROUPS:	{
+		NEW:	"New Group",
+		JOIN:	"Join Group"
+	},
+	MEDIUMS: {
+		EMAIL:		"Email",
+		SMS:		"SMS",
+		MMS:		"MMS"
 	},
 	GROUPS:			"Groups",
 	NO_GROUPS:		"You are not currently in any groups.",

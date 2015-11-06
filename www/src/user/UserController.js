@@ -221,6 +221,7 @@
 						self.info.fullName.loading = false;
 						var i;
 						for (i in self.info.addresses) {
+							self.info.addresses[i].medium = self.info.addresses[i].medium.toUpperCase();
 							self.info.addresses[i].new_address = '';
 							self.info.addresses[i].editing = false;
 							self.info.addresses[i].loading = false;
