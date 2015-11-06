@@ -14,8 +14,11 @@
 			</md-button>
 			<md-menu-content>
 				<md-menu-item>
-					<md-button aria-label="delete account" ng-click="user.info.delete()">
-						{{ "USER.DELETE" | translate }}
+					<md-button ng-if="!user.info.status.editing" aria-label="Edit profile" ng-click="user.info.toggleEditing(originalEvent)">
+						<span >Begin Editing<span>
+					</md-button>
+					<md-button ng-if="user.info.status.editing" aria-label="Edit profile" ng-click="user.info.toggleEditing(originalEvent)">
+						<span >Stop Editing<span>
 					</md-button>
 				</md-menu-item>
 				<md-menu-item>
@@ -23,11 +26,50 @@
 						{{ "USER.CHANGE_PASSWORD" | translate }}
 					</md-button>
 				</md-menu-item>
+				<md-menu-item>
+					<md-button aria-label="delete account" ng-click="user.info.delete()">
+						{{ "USER.DELETE" | translate }}
+					</md-button>
+				</md-menu-item>
 			</md-menu-content>
 		</md-menu>
 	</md-toolbar>
 
 	<md-card-content style="padding-right: 0;">
+		<div>
+			<p ng-if="user.info.fullName.loading">Saving...</p>
+			<div ng-if="!user.info.fullName.loading">
+				<div ng-if="!user.info.fullName.editing" layout="row" layout-align="start center">
+					<md-menu ng-if="user.info.status.editing">
+						<md-button aria-label="menu" class="md-icon-button" ng-click="openMenu($mdOpenMenu, $event)" >
+							<md-icon md-svg-src="assets/svg/more_horiz.svg"></md-icon>
+						</md-button>
+						<md-menu-content>
+							<md-menu-item>
+								<md-button aria-label="change" ng-click="user.info.edit_fullName()">
+									Change Name
+								</md-button>
+							</md-menu-item>
+						</md-meeu-content>
+					</md-menu>
+					<div layout="column">
+						<p style="font-weight: bold; padding-bottom: 0; margin-bottom: 0;">Full Name</p>
+						<p ng-if="user.info.fullName.text != ''">{{ user.info.fullName.text }}</p>
+						<p ng-if="user.info.fullName.text == ''" style="color: #a0a0a0">No name set.</p>
+					</div>
+				</div>
+				<form ng-if="user.info.fullName.editing" name="editAddressForm" ng-submit="user.info.set_fullName()">
+					<md-input-container style="padding-right: 1em;">
+						<label>Full Name</label>
+						<input name="address" ng-model="user.info.fullName.new_text" type="text" focus-on="edit_fullName" ng-blur="user.info.set_fullName()" require ></input>
+					</md-input-container>
+					<md-button type="submit" ng-show="false">
+						Submit
+					</md-button>
+				</form>
+			</div>
+		</div>
+
 		<div layout="row" layout-align="space-between center">
 			<h3 style="margin-bottom: 0;">Contact Addresses</h3>
 			<md-button class="md-button md-primary" aria-label="change" ng-click="user.info.newAddress($event)">
@@ -38,31 +80,34 @@
 			<li ng-repeat="address in user.info.addresses">
 				<p ng-if="address.loading">Saving...</p>
 				<div ng-if="!address.loading">
-					<div ng-if="!address.editing" layout="row" layout-align="space-between center">
-						<p><span style="font-weight: bold;">{{address.medium | translate}}:</span>  {{address.address}}</p>
-						<md-menu>
+					<div ng-if="!address.editing" layout="row" layout-align="start center">
+						<md-menu ng-if="user.info.status.editing">
 							<md-button aria-label="menu" class="md-icon-button" ng-click="openMenu($mdOpenMenu, $event)" >
 								<md-icon md-svg-src="assets/svg/more_horiz.svg"></md-icon>
 							</md-button>
 							<md-menu-content>
 								<md-menu-item>
-									<md-button class="md-button md-primary" aria-label="change" ng-click="user.info.edit_address($index)">
+									<md-button aria-label="change" ng-click="user.info.edit_address($index)">
 										{{ "USER.EMAIL_CHANGE" | translate }}
 									</md-button>
 								</md-menu-item>
 								<md-menu-item>
-									<md-button class="md-button md-primary" aria-label="change" ng-click="user.info.delete_address($index)">
+									<md-button aria-label="change" ng-click="user.info.delete_address($index)">
 										Delete
 									</md-button>
 								</md-menu-item>
 							</md-menu-container>
 						</md-menu>
+						<p><span style="font-weight: bold;">{{address.medium | translate}}:</span>  {{address.address}}</p>
 					</div>
-					<form ng-if="address.editing" name="editAddressForm">
+					<form ng-if="address.editing" name="editAddressForm" ng-submit="user.info.save_edit_address($index)">
 						<md-input-container style="padding-right: 1em;">
 							<label>{{ address.medium | translate }}</label>
 							<input name="address" ng-model="address.new_address" type="text" focus-on="edit_address" ng-blur="user.info.save_edit_address($index)" require ></input>
 						</md-input-container>
+						<md-button type="submit" ng-show="false">
+							Submit
+						</md-button>
 					</form>
 				</div>
 			</li>

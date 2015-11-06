@@ -26,15 +26,53 @@
 
 		self.info = {
 			status: {
-				loading: true,
-				error:	''
+				loading: 	true,
+				error:		'',
+				editing:	false
 			},
 			title:		'USER.INFO.TITLE',
 			username:	'',
 			addresses:	[],
-			fullName:	'',
+			fullName:	{
+				editing:	false,
+				loading:	false,
+				text:		'',
+				new_text:	''
+			},
+			toggleEditing: function(event) {
+				self.info.status.editing = !self.info.status.editing;
+			},
+			edit_fullName:	function() {
+				self.info.fullName.editing = true;
+				focus('edit_fullName');
+			},
 			set_fullName:	function() {
-				//open dialogue
+				self.info.fullName.editing = false;
+				if(self.info.fullName.text !== self.info.fullName.new_text) {
+					self.info.fullName.loading = true;
+					$http({
+						method: 'PATCH',
+						url: '/v1/users/' + userService.user_id,
+						headers: {
+							'Content-Type': 'application/json-patch+json'
+						},
+						data: [
+							{
+								'op':		'replace',
+								'path':		'/fullname',
+								'value':	self.info.fullName.new_text
+							}
+						]
+					}).then(
+						function success (response) {
+							debugger;
+							self.info.load();
+						},
+						function fail (response) {
+							debugger;
+						}
+					);
+				}
 			},
 			edit_address:	function(index) {
 				self.info.addresses[index].new_address = self.info.addresses[index].address;
@@ -177,6 +215,10 @@
 						debugger;
 						self.info.username = response.data.user_id;
 						self.info.addresses = response.data.addresses;
+						self.info.fullName.text = response.data.fullname;
+						self.info.fullName.new_text = response.data.fullname;
+						self.info.fullName.editing = false;
+						self.info.fullName.loading = false;
 						var i;
 						for (i in self.info.addresses) {
 							self.info.addresses[i].new_address = '';
