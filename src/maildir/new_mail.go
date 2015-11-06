@@ -23,7 +23,7 @@ func newUnique() Unique {
 	if err != nil {
 		hostname = "localhost"
 	}
-	hostname = strings.Replace("/", "\\057", strings.Replace(":", "\\072", hostname, -1), -1)
+	hostname = strings.Replace(strings.Replace(hostname, ":", "\\072", -1), "/", "\\057", -1)
 
 	delivery_id := ""
 	// delivery_id += fmt.Sprintf("#%x", unix_sequencenumber())
