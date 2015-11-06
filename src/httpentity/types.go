@@ -37,7 +37,7 @@ type Router struct {
 	// Whether to include stacktraces in HTTP 500 responses
 	Stacktrace bool
 
-	// Whether to log requests
+	// Whether to log requests to stderr
 	LogRequest bool
 
 	// Whether to trust `X-Forwarded-Scheme:` and RFC 7239
@@ -97,5 +97,10 @@ type NetEntity interface {
 
 ////////////////////////////////////////////////////////////////////////////////
 
-// A Middleware is something that wraps the request handler.
-type Middleware func(Request, func(Request) Response) Response
+// A Middleware is something that is capable of modifying a request
+// before it is passed to an entity, and is capable of modifying the
+// response returned before it is sent to the client.
+type Middleware interface {
+	Before(req *Request)
+	After(req Request, res *Response)
+}

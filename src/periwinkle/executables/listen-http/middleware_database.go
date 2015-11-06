@@ -3,24 +3,28 @@
 package main
 
 import (
+	"github.com/jinzhu/gorm"
 	he "httpentity"
 	"periwinkle/cfg"
 	"periwinkle/util" // putil
 )
 
-func MiddlewareDatabase(req he.Request, handle func(he.Request) he.Response) (res he.Response) {
+type database struct{}
+
+func (p database) Before(req *he.Request) {
 	transaction := cfg.DB.Begin()
 	req.Things["db"] = transaction
-	rollback := true
+}
+
+func (p database) After(req he.Request, res *he.Response) {
+	transaction := req.Things["db"].(*gorm.DB)
+
 	defer func() {
 		if obj := recover(); obj != nil {
-			if rollback {
-				transaction.Rollback()
-			}
 			if err, ok := obj.(error); ok {
 				perror := putil.ErrorToError(err)
 				if perror.HttpCode() != 500 {
-					res = putil.ErrorToHTTP(perror)
+					*res = putil.ErrorToHTTP(perror)
 					return
 				}
 			}
@@ -29,13 +33,13 @@ func MiddlewareDatabase(req he.Request, handle func(he.Request) he.Response) (re
 		}
 	}()
 
-	res = handle(req)
+	if obj := recover(); obj != nil {
+		transaction.Rollback()
+		panic(obj)
+	}
 
 	err := transaction.Commit().Error
-	rollback = false
 	if err != nil {
 		panic(err)
 	}
-
-	return
 }

@@ -5,28 +5,29 @@ package main
 import (
 	"encoding/json"
 	he "httpentity"
-	"httpentity/util" // heutil
 	"strings"
 )
 
-func MiddlewarePostHack(req he.Request, handle func(he.Request) he.Response) he.Response {
+type postHack struct{}
+
+func (p postHack) Before(req *he.Request) {
 	if req.Method != "POST" {
-		return handle(req)
+		return
 	}
 
 	decoder, ok := req.Entity.(*json.Decoder)
 	if !ok {
-		return handle(req)
+		return //putil.HTTPErrorf(415, "PUT and POST requests must have a document media type")
 	}
 	var entity interface{}
 	err := decoder.Decode(&entity)
 	if err != nil {
-		return he.StatusUnsupportedMediaType(heutil.NetPrintf("Couldn't parse: %v", err))
+		return //putil.HTTPErrorf(415, "Couldn't parse: %v", err)
 	}
 
 	hash, ok := entity.(map[string]interface{})
 	if !ok {
-		return handle(req)
+		return
 	}
 
 	method, ok := hash["_method"].(string)
@@ -54,5 +55,6 @@ func MiddlewarePostHack(req he.Request, handle func(he.Request) he.Response) he.
 		panic(err)
 	}
 	req.Entity = json.NewDecoder(strings.NewReader(string(str)))
-	return handle(req)
 }
+
+func (p postHack) After(req he.Request, res *he.Response) {}
