@@ -24,7 +24,7 @@
 	.config(function($mdThemingProvider){
 		$mdThemingProvider.theme('default')
 		.primaryPalette('deep-purple')
-		.accentPalette('teal');
+		.accentPalette('amber');
 	})
 
 	.factory('httpRequestInterceptor', ['$cookies', function ($cookies) {
