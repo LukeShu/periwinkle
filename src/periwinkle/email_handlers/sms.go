@@ -46,7 +46,7 @@ func sender(message mail.Message, to string, db *gorm.DB) (status string, err er
 	user := store.GetUserByAddress(db, "email", message.Header.Get("From"))
 
 	sms_from := "+17653569541"   // TODO: group:numberFor(group)
-	sms_to := strings.Split(to, "@")[1] //test 0 or 1
+	sms_to := strings.Split(to, "@")[0] //test 0 or 1
 	sms_body := user.FullName + ":" + message.Header.Get("Subject")
 
 	// account SID for Twilio account
