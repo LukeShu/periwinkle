@@ -56,7 +56,7 @@ localised.en = {
 		FULL_NAME:					"Full Name",
 		NO_FULL_NAME:				"No name set. ",
 		CHANGE_NAME:				"Change Name",
-		ADDRESSES:					"Contact Addresses",
+		ADDRESSES:					"Contact Addresses"
 	},
 	GROUPS:	{
 		NEW:	"New Group",
