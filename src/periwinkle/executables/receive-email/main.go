@@ -25,10 +25,12 @@ func main() {
 
 	domain = strings.ToLower(domain)
 
+	transaction := cfg.DB.Begin()
+
 	handler, ok := cfg.DomainHandlers[domain]
 	if ok {
-		os.Exit(handler(os.Stdin, user))
+		os.Exit(handler(os.Stdin, user, transaction))
 	} else {
-		os.Exit(cfg.DefaultDomainHandler(os.Stdin, recipient))
+		os.Exit(cfg.DefaultDomainHandler(os.Stdin, recipient, transaction))
 	}
 }

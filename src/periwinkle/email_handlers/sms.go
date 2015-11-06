@@ -7,6 +7,7 @@ package handlers
 import (
 	"bytes"
 	"fmt"
+	"github.com/jinzhu/gorm"
 	"io"
 	"io/ioutil"
 	"net/http"
@@ -21,7 +22,7 @@ import (
 
 var message_status, error_code string // TODO: bad globals
 
-func HandleSMS(r io.Reader, name string) int {
+func HandleSMS(r io.Reader, name string, db *gorm.DB) int {
 	panic("TODO")
 }
 
