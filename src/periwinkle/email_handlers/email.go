@@ -12,25 +12,53 @@ import (
 	"net/smtp"
 	"periwinkle/cfg"
 	"periwinkle/store"
+	"periwinkle/util" // putil
 	"postfixpipe"
 )
 
-func HandleEmail(r io.Reader, name string, db *gorm.DB) (ret uint8) {
+func HandleEmail(r io.Reader, name string, db *gorm.DB) uint8 {
 	mdWriter := cfg.Mailstore.NewMail()
+	defer func() {
+		if mdWriter != nil {
+			mdWriter.Cancel()
+		}
+	}()
 	r = io.TeeReader(r, mdWriter)
 	msg, err := mail.ReadMessage(r)
 	if err != nil {
-		mdWriter.Cancel()
-		ret = postfixpipe.EX_NOINPUT
-		return
+		return postfixpipe.EX_NOINPUT
 	}
 
 	group := store.GetGroupById(db, name)
 	if group == nil {
-		mdWriter.Cancel()
-		ret = postfixpipe.EX_NOUSER
-		return
+		return postfixpipe.EX_NOUSER
 	}
+
+	// try/catch looks awefully funny in Go
+	silentbounce := false
+	func() {
+		defer func() {
+			if obj := recover(); obj != nil {
+				if err, ok := obj.(error); ok {
+					perror := putil.ErrorToError(err)
+					if perror.HttpCode() == 409 {
+						silentbounce = true
+					}
+				}
+				panic(obj)
+			}
+		}()
+		store.NewMessage(
+			db,
+			msg.Header.Get("Message-Id"),
+			*group,
+			mdWriter.Unique())
+	}()
+	if silentbounce {
+		return 0
+	}
+	mdWriter.Close()
+	mdWriter = nil
 
 	// collect IDs of addresses subscribed to the group
 	address_ids := make([]int64, len(group.Subscriptions))
@@ -77,6 +105,5 @@ func HandleEmail(r io.Reader, name string, db *gorm.DB) (ret uint8) {
 	if err != nil {
 		panic(err)
 	}
-	ret = postfixpipe.EX_OK
-	return
+	return postfixpipe.EX_OK
 }

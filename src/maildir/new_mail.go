@@ -46,6 +46,7 @@ type Writer interface {
 	Cancel() error
 	Close() error
 	Write([]byte) (int, error)
+	Unique() Unique
 }
 
 type mailWriter struct {
@@ -74,6 +75,10 @@ func (w *mailWriter) Close() (err error) {
 
 func (w *mailWriter) Write(p []byte) (n int, err error) {
 	return w.file.Write(p)
+}
+
+func (w *mailWriter) Unique() Unique {
+	return w.unique
 }
 
 // Start the delivery of a new message to the maildir.  This function
