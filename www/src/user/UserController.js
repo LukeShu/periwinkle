@@ -11,12 +11,12 @@
 		var self = this;
 		//clears the toolbar and such so we can set it up for this view
 		$scope.reset();
-		$scope.toolbar.title = "USER.USER";
+		$scope.toolbar.title = "USER.INFO.USER";
 		//set up public fields
 
 		$scope.toolbar.buttons = [{
 			aria_label: "LogOut",
-			label:	"SIGNOUT"
+			label:	"GENERAL.SIGNOUT"
 		}];
 		$scope.toolbar.onclick = function(index) {
 			if(index == 0) {
@@ -26,15 +26,65 @@
 
 		self.info = {
 			status: {
-				loading: true,
-				error:	''
+				loading: 	true,
+				error:		'',
+				editing:	false
 			},
-			title:		'USER.INFO.TITLE',
+			title:		'USER.INFO.USER',
 			username:	'',
 			addresses:	[],
-			fullName:	'',
+			fullName:	{
+				editing:	false,
+				loading:	false,
+				text:		'',
+				new_text:	''
+			},
+			toggleEditing: function(event) {
+				self.info.status.editing = !self.info.status.editing;
+			},
+			edit_fullName:	function() {
+				self.info.fullName.editing = true;
+				focus('edit_fullName');
+			},
 			set_fullName:	function() {
-				//open dialogue
+				self.info.fullName.editing = false;
+				if(self.info.fullName.text !== self.info.fullName.new_text) {
+					self.info.fullName.loading = true;
+					$http({
+						method: 'PATCH',
+						url: '/v1/users/' + userService.user_id,
+						headers: {
+							'Content-Type': 'application/json-patch+json'
+						},
+						data: [
+							{
+								'op':		'replace',
+								'path':		'/fullname',
+								'value':	self.info.fullName.new_text
+							}
+						]
+					}).then(
+						function success (response) {
+							self.info.load();
+						},
+						function fail (response) {
+							debugger;
+							var status_code = response.status;
+							var reason = response.data;
+							$scope.loading.is = false;
+							switch(status_code){
+								case 403:
+									$scope.showError('LOGIN.LOGIN.ERRORS.403.TITLE', 'LOGIN.LOGIN.ERRORS.403.CONTENT', '', '#login-button', '#login-button');
+									break;
+								case 500:
+									$scope.showError('GENERAL.ERRORS.500.TITLE', 'GENERAL.ERRORS.500.CONTENT', reason, '#login-button', '#login-button');
+									break;
+								default:
+									$scope.showError('GENERAL.ERRORS.DEFAULT.TITLE', 'GENERAL.ERRORS.DEFAULT.CONTENT', reason, '#login-button', '#login-button');
+							}
+						}
+					);
+				}
 			},
 			edit_address:	function(index) {
 				self.info.addresses[index].new_address = self.info.addresses[index].address;
@@ -60,11 +110,20 @@
 						]
 					}).then(
 						function success (response) {
-							debugger;
 							self.info.load();
 						},
 						function fail (response) {
 							debugger;
+							var status_code = response.status;
+							var reason = response.data;
+							//show alert
+							switch(status_code){
+								case 500:
+									$scope.showError('GENERAL.ERRORS.500.TITLE', 'GENERAL.ERRORS.500.CONTENT', reason, 'body', 'body');
+									break;
+								default:
+									$scope.showError('GENERAL.ERRORS.DEFAULT.TITLE', 'GENERAL.ERRORS.DEFAULT.CONTENT', reason, 'body', 'body');
+							}
 						}
 					);
 				}
@@ -86,11 +145,20 @@
 					]
 				}).then(
 					function success (response) {
-						debugger;
 						self.info.load();
 					},
 					function fail (response) {
 						debugger;
+						var status_code = response.status;
+						var reason = response.data;
+						//show alert
+						switch(status_code){
+							case 500:
+								$scope.showError('GENERAL.ERRORS.500.TITLE', 'GENERAL.ERRORS.500.CONTENT', reason, 'body', 'body');
+								break;
+							default:
+								$scope.showError('GENERAL.ERRORS.DEFAULT.TITLE', 'GENERAL.ERRORS.DEFAULT.CONTENT', reason, 'body', 'body');
+						}
 					}
 				);
 			},
@@ -101,7 +169,28 @@
 					parent:					angular.element(document.body),
 					targetEvent:			ev,
 					clickOutsideToClose:	true
-				});
+				}).then(
+					function hide (message) {
+						if(message !== "success") {
+							//errors
+							var status_code = response.status;
+							var reason = response.data;
+							//show alert
+							switch(status_code){
+								case 500:
+									$scope.showError('GENERAL.ERRORS.500.TITLE', 'GENERAL.ERRORS.500.CONTENT', reason, '#user-info-menu', '#user-info-menu');
+									break;
+								default:
+									$scope.showError('GENERAL.ERRORS.DEFAULT.TITLE', 'GENERAL.ERRORS.DEFAULT.CONTENT', reason, '#user-info-menu', '#user-info-menu');
+							}
+						} else {
+							//succeeded
+						}
+					},
+					function cancel() {
+						//Do nothing?
+					}
+				);
 			},
 			newAddress:	function(ev) {
 				$mdDialog.show({
@@ -113,7 +202,22 @@
 				}).then(
 					function (response) {
 						//the dialog responded before closing
-						self.info.load();
+						if(message !== "success") {
+							//errors
+							var status_code = response.status;
+							var reason = response.data;
+							//show alert
+							switch(status_code){
+								case 500:
+									$scope.showError('GENERAL.ERRORS.500.TITLE', 'GENERAL.ERRORS.500.CONTENT', reason, '#new-address-fab', '#new-address-fab');
+									break;
+								default:
+									$scope.showError('GENERAL.ERRORS.DEFAULT.TITLE', 'GENERAL.ERRORS.DEFAULT.CONTENT', reason, '#new-address-fab', '#new-address-fab');
+							}
+						} else {
+							//succeeded
+							self.info.load();
+						}
 					}, function () {
 						//the dialog was cancelled
 					}
@@ -128,6 +232,7 @@
 						.ok('Yes')
 						.cancel('No')
 						.openFrom('#info_menu')
+						.closeTo('#info_menu')
 				).then(
 					function ok() {
 						$scope.loading.is = true;
@@ -141,17 +246,20 @@
 								session_id: userService.session_id
 							}
 						}).then(
-							// 410 is success - therefore success is a type
-							// of fail so the real success is in the fail
-							// block
 							function success(response) {
-								debugger;
+								$location.path('/login');
 							},
 							function fail(response) {
-								if(response.status == 410) {
-									$location.path('/login');
+								var status_code = response.status;
+								var reason = response.data;
+								//show alert
+								switch(status_code){
+									case 500:
+										$scope.showError('GENERAL.ERRORS.500.TITLE', 'GENERAL.ERRORS.500.CONTENT', reason, '#user-info-menu', '#user-info-menu');
+										break;
+									default:
+										$scope.showError('GENERAL.ERRORS.DEFAULT.TITLE', 'GENERAL.ERRORS.DEFAULT.CONTENT', reason, '#user-info-menu', '#user-info-menu');
 								}
-								debugger;
 							}
 						);
 					},
@@ -174,11 +282,15 @@
 				}).then(
 					function success(response) {
 						//do work with response
-						debugger;
 						self.info.username = response.data.user_id;
 						self.info.addresses = response.data.addresses;
+						self.info.fullName.text = response.data.fullname;
+						self.info.fullName.new_text = response.data.fullname;
+						self.info.fullName.editing = false;
+						self.info.fullName.loading = false;
 						var i;
 						for (i in self.info.addresses) {
+							self.info.addresses[i].medium = self.info.addresses[i].medium.toUpperCase();
 							self.info.addresses[i].new_address = '';
 							self.info.addresses[i].editing = false;
 							self.info.addresses[i].loading = false;
@@ -189,6 +301,16 @@
 						//do work with response
 						//show error to user
 						self.info.status.loading = false;
+						var status_code = response.status;
+						var reason = response.data;
+						//show alert
+						switch(status_code){
+							case 500:
+								$scope.showError('GENERAL.ERRORS.500.TITLE', 'GENERAL.ERRORS.500.CONTENT', reason, 'body', 'body');
+								break;
+							default:
+								$scope.showError('GENERAL.ERRORS.DEFAULT.TITLE', 'GENERAL.ERRORS.DEFAULT.CONTENT', reason, 'body', 'body');
+						}
 					}
 				);
 			}
@@ -209,7 +331,22 @@
 				}).then(
 					function (response) {
 						//the dialog responded before closing
-						self.groups.load();
+						if(message !== "success") {
+							//errors
+							var status_code = response.status;
+							var reason = response.data;
+							//show alert
+							switch(status_code){
+								case 500:
+									$scope.showError('GENERAL.ERRORS.500.TITLE', 'GENERAL.ERRORS.500.CONTENT', reason, '#new-address-fab', '#new-address-fab');
+									break;
+								default:
+									$scope.showError('GENERAL.ERRORS.DEFAULT.TITLE', 'GENERAL.ERRORS.DEFAULT.CONTENT', reason, '#new-address-fab', '#new-address-fab');
+							}
+						} else {
+							//succeeded
+							self.groups.load();
+						}
 					}, function () {
 						//the dialog was cancelled
 					}
@@ -229,12 +366,20 @@
 				}).then(
 					function success(response) {
 						self.groups.list = response.data;
-						debugger;
 						self.groups.status.loading = false;
 					},
 					function fail(response) {
-						debugger;
 						self.groups.status.loading = false;
+						var status_code = response.status;
+						var reason = response.data;
+						//show alert
+						switch(status_code){
+							case 500:
+								$scope.showError('GENERAL.ERRORS.500.TITLE', 'GENERAL.ERRORS.500.CONTENT', reason, 'body', 'body');
+								break;
+							default:
+								$scope.showError('GENERAL.ERRORS.DEFAULT.TITLE', 'GENERAL.ERRORS.DEFAULT.CONTENT', reason, 'body', 'body');
+						}
 					}
 				);
 			}
@@ -251,11 +396,21 @@
 				},
 				function fail(status) {
 					debugger;
+					var status_code = response.status;
+					var reason = response.data;
+					//show alert
+					switch(status_code){
+						case 500:
+							$scope.showError('GENERAL.ERRORS.500.TITLE', 'GENERAL.ERRORS.500.CONTENT', reason, 'body', 'body');
+							break;
+						default:
+							$scope.showError('GENERAL.ERRORS.DEFAULT.TITLE', 'GENERAL.ERRORS.DEFAULT.CONTENT', reason, 'body', 'body');
+					}
 				},
 				function noSession_cb() {
 					userService.loginRedir.has = true;
 					userService.loginRedir.path = $location.path();
-					userService.loginRedir.message = "You will be redirected back to your user once you log in. ";
+					userService.loginRedir.message = 'USER.REDIR';
 					$location.path('/login');
 				}
 			);
@@ -268,8 +423,8 @@
 		var self = $scope.group = this;
 
 		$scope.loading = false;
-		$scope.title = 'New Group';
-		$scope.errors = [];
+		$scope.title = 'USER.NEW_GROUP.TITLE.MAIN';
+		$scope.error = '';
 
 		self.name = '';
 
@@ -278,7 +433,7 @@
 		};
 		self.create = function() {
 			$scope.loading = true;
-			$scope.title = 'Creating Group...';
+			$scope.title = 'USER.NEW_GROUP.TITLE.CREATING';
 			$http({
 				method: 'POST',
 				url: '/v1/groups',
@@ -290,13 +445,16 @@
 				}
 			}).then(
 				function success(response) {
-					debugger;
-					$mdDialog.hide(self.name);
+					$mdDialog.hide("success");
 				},
 				function fail(response) {
-					debugger;
-					$scope.loading = false;
-					$scope.title = 'Fail';
+					if(response.status == 409) {
+						$scope.loading = false;
+						$scope.title = 'USER.NEW_GROUP.ERRORS.409.TITLE';
+						$scope.error = 'USER.NEW_GROUP.ERRORS.409.CONTENT';
+					} else {
+						$mdDialog.hide(response);
+					}
 				}
 			);
 		};
@@ -306,8 +464,8 @@
 		var self = $scope.password = this;
 
 		$scope.loading = false;
-		$scope.title = 'Change Password';
-		$scope.errors = [];
+		$scope.title = 'USER.CHANGE_PASSWORD.TITLE.MAIN';
+		$scope.error = '';
 
 		self.oldPassword = '';
 		self.newPassword = ['',''];
@@ -318,7 +476,7 @@
 		};
 		self.change = function() {
 			$scope.loading = true;
-			$scope.title = 'Changing Password...';
+			$scope.title = 'USER.CHANGE_PASSWORD.TITLE.CREATING';
 			$http({
 				method: 'PATCH',
 				url: '/v1/users/' + UserService.user_id,
@@ -339,11 +497,18 @@
 				]
 			}).then(
 				function success(response) {
-					debugger;
 					$mdDialog.hide("success");
 				},
 				function fail(response) {
-					debugger;
+					if(response.status == 409) {
+						$scope.loading = false;
+						$scope.title = 'USER.CHANGE_PASSWORD.ERRORS.409.TITLE';
+						$scope.error = 'USER.CHANGE_PASSWORD.ERRORS.409.CONTENT';
+						self.oldPassword = '';
+						self.newPassword = ['', ''];
+					} else {
+						$mdDialog.hide(response);
+					}
 				}
 			);
 		};
@@ -353,36 +518,32 @@
 		var self = $scope.address = this;
 
 		$scope.loading = false;
-		$scope.title = 'New Address';
+		$scope.title = 'USER.NEW_ADDRESS.TITLE.MAIN';
 		$scope.errors = [];
 
 		self.mediums = [
 			{
-				name:	'email',
+				name:	'EMAIL',
 				type:	'email'
 			},
 			{
-				name:	'sms',
+				name:	'SMS',
 				type:	'tel'
 			},
 			{
-				name:	'mms',
+				name:	'MMS',
 				type:	'tel'
 			}
 		];
 		self.medium = 0;
 		self.address = '';
 
-		self.test = function() {
-			debugger;
-		};
-
 		self.cancel = function() {
 			$mdDialog.cancel();
 		};
 		self.create = function() {
 			$scope.loading = true;
-			$scope.title = 'Creating Address...';
+			$scope.title = 'USER.NEW_ADDRESS.TITLE.CREATING';
 			$http({
 				method: 'PATCH',
 				url: '/v1/users/' + UserService.user_id,
@@ -394,18 +555,17 @@
 						'op':		'add',
 						'path':		'/addresses',
 						'value':	{
-							medium:	self.mediums[self.medium].name,
+							medium:	self.mediums[self.medium].name.toLowerCase(),
 							address: self.address
 						}
 					}
 				]
 			}).then(
 				function success (response) {
-					debugger;
-					self.info.load();
+					$mdDialog.hide("success");
 				},
 				function fail (response) {
-					debugger;
+					$mdDialog.hide(response);
 				}
 			);
 		};

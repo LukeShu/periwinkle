@@ -1,6 +1,6 @@
 // Copyright 2015 Zhandos Suleimenov
 
-package main
+package twilio
 
 type Paging struct {
 	First_page_uri    string    `json:"first_page_uri"`

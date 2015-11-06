@@ -12,6 +12,7 @@ import (
 	"periwinkle/util"
 	"strings"
 	"time"
+	"periwinkle/twilio"
 )
 
 func main() {
@@ -55,7 +56,7 @@ func main() {
 			}
 
 			// converts JSON messages
-			message := Paging{}
+			message := twilio.Paging{}
 			json.Unmarshal([]byte(body), &message)
 
 			mes_len := len(message.Messages)

@@ -4,23 +4,31 @@
 <div flex="50" flex-sm="100">
 <md-card id="user">
 	<md-toolbar class="md-toolbar-tools">
-		<h1 ng-if="user.info.username == ''">{{user.info.title | translate }}</h1>
-		<h1 ng-if="user.info.username != ''">{{user.info.username }}</h1>
+		<h1 ng-if="user.info.username == ''">{{ user.info.title | translate }}</h1>
+		<h1 ng-if="user.info.username != ''">{{ user.info.username }}</h1>
 		<!-- central gap -->
 		<span flex=""></span>
 		<md-menu>
-			<md-button aria-label="menu" class="md-icon-button" ng-click="openMenu($mdOpenMenu, $event)" >
+			<md-button id="user-info-menu" aria-label="menu" class="md-icon-button" ng-click="openMenu($mdOpenMenu, $event)" >
 				<md-icon md-svg-src="assets/svg/more_vert.svg"></md-icon>
 			</md-button>
 			<md-menu-content>
 				<md-menu-item>
-					<md-button aria-label="delete account" ng-click="user.info.delete()">
-						{{ "USER.DELETE" | translate }}
+					<md-button ng-if="!user.info.status.editing" aria-label="Edit profile" ng-click="user.info.toggleEditing(originalEvent)">
+						<span >{{ "USER.INFO.BEGIN_EDIT" | translate }}<span>
+					</md-button>
+					<md-button ng-if="user.info.status.editing" aria-label="Edit profile" ng-click="user.info.toggleEditing(originalEvent)">
+						<span >{{ "USER.INFO.STOP_EDIT" | translate }}<span>
 					</md-button>
 				</md-menu-item>
 				<md-menu-item>
 					<md-button aria-label="change password" ng-click="user.info.changePassword(originalEvent)">
-						{{ "USER.CHANGE_PASSWORD" | translate }}
+						{{ "USER.INFO.CHANGE_PASSWORD" | translate }}
+					</md-button>
+				</md-menu-item>
+				<md-menu-item>
+					<md-button aria-label="delete account" ng-click="user.info.delete()">
+						{{ "USER.INFO.DELETE" | translate }}
 					</md-button>
 				</md-menu-item>
 			</md-menu-content>
@@ -28,41 +36,78 @@
 	</md-toolbar>
 
 	<md-card-content style="padding-right: 0;">
+		<div>
+			<p ng-if="user.info.fullName.loading">{{ "USER.INFO.SAVING" | translate }}</p>
+			<div ng-if="!user.info.fullName.loading">
+				<div ng-if="!user.info.fullName.editing" layout="row" layout-align="start center">
+					<md-menu ng-if="user.info.status.editing">
+						<md-button aria-label="menu" class="md-icon-button" ng-click="openMenu($mdOpenMenu, $event)" >
+							<md-icon md-svg-src="assets/svg/more_horiz.svg"></md-icon>
+						</md-button>
+						<md-menu-content>
+							<md-menu-item>
+								<md-button aria-label="change" ng-click="user.info.edit_fullName()">
+									{{ "USER.INFO.CHANGE_NAME" | translate }}
+								</md-button>
+							</md-menu-item>
+						</md-meeu-content>
+					</md-menu>
+					<div layout="column">
+						<p style="font-weight: bold; padding-bottom: 0; margin-bottom: 0;">{{ "USER.INFO.FULL_NAME" | translate }}</p>
+						<p ng-if="user.info.fullName.text != ''">{{ user.info.fullName.text }}</p>
+						<p ng-if="user.info.fullName.text == ''" style="color: #a0a0a0">{{ "USER.INFO.NO_FULL_NAME" | translate }}</p>
+					</div>
+				</div>
+				<form ng-if="user.info.fullName.editing" name="editAddressForm" ng-submit="user.info.set_fullName()">
+					<md-input-container style="padding-right: 1em;">
+						<label>{{ "USER.INFO.FULL_NAME" | translate }}</label>
+						<input name="address" ng-model="user.info.fullName.new_text" type="text" focus-on="edit_fullName" ng-blur="user.info.set_fullName()" require ></input>
+					</md-input-container>
+					<md-button type="submit" ng-show="false">
+						Submit
+					</md-button>
+				</form>
+			</div>
+		</div>
+
 		<div layout="row" layout-align="space-between center">
-			<h3 style="margin-bottom: 0;">Contact Addresses</h3>
-			<md-button class="md-button md-primary" aria-label="change" ng-click="user.info.newAddress($event)">
-				New
+			<h3 style="margin-bottom: 0;">{{ "USER.INFO.ADDRESSES" | translate }}</h3>
+			<md-button id="new-address-fab" class="md-fab md-accent" aria-label="change" ng-click="user.info.newAddress($event)">
+				<md-icon md-svg-src="assets/svg/add.svg"></md-icon>
 			</md-button>
 		</div>
 		<ul style="list-style: none; padding: 0; margin: 0;">
 			<li ng-repeat="address in user.info.addresses">
-				<p ng-if="address.loading">Saving...</p>
+				<p ng-if="address.loading">{{ "USER.INFO.SAVING" | translate }}</p>
 				<div ng-if="!address.loading">
-					<div ng-if="!address.editing" layout="row" layout-align="space-between center">
-						<p><span style="font-weight: bold;">{{address.medium | translate}}:</span>  {{address.address}}</p>
-						<md-menu>
+					<div ng-if="!address.editing" layout="row" layout-align="start center">
+						<md-menu ng-if="user.info.status.editing">
 							<md-button aria-label="menu" class="md-icon-button" ng-click="openMenu($mdOpenMenu, $event)" >
 								<md-icon md-svg-src="assets/svg/more_horiz.svg"></md-icon>
 							</md-button>
 							<md-menu-content>
 								<md-menu-item>
-									<md-button class="md-button md-primary" aria-label="change" ng-click="user.info.edit_address($index)">
-										{{ "USER.EMAIL_CHANGE" | translate }}
+									<md-button aria-label="change" ng-click="user.info.edit_address($index)">
+										{{ "USER.INFO.EMAIL_CHANGE" | translate }}
 									</md-button>
 								</md-menu-item>
 								<md-menu-item>
-									<md-button class="md-button md-primary" aria-label="change" ng-click="user.info.delete_address($index)">
-										Delete
+									<md-button aria-label="change" ng-click="user.info.delete_address($index)">
+										{{ "USER.INFO.EMAIL_DELETE" | translate }}
 									</md-button>
 								</md-menu-item>
 							</md-menu-container>
 						</md-menu>
+						<p><span style="font-weight: bold;">{{ "GENERAL.MEDIUMS." + address.medium | translate }}:</span>  {{address.address}}</p>
 					</div>
-					<form ng-if="address.editing" name="editAddressForm">
+					<form ng-if="address.editing" name="editAddressForm" ng-submit="user.info.save_edit_address($index)">
 						<md-input-container style="padding-right: 1em;">
-							<label>{{ address.medium | translate }}</label>
+							<label>{{ "GENERAL.MEDIUMS." + address.medium | translate }}</label>
 							<input name="address" ng-model="address.new_address" type="text" focus-on="edit_address" ng-blur="user.info.save_edit_address($index)" require ></input>
 						</md-input-container>
+						<md-button type="submit" ng-show="false">
+							Submit
+						</md-button>
 					</form>
 				</div>
 			</li>
@@ -74,7 +119,7 @@
 <div flex="50" flex-sm="100">
 <md-card id="groups">
 	<md-toolbar class="md-toolbar-tools">
-		<h1 style="padding-left: .5em; padding-bottom: 0em; margin-bottom: 0em;">{{ "GROUPS" | translate }}</h1>
+		<h1 style="padding-left: .5em; padding-bottom: 0em; margin-bottom: 0em;">{{ "USER.GROUPS.GROUPS" | translate }}</h1>
 		<!-- central gap -->
 		<span flex=""></span>
 		<md-menu>
@@ -84,12 +129,12 @@
 			<md-menu-content>
 				<md-menu-item>
 					<md-button aria-label="Join">
-						Join Group
+						{{ "USER.GROUPS.JOIN" | translate }}
 					</md-button>
 				</md-menu-item>
 				<md-menu-item>
 					<md-button aria-label="New" ng-click="user.groups.new(originalEvent)">
-						New Group
+						{{ "USER.GROUPS.NEW" | translate }}
 					</md-button>
 				</md-menu-item>
 			</md-menu-content>
@@ -103,7 +148,7 @@
 			</div>
 			</li>
 		</ul>
-		<p ng-if="!user.groups.list.length">{{ "NO_GROUPS" | translate }}</p>
+		<p ng-if="!user.groups.list.length">{{ "USER.GROUPS.NO_GROUPS" | translate }}</p>
 	</md-card-content>
 </md-card>
 </div>

@@ -5,7 +5,7 @@
 	<md-toolbar>
 		<!-- sidenav toolbar (should be like on android) -->
 	</md-toolbar>
-	
+
 	<md-lisit>
 		<md-list-item ng-repeat="sni in sidenav.items">
 			<md-button ng-click="sni.click()" ng-class="{'selected' : it === sidenav.selected}">
@@ -20,14 +20,14 @@
 	<md-button ng-if="sidenav.exists" class="md-icon-button" aria-label="Settings">
 		<md-icon md-svg-icon="assets/svg/menu.svg"></md-icon>
 	</md-button>
-	
+
 	<h1 id="title">
 		<span>{{ toolbar.title  | translate}}</span>
 	</h1>
-	
+
 	<!-- central gap -->
 	<span flex=""></span>
-	
+
 	<span ng-repeat="b in toolbar.buttons">
 		<md-button class="md-icon-button" ng-if="b.img_src" ng-attr-aria-label="{{ b.aria_label }}" ng-click="toolbar.onclick($index)">
 			<md-icon md-svg-icon="{{ b.img_src }}"><md-icon>

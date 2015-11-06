@@ -7,26 +7,34 @@
 		</div>
 	</md-toolbar>
 
-	<form ng-if="!loading" ng-submit="group.create()">
-		<md-dialog-content style="max-width: 150mm; max-height: 100mm;">
-			<div class="md-dialog-content">
-				<md-input-container>
-					<label>New Group Name</label>
-					<input ng-model="group.name" type="text" />
-				</md-input-container>
-			</div>
-		</md-dialog-content>
-		<div style="clear: both;"></div>
-	</form>
+	<div ng-if="!loading">
+		<form ng-submit="group.create()">
+			<md-dialog-content style="max-width: 150mm; max-height: 100mm;">
+				<div class="md-dialog-content">
+					<p style="color: red;" ng-if="error != ''">{{ error | translate }}</p>
+					<md-input-container>
+						<label>{{ "USER.NEW_GROUP.GROUP_NAME" | translate}}</label>
+						<input ng-model="group.name" type="text" />
+					</md-input-container>
+				</div>
+			</md-dialog-content>
+			<div style="clear: both;"></div>
+			<md-button type="submit" ng-show="false">
+				Submit
+			</md-button>
+		</form>
 
-	<div class="md-actions" layout="row">
-		<md-button ng-click="group.cancel()">
-			Cancel
-		</md-button>
-		<md-button ng-click="group.create()">
-			Create
-		</md-button>
+		<div class="md-actions" layout="row">
+			<md-button ng-click="group.cancel()">
+				{{ "GENERAL.FORM.RESPONSE.CANCEL" | translate }}
+			</md-button>
+			<md-button ng-click="group.create()">
+				{{ "GENERAL.FORM.RESPONSE.CREATE" | translate }}
+			</md-button>
+		</div>
 	</div>
 
-	<div ng-if="loading" ng-include="'src/loader.html'" style="z-index: 12; width: 100%; height: 100%;"></div>
+	<div ng-if="loading" style="width: 100px; height: 100px margin-top: 1.5em; margin-left: auto; margin-right: auto; margin-bottom: 1.5em;">
+		<md-progress-circular md-mode="indeterminate"></md-progress-circular>
+	</div>
 </md-dialog>

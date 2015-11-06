@@ -13,6 +13,7 @@ import (
 	"io"
 	"jsonpatch"
 	"strings"
+	"log"
 )
 
 var _ he.Entity = &User{}
@@ -69,15 +70,17 @@ func (u *User) populate(db *gorm.DB) {
 			panic(result.Error)
 		}
 	}
-
-	for _, subscription := range subscriptions {
-		for j, address := range u.Addresses {
-			if address.Id == subscription.AddressId {
-				u.Addresses[j].Subscriptions = append(u.Addresses[j].Subscriptions, subscription)
+	for i := range u.Addresses {
+		u.Addresses[i].Subscriptions = []Subscription{}
+		for _, subscription := range subscriptions {
+			if u.Addresses[i].Id == subscription.AddressId {
+				u.Addresses[i].Subscriptions = append(u.Addresses[i].Subscriptions, subscription)
 			}
 		}
+		log.Printf("\n%#v\n", u.Addresses[i].Subscriptions)
 	}
 }
+
 
 func GetUserById(db *gorm.DB, id string) *User {
 	id = strings.ToLower(id)
@@ -270,6 +273,7 @@ func (user *User) Methods() map[string]func(he.Request) he.Response {
 				}
 			}
 			// save
+
 			*user = new_user
 			user.Save(db)
 			if err = db.Where("id IN (?)", delete_address_ids).Delete(UserAddress{}).Error; err != nil {
