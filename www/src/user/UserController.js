@@ -584,7 +584,7 @@
 				list.push(item);
 			}
 			var item = {
-				medium:	self.medium.toLowerCase(),
+				medium:	self.mediums[medium].name.toLowerCase(),
 				address: self.address
 			};
 			list.push(item);
