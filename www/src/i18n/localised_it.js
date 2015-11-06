@@ -56,16 +56,26 @@ localised.it = {
 		NEW_GROUP:	{
 			TITLE: {
 				MAIN:		"Crea Gruppo",
-				CREATING:	"Creando Group...",
-				FAIL:		"Errore"
+				CREATING:	"Creando Group..."
 			},
-			GROUP_NAME:		"Come si chiamano"
+			GROUP_NAME:		"Come si chiamano",
+			ERRORS:	{
+				"409": {
+					TITLE:		"Questo nome di gruppo è già usato.",
+					CONTENT:	"Non puoi usare questo nome per un nuovo gruppo perché un altro gruppo lo sta già usando.  "
+				}
+			}
 		},
 		CHANGE_PASSWORD:	{
 			TITLE: {
 				MAIN:		"Cambia Password",
-				CREATING:	"Cambiando Password...",
-				FAIL:		"Errore"
+				CREATING:	"Cambiando Password..."
+			},
+			ERRORS:	{
+				"409": {
+					TITLE:		"Errore di Cambiare Password",
+					CONTENT:	"Non scriva la tua password corrente corregiamente.  "
+				}
 			},
 			OLD_PASSWORD:	"Password Corrente",
 			NEW_PASSWORD:	"Password Nuova",
@@ -74,8 +84,7 @@ localised.it = {
 		NEW_ADDRESS: {
 			TITLE: {
 				MAIN:		"Aggiunge Indirizzo",
-				CREATING:	"Aggiungendo Indirizzo...",
-				FAIL:		"Errore"
+				CREATING:	"Aggiungendo Indirizzo..."
 			},
 			MEDIUM:		"Mezzo",
 			ADDRESS:	"Indirizzo"
