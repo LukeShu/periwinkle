@@ -95,6 +95,18 @@
 				self.info.addresses[index].editing = false;
 				if(self.info.addresses[index].address !== self.info.addresses[index].new_address) {
 					self.info.addresses[index].loading = true;
+					var i;
+					var list = [];
+					for (i in self.info.addresses) {
+						var item = {
+							medium:	self.info.address[i].medium.toLowerCase(),
+							address: self.info.address[i].address
+						};
+						if(i == index) {
+							item.address = self.info.address[i].new_address;
+						}
+						list.push(item);
+					}
 					$http({
 						method: 'PATCH',
 						url: '/v1/users/' + userService.user_id,
@@ -104,8 +116,8 @@
 						data: [
 							{
 								'op':		'replace',
-								'path':		'/addresses/' + index + '/address',
-								'value':	self.info.addresses[index].new_address
+								'path':		'/addresses',
+								'value':	list
 							}
 						]
 					}).then(
@@ -130,6 +142,17 @@
 			},
 			delete_address: function(index) {
 				self.info.addresses[index].loading = true;
+				var i;
+				var list = [];
+				for (i in self.info.addresses) {
+					if(i != index) {
+						var item = {
+							medium:	self.info.address[i].medium.toLowerCase(),
+							address: self.info.address[i].address
+						};
+						list.push(item);
+					}
+				}
 				$http({
 					method: 'PATCH',
 					url: '/v1/users/' + userService.user_id,
@@ -139,12 +162,12 @@
 					data: [
 						{
 							'op':		'remove',
-							'path':		'/addresses/' + index + '/address',
+							'path':		'/addresses',
 							/* TODO: value should send in an array [] of all of the
 							 * values that are currently in it, minus the one below
 							 * that the user clicked to delete
 							 */
-							'value':	self.info.addresses[index].new_address
+							'value':	list
 						}
 					]
 				}).then(
@@ -202,7 +225,10 @@
 					templateUrl:			'src/user/new_address.html',
 					parent:					angular.element(document.body),
 					targetEvent:			ev,
-					clickOutsideToClose:	true
+					clickOutsideToClose:	true,
+					locals:	{
+						addresses: self.info.addresses
+					}
 				}).then(
 					function (response) {
 						//the dialog responded before closing
@@ -518,7 +544,7 @@
 		};
 	}
 
-	function NewAddressController($scope, $mdDialog, $http, UserService) {
+	function NewAddressController($scope, $mdDialog, $http, UserService, addresses) {
 		var self = $scope.address = this;
 
 		$scope.loading = false;
@@ -548,6 +574,20 @@
 		self.create = function() {
 			$scope.loading = true;
 			$scope.title = 'USER.NEW_ADDRESS.TITLE.CREATING';
+			var i;
+			var list = [];
+			for (i in addresses) {
+				var item = {
+					medium:	address[i].medium.toLowerCase(),
+					address: address[i].address
+				};
+				list.push(item);
+			}
+			var item = {
+				medium:	self.medium.toLowerCase(),
+				address: self.address
+			};
+			list.push(item);
 			$http({
 				method: 'PATCH',
 				url: '/v1/users/' + UserService.user_id,
@@ -558,15 +598,7 @@
 					{
 						'op':		'add',
 						'path':		'/addresses',
-						'value':	[{  
-							/*TODO: add all of the other user addresses that are
-							 * currently in the array and add them this array as
-							 * the patch function does not go into the array and 
-							 * instead just replaces it
-							 */
-							medium:	self.mediums[self.medium].name.toLowerCase(),
-							address: self.address
-						}]
+						'value':	list
 					}
 				]
 			}).then(
