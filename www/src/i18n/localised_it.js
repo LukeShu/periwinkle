@@ -2,7 +2,7 @@
 var _it = {
 	CONTACT_ADMIN:	"Si prega di contattare un amministratore."
 };
-localised.en = {
+localised.it = {
 	LOGIN: {
 		SIGNUP: {
 			SIGNUP:						"Iscriviti",
