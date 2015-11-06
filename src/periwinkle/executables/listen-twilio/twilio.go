@@ -10,6 +10,7 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+	"periwinkle/twilio"
 )
 
 // function returns  a phone number and Status
@@ -90,7 +91,7 @@ func NewPhoneNum() (string, error) {
 		return "", err
 	}
 
-	avail_number := Avail_ph_num{}
+	avail_number := twilio.Avail_ph_num{}
 	json.Unmarshal(body, &avail_number)
 
 	if len(avail_number.PhoneNumberList) != 0 {

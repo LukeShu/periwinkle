@@ -9,50 +9,32 @@ import (
 	"fmt"
 	"github.com/jinzhu/gorm"
 	"io"
-	"io/ioutil"
 	"net/http"
 	"net/mail"
 	"net/url"
 	"os"
+	"encoding/json"
 	"periwinkle/cfg"
 	"periwinkle/store"
 	"strings"
 	"time"
+	"periwinkle/twilio"
+	"io/ioutil"
 )
-
-var message_status, error_code string // TODO: bad globals
-
 func HandleSMS(r io.Reader, name string, db *gorm.DB) int {
 	panic("TODO")
-}
-
-func SmsHttpCallback(w http.ResponseWriter, req *http.Request) {
-	body, err := ioutil.ReadAll(req.Body)
-	if err != nil {
-		fmt.Printf("%v", err)
-	}
-
-	values, err := url.ParseQuery(string(body))
-	if err != nil {
-		fmt.Printf("%v", err)
-	}
-
-	message_status = values.Get("MessageStatus")
-	error_code = values.Get("ErrorCode")
 }
 
 // Returns the status of the message: queued, sending, sent,
 // delivered, undelivered, failed.  If an error occurs, it returns
 // Error.
 func sender(message mail.Message, to string) (status string, err error) {
-	message_status = ""
-	error_code = ""
-
+	
 	group := message.Header.Get("From")
 	user := store.GetUserByAddress(cfg.DB, "email", message.Header.Get("From"))
 
 	sms_from := group // TODO: numberFor(group)
-	sms_to := strings.Split(to, "@")[0]
+	sms_to := strings.Split(to, "@")[1]  //test 0 or 1
 	sms_body := user.FullName + ":" + message.Header.Get("Subject")
 
 	// account SID for Twilio account
@@ -86,16 +68,30 @@ func sender(message mail.Message, to string) (status string, err error) {
 	}
 
 	if resp.StatusCode == 200 || resp.StatusCode == 201 {
+
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		fmt.Printf("%v", err)
+	}
+
+	message := twilio.Message{}
+	json.Unmarshal([]byte(body), &message)
+	sms_status, err := SmsWaitForCallback(message.Sid)
+	
+	if err != nil {
+		fmt.Printf("%s", err)
+	}
+
 		time.Sleep(time.Second)
-		if error_code != "" {
-			return message_status, fmt.Errorf("%s", error_code)
+		if sms_status.ErrorCode != "" {
+			return sms_status.MessageStatus, fmt.Errorf("%s", sms_status.ErrorCode)
 		}
-		if message_status == "queued" || message_status == "sending" || message_status == "sent" {
+		if sms_status.MessageStatus == "queued" || sms_status.MessageStatus == "sending" || sms_status.MessageStatus == "sent" {
 			time.Sleep(time.Second)
 		}
-		status = message_status
-		err = nil
-		return
+		status = sms_status.MessageStatus
+		err = fmt.Errorf("%s", sms_status.ErrorCode)
+		return status, err
 	} else {
 		err = fmt.Errorf("%s", resp.Status)
 		return
