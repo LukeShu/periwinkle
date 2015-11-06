@@ -67,16 +67,16 @@ localised.en = {
 				CREATING:	"Changing Password...",
 				FAIL:		"Fail"
 			},
-			OLD_PASSWORD:	"Current Password",
-			NEW_PASSWORD:	"New Password",
-			CONFIRM:		"Confirm Password",
 			ERRORS:	{
 				"409": {
 					TITLE:		"Password Change Failed",
 					CONTENT:	"You did not enter your current password correctly"
 				},
 				SOMETHING:	'something'
-			}
+			},
+			OLD_PASSWORD:	"Current Password",
+			NEW_PASSWORD:	"New Password",
+			CONFIRM:		"Confirm Password"
 		},
 		NEW_ADDRESS: {
 			TITLE: {
