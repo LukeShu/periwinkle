@@ -99,11 +99,11 @@
 					var list = [];
 					for (i in self.info.addresses) {
 						var item = {
-							medium:	self.info.address[i].medium.toLowerCase(),
-							address: self.info.address[i].address
+							medium:	self.info.addresses[i].medium.toLowerCase(),
+							address: self.info.addresses[i].address
 						};
 						if(i == index) {
-							item.address = self.info.address[i].new_address;
+							item.address = self.info.addresses[i].new_address;
 						}
 						list.push(item);
 					}
