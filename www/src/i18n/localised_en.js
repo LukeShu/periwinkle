@@ -79,7 +79,7 @@ localised.en = {
 			},
 			MEDIUM:		"Medium",
 			ADDRESS:	"Address"
-		}
+		},
 		REDIR:	"You will be redirected back to your user once you log in. "
 	},
 	GENERAL: {
