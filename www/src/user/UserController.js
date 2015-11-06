@@ -197,8 +197,8 @@
 					targetEvent:			ev,
 					clickOutsideToClose:	true
 				}).then(
-					function hide (message) {
-						if(message !== "success") {
+					function hide (response) {
+						if(response !== "success") {
 							//errors
 							var status_code = response.status;
 							var reason = response.data;
@@ -232,7 +232,7 @@
 				}).then(
 					function (response) {
 						//the dialog responded before closing
-						if(message !== "success") {
+						if(response !== "success") {
 							//errors
 							var status_code = response.status;
 							var reason = response.data;
@@ -361,7 +361,7 @@
 				}).then(
 					function (response) {
 						//the dialog responded before closing
-						if(message !== "success") {
+						if(response !== "success") {
 							//errors
 							var status_code = response.status;
 							var reason = response.data;
