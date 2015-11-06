@@ -84,7 +84,7 @@ func HandleEmail(r io.Reader, name string, db *gorm.DB) uint8 {
 	for _, header := range []string{"To", "From", "Cc"} {
 		addresses, err := msg.Header.AddressList(header)
 		if err != nil {
-			log.Fatalf("Parsing %q Header: %v\n", header, err)
+			log.Printf("Parsing %q Header: %v\n", header, err)
 		}
 		for _, addr := range addresses {
 			delete(forward_set, addr.Address)
@@ -107,7 +107,8 @@ func HandleEmail(r io.Reader, name string, db *gorm.DB) uint8 {
 		forward_ary,
 		body)
 	if err != nil {
-		panic(err)
+		log.Println("Error sending:", err)
+		return postfixpipe.EX_UNAVAILABLE
 	}
 	return postfixpipe.EX_OK
 }
