@@ -53,8 +53,11 @@
 	<div ng-include="'src/head.html'"></div>
 	<!-- body -->
 	<md-content id="content" class="md-padding">
-		<div ng-if="loading.is" style="position: absolute; z-index: 12; top: 3em; left: 50%; margin-left: -3.5em; border-color: #f0f0f0; border-style: solid; border-width: 1px; border-radius: 3.5em; background-color: white;">
+		<!-- <div ng-if="loading.is" style="position: absolute; z-index: 12; top: 3em; left: 50%; margin-left: -3.5em; border-color: #f0f0f0; border-style: solid; border-width: 1px; border-radius: 3.5em; background-color: white;">
 			<md-progress-circular md-mode="indeterminate"></md-progress-circular>
+		</div> -->
+		<div ng-if="loading.is" style="position: absolute; z-index: 12; top: 3em; left: 50%; margin-left: -3.5em; border-color: #f0f0f0; border-style: solid; border-width: 1px; border-radius: 3.5em; background-color: white;">
+			<md-progress-circular md-diameter="20px" md-mode="indeterminate"></md-progress-circular>
 		</div>
 		<div ng-view></div>
 	</md-content>
