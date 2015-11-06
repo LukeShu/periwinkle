@@ -56,22 +56,43 @@
 								'op':		'replace',
 								'path':		'/addresses/' + index + '/address',
 								'value':	self.info.addresses[index].new_address
-							},
-							{
-								'op':		'test',
-								'path':		'/addresses/' + index + '/address',
-								'value':	self.info.addresses[index].new_address
-							},
+							}
 						]
 					}).then(
 						function success (response) {
 							debugger;
+							self.info.load();
 						},
 						function fail (response) {
 							debugger;
 						}
 					);
 				}
+			},
+			delete_address: function(index) {
+				self.info.addresses[index].loading = true;
+				$http({
+					method: 'PATCH',
+					url: '/v1/users/' + userService.user_id,
+					headers: {
+						'Content-Type': 'application/json-patch+json'
+					},
+					data: [
+						{
+							'op':		'remove',
+							'path':		'/addresses/' + index + '/address',
+							'value':	self.info.addresses[index].new_address
+						}
+					]
+				}).then(
+					function success (response) {
+						debugger;
+						self.info.load();
+					},
+					function fail (response) {
+						debugger;
+					}
+				);
 			},
 			changePassword:	function(ev) {
 				$mdDialog.show({
@@ -198,7 +219,7 @@
 			);
 		};
 
-		$timeout(self.load);
+		self.load();
 	}
 
 	function NewGroupController($scope, $mdDialog, $http) {
@@ -286,7 +307,7 @@
 		};
 	}
 
-	function NewAddressController($scope, $mdDialog, $http) {
+	function NewAddressController($scope, $mdDialog, $http, UserService) {
 		var self = $scope.address = this;
 
 		$scope.loading = false;
@@ -320,26 +341,31 @@
 		self.create = function() {
 			$scope.loading = true;
 			$scope.title = 'Creating Address...';
-			// $http({
-			// 	method: 'POST',
-			// 	url: '/v1/groups',
-			// 	headers: {
-			// 		'Content-Type': 'application/json'
-			// 	},
-			// 	data: {
-			// 		'groupname': self.name
-			// 	}
-			// }).then(
-			// 	function success(response) {
-			// 		debugger;
-			// 		$mdDialog.hide(self.name);
-			// 	},
-			// 	function fail(response) {
-			// 		debugger;
-			// 		$scope.loading = false;
-			// 		$scope.title = 'Fail';
-			// 	}
-			// );
+			$http({
+				method: 'PATCH',
+				url: '/v1/users/' + UserService.user_id,
+				headers: {
+					'Content-Type': 'application/json-patch+json'
+				},
+				data: [
+					{
+						'op':		'add',
+						'path':		'/addresses',
+						'value':	{
+							medium:	self.mediums[self.medium].name,
+							address: self.address
+						}
+					}
+				]
+			}).then(
+				function success (response) {
+					debugger;
+					self.info.load();
+				},
+				function fail (response) {
+					debugger;
+				}
+			);
 		};
 	}
 

@@ -42,23 +42,21 @@
 			debugger;
 			if(cookie != null && cookie != "") {
 				//the user may have a session
-				$timeout(function() {
-					$scope.loading.is = true;
-					userService.validate(
-						function success() {
-							//user is logged in
-							$location.path('/user').replace();
-						},
-						function fail(status) {
-							//TODO: uh oh!
-						},
-						function noSession() {
-							//the user isn't logged in
-							userService.reset();
-							$scope.loading.is = false;
-						}
-					);
-				});
+				$scope.loading.is = true;
+				userService.validate(
+					function success() {
+						//user is logged in
+						$location.path('/user').replace();
+					},
+					function fail(status) {
+						//TODO: uh oh!
+					},
+					function noSession() {
+						//the user isn't logged in
+						userService.reset();
+						$scope.loading.is = false;
+					}
+				);
 			}
 		}
 

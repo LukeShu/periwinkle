@@ -75,7 +75,6 @@
 				controller:				ErrorDialogController,
 				templateUrl:			'src/error_dialog.html',
 				parent:					angular.element(document.body),
-				targetEvent:			ev,
 				clickOutsideToClose:	true,
 				openFrom:				from,
 				closeTo:				to,
