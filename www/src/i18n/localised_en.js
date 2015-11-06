@@ -62,7 +62,7 @@ localised.en = {
 		OK:				"OK",
 		FORM: {
 			REQUIRED_FIELD:	"This field is required.",
-		}
+		},
 		ERRORS:	{
 			"500": {
 				TITLE:		"Something Went Wrong",
