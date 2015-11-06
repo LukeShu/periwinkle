@@ -118,7 +118,7 @@ localised.en = {
 		SIGNOUT:		"Sign out"
 	}
 };
-localised.en.USER.CHANGE_PASSWORD.ERRORS = ERRORS:	{
+localised.en.USER.CHANGE_PASSWORD.ERRORS = {
 	"409": {
 		TITLE:		"Password Change Failed",
 		CONTENT:	"You did not enter your current password correctly"
