@@ -34,6 +34,7 @@ func (o User) dbSchema(db *gorm.DB) error {
 }
 
 type UserAddress struct {
+	// TODO: add a "verified" boolean
 	Id            int64          `json:"-"`
 	UserId        string         `json:"-"`
 	Medium        string         `json:"medium"`
@@ -167,6 +168,9 @@ func (o *User) patchPassword(patch *jsonpatch.Patch) putil.HTTPError {
 				if !checkedpass {
 					return putil.HTTPErrorf(409, "you must submit and old password (using 'test') before setting a new one")
 				}
+				if o.CheckPassword(op.Value) {
+					return putil.HTTPErrorf(409, "that new password is the same as the old one")
+				}
 				o.SetPassword(op.Value)
 			default:
 				return putil.HTTPErrorf(415, "you may only 'set' or 'replace' the password")
@@ -188,15 +192,15 @@ func (o *User) patchPassword(patch *jsonpatch.Patch) putil.HTTPError {
 	return nil
 }
 
-func (o *User) Methods() map[string]func(he.Request) he.Response {
+func (user *User) Methods() map[string]func(he.Request) he.Response {
 	return map[string]func(he.Request) he.Response{
 		"GET": func(req he.Request) he.Response {
-			return he.StatusOK(o)
+			return he.StatusOK(user)
 		},
 		"PUT": func(req he.Request) he.Response {
 			db := req.Things["db"].(*gorm.DB)
 			sess := req.Things["session"].(*Session)
-			if sess.UserId != o.Id {
+			if sess.UserId != user.Id {
 				return he.StatusForbidden(heutil.NetString("Unauthorized user"))
 			}
 			var new_user User
@@ -204,42 +208,58 @@ func (o *User) Methods() map[string]func(he.Request) he.Response {
 			if err != nil {
 				return err.Response()
 			}
-			if o.Id != new_user.Id {
+			if user.Id != new_user.Id {
 				return he.StatusConflict(heutil.NetString("Cannot change user id"))
 			}
-			*o = new_user
-			o.Save(db)
-			return he.StatusOK(o)
+			// TODO: this won't play nice with the
+			// password hash (because it's private), or
+			// with addresses (because the (private) IDs
+			// need to be made to match up)
+			*user = new_user
+			user.Save(db)
+			return he.StatusOK(user)
 		},
 		"PATCH": func(req he.Request) he.Response {
 			db := req.Things["db"].(*gorm.DB)
 			sess := req.Things["session"].(*Session)
-			if sess.UserId != o.Id {
+			if sess.UserId != user.Id {
 				return he.StatusForbidden(heutil.NetString("Unauthorized user"))
 			}
 			patch, ok := req.Entity.(jsonpatch.Patch)
 			if !ok {
 				return putil.HTTPErrorf(415, "PATCH request must have a patch media type").Response()
 			}
-			httperr := o.patchPassword(&patch)
+			httperr := user.patchPassword(&patch)
 			if httperr != nil {
 				return httperr.Response()
 			}
 			var new_user User
-			err := patch.Apply(o, &new_user)
+			err := patch.Apply(user, &new_user)
 			if err != nil {
 				return putil.HTTPErrorf(409, "%v", err).Response()
 			}
-			if o.Id != new_user.Id {
+			if user.Id != new_user.Id {
 				return he.StatusConflict(heutil.NetString("Cannot change user id"))
 			}
-			*o = new_user
-			o.Save(db)
-			return he.StatusOK(o)
+			// some mucking around with private fields to make things match up
+			new_user.PwHash = user.PwHash
+			for o := range user.Addresses {
+				old_addr := &user.Addresses[o]
+				for n := range new_user.Addresses {
+					new_addr := &new_user.Addresses[n]
+					if new_addr.Medium == old_addr.Medium && new_addr.Address == old_addr.Address {
+						new_addr.Id = old_addr.Id
+					}
+				}
+			}
+			// save
+			*user = new_user
+			user.Save(db)
+			return he.StatusOK(user)
 		},
 		"DELETE": func(req he.Request) he.Response {
 			db := req.Things["db"].(*gorm.DB)
-			db.Delete(o)
+			db.Delete(user)
 			return he.StatusGone(heutil.NetString("User has been deleted"))
 		},
 	}
