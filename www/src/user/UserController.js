@@ -152,7 +152,28 @@
 					parent:					angular.element(document.body),
 					targetEvent:			ev,
 					clickOutsideToClose:	true
-				});
+				}).then(
+					function hide (message) {
+						if(message ! "success") {
+							//errors
+							var status_code = response.status;
+							var reason = response.data;
+							//show alert
+							switch(status_code){
+								case 500:
+									$scope.showError('GENERAL.ERRORS.500.TITLE', 'GENERAL.ERRORS.500.CONTENT', reason, '#user-info-menu', '#user-info-menu');
+									break;
+								default:
+									$scope.showError('GENERAL.ERRORS.DEFAULT.TITLE', 'GENERAL.ERRORS.DEFAULT.CONTENT', reason, '#user-info-menu', '#user-info-menu');
+							}
+						} else {
+							//succeeded
+						}
+					},
+					function cancel() {
+
+					}
+				);
 			},
 			newAddress:	function(ev) {
 				$mdDialog.show({
@@ -360,7 +381,7 @@
 
 		$scope.loading = false;
 		$scope.title = 'USER.CHANGE_PASSWORD.TITLE.MAIN';
-		$scope.errors = [];
+		$scope.error = '';
 
 		self.oldPassword = '';
 		self.newPassword = ['',''];
@@ -395,17 +416,13 @@
 					$mdDialog.hide("success");
 				},
 				function fail(response) {
-					debugger;
-					//TODO: fail messages
-					switch(status_code){
-						case 409:
-							$scope.showError('LOGIN.LOGIN.ERRORS.403.TITLE', 'LOGIN.LOGIN.ERRORS.403.CONTENT', '', '#login-button', '#login-button');
-							break;
-						case 500:
-							$scope.showError('GENERAL.ERRORS.500.TITLE', 'GENERAL.ERRORS.500.CONTENT', reason, '#login-button', '#login-button');
-							break;
-						default:
-							$scope.showError('GENERAL.ERRORS.DEFAULT.TITLE', 'GENERAL.ERRORS.DEFAULT.CONTENT', reason, '#login-button', '#login-button');
+					if(response.status == 409) {
+						$scope.loading = false;
+						$scope.title = 'USER.CHANGE_PASSWORD.ERRORS.409.TITLE';
+						$scope.error = 'USER.CHANGE_PASSWORD.ERRORS.409.CONTENT';
+						self.oldPassword = '';
+					} else {
+						$mdDialog.hide(response);
 					}
 				}
 			);

@@ -69,7 +69,13 @@ localised.en = {
 			},
 			OLD_PASSWORD:	"Current Password",
 			NEW_PASSWORD:	"New Password",
-			CONFIRM:		"Confirm Password"
+			CONFIRM:		"Confirm Password",
+			ERRORS:	{
+				"409": {
+					TITLE:		"Password Change Failed",
+					CONTENT:	"You did not enter your current password correctly"
+				}
+			}
 		},
 		NEW_ADDRESS: {
 			TITLE: {

@@ -92,8 +92,6 @@
 					//show error to user
 					var status_code = response.status;
 					var reason = response.data;
-					var $translate = $filter('translate');
-					var $escape = $filter('escapeHTML');
 					$scope.loading.is = false;
 					//show alert
 					switch(status_code){
