@@ -5,7 +5,6 @@ package httpentity
 import (
 	"bitbucket.org/ww/goautoneg"
 	"fmt"
-	"httpentity/util"
 	"log"
 	"mime"
 	"net/url"
@@ -30,35 +29,19 @@ func normalizeURL(u1 *url.URL) (u *url.URL, mimetype string) {
 }
 
 // assumes that the url has already been passed to normalizeURL()
-func (r *Router) route(req Request, u *url.URL) Response {
-	if r.LogRequest {
-		log.Printf("route %s %q %#v\n", req.Method, u.String(), req)
+func (router *Router) route(request Request, u *url.URL) Response {
+	if router.LogRequest {
+		log.Printf("route %s %q %#v\n", request.Method, u.String(), request)
 	}
 
-	entity := findEntity(r.Root, req, strings.TrimPrefix(u.Path, r.Prefix))
-	if entity == nil {
-		return statusNotFound()
+	handler := router.defaultHandler
+	for i := 0; i < len(router.Middlewares); i++ {
+		handler = middlewareHolder{
+			middleware:  router.Middlewares[len(router.Middlewares)-1-i],
+			nextHandler: handler,
+		}.handler
 	}
-
-	res := r.handleEntity(entity, req)
-	// make sure the Location: header is absolute
-	if l := res.Headers.Get("Location"); l != "" {
-		u2, _ := u.Parse(l)
-		res.Headers.Set("Location", u2.String())
-		// XXX: this is pretty hacky, because it is tightly
-		// integrated with the entity format used by
-		// (Request).StatusCreated()
-		if res.Status == 201 {
-			ilist := []interface{}(res.Entity.(heutil.NetList))
-			slist := make([]string, len(ilist))
-			for i, iface := range ilist {
-				slist[i] = iface.(string)
-			}
-			res.Entity = extensions2net(u2, slist)
-		}
-	}
-
-	return res
+	return handler(request, u)
 }
 
 // assumes that the url has already been passed to normalizeURL()

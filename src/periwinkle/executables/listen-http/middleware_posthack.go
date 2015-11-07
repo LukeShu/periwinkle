@@ -6,17 +6,18 @@ import (
 	"encoding/json"
 	he "httpentity"
 	"httpentity/util" // heutil
+	"net/url"
 	"strings"
 )
 
-func MiddlewarePostHack(req he.Request, handle func(he.Request) he.Response) he.Response {
+func MiddlewarePostHack(req he.Request, u *url.URL, handle func(he.Request, *url.URL) he.Response) he.Response {
 	if req.Method != "POST" {
-		return handle(req)
+		return handle(req, u)
 	}
 
 	decoder, ok := req.Entity.(*json.Decoder)
 	if !ok {
-		return handle(req)
+		return handle(req, u)
 	}
 	var entity interface{}
 	err := decoder.Decode(&entity)
@@ -26,7 +27,7 @@ func MiddlewarePostHack(req he.Request, handle func(he.Request) he.Response) he.
 
 	hash, ok := entity.(map[string]interface{})
 	if !ok {
-		return handle(req)
+		return handle(req, u)
 	}
 
 	method, ok := hash["_method"].(string)
@@ -54,5 +55,5 @@ func MiddlewarePostHack(req he.Request, handle func(he.Request) he.Response) he.
 		panic(err)
 	}
 	req.Entity = json.NewDecoder(strings.NewReader(string(str)))
-	return handle(req)
+	return handle(req, u)
 }

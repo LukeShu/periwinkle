@@ -98,4 +98,4 @@ type NetEntity interface {
 ////////////////////////////////////////////////////////////////////////////////
 
 // A Middleware is something that wraps the request handler.
-type Middleware func(Request, func(Request) Response) Response
+type Middleware func(Request, *url.URL, func(Request, *url.URL) Response) Response

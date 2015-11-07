@@ -4,11 +4,12 @@ package main
 
 import (
 	he "httpentity"
+	"net/url"
 	"periwinkle/cfg"
 	"periwinkle/util" // putil
 )
 
-func MiddlewareDatabase(req he.Request, handle func(he.Request) he.Response) (res he.Response) {
+func MiddlewareDatabase(req he.Request, u *url.URL, handle func(he.Request, *url.URL) he.Response) (res he.Response) {
 	transaction := cfg.DB.Begin()
 	req.Things["db"] = transaction
 	rollback := true
@@ -29,7 +30,7 @@ func MiddlewareDatabase(req he.Request, handle func(he.Request) he.Response) (re
 		}
 	}()
 
-	res = handle(req)
+	res = handle(req, u)
 
 	err := transaction.Commit().Error
 	rollback = false

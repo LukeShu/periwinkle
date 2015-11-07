@@ -10,7 +10,7 @@ import (
 // Takes the normalized path without the leading slash
 func findEntity(entity Entity, req Request, upath string) Entity {
 	if entity == nil {
-		return nil // statusNotFound()
+		return nil // 404
 	} else if upath == "" {
 		return entity
 	} else {

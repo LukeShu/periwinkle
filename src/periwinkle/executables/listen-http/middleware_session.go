@@ -6,6 +6,7 @@ import (
 	"log"
 	"github.com/jinzhu/gorm"
 	he "httpentity"
+	"net/url"
 	"periwinkle/store"
 	"time"
 )
@@ -48,8 +49,8 @@ func getsession(req he.Request) *store.Session {
 }
 
 
-func MiddlewareSession(req he.Request, handle func(he.Request) he.Response) he.Response {
+func MiddlewareSession(req he.Request, u *url.URL, handle func(he.Request, *url.URL) he.Response) he.Response {
 	log.Println("session mw")
 	req.Things["session"] = getsession(req)
-	return handle(req)
+	return handle(req, u)
 }

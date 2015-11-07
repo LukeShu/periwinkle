@@ -3,6 +3,8 @@
 package httpentity
 
 import (
+	"httpentity/util"
+	"net/url"
 	"strings"
 )
 
@@ -24,42 +26,59 @@ func methods2string(methods map[string]func(request Request) Response) string {
 	return strings.Join(list, ", ")
 }
 
-func middlewareToHandler(mw Middleware, h func(Request) Response) func(Request) Response {
-	return func(r Request) Response {
-		return mw(r, h)
-	}
+type middlewareHolder struct {
+	middleware  Middleware
+	nextHandler func(request Request, u *url.URL) Response
 }
 
-func entityToHandler(entity Entity) func(Request) Response {
-	return func(request Request) (response Response) {
-		callmethod := request.Method
-		if callmethod == "HEAD" {
-			callmethod = "GET"
-		}
-		methods := entity.Methods()
-		handler, method_allowed := methods[request.Method]
-		if method_allowed {
-			response = handler(request)
-		} else {
-			if callmethod == "OPTIONS" {
-				response = StatusOK(nil)
-			} else {
-				response = statusMethodNotAllowed(methods2string(methods))
-			}
-		}
+func (mwh middlewareHolder) handler(request Request, u *url.URL) Response {
+	return mwh.middleware(request, u, mwh.nextHandler)
+}
+
+// assumes that the url has already been passed to normalizeURL()
+func (router *Router) defaultHandler(request Request, u *url.URL) Response {
+	entity := findEntity(router.Root, request, strings.TrimPrefix(u.Path, router.Prefix))
+	if entity == nil {
+		return statusNotFound()
+	}
+
+	callmethod := request.Method
+	if callmethod == "HEAD" {
+		callmethod = "GET"
+	}
+	methods := entity.Methods()
+	handler, method_allowed := methods[request.Method]
+
+	var response Response
+	if method_allowed {
+		response = handler(request)
+	} else {
 		if callmethod == "OPTIONS" {
-			response.Headers.Set("Allow", methods2string(methods))
+			response = StatusOK(nil)
+		} else {
+			response = statusMethodNotAllowed(methods2string(methods))
 		}
-		return
 	}
-}
+	if callmethod == "OPTIONS" {
+		response.Headers.Set("Allow", methods2string(methods))
+	}
 
-func (router *Router) handleEntity(entity Entity, request Request) Response {
-	handler := entityToHandler(entity)
-	for i := 0; i < len(router.Middlewares); i++ {
-		handler = middlewareToHandler(
-			router.Middlewares[len(router.Middlewares)-1-i],
-			handler)
+	// make sure the Location: header is absolute
+	if l := response.Headers.Get("Location"); l != "" {
+		u2, _ := u.Parse(l)
+		response.Headers.Set("Location", u2.String())
+		// XXX: this is pretty hacky, because it is tightly
+		// integrated with the entity format used by
+		// (Request).StatusCreated()
+		if response.Status == 201 {
+			ilist := []interface{}(response.Entity.(heutil.NetList))
+			slist := make([]string, len(ilist))
+			for i, iface := range ilist {
+				slist[i] = iface.(string)
+			}
+			response.Entity = extensions2net(u2, slist)
+		}
 	}
-	return handler(request)
+
+	return response
 }
