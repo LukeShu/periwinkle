@@ -19,7 +19,7 @@ var dirMessages he.Entity = newDirMessages()
 type Message struct {
 	Id      string
 	GroupId string
-	Unique  maildir.Unique
+	Unique  string
 	// cached fields??????
 }
 
@@ -37,7 +37,7 @@ func NewMessage(db *gorm.DB, id string, group Group, unique maildir.Unique) Mess
 	o := Message{
 		Id:      id,
 		GroupId: group.Id,
-		Unique:  unique,
+		Unique:  string(unique),
 	}
 	if err := db.Create(&o).Error; err != nil {
 		panic(err)

@@ -3,11 +3,14 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"os"
 	"periwinkle/cfg"
 	"periwinkle/util" // putil
+	_ "periwinkle/email_handlers" // handlers
 	"postfixpipe"
+	"runtime"
 	"strings"
 )
 
@@ -15,12 +18,18 @@ func main() {
 	var ret uint8
 	defer func() {
 		if obj := recover(); obj != nil {
-			log.Println(obj)
 			if err, ok := obj.(error); ok {
 				perror := putil.ErrorToError(err)
 				ret = perror.PostfixCode()
 			} else {
 				ret = postfixpipe.EX_UNAVAILABLE
+			}
+			const size = 64 << 10
+			buf := make([]byte, size)
+			buf = buf[:runtime.Stack(buf, false)]
+			text := fmt.Sprintf("%T(%#v) => %v\n\n%s\n", obj, obj, obj, string(buf))
+			for _, line := range strings.Split(text, "\n") {
+				log.Println(line)
 			}
 		}
 		os.Exit(int(ret))

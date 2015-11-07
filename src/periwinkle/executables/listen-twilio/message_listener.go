@@ -4,8 +4,8 @@ package main
 
 import (
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"periwinkle/cfg"
 	"periwinkle/store"
@@ -46,13 +46,13 @@ func main() {
 			resp, err := client.Do(req)
 
 			if err != nil {
-				fmt.Printf("%v", err)
+				log.Println(err)
 			}
 
 			defer resp.Body.Close()
 			body, err := ioutil.ReadAll(resp.Body)
 			if err != nil {
-				fmt.Printf("%v", err)
+				log.Println(err)
 			}
 
 			// converts JSON messages
@@ -66,7 +66,7 @@ func main() {
 					time_send, _ := time.Parse(time.RFC1123Z, message.Messages[i].DateSent)
 
 					if err != nil {
-						fmt.Printf("%v", err)
+						log.Println(err)
 					}
 
 					if time_send.Unix() >= cur_time.Unix() {

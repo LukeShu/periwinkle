@@ -23,7 +23,7 @@ func newUnique() Unique {
 	if err != nil {
 		hostname = "localhost"
 	}
-	hostname = strings.Replace("/", "\\057", strings.Replace(":", "\\072", hostname, -1), -1)
+	hostname = strings.Replace(strings.Replace(hostname, ":", "\\072", -1), "/", "\\057", -1)
 
 	delivery_id := ""
 	// delivery_id += fmt.Sprintf("#%x", unix_sequencenumber())
@@ -88,6 +88,7 @@ func (md Maildir) NewMail() Writer {
 	unique := newUnique()
 	file, err := os.OpenFile(string(md)+"/tmp/"+string(unique), os.O_WRONLY|os.O_CREATE, 0666)
 	if err != nil {
+		fmt.Println(err)
 		return nil
 	}
 	ret := &mailWriter{

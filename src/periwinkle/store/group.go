@@ -87,11 +87,15 @@ func GetGroupsByMember(db *gorm.DB, user User) []Group {
 	}
 	// use the list of address IDs to get a list of subscriptions
 	var subscriptions []Subscription
-	if result := db.Where("address_id IN (?)", user_address_ids).Find(&subscriptions); result.Error != nil {
-		if result.RecordNotFound() {
-			return nil
+	if len(user_address_ids) > 0 {
+		if result := db.Where("address_id IN (?)", user_address_ids).Find(&subscriptions); result.Error != nil {
+			if result.RecordNotFound() {
+				return nil
+			}
+			panic(result.Error)
 		}
-		panic(result.Error)
+	} else {
+		subscriptions = make([]Subscription, 0)
 	}
 	// turn the list of subscriptions into a list of group IDs
 	group_ids := make([]string, len(subscriptions))

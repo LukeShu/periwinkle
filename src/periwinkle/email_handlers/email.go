@@ -4,6 +4,7 @@
 package handlers
 
 import (
+	"fmt"
 	"github.com/jinzhu/gorm"
 	"io"
 	"io/ioutil"
@@ -18,6 +19,10 @@ import (
 
 func HandleEmail(r io.Reader, name string, db *gorm.DB) uint8 {
 	mdWriter := cfg.Mailstore.NewMail()
+	if mdWriter == nil {
+		log.Printf("Could not open maildir for writing: %s\n", cfg.Mailstore)
+		return postfixpipe.EX_IOERR
+	}
 	defer func() {
 		if mdWriter != nil {
 			mdWriter.Cancel()
@@ -68,7 +73,11 @@ func HandleEmail(r io.Reader, name string, db *gorm.DB) uint8 {
 
 	// fetch all of those addresses
 	var address_list []store.UserAddress
-	db.Where("id in (?)", address_ids).Find(&address_list)
+	if len(address_ids) > 0 {
+		db.Where("id IN (?)", address_ids).Find(&address_list)
+	} else {
+		address_list = make([]store.UserAddress, 0)
+	}
 
 	// convert that list into a set
 	forward_set := make(map[string]bool, len(address_list))
@@ -80,7 +89,7 @@ func HandleEmail(r io.Reader, name string, db *gorm.DB) uint8 {
 	for _, header := range []string{"To", "From", "Cc"} {
 		addresses, err := msg.Header.AddressList(header)
 		if err != nil {
-			log.Fatalf("Parsing %q Header: %v\n", header, err)
+			log.Printf("Parsing %q Header: %v\n", header, err)
 		}
 		for _, addr := range addresses {
 			delete(forward_set, addr.Address)
@@ -95,15 +104,28 @@ func HandleEmail(r io.Reader, name string, db *gorm.DB) uint8 {
 		i++
 	}
 
-	// send the message out
-	body, _ := ioutil.ReadAll(msg.Body)
-	err = smtp.SendMail("localhost:25",
-		smtp.PlainAuth("", "", "", ""),
-		msg.Header.Get("From"),
-		forward_ary,
-		body)
-	if err != nil {
-		panic(err)
+	// format the message
+	msg822 := []byte{}
+	for k := range msg.Header {
+		msg822 = append(msg822, []byte(fmt.Sprintf("%s: %s\r\n", k, msg.Header.Get(k)))...)
+	}
+	msg822 = append(msg822, []byte("\r\n")...)
+	body, _ := ioutil.ReadAll(msg.Body) // TODO: error handling
+	msg822 = append(msg822, body...)
+	log.Println("MSG822\n"+string(msg822))
+	log.Println("RECIPIENTS:", forward_ary)
+
+	if len(forward_ary) > 0 {
+		// send the message out
+		err = smtp.SendMail("localhost:25",
+			smtp.PlainAuth("", "", "", ""),
+			msg.Header.Get("From"),
+			forward_ary,
+			msg822)
+		if err != nil {
+			log.Println("Error sending:", err)
+			return postfixpipe.EX_UNAVAILABLE
+		}
 	}
 	return postfixpipe.EX_OK
 }
