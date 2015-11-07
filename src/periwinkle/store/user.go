@@ -39,7 +39,7 @@ type UserAddress struct {
 	UserId        string         `json:"-"`
 	Medium        string         `json:"medium"`
 	Address       string         `json:"address"`
-	Subscriptions []Subscription `json:"-"`
+	Subscriptions []Subscription `json:"subscriptions"`
 }
 
 func (o UserAddress) dbSchema(db *gorm.DB) error {
