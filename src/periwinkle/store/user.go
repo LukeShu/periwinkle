@@ -81,7 +81,6 @@ func (u *User) populate(db *gorm.DB) {
 				u.Addresses[i].Subscriptions = append(u.Addresses[i].Subscriptions, subscription)
 			}
 		}
-		log.Printf("\n%#v\n", u.Addresses[i].Subscriptions)
 	}
 }
 

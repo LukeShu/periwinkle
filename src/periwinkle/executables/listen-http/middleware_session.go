@@ -5,7 +5,6 @@ package main
 import (
 	"github.com/jinzhu/gorm"
 	he "httpentity"
-	"log"
 	"net/url"
 	"periwinkle/store"
 	"time"
@@ -17,28 +16,24 @@ func getsession(req he.Request) *store.Session {
 		return nil
 	}
 	session_id := cookie.Value
-	log.Println("cookie: ", session_id)
+
 	switch req.Method {
 	case "OPTIONS", "GET", "HEAD":
 		// do nothing
 	default:
 		header := req.Headers.Get("X-XSRF-TOKEN")
-		log.Println("header: ", header)
 		if header != session_id {
 			return nil
 		}
 	}
-	log.Println("trying: ", session_id)
 
 	// It's not worth panicing if we have database errors here.
 	db, ok := req.Things["db"].(*gorm.DB)
 	if !ok {
 		return nil
 	}
-	log.Println("dbok")
 	sess := store.GetSessionById(db, session_id)
 	if sess != nil {
-		log.Println("got session")
 		sess.LastUsed = time.Now()
 		func() {
 			defer recover()
@@ -49,7 +44,6 @@ func getsession(req he.Request) *store.Session {
 }
 
 func MiddlewareSession(req he.Request, u *url.URL, handle func(he.Request, *url.URL) he.Response) he.Response {
-	log.Println("session mw")
 	req.Things["session"] = getsession(req)
 	return handle(req, u)
 }
