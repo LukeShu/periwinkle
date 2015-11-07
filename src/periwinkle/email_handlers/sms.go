@@ -19,9 +19,9 @@ import (
 	"periwinkle/cfg"
 	"periwinkle/store"
 	"periwinkle/twilio"
+	"postfixpipe"
 	"strings"
 	"time"
-	"postfixpipe"
 )
 
 func HandleSMS(r io.Reader, name string, db *gorm.DB) uint8 {
@@ -45,8 +45,8 @@ func sender(message mail.Message, to string, db *gorm.DB) (status string, err er
 	//group := message.Header.Get("From")
 	user := store.GetUserByAddress(db, "email", message.Header.Get("From"))
 
-	sms_from := "+17653569541"   // TODO: group:numberFor(group)
-	sms_to := strings.Split(to, "@")[0] //test 0 or 1
+	sms_from := "+17653569541"          // TODO: group:numberFor(group)
+	sms_to := strings.Split(to, "@")[0] // test 0 or 1
 	sms_body := user.FullName + ":" + message.Header.Get("Subject")
 
 	// account SID for Twilio account
@@ -93,7 +93,7 @@ func sender(message mail.Message, to string, db *gorm.DB) (status string, err er
 		if err != nil {
 			return "", fmt.Errorf("%v", err)
 		}
-		
+
 		if sms_status.MessageStatus == "undelivered" || sms_status.MessageStatus == "failed" {
 			return sms_status.MessageStatus, fmt.Errorf("%s", sms_status.ErrorCode)
 		}

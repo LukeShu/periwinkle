@@ -7,8 +7,8 @@ import (
 	"log"
 	"os"
 	"periwinkle/cfg"
-	"periwinkle/util" // putil
 	_ "periwinkle/email_handlers" // handlers
+	"periwinkle/util"             // putil
 	"postfixpipe"
 	"runtime"
 	"strings"

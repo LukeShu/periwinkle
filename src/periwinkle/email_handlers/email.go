@@ -112,7 +112,7 @@ func HandleEmail(r io.Reader, name string, db *gorm.DB) uint8 {
 	msg822 = append(msg822, []byte("\r\n")...)
 	body, _ := ioutil.ReadAll(msg.Body) // TODO: error handling
 	msg822 = append(msg822, body...)
-	log.Println("MSG822\n"+string(msg822))
+	log.Println("MSG822\n" + string(msg822))
 	log.Println("RECIPIENTS:", forward_ary)
 
 	if len(forward_ary) > 0 {
