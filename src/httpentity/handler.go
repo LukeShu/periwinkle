@@ -82,3 +82,14 @@ func (router *Router) defaultHandler(request Request, u *url.URL) Response {
 
 	return response
 }
+
+func (router *Router) initHandler() {
+	handler := router.defaultHandler
+	for i := 0; i < len(router.Middlewares); i++ {
+		handler = middlewareHolder{
+			middleware:  router.Middlewares[len(router.Middlewares)-1-i],
+			nextHandler: handler,
+		}.handler
+	}
+	router.handler = handler
+}

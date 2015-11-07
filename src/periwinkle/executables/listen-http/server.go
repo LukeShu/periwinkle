@@ -31,7 +31,7 @@ func makeServer(socket net.Listener) *stoppable.HTTPServer {
 	}
 	mux := http.NewServeMux()
 	// The main REST API
-	mux.Handle("/v1/", &he.Router{
+	mux.Handle("/v1/", he.Router{
 		Prefix:         "/v1/",
 		Root:           store.DirRoot,
 		Decoders:       std_decoders,
@@ -39,9 +39,9 @@ func makeServer(socket net.Listener) *stoppable.HTTPServer {
 		Stacktrace:     cfg.Debug,
 		LogRequest:     cfg.Debug,
 		TrustForwarded: cfg.TrustForwarded,
-	})
+	}.Init())
 	// URL shortener service
-	mux.Handle("/s/", &he.Router{
+	mux.Handle("/s/", he.Router{
 		Prefix:         "/s/",
 		Root:           store.DirShortUrls,
 		Decoders:       std_decoders,
@@ -49,7 +49,7 @@ func makeServer(socket net.Listener) *stoppable.HTTPServer {
 		Stacktrace:     cfg.Debug,
 		LogRequest:     cfg.Debug,
 		TrustForwarded: cfg.TrustForwarded,
-	})
+	}.Init())
 
 	// The static web UI
 	mux.Handle("/webui/", http.StripPrefix("/webui/", http.FileServer(cfg.WebUiDir)))

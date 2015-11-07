@@ -43,6 +43,8 @@ type Router struct {
 	// Whether to trust `X-Forwarded-Scheme:` and RFC 7239
 	// `Forwarded: proto=`
 	TrustForwarded bool
+
+	handler func(Request, *url.URL) Response
 }
 
 ////////////////////////////////////////////////////////////////////////////////

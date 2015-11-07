@@ -20,7 +20,7 @@ func (r *Router) Route(req Request, u *url.URL) (res Response) {
 	}
 
 	defer r.finish(req, u, &res)
-	res = r.route(req, u)
+	res = r.handler(req, u)
 	return
 }
 
@@ -74,7 +74,7 @@ func (h *Router) serveHTTP(w http.ResponseWriter, r *http.Request) (res Response
 	}
 
 	// run the request
-	res = h.route(req, u)
+	res = h.handler(req, u)
 
 	return
 }

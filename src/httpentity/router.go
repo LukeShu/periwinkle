@@ -28,20 +28,9 @@ func normalizeURL(u1 *url.URL) (u *url.URL, mimetype string) {
 	return
 }
 
-// assumes that the url has already been passed to normalizeURL()
-func (router *Router) route(request Request, u *url.URL) Response {
-	if router.LogRequest {
-		log.Printf("route %s %q %#v\n", request.Method, u.String(), request)
-	}
-
-	handler := router.defaultHandler
-	for i := 0; i < len(router.Middlewares); i++ {
-		handler = middlewareHolder{
-			middleware:  router.Middlewares[len(router.Middlewares)-1-i],
-			nextHandler: handler,
-		}.handler
-	}
-	return handler(request, u)
+func (r Router) Init() *Router {
+	r.initHandler()
+	return &r
 }
 
 // assumes that the url has already been passed to normalizeURL()
