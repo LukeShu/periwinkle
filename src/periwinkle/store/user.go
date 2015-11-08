@@ -12,7 +12,6 @@ import (
 	"httpentity/util" // heutil
 	"io"
 	"jsonpatch"
-	"log"
 	"strings"
 )
 
