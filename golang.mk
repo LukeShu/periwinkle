@@ -7,7 +7,7 @@ _golang_src_cmd = find -L $1/src -name '.*' -prune -o \( -type f \( -false $(for
 # Iterate over external dependencies, and create a rule to download it
 goget = $(foreach d,$2,$(eval $1/src/$d: $(NET); GOPATH='$(abspath $1)' go get -d -u $d || { rm -rf -- $$@; false; }))
 
-gosrc = $(shell $(_golang_gosrc_cmd)) $(addprefix .var.,$(_golang_cgo_variables))
+gosrc = $(shell $(_golang_src_cmd)) $(addprefix .var.,$(_golang_cgo_variables))
 define goinstall
 	$(Q)true $(foreach f,$(filter .var.%,$^), && test $@ -nt $f ) || rm -rf -- $1/bin $1/pkg
 	GOPATH='$(abspath $1)' go install $2

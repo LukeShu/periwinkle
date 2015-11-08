@@ -44,7 +44,7 @@ endif
 include $(topdir)/golang.mk
 $(call goget,$(topdir),$(deps))
 
-$(addprefix %/bin/,$(executables)): generate %/src $(call gosrc,$(topdir))
+$(addprefix %/bin/,$(executables)): $(generate) $(configure) %/src $(call gosrc,$(topdir))
 	$(call goinstall,$*,$(addprefix periwinkle/executables/,$(executables)))
 
 gofmt:
