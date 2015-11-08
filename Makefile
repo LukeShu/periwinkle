@@ -21,7 +21,7 @@ deps += github.com/jinzhu/gorm
 deps += github.com/mattbaird/jsonpatch
 deps += github.com/mattn/go-sqlite3
 deps += golang.org/x/crypto/bcrypt
-deps += lukeshu.com/git/go/libsystemd.git/sd_daemon
+deps += lukeshu.com/git/go/libsystemd.git
 
 # List of our packages and executables in them
 packages = $(sort $(shell find src -type d -name '*.*' -prune -o -type f -name '*.go' -printf '%h\n'|cut -d/ -f2-))
