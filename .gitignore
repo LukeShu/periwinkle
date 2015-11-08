@@ -1,6 +1,6 @@
 /pkg/
 /bin/
 /src/*.*/
-/.var.*
+.var.*
 *.sqlite
 /.rm/
