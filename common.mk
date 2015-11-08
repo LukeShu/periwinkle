@@ -8,7 +8,7 @@ rel = $(patsubst $(abspath .)/%,./%,$(abspath $1))
 all: build
 .PHONY: all
 
--include $(addsuffix /Makefile,$(subdirs))
+include $(addsuffix /Makefile,$(subdirs))
 
 generate: $(generate)
 .PHONY: generate
