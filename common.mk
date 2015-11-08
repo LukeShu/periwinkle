@@ -1,11 +1,14 @@
-# Copyright 2015 Luke Shumaker
+# Copyright © 2015 Luke Shumaker
+# This work is free. You can redistribute it and/or modify it under the
+# terms of the Do What The Fuck You Want To Public License, Version 2,
+# as published by Sam Hocevar. See http://www.wtfpl.net/ for more details.
 
 rel = $(patsubst $(abspath .)/%,./%,$(abspath $1))
 
 all: build
 .PHONY: all
 
-include $(addsuffix /Makefile,$(subdirs))
+-include $(addsuffix /Makefile,$(subdirs))
 
 generate: $(generate)
 .PHONY: generate
@@ -15,6 +18,9 @@ configure: generate $(configure)
 
 build: configure $(build)
 .PHONY: build
+
+install: build $(install)
+.PHONY: install
 
 # un-build
 clean:
@@ -30,6 +36,12 @@ distclean: clean
 maintainer-clean: distclean
 	rm -rf -- $(generate) $(generate_secondary)
 .PHONY: maintainer-clean
+
+# un-install
+uninstall:
+	rm -f -- $(install)
+	rmdir -p -- $(sort $(dir $(install))) 2>/dev/null || true
+.PHONY: uninstall
 
 
 # Now, this is magic.  It stores the values of environment variables,
