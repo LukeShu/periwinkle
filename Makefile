@@ -32,7 +32,7 @@ topdir := $(srcdir)
 
 subdirs += $(topdir)/src/postfixpipe $(topdir)/HACKING
 
-generate += $(addprefix $(topdir)/src/,$(godeps))
+generate += $(addprefix $(topdir)/src/,$(deps))
 generate_secondary += $(topdir)/src/*.*/
 build += $(addprefix $(topdir)/bin/,$(executables))
 build_secondary += $(topdir)/bin $(topdir)/pkg $(topdir)/*.sqlite
