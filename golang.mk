@@ -9,7 +9,16 @@ goget = $(foreach d,$2,$(eval $1/src/$d: $(NET); GOPATH='$(abspath $1)' go get -
 
 gosrc = $(shell $(_golang_src_cmd)) $(addprefix .var.,$(_golang_cgo_variables))
 define goinstall
-	$(Q)true $(foreach f,$(filter .var.%,$^), && test $@ -nt $f ) || rm -rf -- $1/bin $1/pkg
+	$(Q)for target in $(addprefix $1/bin/,$(notdir $2)); do              \
+		if test -e $$target; then                                    \
+			for dep in $(filter .var.%,$^); do                   \
+				if test $$dep -nt $$target; then             \
+					rm -rf -- $1/bin $1/pkg || exit $$?; \
+					exit 0;                              \
+				fi                                           \
+			done                                                 \
+		fi                                                           \
+	done
 	GOPATH='$(abspath $1)' go install $2
-	$(Q)true $(foreach e,$(notdir $2), && test -f $1/bin/$e && test -x $1/bin/$e && touch $1/bin/$e)
+	$(Q)true $(foreach e,$(notdir $2), && test -f $1/bin/$e -a -x $1/bin/$e && touch $1/bin/$e)
 endef
