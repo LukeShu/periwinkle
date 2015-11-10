@@ -11,7 +11,7 @@
 		<div ng-if="loading" style="width: 100px; height: 100px margin-top: 1.5em; margin-left: auto; margin-right: auto; margin-bottom: 1.5em;">
 			<md-progress-circular md-mode="indeterminate"></md-progress-circular>
 		</div
-		
+
 		<form name="newAddressForm" ng-submit="address.create()">
 			<md-dialog-content style="max-width: 150mm; max-height: 100mm;">
 				<div class="md-dialog-content">
@@ -23,11 +23,11 @@
 							</md-option>
 						</md-select>
 					</md-input-container>
-					<md-input-container ng-if="addresses.mediums[addresses.medium].type == 'email'">
+					<md-input-container ng-if="addresses.medium_type() == 'email'">
 						<label>{{ "USER.NEW_ADDRESS.ADDRESS" | translate }}</label>
 						<input ng-model="address.address" type="email" required/>
 					</md-input-container>
-					<md-input-container ng-if="addresses.mediums[addresses.medium].type == 'email'">
+					<md-input-container ng-if="addresses.medium_type() == 'tel'">
 						<label>{{ "USER.NEW_ADDRESS.ADDRESS" | translate }}</label>
 						<input ng-model="address.address" type='tel' required/>
 					</md-input-container>

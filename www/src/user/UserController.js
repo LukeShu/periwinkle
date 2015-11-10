@@ -566,6 +566,9 @@
 			}
 		];
 		self.medium = 0;
+		self.medium_type = function() {
+			return self.mediums[self.medium].type;
+		};
 		self.address = '';
 
 		self.cancel = function() {
