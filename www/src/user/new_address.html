@@ -7,8 +7,12 @@
 		</div>
 	</md-toolbar>
 
-	<div ng-if="!loading">
-		<form ng-submit="address.create()">
+	<div>
+		<div ng-if="loading" style="width: 100px; height: 100px margin-top: 1.5em; margin-left: auto; margin-right: auto; margin-bottom: 1.5em;">
+			<md-progress-circular md-mode="indeterminate"></md-progress-circular>
+		</div
+		
+		<form name="newAddressForm" ng-submit="address.create()">
 			<md-dialog-content style="max-width: 150mm; max-height: 100mm;">
 				<div class="md-dialog-content">
 					<md-input-container>
@@ -19,9 +23,13 @@
 							</md-option>
 						</md-select>
 					</md-input-container>
-					<md-input-container>
+					<md-input-container ng-if="addresses.mediums[addresses.medium].type == 'email'">
 						<label>{{ "USER.NEW_ADDRESS.ADDRESS" | translate }}</label>
-						<input ng-model="address.address" ng-attr-type="address.mediums[0].type" />
+						<input ng-model="address.address" type="email" required/>
+					</md-input-container>
+					<md-input-container ng-if="addresses.mediums[addresses.medium].type == 'email'">
+						<label>{{ "USER.NEW_ADDRESS.ADDRESS" | translate }}</label>
+						<input ng-model="address.address" type='tel' required/>
 					</md-input-container>
 				</div>
 			</md-dialog-content>
@@ -35,13 +43,9 @@
 			<md-button ng-click="address.cancel()">
 				{{ "GENERAL.FORM.RESPONSE.CANCEL" | translate }}
 			</md-button>
-			<md-button ng-click="address.create()">
+			<md-button ng-click="address.create()" ng-disable="loading || (newAddressForm.$invalid && newAddressForm.$dirty)">
 				{{ "GENERAL.FORM.RESPONSE.ADD" | translate }}
 			</md-button>
 		</div>
-	</div>
-
-	<div ng-if="loading" style="width: 100px; height: 100px margin-top: 1.5em; margin-left: auto; margin-right: auto; margin-bottom: 1.5em;">
-		<md-progress-circular md-mode="indeterminate"></md-progress-circular>
 	</div>
 </md-dialog>
