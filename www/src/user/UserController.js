@@ -567,7 +567,9 @@
 		];
 		self.medium = 0;
 		self.medium_type = function() {
-			return self.mediums[self.medium].type;
+			var type = self.mediums[self.medium].type;
+			return type;
+
 		};
 		self.address = '';
 

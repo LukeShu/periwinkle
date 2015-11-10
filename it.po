@@ -1,0 +1,221 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2015-11-10 15:35-0500\n"
+"PO-Revision-Date: 2015-11-10 18:25-0500\n"
+"Last-Translator: Richard Wisniewski (t.walters1101@gmail.com)\n"
+"Language-Team: Italian <LL@li.org>\n"
+"Language: it_IT\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: src/httpentity/findentity.go:20
+msgid "Path parser logic failure: %#v"
+msgstr ""
+
+#: src/httpentity/marshal.go:25
+msgid "400 Bad Request: Could not parse Content-Type: %v"
+msgstr "400 Cattiva Richiesta: Non può analizzare Content-Type: %v"
+
+#: src/httpentity/marshal.go:30
+msgid "415 Unsupported Media Type: Unsupported MIME type: "
+msgstr ""
+
+#: src/httpentity/marshal.go:35
+msgid "415 Unsupported Media Type: Error reading request body (%s): %v"
+msgstr ""
+
+#: src/httpentity/status.go:23
+msgid "can't call StatusCreated with an empty child name"
+msgstr ""
+
+#: src/httpentity/status.go:27
+msgid "called StatusCreated, but the subentity doesn't exist"
+msgstr ""
+
+#: src/httpentity/status.go:31
+msgid "called StatusCreated, but can't GET the subentity"
+msgstr ""
+
+#: src/httpentity/status.go:36
+msgid "called StatusCreated, but GET on subentity doesn't return an entity"
+msgstr ""
+
+#: src/httpentity/status.go:96
+msgid "301 Moved"
+msgstr ""
+
+#: src/httpentity/status.go:111
+msgid "302 Found: "
+msgstr ""
+
+#: src/httpentity/status.go:121
+msgid "303 See Other: "
+msgstr ""
+
+#: src/httpentity/status.go:135
+msgid "307 Temporary Redirect: "
+msgstr ""
+
+#: src/httpentity/status.go:142
+msgid "400 Bad Request"
+msgstr ""
+
+#: src/httpentity/status.go:153
+msgid "403 Forbidden"
+msgstr ""
+
+#: src/httpentity/status.go:166
+msgid "404 Not Found"
+msgstr ""
+
+#: src/httpentity/status.go:176
+msgid "405 Method Not Allowed"
+msgstr ""
+
+#: src/httpentity/status.go:209
+msgid "415 Unsupported Media Type"
+msgstr ""
+
+#: src/httpentity/status.go:227
+msgid "500 Internal Server Error: %v"
+msgstr ""
+
+#: src/maildir/cur_mail.go:35
+msgid "Found %d files with unique %#v"
+msgstr ""
+
+#: src/periwinkle/cfg/cfg.go:44
+msgid "Falling back to SQLite3"
+msgstr "Retrocedendo a SQLite3"
+
+#: src/periwinkle/email_handlers/email.go:23
+#, c-format
+msgid "Could not open maildir for writing: %s\n"
+msgstr ""
+
+#: src/periwinkle/email_handlers/email.go:92
+msgid "Parsing %q Header: %v\n"
+msgstr ""
+
+#: src/periwinkle/email_handlers/email.go:126
+msgid "Error sending:"
+msgstr ""
+
+#: src/periwinkle/email_handlers/sms_callback.go:42
+msgid "Accept:"
+msgstr ""
+
+#: src/periwinkle/email_handlers/sms_callback.go:49
+msgid "Read:"
+msgstr ""
+
+#: src/periwinkle/executables/listen-http/main.go:136
+msgid "Failed to aquire sockets from systemd"
+msgstr ""
+
+#: src/periwinkle/executables/listen-http/main.go:140
+#, c-format
+msgid "Wrong number of sockets from systemd: expected %d but got %d"
+msgstr ""
+
+#: src/periwinkle/executables/listen-http/middleware_posthack.go:25
+#: src/periwinkle/store/util.go:81
+msgid "Couldn't parse: %v"
+msgstr ""
+
+#: src/periwinkle/executables/listen-http/server.go:61
+msgid "Could not serve SmsCallbackServer: %v\n"
+msgstr ""
+
+#: src/periwinkle/executables/listen-twilio/twilio.go:137
+#: src/periwinkle/executables/listen-twilio/twilio.go:138
+msgid "There are no available phone numbers!!!"
+msgstr "Non c'è nesun numero di telefono disponibile."
+
+#: src/periwinkle/executables/receive-email/main.go:39
+msgid "ORIGINAL_RECIPIENT or RECIPIENT must be set"
+msgstr ""
+
+#: src/periwinkle/store/group.go:174
+msgid "Cannot change group id"
+msgstr "Non si può cambiare group id"
+
+#: src/periwinkle/store/group.go:185 src/periwinkle/store/user.go:245
+msgid "PATCH request must have a patch media type"
+msgstr ""
+
+#: src/periwinkle/store/group.go:193 src/periwinkle/store/user.go:227
+#: src/periwinkle/store/user.go:257
+msgid "Cannot change user id"
+msgstr "Non si può cambiare user id"
+
+#: src/periwinkle/store/group.go:250 src/periwinkle/store/subscription.go:72
+msgid "groupname can't be emtpy"
+msgstr ""
+
+#: src/periwinkle/store/group.go:257
+msgid "a group with that name already exists"
+msgstr ""
+
+#: src/periwinkle/store/session.go:109
+msgid "Incorrect username/password"
+msgstr ""
+
+#: src/periwinkle/store/user.go:125
+msgid "name can't be empty"
+msgstr ""
+
+#: src/periwinkle/store/user.go:175
+msgid "old password didn't match"
+msgstr ""
+
+#: src/periwinkle/store/user.go:181
+msgid ""
+"you must submit and old password (using 'test') before setting a new one"
+msgstr ""
+
+#: src/periwinkle/store/user.go:185
+msgid "that new password is the same as the old one"
+msgstr ""
+
+#: src/periwinkle/store/user.go:190
+msgid "you may only 'set' or 'replace' the password"
+msgstr ""
+
+#: src/periwinkle/store/user.go:219 src/periwinkle/store/user.go:241
+msgid "Unauthorized user"
+msgstr "Utente non Autorizzato"
+
+#: src/periwinkle/store/user.go:325
+msgid "username, email, and password can't be emtpy"
+msgstr ""
+
+#: src/periwinkle/store/user.go:331
+msgid "password and password_verification don't match"
+msgstr "password e password_verification non corrispondono"
+
+#: src/periwinkle/store/util.go:75
+msgid "PUT and POST requests must have a document media type"
+msgstr ""
+
+#: src/periwinkle/store/util.go:90
+msgid ""
+"Request body didn't have expected structure (field had wrong data type): %v"
+msgstr ""
+
+#: src/periwinkle/store/util.go:99
+msgid ""
+"Request body didn't have expected structure (extra or missing fields).  The "
+"included diff would make the request acceptable."
+msgstr ""
+"Il corpo della richiesta non ha la struttura specificata (campi "
+"mancante o extra).  La diff inclusa può riparare la richiesta. "
