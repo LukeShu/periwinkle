@@ -23,11 +23,11 @@
 							</md-option>
 						</md-select>
 					</md-input-container>
-					<md-input-container ng-if="addresses.medium_type() == 'email'">
+					<md-input-container ng-if="address.medium_type() == 'email'">
 						<label>{{ "USER.NEW_ADDRESS.ADDRESS" | translate }}</label>
 						<input ng-model="address.address" type="email" required/>
 					</md-input-container>
-					<md-input-container ng-if="addresses.medium_type() == 'tel'">
+					<md-input-container ng-if="address.medium_type() == 'tel'">
 						<label>{{ "USER.NEW_ADDRESS.ADDRESS" | translate }}</label>
 						<input ng-model="address.address" type='tel' required/>
 					</md-input-container>
