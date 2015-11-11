@@ -34,18 +34,14 @@
 				</div>
 			</md-dialog-content>
 			<div style="clear: both;"></div>
-			<md-button type="submit" ng-show="false">
-				Submit
-			</md-button>
+			<div class="md-actions" layout="row">
+				<md-button type="button" ng-click="address.cancel(); return false;">
+					{{ "GENERAL.FORM.RESPONSE.CANCEL" | translate }}
+				</md-button>
+				<md-button type="submit" ng-click="address.create()" ng-disable="loading || (newAddressForm.$invalid && newAddressForm.$dirty)">
+					{{ "GENERAL.FORM.RESPONSE.ADD" | translate }}
+				</md-button>
+			</div>
 		</form>
-
-		<div class="md-actions" layout="row">
-			<md-button ng-click="address.cancel()">
-				{{ "GENERAL.FORM.RESPONSE.CANCEL" | translate }}
-			</md-button>
-			<md-button ng-click="address.create()" ng-disable="loading || (newAddressForm.$invalid && newAddressForm.$dirty)">
-				{{ "GENERAL.FORM.RESPONSE.ADD" | translate }}
-			</md-button>
-		</div>
 	</div>
 </md-dialog>
