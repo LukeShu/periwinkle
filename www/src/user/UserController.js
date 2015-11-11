@@ -552,26 +552,35 @@
 		$scope.errors = [];
 
 		self.mediums = [
-			{
-				name:	'EMAIL',
-				type:	'email'
-			},
-			{
-				name:	'SMS',
-				type:	'tel'
-			},
-			{
-				name:	'MMS',
-				type:	'tel'
-			}
+			'EMAIL',
+			'SMS',
+			'MMS'
 		];
 		self.medium = 0;
 		self.medium_type = function() {
-			var type = self.mediums[self.medium].type;
-			return type;
-
+			switch(self.medium) {
+				case 0:
+					return 'email';
+				case 1:
+				case 2:
+					return 'tel';
+				default:
+					//error
+			}
 		};
-		self.address = '';
+		self.email_address = '';
+		self.tel_address = '';
+		self.address = function() {
+			switch(self.medium) {
+				case 0:
+					return self.email_address;
+				case 1:
+				case 2:
+					return self.tel_address;
+				default:
+					//error
+			}
+		}
 
 		self.cancel = function() {
 			$mdDialog.cancel();
@@ -590,7 +599,7 @@
 			}
 			var item = {
 				medium:	self.mediums[self.medium].name.toLowerCase(),
-				address: self.address
+				address: self.address()
 			};
 			list.push(item);
 			$http({

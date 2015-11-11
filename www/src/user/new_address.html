@@ -19,17 +19,17 @@
 						<label>{{ "USER.NEW_ADDRESS.MEDIUM" | translate }}</label>
 						<md-select ng-model="address.medium">
 							<md-option ng-repeat="medium in address.mediums" ng-value="$index">
-								{{ "GENERAL.MEDIUMS." + medium.name | translate }}
+								{{ "GENERAL.MEDIUMS." + medium | translate }}
 							</md-option>
 						</md-select>
 					</md-input-container>
 					<md-input-container ng-if="address.medium_type() == 'email'">
 						<label>{{ "USER.NEW_ADDRESS.ADDRESS" | translate }}</label>
-						<input ng-model="address.address" type="email" required/>
+						<input ng-model="address.email_address" type="email" required/>
 					</md-input-container>
 					<md-input-container ng-if="address.medium_type() == 'tel'">
 						<label>{{ "USER.NEW_ADDRESS.ADDRESS" | translate }}</label>
-						<input ng-model="address.address" type='tel' required/>
+						<input ng-model="address.tel_address" type='tel' required/>
 					</md-input-container>
 				</div>
 			</md-dialog-content>
