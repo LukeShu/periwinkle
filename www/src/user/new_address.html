@@ -35,10 +35,10 @@
 			</md-dialog-content>
 			<div style="clear: both;"></div>
 			<div class="md-actions" layout="row">
-				<md-button type="button" ng-click="address.cancel(); return false;">
+				<md-button type="button" ng-click="address.cancel()">
 					{{ "GENERAL.FORM.RESPONSE.CANCEL" | translate }}
 				</md-button>
-				<md-button type="submit" ng-click="address.create()" ng-disable="loading || (newAddressForm.$invalid && newAddressForm.$dirty)">
+				<md-button type="submit" ng-disable="loading || (newAddressForm.$invalid && newAddressForm.$dirty)">
 					{{ "GENERAL.FORM.RESPONSE.ADD" | translate }}
 				</md-button>
 			</div>
