@@ -39,7 +39,7 @@
 		$scope.reset = reset;
 
 		$scope.toolbarClasses = function() {
-			var classes = 'md-toolbar';
+			var classes = 'md-toolbar-tools';
 			if($scope.toolbar.tall)
 				classes += ' md-toolbar-tall';
 			return classes;
