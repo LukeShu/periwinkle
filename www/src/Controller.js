@@ -38,6 +38,13 @@
 		}
 		$scope.reset = reset;
 
+		$scope.toolbarClasses = function() {
+			var classes = 'md-toolbar';
+			if($scope.toolbar.tall)
+				classes += ' md-toolbar-tall';
+			return classes;
+		}
+
 		$scope.openMenu = function($mdOpenMenu, ev) {
 			$scope.originalEvent = ev;
 			$mdOpenMenu(ev);
