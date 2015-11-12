@@ -12,7 +12,7 @@
 	</div>
 </md-toolbar>
 
-<md-content id="content" class="md-padding" style="padding-top: 0; margin-top: -72px;">
+<md-content id="content" class="md-padding" style="padding-top: 0; margin-top: -64px;">
 
 	<div ng-if="user.loading" style="position: absolute; z-index: 12; width: 40px; height: 40px; top: 3em; left: 50%; margin-left: -20px; border-color: #f0f0f0; border-style: solid; border-width: 1px; border-radius: 20px; background-color: white;">
 		<md-progress-circular md-diameter="20px" md-mode="indeterminate" style="margin-top: -30px; margin-left: -30px;"></md-progress-circular>
@@ -20,7 +20,7 @@
 	<div layout="row" layout-wrap style="max-width: 15cm; margin-left: auto; margin-right: auto; z-index: 2;">
 		<div flex="100">
 			<md-card id="user">
-				<md-toolbar class="md-toolbar-tools" style="background-color: white; color: black;">
+				<md-toolbar class="md-toolbar-tools" style="background-color: white; color: black; padding-bottom: 8px;">
 					<h1 ng-if="user.info.username == ''">{{ user.info.title | translate }}</h1>
 					<h1 ng-if="user.info.username != ''">{{ user.info.username }}</h1>
 					<!-- central gap -->
@@ -52,7 +52,7 @@
 					</md-menu>
 				</md-toolbar>
 
-				<md-card-content style="padding-right: 0;">
+				<md-card-content style="padding-right: 0; padding-top: 0px;">
 					<div>
 						<p ng-if="user.info.fullName.loading">{{ "USER.INFO.SAVING" | translate }}</p>
 						<div ng-if="!user.info.fullName.loading">
