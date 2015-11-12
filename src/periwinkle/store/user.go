@@ -38,6 +38,7 @@ type UserAddress struct {
 	UserId        string         `json:"-"`
 	Medium        string         `json:"medium"`
 	Address       string         `json:"address"`
+	SortOrder     uint64         `json:"sort_order"`
 	Subscriptions []Subscription `json:"subscriptions"`
 }
 
@@ -45,7 +46,8 @@ func (o UserAddress) dbSchema(db *gorm.DB) error {
 	return db.CreateTable(&o).
 		AddForeignKey("user_id", "users(id)", "RESTRICT", "RESTRICT").
 		AddForeignKey("medium", "media(id)", "RESTRICT", "RESTRICT").
-		AddUniqueIndex("uniqueness_idx", "medium", "address").
+		AddUniqueIndex("address_idx", "medium", "address").
+		AddUniqueIndex("user_idx", "user_id", "sort_order").
 		Error
 }
 
