@@ -16,29 +16,31 @@
 </md-sidenav>
 
 <!-- toolbar -->
-<md-toolbar ng-if="toolbar.exists" ng-class="toolbarClasses()">
-	<md-button ng-if="sidenav.exists" class="md-icon-button" aria-label="Settings">
-		<md-icon md-svg-icon="assets/svg/menu.svg"></md-icon>
-	</md-button>
-
-	<h1 id="title">
-		<span>{{ toolbar.title  | translate}}</span>
-	</h1>
-
-	<!-- central gap -->
-	<span flex=""></span>
-
-	<span ng-repeat="b in toolbar.buttons">
-		<md-button class="md-icon-button" ng-if="b.img_src" ng-attr-aria-label="{{ b.aria_label }}" ng-click="toolbar.onclick($index)">
-			<md-icon md-svg-icon="{{ b.img_src }}"><md-icon>
+<md-toolbar ng-if="toolbar.exists" ng-class="toolbar.tall ? 'md-toolbar-tall' : ''">
+	<div class="md-toolbar-tools">
+		<md-button ng-if="sidenav.exists" class="md-icon-button" aria-label="Settings">
+			<md-icon md-svg-icon="assets/svg/menu.svg"></md-icon>
 		</md-button>
-		<md-button ng-if="b.label" ng-attr-aria-label="{{ b.aria_label }}" ng-click="toolbar.onclick($index)">
-			{{ b.label | translate }}
+
+		<h1 id="title">
+			<span>{{ toolbar.title  | translate}}</span>
+		</h1>
+
+		<!-- central gap -->
+		<span flex=""></span>
+
+		<span ng-repeat="b in toolbar.buttons">
+			<md-button class="md-icon-button" ng-if="b.img_src" ng-attr-aria-label="{{ b.aria_label }}" ng-click="toolbar.onclick($index)">
+				<md-icon md-svg-icon="{{ b.img_src }}"><md-icon>
+			</md-button>
+			<md-button ng-if="b.label" ng-attr-aria-label="{{ b.aria_label }}" ng-click="toolbar.onclick($index)">
+				{{ b.label | translate }}
+			</md-button>
+		</span>
+		<md-button ng-if="expandMenu.exists" class="md-icon-button" aria-label="More">
+			<md-icon md-svg-icon="assets/svg/more_vert.svg"></md-icon>
 		</md-button>
-	</span>
-	<md-button ng-if="expandMenu.exists" class="md-icon-button" aria-label="More">
-		<md-icon md-svg-icon="assets/svg/more_vert.svg"></md-icon>
-	</md-button>
+	</div>
 </md-toolbar>
 
 <md-toolbar class="md-warn md-toolbar-tools" ng-if="toolbar.warn.exists">
