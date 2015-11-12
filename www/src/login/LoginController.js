@@ -19,21 +19,19 @@
 		self.captcha_key = '';
 		self.isSignup = false;
 		//prep the toolbar
-		self.toolbar = {
-			title:	'LOGIN.LOGIN.LOGIN',
-			warn: {
-				exists: false,
-				prefix:	'',
-				message: ''
-			}
+		self.title = 'LOGIN.LOGIN.LOGIN';
+		self.warn = {
+			exists: false,
+			prefix:	'',
+			message: ''
 		};
 		self.loading = false;
 
 		//for login redir;
 		if(userService.loginRedir.has == true) {
-			self.toolbar.warn.exists = true;
-			self.toolbar.warn.prefix = 'LOGIN.LOGIN.MESSAGE';
-			self.toolbar.warn.message = userService.loginRedir.message;
+			self.warn.exists = true;
+			self.warn.prefix = 'LOGIN.LOGIN.MESSAGE';
+			self.warn.message = userService.loginRedir.message;
 		} else {
 			var cookie = userService.getSession();
 			debugger;
@@ -154,9 +152,9 @@
 				self.username = '';
 			self.password = '';
 			if(self.isSignup) {
-				self.toolbar.title = 'LOGIN.SIGNUP.SIGNUP';
+				self.title = 'LOGIN.SIGNUP.SIGNUP';
 			} else {
-				self.toolbar.title = 'LOGIN.LOGIN.LOGIN';
+				self.title = 'LOGIN.LOGIN.LOGIN';
 			}
 		}
 	}
