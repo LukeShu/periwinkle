@@ -81,6 +81,21 @@ func (u *User) populate(db *gorm.DB) {
 			}
 		}
 	}
+	var addresses []UserAddress
+
+        for i, address := range u.Addresses {
+		if address.Medium == "noop" {
+			addresses = append(u.Addresses[:i], u.Addresses[i+1:]...)
+			break
+		}
+        }
+        for i, address := range addresses {
+		if address.Medium == "admin" {
+			addresses = append(addresses[:i], addresses[i+1:]...)
+			break
+		}
+        }
+	u.Addresses = addresses
 }
 
 func GetUserById(db *gorm.DB, id string) *User {
@@ -131,6 +146,19 @@ func NewUser(db *gorm.DB, name string, password string, email string) User {
 	}
 	if err := o.SetPassword(password); err != nil {
 		panic(err)
+	}
+	if err := db.Create(&o).Error; err != nil {
+		panic(err)
+	}
+	return o
+}
+
+func NewUserAddress(db *gorm.DB, userId string, medium string, address string) UserAddress {
+	o := UserAddress{
+		UserId:        userId,
+		Medium:        medium,
+		Address:       address,
+		Subscriptions: make([]Subscription, 0),
 	}
 	if err := db.Create(&o).Error; err != nil {
 		panic(err)
@@ -335,6 +363,8 @@ func newDirUsers() t_dirUsers {
 			entity.Username = strings.ToLower(entity.Username)
 
 			user := NewUser(db, entity.Username, entity.Password, entity.Email)
+			NewUserAddress(db, user.Id, "noop", "")
+			NewUserAddress(db, user.Id, "admin", "")
 			req.Things["user"] = user
 			return he.StatusCreated(r, user.Id, req)
 		},
