@@ -10,8 +10,6 @@
 	function LoginController($cookies, $http, $scope, $interval, $location, $mdDialog, $filter, userService, $timeout) {
 		//gives us an anchor to the outer object from within sub objects or functions
 		var self = this;
-		//clears the toolbar and such so we can set it up for this view
-		$scope.reset();
 		//set up public fields
 		self.username = '';
 		self.password = '';
@@ -21,22 +19,20 @@
 		self.captcha_key = '';
 		self.isSignup = false;
 		//prep the toolbar
-		$scope.toolbar.title = 'LOGIN.LOGIN.LOGIN';
-		/*$scope.toolbar.buttons = [{
-			label: "Signup",
-			img_src: "assets/svg/phone.svg",
-		}];
-		$scope.toolbar.onclick = function(index) {
-			if(index == 0) {
-				self.togleSignup();
+		self.toolbar = {
+			title:	'LOGIN.LOGIN.LOGIN',
+			warn: {
+				exists: false,
+				prefix:	'',
+				message: ''
 			}
-		}; */
+		};
 
 		//for login redir;
 		if(userService.loginRedir.has == true) {
-			$scope.toolbar.warn.exists = true;
-			$scope.toolbar.warn.prefix = 'LOGIN.LOGIN.MESSAGE';
-			$scope.toolbar.warn.message = userService.loginRedir.message;
+			self.toolbar.warn.exists = true;
+			self.toolbar.warn.prefix = 'LOGIN.LOGIN.MESSAGE';
+			self.toolbar.warn.message = userService.loginRedir.message;
 		} else {
 			var cookie = userService.getSession();
 			debugger;
@@ -157,9 +153,9 @@
 				self.username = '';
 			self.password = '';
 			if(self.isSignup) {
-				$scope.toolbar.title = 'LOGIN.SIGNUP.SIGNUP';
+				self.toolbar.title = 'LOGIN.SIGNUP.SIGNUP';
 			} else {
-				$scope.toolbar.title = 'LOGIN.LOGIN.LOGIN';
+				self.toolbar.title = 'LOGIN.LOGIN.LOGIN';
 			}
 		}
 	}
