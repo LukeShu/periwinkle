@@ -10,8 +10,9 @@
 		//gives us an anchor to the outer object from within sub objects or functions
 		var self = this;
 		//clears the toolbar and such so we can set it up for this view
-		self.toolbar.title = "USER.INFO.USER";
+		self.title = "USER.INFO.USER";
 		self.loading = false;
+
 		self.info = {
 			status: {
 				loading: 	true,
