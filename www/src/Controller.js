@@ -17,7 +17,8 @@
 			};
 			$scope.toolbar = {
 				exists: true,
-				title: '',
+				tall:	false,
+				title:	'',
 				buttons: [],
 				onclick: function(){},
 				warn: null

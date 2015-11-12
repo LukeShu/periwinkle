@@ -12,8 +12,7 @@
 		//clears the toolbar and such so we can set it up for this view
 		$scope.reset();
 		$scope.toolbar.title = "USER.INFO.USER";
-		//set up public fields
-
+		$scope.toolbar.tall = true;
 		$scope.toolbar.buttons = [{
 			aria_label: "LogOut",
 			label:	"GENERAL.SIGNOUT"
