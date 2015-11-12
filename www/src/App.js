@@ -23,7 +23,7 @@
 
 	.config(function($mdThemingProvider){
 		$mdThemingProvider.theme('default')
-		.primaryPalette('deep-purple')
+		.primaryPalette('purple')
 		.accentPalette('amber');
 	})
 
