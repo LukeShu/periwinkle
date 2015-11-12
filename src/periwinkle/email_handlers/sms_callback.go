@@ -39,14 +39,14 @@ func (server *SmsCallbackServer) Serve() (err error) {
 	for {
 		conn, err := listener.Accept()
 		if err != nil {
-			log.Println("Accept:", err)
+			log.Println(s("Accept:"), err)
 			continue
 		}
 		go func() {
 			reader := bufio.NewReader(conn)
 			message_sid, _, err := reader.ReadLine()
 			if err != nil {
-				log.Println("Read:", err)
+				log.Println(s("Read:"), err)
 			}
 			server.connsLock.Lock()
 			server.conns[string(message_sid)] = conn

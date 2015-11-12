@@ -20,20 +20,20 @@ func StatusOK(entity NetEntity) Response {
 // For when you've created a document with a new URL.
 func StatusCreated(parent Entity, child_name string, req Request) Response {
 	if child_name == "" {
-		panic("can't call StatusCreated with an empty child name")
+		panic(s("can't call StatusCreated with an empty child name"))
 	}
 	child := parent.Subentity(child_name, req)
 	if child == nil {
-		panic("called StatusCreated, but the subentity doesn't exist")
+		panic(s("called StatusCreated, but the subentity doesn't exist"))
 	}
 	handler, ok := child.Methods()["GET"]
 	if !ok {
-		panic("called StatusCreated, but can't GET the subentity")
+		panic(s("called StatusCreated, but can't GET the subentity"))
 	}
 	response := handler(req)
 	response.Headers.Set("Location", url.QueryEscape(child_name))
 	if response.Entity == nil {
-		panic("called StatusCreated, but GET on subentity doesn't return an entity")
+		panic(s("called StatusCreated, but GET on subentity doesn't return an entity"))
 	}
 	mimetypes := encoders2mimetypes(response.Entity.Encoders())
 	u, _ := url.Parse("") // create a blank dummy url.URL
@@ -93,7 +93,7 @@ func StatusMovedPermanently(u *url.URL) Response {
 		Headers: http.Header{
 			"Location": {u.String()},
 		},
-		Entity: heutil.NetString("301 Moved"),
+		Entity: heutil.NetString(k("301 Moved")),
 	}
 }
 
@@ -108,7 +108,7 @@ func StatusFound(u *url.URL) Response {
 		Headers: http.Header{
 			"Location": {u.String()},
 		},
-		Entity: heutil.NetString("302 Found: " + u.String()),
+		Entity: heutil.NetString(k("302 Found: ") + u.String()),
 	}
 }
 
@@ -118,7 +118,7 @@ func StatusSeeOther(u *url.URL) Response {
 		Headers: http.Header{
 			"Location": {u.String()},
 		},
-		Entity: heutil.NetString("303 See Other: " + u.String()),
+		Entity: heutil.NetString(k("303 See Other: ") + u.String()),
 	}
 }
 
@@ -132,14 +132,14 @@ func StatusTemporaryRedirect(u *url.URL) Response {
 		Headers: http.Header{
 			"Location": {u.String()},
 		},
-		Entity: heutil.NetString("307 Temporary Redirect: " + u.String()),
+		Entity: heutil.NetString(k("307 Temporary Redirect: ") + u.String()),
 	}
 }
 
 // For when the *user* has screwed up a request.
 func statusBadRequest(e NetEntity) Response {
 	if e == nil {
-		e = heutil.NetString("400 Bad Request")
+		e = heutil.NetString(k("400 Bad Request"))
 	}
 	return Response{
 		Status:  400,
@@ -150,7 +150,7 @@ func statusBadRequest(e NetEntity) Response {
 
 func StatusForbidden(e NetEntity) Response {
 	if e == nil {
-		e = heutil.NetString("403 Forbidden")
+		e = heutil.NetString(k("403 Forbidden"))
 	}
 	return Response{
 		Status:  403,
@@ -163,7 +163,7 @@ func statusNotFound() Response {
 	return Response{
 		Status:  404,
 		Headers: http.Header{},
-		Entity:  heutil.NetString("404 Not Found"),
+		Entity:  heutil.NetString(k("404 Not Found")),
 	}
 }
 
@@ -173,7 +173,7 @@ func statusMethodNotAllowed(methods string) Response {
 		Headers: http.Header{
 			"Allow": {methods},
 		},
-		Entity: heutil.NetString("405 Method Not Allowed"),
+		Entity: heutil.NetString(k("405 Method Not Allowed")),
 	}
 }
 
@@ -206,7 +206,7 @@ func StatusGone(entity NetEntity) Response {
 
 func StatusUnsupportedMediaType(e NetEntity) Response {
 	if e == nil {
-		e = heutil.NetString("415 Unsupported Media Type")
+		e = heutil.NetString(k("415 Unsupported Media Type"))
 	}
 	return Response{
 		Status:  415,
@@ -224,7 +224,7 @@ func statusInternalServerError(err interface{}) Response {
 		Headers: http.Header{
 			"Content-Type": {"text/plain; charset=utf-8"},
 		},
-		Entity: heutil.NetPrintf("500 Internal Server Error: %v", err),
+		Entity: heutil.NetPrintf(k("500 Internal Server Error: %v"), err),
 	}
 }
 

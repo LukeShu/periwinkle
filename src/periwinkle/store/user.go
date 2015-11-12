@@ -139,7 +139,7 @@ func (u *User) CheckPassword(password string) bool {
 
 func NewUser(db *gorm.DB, name string, password string, email string) User {
 	if name == "" {
-		panic("name can't be empty")
+		panic(s("name can't be empty"))
 	}
 	o := User{
 		Id:        name,
@@ -202,22 +202,22 @@ func (o *User) patchPassword(patch *jsonpatch.Patch) *he.Response {
 			switch op.Op {
 			case "test":
 				if !o.CheckPassword(op.Value) {
-					ret := he.StatusConflict(heutil.NetString("old password didn't match"))
+					ret := he.StatusConflict(heutil.NetString(k("old password didn't match")))
 					return &ret
 				}
 				checkedpass = true
 			case "replace":
 				if !checkedpass {
-					ret := he.StatusUnsupportedMediaType(heutil.NetString("you must submit and old password (using 'test') before setting a new one"))
+					ret := he.StatusUnsupportedMediaType(heutil.NetString(k("you must submit and old password (using 'test') before setting a new one")))
 					return &ret
 				}
 				if o.CheckPassword(op.Value) {
-					ret := he.StatusConflict(heutil.NetString("that new password is the same as the old one"))
+					ret := he.StatusConflict(heutil.NetString(k("that new password is the same as the old one")))
 					return &ret
 				}
 				o.SetPassword(op.Value)
 			default:
-				ret := he.StatusUnsupportedMediaType(heutil.NetString("you may only 'set' or 'replace' the password"))
+				ret := he.StatusUnsupportedMediaType(heutil.NetString(k("you may only 'set' or 'replace' the password")))
 				return &ret
 			}
 		} else {
@@ -246,7 +246,7 @@ func (user *User) Methods() map[string]func(he.Request) he.Response {
 			db := req.Things["db"].(*gorm.DB)
 			sess := req.Things["session"].(*Session)
 			if sess.UserId != user.Id {
-				return he.StatusForbidden(heutil.NetString("Unauthorized user"))
+				return he.StatusForbidden(heutil.NetString(k("Unauthorized user")))
 			}
 			var new_user User
 			httperr := safeDecodeJSON(req.Entity, &new_user)
@@ -254,7 +254,7 @@ func (user *User) Methods() map[string]func(he.Request) he.Response {
 				return *httperr
 			}
 			if user.Id != new_user.Id {
-				return he.StatusConflict(heutil.NetString("Cannot change user id"))
+				return he.StatusConflict(heutil.NetString(k("Cannot change user id")))
 			}
 			// TODO: this won't play nice with the
 			// password hash (because it's private), or
@@ -268,11 +268,11 @@ func (user *User) Methods() map[string]func(he.Request) he.Response {
 			db := req.Things["db"].(*gorm.DB)
 			sess := req.Things["session"].(*Session)
 			if sess.UserId != user.Id {
-				return he.StatusForbidden(heutil.NetString("Unauthorized user"))
+				return he.StatusForbidden(heutil.NetString(k("Unauthorized user")))
 			}
 			patch, ok := req.Entity.(jsonpatch.Patch)
 			if !ok {
-				return he.StatusUnsupportedMediaType(heutil.NetString("PATCH request must have a patch media type"))
+				return he.StatusUnsupportedMediaType(heutil.NetString(k("PATCH request must have a patch media type")))
 			}
 			httperr := user.patchPassword(&patch)
 			if httperr != nil {
@@ -284,7 +284,7 @@ func (user *User) Methods() map[string]func(he.Request) he.Response {
 				return he.StatusConflict(heutil.NetString(err.Error()))
 			}
 			if user.Id != new_user.Id {
-				return he.StatusConflict(heutil.NetString("Cannot change user id"))
+				return he.StatusConflict(heutil.NetString(k("Cannot change user id")))
 			}
 			// some mucking around with private fields to make things match up
 			new_user.PwHash = user.PwHash
@@ -352,13 +352,13 @@ func newDirUsers() t_dirUsers {
 			}
 
 			if entity.Username == "" || entity.Email == "" || entity.Password == "" {
-				return he.StatusUnsupportedMediaType(heutil.NetString("username, email, and password can't be emtpy"))
+				return he.StatusUnsupportedMediaType(heutil.NetString(k("username, email, and password can't be emtpy")))
 			}
 
 			if entity.PasswordVerification != "" {
 				if entity.Password != entity.PasswordVerification {
 					// Passwords don't match
-					return he.StatusConflict(heutil.NetString("password and password_verification don't match"))
+					return he.StatusConflict(heutil.NetString(k("password and password_verification don't match")))
 				}
 			}
 

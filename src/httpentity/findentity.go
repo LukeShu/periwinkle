@@ -16,7 +16,7 @@ func findEntity(entity Entity, req Request, upath string) Entity {
 	} else {
 		parts := strings.SplitN(upath, "/", 2)
 		if len(parts) != 2 {
-			panic(fmt.Sprintf("path parser logic failure: %#v", upath))
+			panic(fmt.Sprintf(s("Path parser logic failure: %#v"), upath))
 		}
 		child := parts[0]
 		grandchildren := parts[1]

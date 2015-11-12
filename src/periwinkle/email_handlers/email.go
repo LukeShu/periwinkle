@@ -20,7 +20,7 @@ import (
 func HandleEmail(r io.Reader, name string, db *gorm.DB) uint8 {
 	mdWriter := cfg.Mailstore.NewMail()
 	if mdWriter == nil {
-		log.Printf("Could not open maildir for writing: %s\n", cfg.Mailstore)
+		log.Printf(s("Could not open maildir for writing: %s\n"), cfg.Mailstore)
 		return postfixpipe.EX_IOERR
 	}
 	defer func() {
@@ -89,7 +89,7 @@ func HandleEmail(r io.Reader, name string, db *gorm.DB) uint8 {
 	for _, header := range []string{"To", "From", "Cc"} {
 		addresses, err := msg.Header.AddressList(header)
 		if err != nil {
-			log.Printf("Parsing %q Header: %v\n", header, err)
+			log.Printf(s("Parsing %q Header: %v\n"), header, err)
 		}
 		for _, addr := range addresses {
 			delete(forward_set, addr.Address)
@@ -123,7 +123,7 @@ func HandleEmail(r io.Reader, name string, db *gorm.DB) uint8 {
 			forward_ary,
 			msg822)
 		if err != nil {
-			log.Println("Error sending:", err)
+			log.Println(s("Error sending:"), err)
 			return postfixpipe.EX_UNAVAILABLE
 		}
 	}

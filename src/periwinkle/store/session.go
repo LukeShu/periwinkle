@@ -106,7 +106,7 @@ func newFileSession() t_fileSession {
 
 			sess := NewSession(db, user, entity.Password)
 			if sess == nil {
-				return he.StatusForbidden(heutil.NetString("Incorrect username/password"))
+				return he.StatusForbidden(heutil.NetString(k("Incorrect username/password")))
 			} else {
 				ret := he.StatusOK(sess)
 				cookie := &http.Cookie{

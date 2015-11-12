@@ -36,7 +36,7 @@ func main() {
 	}()
 	recipient := postfixpipe.OriginalRecipient()
 	if recipient == "" {
-		log.Println("ORIGINAL_RECIPIENT or RECIPIENT must be set")
+		log.Println(s("ORIGINAL_RECIPIENT or RECIPIENT must be set"))
 		os.Exit(int(postfixpipe.EX_USAGE))
 	}
 	parts := strings.SplitN(recipient, "@", 2)

@@ -18,7 +18,7 @@ import (
 
 func usage(w io.Writer) {
 	fmt.Fprintf(w,
-		`Usage: %s [ADDR_TYPE] [ADDR]
+		s(`Usage: %s [ADDR_TYPE] [ADDR]
 Do the HTTP that you do, baby.
 
 Address types are "tcp", "tcp4", "tcp6", "unix", and "fd".
@@ -44,7 +44,7 @@ from systemd socket-activation.
 
 If one argument is given, and it starts with a "-" or is "help", then
 this message is displayed.
-`, os.Args[0])
+`), os.Args[0])
 }
 
 func parse_args() net.Listener {
@@ -133,11 +133,11 @@ func listenfd(fd int, name string) (net.Listener, error) {
 func sd_get_socket() (socket net.Listener, err error) {
 	fds := sd.ListenFds(true)
 	if fds == nil {
-		err = fmt.Errorf("Failed to aquire sockets from systemd")
+		err = fmt.Errorf(s("Failed to aquire sockets from systemd"))
 		return
 	}
 	if len(fds) != 1 {
-		err = fmt.Errorf("Wrong number of sockets from systemd: expected %d but got %d", 1, len(fds))
+		err = fmt.Errorf(s("Wrong number of sockets from systemd: expected %d but got %d"), 1, len(fds))
 		return
 	}
 	socket, err = net.FileListener(fds[0])

@@ -171,7 +171,7 @@ func (o *Group) Methods() map[string]func(he.Request) he.Response {
 				return *httperr
 			}
 			if o.Id != new_group.Id {
-				return he.StatusConflict(heutil.NetString("Cannot change group id"))
+				return he.StatusConflict(heutil.NetString(k("Cannot change group id")))
 			}
 			*o = new_group
 			o.Save(db)
@@ -182,7 +182,7 @@ func (o *Group) Methods() map[string]func(he.Request) he.Response {
 
 			patch, ok := req.Entity.(jsonpatch.Patch)
 			if !ok {
-				return he.StatusUnsupportedMediaType(heutil.NetString("PATCH request must have a patch media type"))
+				return he.StatusUnsupportedMediaType(heutil.NetString(k("PATCH request must have a patch media type")))
 			}
 			var new_group Group
 			err := patch.Apply(o, &new_group)
@@ -190,7 +190,7 @@ func (o *Group) Methods() map[string]func(he.Request) he.Response {
 				return he.StatusConflict(heutil.NetPrintf("%v", err))
 			}
 			if o.Id != new_group.Id {
-				return he.StatusConflict(heutil.NetString("Cannot change user id"))
+				return he.StatusConflict(heutil.NetString(k("Cannot change user id")))
 			}
 			*o = new_group
 			o.Save(db)
@@ -247,14 +247,14 @@ func newDirGroups() t_dirGroups {
 			}
 
 			if entity.Groupname == "" {
-				return he.StatusUnsupportedMediaType(heutil.NetString("groupname can't be emtpy"))
+				return he.StatusUnsupportedMediaType(heutil.NetString(k("groupname can't be emtpy")))
 			}
 
 			entity.Groupname = strings.ToLower(entity.Groupname)
 
 			group := NewGroup(db, entity.Groupname)
 			if group == nil {
-				return he.StatusConflict(heutil.NetString("a group with that name already exists"))
+				return he.StatusConflict(heutil.NetString(k("a group with that name already exists")))
 			} else {
 				return he.StatusCreated(r, group.Id, req)
 			}

@@ -22,7 +22,7 @@ func MiddlewarePostHack(req he.Request, u *url.URL, handle func(he.Request, *url
 	var entity interface{}
 	err := decoder.Decode(&entity)
 	if err != nil {
-		return he.StatusUnsupportedMediaType(heutil.NetPrintf("Couldn't parse: %v", err))
+		return he.StatusUnsupportedMediaType(heutil.NetPrintf(k("Couldn't parse: %v"), err))
 	}
 
 	hash, ok := entity.(map[string]interface{})

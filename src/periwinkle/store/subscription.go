@@ -69,7 +69,7 @@ func newDirSubscriptions() t_dirSubscriptions {
 			}
 
 			if entity.GroupId == "" {
-				return he.StatusUnsupportedMediaType(heutil.NetString("groupname can't be emtpy"))
+				return he.StatusUnsupportedMediaType(heutil.NetString(k("groupname can't be emtpy")))
 			}
 			entity.GroupId = strings.ToLower(entity.GroupId)
 			var subscriptions []Subscription
@@ -96,5 +96,5 @@ func (d t_dirSubscriptions) Methods() map[string]func(he.Request) he.Response {
 func (d t_dirSubscriptions) Subentity(user_id string, group_name string, req he.Request) he.Entity {
 	//group_name = strings.ToLower(group_name)
 	//db := req.Things["db"].(*gorm.DB)
-	panic("Not yet implemented")
+	panic("TODO")
 }

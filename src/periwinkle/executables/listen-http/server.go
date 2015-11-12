@@ -58,7 +58,7 @@ func makeServer(socket net.Listener) *stoppable.HTTPServer {
 	go func() {
 		err := smsCallbackServer.Serve()
 		if err != nil {
-			log.Printf("Could not serve SmsCallbackServer: %v\n", err)
+			log.Printf(s("Could not serve SmsCallbackServer: %v\n"), err)
 		}
 	}()
 

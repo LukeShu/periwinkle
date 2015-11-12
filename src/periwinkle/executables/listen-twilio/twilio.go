@@ -134,7 +134,7 @@ func NewPhoneNum() (string, error) {
 
 	}
 
-	log.Println("There are no available phone numbers!!!")
-	return "", fmt.Errorf("There are no available phone numbers!!!")
+	log.Println(s("There are no available phone numbers!!!"))
+	return "", fmt.Errorf(s("There are no available phone numbers!!!"))
 
 }
