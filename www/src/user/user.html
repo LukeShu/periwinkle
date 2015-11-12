@@ -1,156 +1,173 @@
 <!-- // Copyright 2015 Richard Wisniewski -->
-<div layout="row" layout-wrap style="max-width: 31cm; margin-left: auto; margin-right: auto;">
-
-<div flex="50" flex-sm="100">
-<md-card id="user">
-	<md-toolbar class="md-toolbar-tools">
-		<h1 ng-if="user.info.username == ''">{{ user.info.title | translate }}</h1>
-		<h1 ng-if="user.info.username != ''">{{ user.info.username }}</h1>
+<md-toolbar class="md-tall">
+	<div class="md-toolbar-tools">
+		<h1 id="title">
+			<span>{{ user.title  | translate}}</span>
+		</h1>
 		<!-- central gap -->
 		<span flex=""></span>
-		<md-menu>
-			<md-button id="user-info-menu" aria-label="menu" class="md-icon-button" ng-click="openMenu($mdOpenMenu, $event)" >
-				<md-icon md-svg-src="assets/svg/more_vert.svg"></md-icon>
-			</md-button>
-			<md-menu-content>
-				<md-menu-item>
-					<md-button ng-if="!user.info.status.editing" aria-label="Edit profile" ng-click="user.info.toggleEditing(originalEvent)">
-						<span >{{ "USER.INFO.BEGIN_EDIT" | translate }}<span>
-					</md-button>
-					<md-button ng-if="user.info.status.editing" aria-label="Edit profile" ng-click="user.info.toggleEditing(originalEvent)">
-						<span >{{ "USER.INFO.STOP_EDIT" | translate }}<span>
-					</md-button>
-				</md-menu-item>
-				<md-menu-item>
-					<md-button aria-label="change password" ng-click="user.info.changePassword(originalEvent)">
-						{{ "USER.INFO.CHANGE_PASSWORD" | translate }}
-					</md-button>
-				</md-menu-item>
-				<md-menu-item>
-					<md-button aria-label="delete account" ng-click="user.info.delete()">
-						{{ "USER.INFO.DELETE" | translate }}
-					</md-button>
-				</md-menu-item>
-			</md-menu-content>
-		</md-menu>
-	</md-toolbar>
+		<md-button class="md-icon-button"  aria-label="Sign Out" ng-click="logout()">
+			{{ 'GENERAL.SIGNOUT' | translate }}
+		</md-button>
+	</div>
+</md-toolbar>
 
-	<md-card-content style="padding-right: 0;">
-		<div>
-			<p ng-if="user.info.fullName.loading">{{ "USER.INFO.SAVING" | translate }}</p>
-			<div ng-if="!user.info.fullName.loading">
-				<div ng-if="!user.info.fullName.editing" layout="row" layout-align="start center">
-					<md-menu ng-if="user.info.status.editing">
-						<md-button aria-label="menu" class="md-icon-button" ng-click="openMenu($mdOpenMenu, $event)" >
-							<md-icon md-svg-src="assets/svg/more_horiz.svg"></md-icon>
+<md-content id="content" class="md-padding">
+
+	<div ng-if="user.loading" style="position: absolute; z-index: 12; width: 40px; height: 40px; top: 3em; left: 50%; margin-left: -20px; border-color: #f0f0f0; border-style: solid; border-width: 1px; border-radius: 20px; background-color: white;">
+		<md-progress-circular md-diameter="20px" md-mode="indeterminate" style="margin-top: -30px; margin-left: -30px;"></md-progress-circular>
+	</div>
+	<div layout="row" layout-wrap style="max-width: 31cm; margin-left: auto; margin-right: auto;">
+		<div flex="50" flex-sm="100">
+			<md-card id="user">
+				<md-toolbar class="md-toolbar-tools">
+					<h1 ng-if="user.info.username == ''">{{ user.info.title | translate }}</h1>
+					<h1 ng-if="user.info.username != ''">{{ user.info.username }}</h1>
+					<!-- central gap -->
+					<span flex=""></span>
+					<md-menu>
+						<md-button id="user-info-menu" aria-label="menu" class="md-icon-button" ng-click="openMenu($mdOpenMenu, $event)" >
+							<md-icon md-svg-src="assets/svg/more_vert.svg"></md-icon>
 						</md-button>
 						<md-menu-content>
 							<md-menu-item>
-								<md-button aria-label="change" ng-click="user.info.edit_fullName()">
-									{{ "USER.INFO.CHANGE_NAME" | translate }}
+								<md-button ng-if="!user.info.status.editing" aria-label="Edit profile" ng-click="user.info.toggleEditing(originalEvent)">
+									<span >{{ "USER.INFO.BEGIN_EDIT" | translate }}<span>
+								</md-button>
+								<md-button ng-if="user.info.status.editing" aria-label="Edit profile" ng-click="user.info.toggleEditing(originalEvent)">
+									<span >{{ "USER.INFO.STOP_EDIT" | translate }}<span>
 								</md-button>
 							</md-menu-item>
-						</md-meeu-content>
+							<md-menu-item>
+								<md-button aria-label="change password" ng-click="user.info.changePassword(originalEvent)">
+									{{ "USER.INFO.CHANGE_PASSWORD" | translate }}
+								</md-button>
+							</md-menu-item>
+							<md-menu-item>
+								<md-button aria-label="delete account" ng-click="user.info.delete()">
+									{{ "USER.INFO.DELETE" | translate }}
+								</md-button>
+							</md-menu-item>
+						</md-menu-content>
 					</md-menu>
-					<div layout="column">
-						<p style="font-weight: bold; padding-bottom: 0; margin-bottom: 0;">{{ "USER.INFO.FULL_NAME" | translate }}</p>
-						<p ng-if="user.info.fullName.text != ''">{{ user.info.fullName.text }}</p>
-						<p ng-if="user.info.fullName.text == ''" style="color: #a0a0a0">{{ "USER.INFO.NO_FULL_NAME" | translate }}</p>
-					</div>
-				</div>
-				<form ng-if="user.info.fullName.editing" name="editAddressForm" ng-submit="user.info.set_fullName()">
-					<md-input-container style="padding-right: 1em;">
-						<label>{{ "USER.INFO.FULL_NAME" | translate }}</label>
-						<input name="address" ng-model="user.info.fullName.new_text" type="text" focus-on="edit_fullName" ng-blur="user.info.set_fullName()" require ></input>
-					</md-input-container>
-					<md-button type="submit" ng-show="false">
-						Submit
-					</md-button>
-				</form>
-			</div>
-		</div>
+				</md-toolbar>
 
-		<div layout="row" layout-align="space-between center">
-			<h3 style="margin-bottom: 0;">{{ "USER.INFO.ADDRESSES" | translate }}</h3>
-			<md-button id="new-address-fab" class="md-fab md-accent" aria-label="change" ng-click="user.info.newAddress($event)">
-				<md-icon md-svg-src="assets/svg/add.svg"></md-icon>
-			</md-button>
-		</div>
-		<ul style="list-style: none; padding: 0; margin: 0;">
-			<li ng-repeat="address in user.info.addresses">
-				<p ng-if="address.loading">{{ "USER.INFO.SAVING" | translate }}</p>
-				<div ng-if="!address.loading">
-					<div ng-if="!address.editing" layout="row" layout-align="start center">
-						<md-menu ng-if="user.info.status.editing">
-							<md-button aria-label="menu" class="md-icon-button" ng-click="openMenu($mdOpenMenu, $event)" >
-								<md-icon md-svg-src="assets/svg/more_horiz.svg"></md-icon>
-							</md-button>
-							<md-menu-content>
-								<md-menu-item>
-									<md-button aria-label="change" ng-click="user.info.edit_address($index)">
-										{{ "USER.INFO.EMAIL_CHANGE" | translate }}
+				<md-card-content style="padding-right: 0;">
+					<div>
+						<p ng-if="user.info.fullName.loading">{{ "USER.INFO.SAVING" | translate }}</p>
+						<div ng-if="!user.info.fullName.loading">
+							<div ng-if="!user.info.fullName.editing" layout="row" layout-align="start center">
+								<md-menu ng-if="user.info.status.editing">
+									<md-button aria-label="menu" class="md-icon-button" ng-click="openMenu($mdOpenMenu, $event)" >
+										<md-icon md-svg-src="assets/svg/more_horiz.svg"></md-icon>
 									</md-button>
-								</md-menu-item>
-								<md-menu-item>
-									<md-button aria-label="change" ng-click="user.info.delete_address($index)">
-										{{ "USER.INFO.EMAIL_DELETE" | translate }}
-									</md-button>
-								</md-menu-item>
-							</md-menu-container>
-						</md-menu>
-						<p><span style="font-weight: bold;">{{ "GENERAL.MEDIUMS." + address.medium | translate }}:</span>  {{address.address}}</p>
+									<md-menu-content>
+										<md-menu-item>
+											<md-button aria-label="change" ng-click="user.info.edit_fullName()">
+												{{ "USER.INFO.CHANGE_NAME" | translate }}
+											</md-button>
+										</md-menu-item>
+									</md-meeu-content>
+								</md-menu>
+								<div layout="column">
+									<p style="font-weight: bold; padding-bottom: 0; margin-bottom: 0;">{{ "USER.INFO.FULL_NAME" | translate }}</p>
+									<p ng-if="user.info.fullName.text != ''">{{ user.info.fullName.text }}</p>
+									<p ng-if="user.info.fullName.text == ''" style="color: #a0a0a0">{{ "USER.INFO.NO_FULL_NAME" | translate }}</p>
+								</div>
+							</div>
+							<form ng-if="user.info.fullName.editing" name="editAddressForm" ng-submit="user.info.set_fullName()">
+								<md-input-container style="padding-right: 1em;">
+									<label>{{ "USER.INFO.FULL_NAME" | translate }}</label>
+									<input name="address" ng-model="user.info.fullName.new_text" type="text" focus-on="edit_fullName" ng-blur="user.info.set_fullName()" require ></input>
+								</md-input-container>
+								<md-button type="submit" ng-show="false">
+									Submit
+								</md-button>
+							</form>
+						</div>
 					</div>
-					<form ng-if="address.editing" name="editAddressForm" ng-submit="user.info.save_edit_address($index)">
-						<md-input-container style="padding-right: 1em;">
-							<label>{{ "GENERAL.MEDIUMS." + address.medium | translate }}</label>
-							<input name="address" ng-model="address.new_address" type="text" focus-on="edit_address" ng-blur="user.info.save_edit_address($index)" require ></input>
-						</md-input-container>
-						<md-button type="submit" ng-show="false">
-							Submit
+
+					<div layout="row" layout-align="space-between center">
+						<h3 style="margin-bottom: 0;">{{ "USER.INFO.ADDRESSES" | translate }}</h3>
+						<md-button id="new-address-fab" class="md-fab md-accent" aria-label="change" ng-click="user.info.newAddress($event)">
+							<md-icon md-svg-src="assets/svg/add.svg"></md-icon>
 						</md-button>
-					</form>
-				</div>
-			</li>
-		</ul>
-	</md-card-content>
-</md-card>
-</div>
-
-<div flex="50" flex-sm="100">
-<md-card id="groups">
-	<md-toolbar class="md-toolbar-tools">
-		<h1 style="padding-left: .5em; padding-bottom: 0em; margin-bottom: 0em;">{{ "USER.GROUPS.GROUPS" | translate }}</h1>
-		<!-- central gap -->
-		<span flex=""></span>
-		<md-menu>
-			<md-button aria-label="menu" class="md-icon-button" ng-click="openMenu($mdOpenMenu, $event)" >
-				<md-icon md-svg-src="assets/svg/more_vert.svg"></md-icon>
-			</md-button>
-			<md-menu-content>
-				<md-menu-item>
-					<md-button aria-label="Join">
-						{{ "USER.GROUPS.JOIN" | translate }}
-					</md-button>
-				</md-menu-item>
-				<md-menu-item>
-					<md-button aria-label="New" ng-click="user.groups.new(originalEvent)">
-						{{ "USER.GROUPS.NEW" | translate }}
-					</md-button>
-				</md-menu-item>
-			</md-menu-content>
-		</md-menu>
-	</md-toolbar>
-	<md-card-content>
-		<ul ng-if="user.groups.list.length" style="list-style: none; padding: 0; margin: 0;">
-			<li ng-repeat="group in user.groups.list">
-			<div layout="row" layout-align="space-between center">
-				<p style="font-weight: bold" ng-click="user.groups.edit($index)">{{ group }}</p>
+					</div>
+					<ul style="list-style: none; padding: 0; margin: 0;">
+						<li ng-repeat="address in user.info.addresses">
+							<p ng-if="address.loading">{{ "USER.INFO.SAVING" | translate }}</p>
+							<div ng-if="!address.loading">
+								<div ng-if="!address.editing" layout="row" layout-align="start center">
+									<md-menu ng-if="user.info.status.editing">
+										<md-button aria-label="menu" class="md-icon-button" ng-click="openMenu($mdOpenMenu, $event)" >
+											<md-icon md-svg-src="assets/svg/more_horiz.svg"></md-icon>
+										</md-button>
+										<md-menu-content>
+											<md-menu-item>
+												<md-button aria-label="change" ng-click="user.info.edit_address($index)">
+													{{ "USER.INFO.EMAIL_CHANGE" | translate }}
+												</md-button>
+											</md-menu-item>
+											<md-menu-item>
+												<md-button aria-label="change" ng-click="user.info.delete_address($index)">
+													{{ "USER.INFO.EMAIL_DELETE" | translate }}
+												</md-button>
+											</md-menu-item>
+										</md-menu-container>
+									</md-menu>
+									<p><span style="font-weight: bold;">{{ "GENERAL.MEDIUMS." + address.medium | translate }}:</span>  {{address.address}}</p>
+								</div>
+								<form ng-if="address.editing" name="editAddressForm" ng-submit="user.info.save_edit_address($index)">
+									<md-input-container style="padding-right: 1em;">
+										<label>{{ "GENERAL.MEDIUMS." + address.medium | translate }}</label>
+										<input name="address" ng-model="address.new_address" type="text" focus-on="edit_address" ng-blur="user.info.save_edit_address($index)" require ></input>
+									</md-input-container>
+									<md-button type="submit" ng-show="false">
+										Submit
+									</md-button>
+								</form>
+							</div>
+						</li>
+					</ul>
+				</md-card-content>
+			</md-card>
 			</div>
-			</li>
-		</ul>
-		<p ng-if="!user.groups.list.length">{{ "USER.GROUPS.NO_GROUPS" | translate }}</p>
-	</md-card-content>
-</md-card>
-</div>
 
-</div>
+			<div flex="50" flex-sm="100">
+			<md-card id="groups">
+				<md-toolbar class="md-toolbar-tools">
+					<h1 style="padding-left: .5em; padding-bottom: 0em; margin-bottom: 0em;">{{ "USER.GROUPS.GROUPS" | translate }}</h1>
+					<!-- central gap -->
+					<span flex=""></span>
+					<md-menu>
+						<md-button aria-label="menu" class="md-icon-button" ng-click="openMenu($mdOpenMenu, $event)" >
+							<md-icon md-svg-src="assets/svg/more_vert.svg"></md-icon>
+						</md-button>
+						<md-menu-content>
+							<md-menu-item>
+								<md-button aria-label="Join">
+									{{ "USER.GROUPS.JOIN" | translate }}
+								</md-button>
+							</md-menu-item>
+							<md-menu-item>
+								<md-button aria-label="New" ng-click="user.groups.new(originalEvent)">
+									{{ "USER.GROUPS.NEW" | translate }}
+								</md-button>
+							</md-menu-item>
+						</md-menu-content>
+					</md-menu>
+				</md-toolbar>
+				<md-card-content>
+					<ul ng-if="user.groups.list.length" style="list-style: none; padding: 0; margin: 0;">
+						<li ng-repeat="group in user.groups.list">
+						<div layout="row" layout-align="space-between center">
+							<p style="font-weight: bold" ng-click="user.groups.edit($index)">{{ group }}</p>
+						</div>
+						</li>
+					</ul>
+					<p ng-if="!user.groups.list.length">{{ "USER.GROUPS.NO_GROUPS" | translate }}</p>
+				</md-card-content>
+			</md-card>
+		</div>
+	</div>
+</md-content>

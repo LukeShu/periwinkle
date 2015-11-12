@@ -10,19 +10,8 @@
 		//gives us an anchor to the outer object from within sub objects or functions
 		var self = this;
 		//clears the toolbar and such so we can set it up for this view
-		$scope.reset();
-		$scope.toolbar.title = "USER.INFO.USER";
-		$scope.toolbar.tall = true;
-		$scope.toolbar.buttons = [{
-			aria_label: "LogOut",
-			label:	"GENERAL.SIGNOUT"
-		}];
-		$scope.toolbar.onclick = function(index) {
-			if(index == 0) {
-				$scope.logout();
-			}
-		};
-
+		self.toolbar.title = "USER.INFO.USER";
+		self.loading = false;
 		self.info = {
 			status: {
 				loading: 	true,
@@ -70,7 +59,7 @@
 							debugger;
 							var status_code = response.status;
 							var reason = response.data;
-							$scope.loading.is = false;
+							self.loading = false;
 							switch(status_code){
 								case 403:
 									$scope.showError('LOGIN.LOGIN.ERRORS.403.TITLE', 'LOGIN.LOGIN.ERRORS.403.CONTENT', '', '#login-button', '#login-button');
@@ -264,7 +253,7 @@
 						.closeTo('#info_menu')
 				).then(
 					function ok() {
-						$scope.loading.is = true;
+						self.loading = true;
 						$http({
 							method: 'DELETE',
 							url: '/v1/users/' + userService.user_id,
@@ -416,10 +405,10 @@
 
 		//check and load
 		self.load = function() {
-			$scope.loading.is = true;
+			self.loading = true;
 			userService.validate(
 				function success() {
-					$scope.loading.is = false;
+					self.loading = false;
 					self.info.load();
 					self.groups.load();
 				},
