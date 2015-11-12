@@ -12,13 +12,13 @@
 	</div>
 </md-toolbar>
 
-<md-content id="content" class="md-padding">
+<md-content id="content" class="md-padding" style="padding-top: 0; margin-top: -64px;">
 
 	<div ng-if="user.loading" style="position: absolute; z-index: 12; width: 40px; height: 40px; top: 3em; left: 50%; margin-left: -20px; border-color: #f0f0f0; border-style: solid; border-width: 1px; border-radius: 20px; background-color: white;">
 		<md-progress-circular md-diameter="20px" md-mode="indeterminate" style="margin-top: -30px; margin-left: -30px;"></md-progress-circular>
 	</div>
-	<div layout="row" layout-wrap style="max-width: 31cm; margin-left: auto; margin-right: auto;">
-		<div flex="50" flex-sm="100">
+	<div layout="row" layout-wrap style="max-width: 15cm; margin-left: auto; margin-right: auto;">
+		<div flex="100">
 			<md-card id="user">
 				<md-toolbar class="md-toolbar-tools">
 					<h1 ng-if="user.info.username == ''">{{ user.info.title | translate }}</h1>
@@ -133,7 +133,7 @@
 			</md-card>
 			</div>
 
-			<div flex="50" flex-sm="100">
+			<div flex="100">
 			<md-card id="groups">
 				<md-toolbar class="md-toolbar-tools">
 					<h1 style="padding-left: .5em; padding-bottom: 0em; margin-bottom: 0em;">{{ "USER.GROUPS.GROUPS" | translate }}</h1>
