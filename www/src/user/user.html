@@ -20,7 +20,7 @@
 	<div layout="row" layout-wrap style="max-width: 15cm; margin-left: auto; margin-right: auto;">
 		<div flex="100">
 			<md-card id="user">
-				<md-toolbar class="md-toolbar-tools">
+				<md-toolbar class="md-toolbar-tools" style="background-color: white; color: black;">
 					<h1 ng-if="user.info.username == ''">{{ user.info.title | translate }}</h1>
 					<h1 ng-if="user.info.username != ''">{{ user.info.username }}</h1>
 					<!-- central gap -->
@@ -135,7 +135,7 @@
 
 			<div flex="100">
 			<md-card id="groups">
-				<md-toolbar class="md-toolbar-tools">
+				<md-toolbar class="md-toolbar-tools" style="background-color: white; color: black;">
 					<h1 style="padding-left: .5em; padding-bottom: 0em; margin-bottom: 0em;">{{ "USER.GROUPS.GROUPS" | translate }}</h1>
 					<!-- central gap -->
 					<span flex=""></span>
