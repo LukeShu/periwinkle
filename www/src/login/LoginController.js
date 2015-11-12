@@ -27,6 +27,7 @@
 				message: ''
 			}
 		};
+		self.loading = false;
 
 		//for login redir;
 		if(userService.loginRedir.has == true) {
@@ -38,7 +39,7 @@
 			debugger;
 			if(cookie != null && cookie != "") {
 				//the user may have a session
-				$scope.loading.is = true;
+				self.loading = true;
 				userService.validate(
 					function success() {
 						//user is logged in
@@ -50,7 +51,7 @@
 					function noSession() {
 						//the user isn't logged in
 						userService.reset();
-						$scope.loading.is = false;
+						self.loading = false;
 					}
 				);
 			}
@@ -59,7 +60,7 @@
 		//public functions
 		this.login = function() {
 			//http login api call
-			$scope.loading.is = true;
+			self.loading = true;
 			$http({
 				method: 'POST',
 				url: '/v1/session',
@@ -88,7 +89,7 @@
 					//show error to user
 					var status_code = response.status;
 					var reason = response.data;
-					$scope.loading.is = false;
+					self.loading = false;
 					//show alert
 					switch(status_code){
 						case 403:
@@ -106,7 +107,7 @@
 
 		this.signup = function(ev) {
 			//http signup api call
-			$scope.loading.is = true;
+			self.loading = true;
 			$http({
 				method: 'POST',
 				url: '/v1/users',
@@ -130,7 +131,7 @@
 					var reason = response.data;
 					var $translate = $filter('translate');
 					var $escape = $filter('escapeHTML');
-					$scope.loading.is = false;
+					self.loading = false;
 					//show alert
 					switch(status_code){
 						case 409:
