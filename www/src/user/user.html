@@ -31,14 +31,6 @@
 						</md-button>
 						<md-menu-content>
 							<md-menu-item>
-								<md-button ng-if="!user.info.status.editing" aria-label="Edit profile" ng-click="user.info.toggleEditing(originalEvent)">
-									<span >{{ "USER.INFO.BEGIN_EDIT" | translate }}<span>
-								</md-button>
-								<md-button ng-if="user.info.status.editing" aria-label="Edit profile" ng-click="user.info.toggleEditing(originalEvent)">
-									<span >{{ "USER.INFO.STOP_EDIT" | translate }}<span>
-								</md-button>
-							</md-menu-item>
-							<md-menu-item>
 								<md-button aria-label="change password" ng-click="user.info.changePassword(originalEvent)">
 									{{ "USER.INFO.CHANGE_PASSWORD" | translate }}
 								</md-button>
@@ -56,19 +48,7 @@
 						<p ng-if="user.info.fullName.loading">{{ "USER.INFO.SAVING" | translate }}</p>
 						<div ng-if="!user.info.fullName.loading">
 							<div ng-if="!user.info.fullName.editing" layout="row" layout-align="start center">
-								<md-menu ng-if="user.info.status.editing">
-									<md-button aria-label="menu" class="md-icon-button" ng-click="openMenu($mdOpenMenu, $event)" >
-										<md-icon md-svg-src="assets/svg/more_horiz.svg"></md-icon>
-									</md-button>
-									<md-menu-content>
-										<md-menu-item>
-											<md-button aria-label="change" ng-click="user.info.edit_fullName()">
-												{{ "USER.INFO.CHANGE_NAME" | translate }}
-											</md-button>
-										</md-menu-item>
-									</md-meeu-content>
-								</md-menu>
-								<div layout="column">
+								<div layout="column" ng-click="user.info.edit_fullName()">
 									<p style="font-weight: bold; padding-bottom: 0; margin-bottom: 0;">{{ "USER.INFO.FULL_NAME" | translate }}</p>
 									<p ng-if="user.info.fullName.text != ''">{{ user.info.fullName.text }}</p>
 									<p ng-if="user.info.fullName.text == ''" style="color: #a0a0a0">{{ "USER.INFO.NO_FULL_NAME" | translate }}</p>
