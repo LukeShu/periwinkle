@@ -55,7 +55,7 @@
 								</div>
 							</div>
 							<form ng-if="user.info.fullName.editing" name="editAddressForm" ng-submit="user.info.set_fullName()">
-								<md-input-container style="padding-right: 8px;">
+								<md-input-container style="padding-bottom: 16px;">
 									<label>{{ "USER.INFO.FULL_NAME" | translate }}</label>
 									<input name="address" ng-model="user.info.fullName.new_text" type="text" focus-on="edit_fullName" ng-blur="user.info.set_fullName()" require ></input>
 								</md-input-container>
