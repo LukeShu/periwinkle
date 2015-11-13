@@ -7,8 +7,9 @@
 	.tall-bar-content {
 		margin-top: -56px;
 	}
-
+}
 @media only screen and (min-width: 0) and (max-width: 600px) and (orientation: landscape) {
 	.tall-bar-content {
 		margin-top: -48px;
 	}
+}
