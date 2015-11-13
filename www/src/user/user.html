@@ -14,7 +14,7 @@
 
 <md-content id="content" class="md-padding" style="padding-top: 0; margin-top: -64px;">
 
-	<div ng-if="user.loading" style="position: absolute; z-index: 12; width: 40px; height: 40px; top: 3em; left: 50%; margin-left: -20px; border-color: #f0f0f0; border-style: solid; border-width: 1px; border-radius: 20px; background-color: white;">
+	<div ng-if="user.loading" style="position: fixed; z-index: 12; width: 40px; height: 40px; top: 128px; left: 50%; margin-left: -20px; border-color: #f0f0f0; border-style: solid; border-width: 1px; border-radius: 20px; background-color: white;">
 		<md-progress-circular md-diameter="20px" md-mode="indeterminate" style="margin-top: -30px; margin-left: -30px;"></md-progress-circular>
 	</div>
 	<div layout="row" layout-wrap style="max-width: 15cm; margin-left: auto; margin-right: auto; z-index: 2;">
@@ -75,7 +75,7 @@
 								</div>
 							</div>
 							<form ng-if="user.info.fullName.editing" name="editAddressForm" ng-submit="user.info.set_fullName()">
-								<md-input-container style="padding-right: 1em;">
+								<md-input-container style="padding-right: 8px;">
 									<label>{{ "USER.INFO.FULL_NAME" | translate }}</label>
 									<input name="address" ng-model="user.info.fullName.new_text" type="text" focus-on="edit_fullName" ng-blur="user.info.set_fullName()" require ></input>
 								</md-input-container>
@@ -142,7 +142,7 @@
 									<p><span style="font-weight: bold;">{{ "GENERAL.MEDIUMS." + address.medium | translate }}:</span>  {{address.address}}</p>
 								</div>
 								<form ng-if="address.editing" name="editAddressForm" ng-submit="user.info.save_edit_address($index)">
-									<md-input-container style="padding-right: 1em;">
+									<md-input-container style="padding-right: 8px;">
 										<label>{{ "GENERAL.MEDIUMS." + address.medium | translate }}</label>
 										<input name="address" ng-model="address.new_address" type="text" focus-on="edit_address" ng-blur="user.info.save_edit_address($index)" require ></input>
 									</md-input-container>
