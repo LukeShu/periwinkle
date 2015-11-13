@@ -4,13 +4,23 @@
 
 	angular
 		.module('periwinkle')
-		.controller('PeriwinkleController', ['$scope', '$http', 'UserService', '$location', '$mdDialog', PeriwinkleController]);
+		.controller('PeriwinkleController', ['$scope', '$http', 'UserService', '$location', '$mdDialog', '$filter', PeriwinkleController]);
 
-	function PeriwinkleController ($scope, $http, userService, $location, $mdDialog) {
+	function PeriwinkleController ($scope, $http, userService, $location, $mdDialog, $filter) {
 		var self = this;
 
 		$scope.title = '';
 		$scope.loading = false;
+
+		$scope.window_title = function () {
+			var title = 'Periwinkle';
+			var $translate = $filter('translate');
+			if($scope.title != '') {
+				title += " &mdash; ";
+				title += $translate($scope.title);
+			}
+			return title;
+		};
 
 		$scope.openMenu = function($mdOpenMenu, ev) {
 			$scope.originalEvent = ev;
