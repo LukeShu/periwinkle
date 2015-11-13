@@ -9,6 +9,7 @@
 	function PeriwinkleController ($scope, $http, userService, $location, $mdDialog) {
 		var self = this;
 
+		$scope.title = '';
 		$scope.loading = false;
 
 		$scope.openMenu = function($mdOpenMenu, ev) {
