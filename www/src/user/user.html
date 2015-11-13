@@ -49,7 +49,7 @@
 						<div ng-if="!user.info.fullName.loading">
 							<div ng-if="!user.info.fullName.editing" layout="row" layout-align="start center">
 								<div layout="column" ng-click="user.info.edit_fullName()">
-									<p style="font-weight: bold; padding-bottom: 0; margin-bottom: 0;">{{ "USER.INFO.FULL_NAME" | translate }}</p>
+									<p style="font-weight: bold; padding-bottom: 0; font-size: 18px; margin-bottom: 0;">{{ "USER.INFO.FULL_NAME" | translate }}</p>
 									<p ng-if="user.info.fullName.text != ''">{{ user.info.fullName.text }}</p>
 									<p ng-if="user.info.fullName.text == ''" style="color: #a0a0a0">{{ "USER.INFO.NO_FULL_NAME" | translate }}</p>
 								</div>
