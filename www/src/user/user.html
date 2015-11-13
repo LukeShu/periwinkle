@@ -6,13 +6,13 @@
 		</h1>
 		<!-- central gap -->
 		<span flex=""></span>
-		<md-button class="md-icon-button"  aria-label="Sign Out" ng-click="logout()">
+		<md-button class="md-button"  aria-label="Sign Out" ng-click="logout()">
 			{{ 'GENERAL.SIGNOUT' | translate }}
 		</md-button>
 	</div>
 </md-toolbar>
 
-<md-content id="content" class="md-padding tall-bar-content">
+<md-content id="content" class="tall-bar-content md-padding">
 
 	<div ng-if="user.loading" style="position: fixed; z-index: 12; width: 40px; height: 40px; top: 128px; left: 50%; margin-left: -20px; border-color: #f0f0f0; border-style: solid; border-width: 1px; border-radius: 20px; background-color: white;">
 		<md-progress-circular md-diameter="20px" md-mode="indeterminate" style="margin-top: -30px; margin-left: -30px;"></md-progress-circular>
