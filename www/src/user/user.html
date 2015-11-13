@@ -51,7 +51,7 @@
 						</md-menu-content>
 					</md-menu>
 				</md-toolbar>
-				<md-card-content>
+				<md-card-content style="padding-top: 0px;">
 					<div>
 						<p ng-if="user.info.fullName.loading">{{ "USER.INFO.SAVING" | translate }}</p>
 						<div ng-if="!user.info.fullName.loading">
@@ -182,7 +182,7 @@
 						</md-menu-content>
 					</md-menu>
 				</md-toolbar>
-				<md-card-content>
+				<md-card-content style="padding-top: 0px;">
 					<ul ng-if="user.groups.list.length" style="list-style: none; padding: 0; margin: 0;">
 						<li ng-repeat="group in user.groups.list">
 						<div layout="row" layout-align="space-between center">
