@@ -19,7 +19,7 @@
 		self.captcha_key = '';
 		self.isSignup = false;
 		//prep the toolbar
-		self.title = 'LOGIN.LOGIN.LOGIN';
+		$scope.title = 'LOGIN.LOGIN.LOGIN';
 		self.warn = {
 			exists: false,
 			prefix:	'',
@@ -152,9 +152,9 @@
 				self.username = '';
 			self.password = '';
 			if(self.isSignup) {
-				self.title = 'LOGIN.SIGNUP.SIGNUP';
+				$scope.title = 'LOGIN.SIGNUP.SIGNUP';
 			} else {
-				self.title = 'LOGIN.LOGIN.LOGIN';
+				$scope.title = 'LOGIN.LOGIN.LOGIN';
 			}
 		}
 	}
