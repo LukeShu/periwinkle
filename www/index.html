@@ -46,7 +46,7 @@
 	<meta name="theme-color" content="#9C27B0">
 	<meta name="viewport" content="width=device-width">
 	<link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
-	<title ng-bind="'Periwinkle &mdash; ' + ( toolbar.title | translate )">Periwinkle</title>
+	<title ng-bind="'Periwinkle' (title != '' ? '&mdash; ' + ( title | translate ) : '' )">Periwinkle</title>
 </head>
 <body>
 	<div ng-view></div>
