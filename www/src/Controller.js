@@ -9,34 +9,7 @@
 	function PeriwinkleController ($scope, $http, userService, $location, $mdDialog) {
 		var self = this;
 
-		var reset = function() {
-			$scope.sidenav = {
-				exists: false,
-				items: [],
-				selected: NaN
-			};
-			$scope.toolbar = {
-				exists: true,
-				tall:	false,
-				title:	'',
-				buttons: [],
-				onclick: function(){},
-				warn: null
-			};
-			$scope.toolbar.warn = {
-				exists:		false,
-				prefix:		'',
-				message:	''
-			};
-			$scope.expandMenu = {
-				exists: false
-			};
-			$scope.loading = {
-				is:	false
-			};
-			$scope.originalEvent = null;
-		}
-		$scope.reset = reset;
+		$scope.loading = false;
 
 		$scope.openMenu = function($mdOpenMenu, ev) {
 			$scope.originalEvent = ev;
@@ -44,7 +17,7 @@
 		};
 
 		$scope.logout = function () {
-			$scope.loading.is = true;
+			$scope.loading = true;
 			if(userService.session_id && userService.session_id != "") {
 				$http({
 					method: 'DELETE',
@@ -64,7 +37,7 @@
 					function fail(response) {
 						//do work with response
 						//show error to user
-						$scope.loading.is = false;
+						$scope.loading = false;
 						//show alert
 					}
 				);

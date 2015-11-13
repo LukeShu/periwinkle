@@ -11,7 +11,7 @@
 		var self = this;
 		//clears the toolbar and such so we can set it up for this view
 		self.title = "USER.INFO.USER";
-		self.loading = false;
+		$scope.loading = false;
 
 		self.info = {
 			status: {
@@ -60,7 +60,7 @@
 							debugger;
 							var status_code = response.status;
 							var reason = response.data;
-							self.loading = false;
+							$scope.loading = false;
 							switch(status_code){
 								case 403:
 									$scope.showError('LOGIN.LOGIN.ERRORS.403.TITLE', 'LOGIN.LOGIN.ERRORS.403.CONTENT', '', '#login-button', '#login-button');
@@ -254,7 +254,7 @@
 						.closeTo('#info_menu')
 				).then(
 					function ok() {
-						self.loading = true;
+						$scope.loading = true;
 						$http({
 							method: 'DELETE',
 							url: '/v1/users/' + userService.user_id,
@@ -406,10 +406,10 @@
 
 		//check and load
 		self.load = function() {
-			self.loading = true;
+			$scope.loading = true;
 			userService.validate(
 				function success() {
-					self.loading = false;
+					$scope.loading = false;
 					self.info.load();
 					self.groups.load();
 				},
