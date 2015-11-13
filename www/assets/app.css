@@ -1,16 +1,15 @@
 // Copyright 2015 Richard Wisniewski
 .tall-bar-content {
-	margin-top: -72px;
-	padding-top: 0px;
+	margin-top: -80px;
 }
 
 @media only screen and (min-width: 0) and (max-width: 600px) and (orientation: portrait) {
 	.tall-bar-content {
-		margin-top: -64px;
+		margin-top: -72px;
 	}
 }
 @media only screen and (min-width: 0) and (max-width: 600px) and (orientation: landscape) {
 	.tall-bar-content {
-		margin-top: -56px;
+		margin-top: -64px;
 	}
 }
