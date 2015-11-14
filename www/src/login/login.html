@@ -9,9 +9,6 @@
 		<span flex=""></span>
 	</div>
 </md-toolbar>
-<md-toolbar class="md-warn md-toolbar-tools" ng-if="login.warn.exists">
-	<p>{{ login.warn.prefix | translate}}: {{ login.warn.message | translate }}</p>
-</md-toolbar>
 
 <md-content id="content" class="md-padding">
 
@@ -19,6 +16,17 @@
 		<md-progress-circular md-diameter="20px" md-mode="indeterminate" style="margin-top: -30px; margin-left: -30px;"></md-progress-circular>
 	</div>
 	<div style="max-width: 25em; margin-left: auto; margin-right: auto;">
+		<md-card class="md-warn md-toolbar-tools" ng-if="login.warn.exists">
+			<md-toolbar>
+				<div class="md-toolbar-tools md-warn">
+					<h1>{{ login.warn.prefix | translate}}</h1>
+				</div>
+			</md-toolbar>
+			<md-card-content>
+				<p class="md-warn">{{ login.warn.message | translate }}</p>
+			</md-card-content>
+		</md-card>
+
 		<div ng-if="!login.isSignup">
 			<md-card id="login">
 				<form name="loginForm" ng-submit="login.login()">
