@@ -16,9 +16,9 @@
 		<md-progress-circular md-diameter="20px" md-mode="indeterminate" style="margin-top: -30px; margin-left: -30px;"></md-progress-circular>
 	</div>
 	<div style="max-width: 25em; margin-left: auto; margin-right: auto;">
-		<md-card class="md-warn md-toolbar-tools" ng-if="login.warn.exists">
-			<md-toolbar>
-				<div class="md-toolbar-tools md-warn">
+		<md-card ng-if="login.warn.exists">
+			<md-toolbar class="md-warn">
+				<div class="md-toolbar-tools">
 					<h1>{{ login.warn.prefix | translate}}</h1>
 				</div>
 			</md-toolbar>
