@@ -43,6 +43,7 @@ func DbSchema(db *gorm.DB) error {
 	errHelper(&errs, (ShortUrl{}).dbSchema(db))
 	errHelper(&errs, (UserAddress{}).dbSchema(db))  // must come after User and Medium
 	errHelper(&errs, (Subscription{}).dbSchema(db)) // must come after Group and UserAddress
+	errHelper(&errs, (Admin{}).dbSchema(db))
 	return errorList(errs)
 }
 
@@ -59,6 +60,7 @@ func DbDrop(db *gorm.DB) error {
 	errHelper(&errs, db.DropTable(&Group{}).Error)
 	errHelper(&errs, db.DropTable(&Medium{}).Error)
 	errHelper(&errs, db.DropTable(&Captcha{}).Error)
+	errHelper(&errs, db.DropTable(&Admin{}).Error)
 	return errorList(errs)
 }
 
