@@ -39,6 +39,7 @@ type UserAddress struct {
 	Medium        string         `json:"medium"`
 	Address       string         `json:"address"`
 	SortOrder     uint64         `json:"sort_order"`
+	Confirmed     bool        `json:"confirmed"`
 	Subscriptions []Subscription `json:"subscriptions"`
 }
 
@@ -144,7 +145,7 @@ func NewUser(db *gorm.DB, name string, password string, email string) User {
 	o := User{
 		Id:        name,
 		FullName:  "",
-		Addresses: []UserAddress{{Medium: "email", Address: email}},
+		Addresses: []UserAddress{{Medium: "email", Address: email, Confirmed: false}},
 	}
 	if err := o.SetPassword(password); err != nil {
 		panic(err)
@@ -155,12 +156,13 @@ func NewUser(db *gorm.DB, name string, password string, email string) User {
 	return o
 }
 
-func NewUserAddress(db *gorm.DB, userId string, medium string, address string) UserAddress {
+func NewUserAddress(db *gorm.DB, userId string, medium string, address string, confirmed bool) UserAddress {
 	o := UserAddress{
 		UserId:        userId,
 		Medium:        medium,
 		Address:       address,
 		Subscriptions: make([]Subscription, 0),
+		Confirmed:     confirmed,
 	}
 	if err := db.Create(&o).Error; err != nil {
 		panic(err)
@@ -365,8 +367,8 @@ func newDirUsers() t_dirUsers {
 			entity.Username = strings.ToLower(entity.Username)
 
 			user := NewUser(db, entity.Username, entity.Password, entity.Email)
-			NewUserAddress(db, user.Id, "noop", "")
-			NewUserAddress(db, user.Id, "admin", "")
+			NewUserAddress(db, user.Id, "noop", "", true)
+			NewUserAddress(db, user.Id, "admin", "", true)
 			req.Things["user"] = user
 			return he.StatusCreated(r, user.Id, req)
 		},
