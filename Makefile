@@ -47,6 +47,10 @@ $(call goget,$(topdir),$(deps))
 $(addprefix %/bin/,$(executables)): $(generate) $(configure) %/src $(call gosrc,$(topdir))
 	$(call goinstall,$*,$(addprefix periwinkle/executables/,$(executables)))
 
+check:
+	GOPATH='$(abspath $(topdir))' go test -v $(packages)
+.PHONY: check
+
 gofmt:
 	gofmt -d $(addprefix $(topdir)/src/,$(packages))
 govet:
