@@ -17,6 +17,7 @@ type Subscription struct {
 	AddressId int64       `json:"-"`
 	Group     Group       `json:"group"`
 	GroupId   string      `json:"group_id"`
+	Confirmed bool        `json:"confirmed"`
 }
 
 func (o Subscription) dbSchema(db *gorm.DB) error {
