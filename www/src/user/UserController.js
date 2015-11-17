@@ -88,7 +88,7 @@
 				self.info.addresses[name][index].editing = false;
 				if(self.info.addresses[name][index].address !== self.info.addresses[name][index].new_address) {
 					self.info.addresses[name][index].loading = true;
-					var i;
+					var i; var n;
 					var list = [];
 					for (n in self.info.addresses) {
 						for(i in self.info.addresses[i]) {
@@ -137,7 +137,7 @@
 			},
 			delete_address: function(name, index) {
 				self.info.addresses[name][index].loading = true;
-				var i;
+				var i; var n;
 				var list = [];
 				for (n in self.info.addresses) {
 					for(i in self.info.addresses[i]) {

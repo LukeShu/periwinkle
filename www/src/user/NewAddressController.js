@@ -50,7 +50,7 @@
 		self.create = function() {
 			$scope.loading = true;
 			$scope.title = 'USER.NEW_ADDRESS.TITLE.CREATING';
-			var i;
+			var i; var n;
 			var list = [];
 			for (n in addresses) {
 				for(i in addresses[i]) {
