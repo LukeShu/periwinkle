@@ -11,11 +11,14 @@ import (
 	"net"
 	"os"
 	"os/signal"
+	"periwinkle"
 	"periwinkle/cfg"
 	"strconv"
 	"strings"
 	"syscall"
 )
+
+// TODO: allow specifying a config file
 
 func usage(w io.Writer) {
 	fmt.Fprintf(w,
@@ -48,7 +51,7 @@ this message is displayed.
 `, os.Args[0])
 }
 
-func parse_args() net.Listener {
+func parse_args() (net.Listener, *periwinkle.Cfg) {
 	var stype, saddr string
 
 	switch len(os.Args) - 1 {
@@ -124,7 +127,20 @@ func parse_args() net.Listener {
 		log.Println(err)
 		os.Exit(int(lsb.EXIT_FAILURE))
 	}
-	return socket
+
+	config_filename := "./periwinkle.conf"
+	file, err := os.Open(config_filename)
+	if err != nil {
+		log.Printf("Could not open %q: %v\n", config_filename, err)
+		os.Exit(int(lsb.EXIT_NOTCONFIGURED))
+	}
+	config, err := cfg.Parse(file)
+	if err != nil {
+		log.Println(err)
+		os.Exit(int(lsb.EXIT_NOTCONFIGURED))
+	}
+
+	return socket, config
 }
 
 func listenfd(fd int, name string) (net.Listener, error) {
@@ -147,38 +163,15 @@ func sd_get_socket() (socket net.Listener, err error) {
 }
 
 func main() {
-	config_filename := "./periwinkle.conf"
-	switch len(os.Args) {
-	case 1:
-		// do nothing
-	case 2:
-		config_filename = os.Args[1]
-	default:
-		usage(os.Stderr)
-		os.Exit(2)
-	}
-
-	file, err := os.Open(config_filename)
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "Could not open %q: %v\n", config_filename, err)
-		os.Exit(1)
-	}
-
-	config, err := cfg.Parse(file)
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "Could not parse %q: %v\n", config_filename, err)
-		os.Exit(1)
-	}
-
 	done := make(chan uint8)
 	signals := make(chan os.Signal)
 	signal.Notify(signals, syscall.SIGTERM, syscall.SIGHUP)
 
-	socket := parse_args()
+	socket, config := parse_args()
 
 	sd.Notify(false, "READY=1")
 
-	server := makeServer(socket, *config)
+	server := makeServer(socket, config)
 	server.Start()
 	go func() {
 		err := server.Wait()

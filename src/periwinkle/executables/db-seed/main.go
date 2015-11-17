@@ -1,11 +1,12 @@
 // Copyright 2015 Luke Shumaker
+// Copyright 2015 Davis Webb
 
 package main
 
 import (
-	"os"
-	"io"
 	"fmt"
+	"io"
+	"os"
 	"periwinkle/cfg"
 	"periwinkle/store"
 )
@@ -37,7 +38,7 @@ func main() {
 		fmt.Fprintf(os.Stderr, "Could not parse %q: %v\n", config_filename, err)
 		os.Exit(1)
 	}
-	
+
 	store.DbSchema(config.DB)
 	store.DbSeed(config.DB)
 }

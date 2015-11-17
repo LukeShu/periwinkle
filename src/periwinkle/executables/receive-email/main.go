@@ -1,12 +1,13 @@
 // Copyright 2015 Luke Shumaker
+// Copyright 2015 Davis Webb
 
 package main
 
 import (
 	"bufio"
 	"fmt"
-	"log"
 	"io"
+	"log"
 	"os"
 	"periwinkle/cfg"
 	_ "periwinkle/email_handlers" // handlers
@@ -83,17 +84,16 @@ func main() {
 	}()
 
 	reader := bufio.NewReader(os.Stdin)
-	_, _, err := reader.ReadLine() // This is done to ignore the first line because it does not fit the RF822 format
-
+	_, _, err = reader.ReadLine() // This is done to ignore the first line because it does not fit the RFC 822 format
 	if err != nil {
 		log.Println(err)
 		ret = postfixpipe.EX_NOINPUT
 		return
 	}
-	handler, ok := cfg.DomainHandlers[domain]
-	if ok {
-		ret = handler(reader, user, transaction, *config)
+
+	if handler, ok := config.DomainHandlers[domain]; ok {
+		ret = handler(reader, user, transaction, config)
 	} else {
-		ret = cfg.DefaultDomainHandler(reader, recipient, transaction, *config)
+		ret = config.DefaultDomainHandler(reader, recipient, transaction, config)
 	}
 }

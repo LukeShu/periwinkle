@@ -10,13 +10,13 @@ import (
 	"log"
 	"net"
 	"net/http"
-	"periwinkle/cfg"
+	"periwinkle"
 	"periwinkle/email_handlers"
 	"periwinkle/store"
 	"stoppable"
 )
 
-func makeServer(socket net.Listener, config cfg.Cfg) *stoppable.HTTPServer {
+func makeServer(socket net.Listener, cfg *periwinkle.Cfg) *stoppable.HTTPServer {
 	std_decoders := map[string]func(io.Reader, map[string]string) (interface{}, error){
 		"application/x-www-form-urlencoded": heutil.DecoderFormUrlEncoded,
 		"multipart/form-data":               heutil.DecoderFormData,
@@ -26,7 +26,7 @@ func makeServer(socket net.Listener, config cfg.Cfg) *stoppable.HTTPServer {
 	}
 	std_middlewares := []he.Middleware{
 		MiddlewarePostHack,
-		MiddlewareDatabase,
+		MiddlewareDatabase(cfg),
 		MiddlewareSession,
 	}
 	mux := http.NewServeMux()
@@ -36,9 +36,9 @@ func makeServer(socket net.Listener, config cfg.Cfg) *stoppable.HTTPServer {
 		Root:           store.DirRoot,
 		Decoders:       std_decoders,
 		Middlewares:    std_middlewares,
-		Stacktrace:     config.Debug,
-		LogRequest:     config.Debug,
-		TrustForwarded: config.TrustForwarded,
+		Stacktrace:     cfg.Debug,
+		LogRequest:     cfg.Debug,
+		TrustForwarded: cfg.TrustForwarded,
 	}.Init())
 	// URL shortener service
 	mux.Handle("/s/", he.Router{
@@ -46,13 +46,13 @@ func makeServer(socket net.Listener, config cfg.Cfg) *stoppable.HTTPServer {
 		Root:           store.DirShortUrls,
 		Decoders:       std_decoders,
 		Middlewares:    std_middlewares,
-		Stacktrace:     config.Debug,
-		LogRequest:     config.Debug,
-		TrustForwarded: config.TrustForwarded,
+		Stacktrace:     cfg.Debug,
+		LogRequest:     cfg.Debug,
+		TrustForwarded: cfg.TrustForwarded,
 	}.Init())
 
 	// The static web UI
-	mux.Handle("/webui/", http.StripPrefix("/webui/", http.FileServer(config.WebUiDir)))
+	mux.Handle("/webui/", http.StripPrefix("/webui/", http.FileServer(cfg.WebUiDir)))
 
 	smsCallbackServer := handlers.SmsCallbackServer{}
 	go func() {

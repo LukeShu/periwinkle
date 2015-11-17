@@ -1,4 +1,5 @@
 // Copyright 2015 Zhandos Suleimenov
+// Copyright 2015 Davis Webb
 
 package main
 
@@ -117,6 +118,7 @@ func main() {
 							if arr_temp[j] == "" {
 								arr_temp[j] = m_sid
 								putil.MessageBuilder{
+									Maildir: config.Mailstore,
 									Headers: map[string]string{
 										"To":      message.Messages[i].To,
 										"From":    message.Messages[i].From,

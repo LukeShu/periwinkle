@@ -11,16 +11,16 @@ import (
 	"log"
 	"net/mail"
 	"net/smtp"
-	"periwinkle/cfg"
+	"periwinkle"
 	"periwinkle/store"
 	"periwinkle/util" // putil
 	"postfixpipe"
 )
 
-func HandleEmail(r io.Reader, name string, db *gorm.DB, config cfg.Cfg) uint8 {
-	mdWriter := config.Mailstore.NewMail()
+func HandleEmail(r io.Reader, name string, db *gorm.DB, cfg *periwinkle.Cfg) uint8 {
+	mdWriter := cfg.Mailstore.NewMail()
 	if mdWriter == nil {
-		log.Printf("Could not open maildir for writing: %s\n", config.Mailstore)
+		log.Printf("Could not open maildir for writing: %s\n", cfg.Mailstore)
 		return postfixpipe.EX_IOERR
 	}
 	defer func() {

@@ -12,76 +12,44 @@ import (
 	"io"
 	"io/ioutil"
 	"log"
-	"maildir"
-	"net/http"
 	"os"
-//	"periwinkle/email_handlers"
+	"periwinkle"
+	"periwinkle/email_handlers" // handlers
 	"postfixpipe"
 )
 
-type Cfg struct {
-	Mailstore            maildir.Maildir          
-	WebUiDir             http.Dir                 
-	Debug                bool                     
-	TrustForwarded       bool                     // whether to trust X-Forwarded: or Forwarded: HTTP headers
-	TwilioAccountId      string                   
-	TwilioAuthToken      string                 
-	GroupDomain          string                  
-	WebRoot              string                  
-	DB                   *gorm.DB                
-	DomainHandlers       map[string]DomainHandler
-	DefaultDomainHandler DomainHandler
-}
+func Parse(in io.Reader) (*periwinkle.Cfg, error) {
+	cfg := periwinkle.Cfg{}
 
-
-/*
-  in periwinkle.conf
-	figure out how to get the io.Reader to give all of the below information
-*/
-func Parse(in io.Reader) (*Cfg, error) {
-	cfg := Cfg{}
-	
 	b, err := ioutil.ReadAll(in)
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 
 	err = yaml.Unmarshal(b, &cfg)
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
-	/*
-	cfg.Mailstore       = "/srv/periwinkle/Maildir"
-	cfg.WebUiDir        = "./www"
-	cfg.Debug           = true
-	cfg.TrustForwarded  = true
-	cfg.GroupDomain     = "periwinkle.lol"
-	*/
+	//cfg.Mailstore       = "/srv/periwinkle/Maildir"
+	//cfg.WebUiDir        = "./www"
+	//cfg.Debug           = true
+	//cfg.TrustForwarded  = true
+	//cfg.GroupDomain     = "periwinkle.lol"
 	cfg.TwilioAccountId = os.Getenv("TWILIO_ACCOUNTID")
 	cfg.TwilioAuthToken = os.Getenv("TWILIO_TOKEN")
-	cfg.WebRoot = getWebroot()
-	cfg.DB = getConnection()
-	// cfg.DomainHandlers = email_handlers.GetHandlers()
+	cfg.DB = getConnection(cfg.Debug) // TODO
+
+	handlers.GetHandlers(&cfg)
 	cfg.DefaultDomainHandler = bounceNoHost
 
 	return &cfg, err
 }
 
-type DomainHandler func(io.Reader, string, *gorm.DB, Cfg) uint8
-
-func bounceNoHost(io.Reader, string, *gorm.DB, Cfg) uint8 {
+func bounceNoHost(io.Reader, string, *gorm.DB, *periwinkle.Cfg) uint8 {
 	return postfixpipe.EX_NOHOST
 }
 
-func getWebroot() string {
-	hostname, err := os.Hostname()
-	if err != nil {
-		panic(err)
-	}
-	return hostname + ":8080"
-}
-
-func getConnection() *gorm.DB {
+func getConnection(debug bool) *gorm.DB {
 	db, err := gorm.Open("mysql", "periwinkle:periwinkle@/periwinkle?charset=utf8&parseTime=True")
 	if err != nil {
 		log.Println("Falling back to SQLite3...")
@@ -92,6 +60,6 @@ func getConnection() *gorm.DB {
 		}
 		db.DB().SetMaxOpenConns(1)
 	}
-	db.LogMode(true)
+	db.LogMode(debug)
 	return &db
 }
