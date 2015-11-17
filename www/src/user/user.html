@@ -99,45 +99,47 @@
 						</md-button>
 					</div>
 					<table class="address-table">
-						<tr ng-repeat="address in user.info.addresses">
-							<td ng-if="address.loading" colspan="3">{{ "USER.INFO.SAVING" | translate }}</td>
-							<td ng-if="!address.loading && !addres.editing && user.info.status.editing">
-								<md-menu>
-									<md-button aria-label="menu" class="md-icon-button" ng-click="openMenu($mdOpenMenu, $event)" >
-										<md-icon md-svg-src="assets/svg/more_horiz.svg"></md-icon>
-									</md-button>
-									<md-menu-content>
-										<md-menu-item>
-											<md-button aria-label="change" ng-click="user.info.edit_address($index)">
-												{{ "USER.INFO.EMAIL_CHANGE" | translate }}
-											</md-button>
-										</md-menu-item>
-										<md-menu-item>
-											<md-button aria-label="change" ng-click="user.info.delete_address($index)">
-												{{ "USER.INFO.EMAIL_DELETE" | translate }}
-											</md-button>
-										</md-menu-item>
-									</md-menu-container>
-								</md-menu>
-							</td>
-							<td ng-if="!address.loading && !addres.editing" style="padding-right: 16px;">
-								<span style="font-weight: bold;">{{ "GENERAL.MEDIUMS." + address.medium | translate }}:</span>
-							</td>
-							<td ng-if="!address.loading && !addres.editing">
-								{{address.address}}
-							</td>
-							<td colspan="3"  ng-if="address.editing">
-								<form name="editAddressForm" ng-submit="user.info.save_edit_address($index)">
-									<md-input-container style="padding-right: 8px;">
-										<label>{{ "GENERAL.MEDIUMS." + address.medium | translate }}</label>
-										<input name="address" ng-model="address.new_address" type="text" focus-on="edit_address" ng-blur="user.info.save_edit_address($index)" require ></input>
-									</md-input-container>
-									<md-button type="submit" ng-show="false">
-										Submit
-									</md-button>
-								</form>
-							</td>
-						</tr>
+						<tbody ng-repeat="(name, addresses) in user.info.addresses">
+							<tr ng-repeat="address in addresses">
+								<td ng-if="address.loading" colspan="3">{{ "USER.INFO.SAVING" | translate }}</td>
+								<td ng-if="!address.loading && !addres.editing && user.info.status.editing">
+									<md-menu>
+										<md-button aria-label="menu" class="md-icon-button" ng-click="openMenu($mdOpenMenu, $event)" >
+											<md-icon md-svg-src="assets/svg/more_horiz.svg"></md-icon>
+										</md-button>
+										<md-menu-content>
+											<md-menu-item>
+												<md-button aria-label="change" ng-click="user.info.edit_address(name, $index)">
+													{{ "USER.INFO.EMAIL_CHANGE" | translate }}
+												</md-button>
+											</md-menu-item>
+											<md-menu-item>
+												<md-button aria-label="change" ng-click="user.info.delete_address(name, $index)">
+													{{ "USER.INFO.EMAIL_DELETE" | translate }}
+												</md-button>
+											</md-menu-item>
+										</md-menu-container>
+									</md-menu>
+								</td>
+								<td ng-if="!address.loading && !addres.editing" style="padding-right: 16px;">
+									<span ng-if="$index == 0" style="font-weight: bold;">{{ "GENERAL.MEDIUMS." + name.toUpperCase() | translate }}:</span>
+								</td>
+								<td ng-if="!address.loading && !addres.editing">
+									{{address.address}}
+								</td>
+								<td colspan="3"  ng-if="address.editing">
+									<form name="editAddressForm" ng-submit="user.info.save_edit_address(name, $index)">
+										<md-input-container style="padding-right: 8px;">
+											<label>{{ "GENERAL.MEDIUMS." + address.medium | translate }}</label>
+											<input name="address" ng-model="address.new_address" type="text" focus-on="edit_address" ng-blur="user.info.save_edit_address(name, $index)" require ></input>
+										</md-input-container>
+										<md-button type="submit" ng-show="false">
+											Submit
+										</md-button>
+									</form>
+								</td>
+							</tr>
+						</tbody>
 					</table>
 					<div style="clear: both;"></div>
 				</md-card-content>

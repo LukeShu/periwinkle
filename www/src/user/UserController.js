@@ -21,7 +21,11 @@
 			},
 			title:		'USER.INFO.USER',
 			username:	'',
-			addresses:	[],
+			addresses:	{
+				email:	[],
+				sms:	[],
+				mms:	[]
+			},
 			fullName:	{
 				editing:	false,
 				loading:	false,
@@ -75,26 +79,28 @@
 					);
 				}
 			},
-			edit_address:	function(index) {
-				self.info.addresses[index].new_address = self.info.addresses[index].address;
-				self.info.addresses[index].editing = true;
+			edit_address:	function(name, index) {
+				self.info.addresses[name][index].new_address = self.info.addresses[name][index].address;
+				self.info.addresses[name][index].editing = true;
 				focus('edit_address');
 			},
-			save_edit_address:	function(index) {
-				self.info.addresses[index].editing = false;
-				if(self.info.addresses[index].address !== self.info.addresses[index].new_address) {
-					self.info.addresses[index].loading = true;
+			save_edit_address:	function(name, index) {
+				self.info.addresses[name][index].editing = false;
+				if(self.info.addresses[name][index].address !== self.info.addresses[name][index].new_address) {
+					self.info.addresses[name][index].loading = true;
 					var i;
 					var list = [];
-					for (i in self.info.addresses) {
-						var item = {
-							medium:	self.info.addresses[i].medium.toLowerCase(),
-							address: self.info.addresses[i].address
-						};
-						if(i == index) {
-							item.address = self.info.addresses[i].new_address;
+					for (n in self.info.addresses) {
+						for(i in self.info.addresses[i]) {
+							var item = {
+								medium:	n,
+								address: self.info.addresses[i].address
+							};
+							if(i == index && n == name) {
+								item.address = self.info.addresses[i].new_address;
+							}
+							list.push(item);
 						}
-						list.push(item);
 					}
 					$http({
 						method: 'PATCH',
@@ -129,17 +135,19 @@
 					);
 				}
 			},
-			delete_address: function(index) {
-				self.info.addresses[index].loading = true;
+			delete_address: function(name, index) {
+				self.info.addresses[name][index].loading = true;
 				var i;
 				var list = [];
-				for (i in self.info.addresses) {
-					if(i != index) {
-						var item = {
-							medium:	self.info.addresses[i].medium.toLowerCase(),
-							address: self.info.addresses[i].address
-						};
-						list.push(item);
+				for (n in self.info.addresses) {
+					for(i in self.info.addresses[i]) {
+						if(i == index && n == name) {
+							var item = {
+								medium:	n,
+								address: self.info.addresses[i].address
+							};
+							list.push(item);
+						}
 					}
 				}
 				$http({
@@ -302,17 +310,19 @@
 					function success(response) {
 						//do work with response
 						self.info.username = response.data.user_id;
-						self.info.addresses = response.data.addresses;
+						//self.info.addresses = response.data.addresses;
 						self.info.fullName.text = response.data.fullname;
 						self.info.fullName.new_text = response.data.fullname;
 						self.info.fullName.editing = false;
 						self.info.fullName.loading = false;
 						var i;
-						for (i in self.info.addresses) {
-							self.info.addresses[i].medium = self.info.addresses[i].medium.toUpperCase();
-							self.info.addresses[i].new_address = '';
-							self.info.addresses[i].editing = false;
-							self.info.addresses[i].loading = false;
+						for (i in response.data.addresses) {
+							self.info.addresses[response.data.addresses[i].medium].push({
+								address:		response.data.addresses[i].address,
+								new_address:	'',
+								editing:		false,
+								loading:		false
+							});
 						}
 						self.info.status.loading = false;
 					},
