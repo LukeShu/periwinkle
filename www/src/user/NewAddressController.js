@@ -56,7 +56,7 @@
 				for(i in addresses[i]) {
 					var item = {
 						medium:	n,
-						address: addresses[i].address
+						address: addresses[n][i].address
 					};
 					list.push(item);
 				}
