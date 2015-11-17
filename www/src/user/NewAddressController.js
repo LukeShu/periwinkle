@@ -60,12 +60,14 @@
 					};
 					list.push(item);
 				}
+				if(n == self.mediums[self.medium].toLowerCase()) {
+					var item = {
+						medium:	self.mediums[self.medium].toLowerCase(),
+						address: self.address()
+					};
+					list.push(item);
+				}
 			}
-			var item = {
-				medium:	self.mediums[self.medium].toLowerCase(),
-				address: self.address()
-			};
-			list.push(item);
 			$http({
 				method: 'PATCH',
 				url: '/v1/users/' + UserService.user_id,
