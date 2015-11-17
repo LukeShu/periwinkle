@@ -157,7 +157,8 @@
 					<md-fab-speed-dial md-open="fabOpen" md-direction="left" class="md-scale">
 						<md-fab-trigger>
 							<md-button aria-label="menu" class="md-fab md-accent" >
-								<md-icon md-svg-src="assets/svg/menu.svg"></md-icon>
+								<md-icon ng-if="!fabOpen" md-svg-src="assets/svg/menu.svg"></md-icon>
+								<md-icon ng-if="fabOpen" md-svg-src="assets/svg/redo.svg"></md-icon>
 							</md-button>
 						</md-fab-trigger>
 						<md-fab-actions>
