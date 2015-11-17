@@ -102,6 +102,12 @@
 						<tbody ng-repeat="(name, addresses) in user.info.addresses">
 							<tr ng-repeat="address in addresses">
 								<td ng-if="address.loading" colspan="3">{{ "USER.INFO.SAVING" | translate }}</td>
+								<td ng-if="!address.loading && !addres.editing" style="padding-right: 16px;">
+									<span ng-if="$index == 0 || user.info.status.editing" style="font-weight: bold;">{{ "GENERAL.MEDIUMS." + name.toUpperCase() | translate }}:</span>
+								</td>
+								<td ng-if="!address.loading && !addres.editing">
+									{{address.address}}
+								</td>
 								<td ng-if="!address.loading && !addres.editing && user.info.status.editing">
 									<md-menu>
 										<md-button aria-label="menu" class="md-icon-button" ng-click="openMenu($mdOpenMenu, $event)" >
@@ -120,12 +126,6 @@
 											</md-menu-item>
 										</md-menu-container>
 									</md-menu>
-								</td>
-								<td ng-if="!address.loading && !addres.editing" style="padding-right: 16px;">
-									<span ng-if="$index == 0" style="font-weight: bold;">{{ "GENERAL.MEDIUMS." + name.toUpperCase() | translate }}:</span>
-								</td>
-								<td ng-if="!address.loading && !addres.editing">
-									{{address.address}}
 								</td>
 								<td colspan="3"  ng-if="address.editing">
 									<form name="editAddressForm" ng-submit="user.info.save_edit_address(name, $index)">
