@@ -153,26 +153,28 @@
 					</ul>
 					<p ng-if="!user.groups.list.length">{{ "USER.GROUPS.NO_GROUPS" | translate }}</p>
 				</md-card-content>
-				<md-fab-speed-dial md-open="fabOpen" md-direction="left" ng-class="md-scale">
-					<md-fab-trigger>
-						<md-button aria-label="menu" class="md-icon-button" >
-							<md-icon style="color: black;" md-svg-src="assets/svg/menu.svg"></md-icon>
-						</md-button>
-					</md-fab-trigger>
-					<md-fab-actions>
-						<md-button aria-label="Join">
-							<md-tooltip md-direction="bottom">
-								{{ "USER.GROUPS.JOIN" | translate }}
-							</md-tooltip>
-							<md-icon md-svg-src="assets/svg/reply.svg">u</md-icon>
-						</md-button>
-						<md-button aria-label="New" ng-click="user.groups.new(originalEvent)">
-							<md-tooltip md-direction="bottom">
-								{{ "USER.GROUPS.NEW" | translate }}
-							</md-tooltip>
-							<md-icon md-svg-src="assets/svg/add.svg">u</md-icon>
-						</md-button>
-					</md-fab-actions>
+				<div layout="row" layout-align="end center">
+					<md-fab-speed-dial md-open="fabOpen" md-direction="left" ng-class="md-scale">
+						<md-fab-trigger>
+							<md-button aria-label="menu" class="md-fab md-accent" >
+								<md-icon style="color: black;" md-svg-src="assets/svg/menu.svg"></md-icon>
+							</md-button>
+						</md-fab-trigger>
+						<md-fab-actions>
+							<md-button aria-label="Join" class="md-fab md-mini">
+								<md-tooltip md-direction="bottom">
+									{{ "USER.GROUPS.JOIN" | translate }}
+								</md-tooltip>
+								<md-icon md-svg-src="assets/svg/reply.svg">u</md-icon>
+							</md-button>
+							<md-button aria-label="New" ng-click="user.groups.new(originalEvent)" class="md-fab md-mini">
+								<md-tooltip md-direction="bottom">
+									{{ "USER.GROUPS.NEW" | translate }}
+								</md-tooltip>
+								<md-icon md-svg-src="assets/svg/add.svg">u</md-icon>
+							</md-button>
+						</md-fab-actions>
+					</div>
 			</md-card>
 		</div>
 	</div>
