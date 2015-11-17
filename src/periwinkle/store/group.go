@@ -21,8 +21,8 @@ var dirGroups he.Entity = newDirGroups()
 
 type Group struct {
 	Id            string         `json:"group_id"`
-	Existence     int            `json:"existence"` // 1 -> public, 2 -> confirmed, 3 -> member	
-	Read          int            `json:"read"`      // 1 -> public, 2 -> confirmed, 3 -> member	
+	Existence     int            `json:"existence"` // 1 -> public, 2 -> confirmed, 3 -> member
+	Read          int            `json:"read"`      // 1 -> public, 2 -> confirmed, 3 -> member
 	Post          int            `json:"post"`      // 1 -> public, 2 -> confirmed, 3 -> moderator
 	Join          int            `json:"join"`      // 1 -> auto join, 2 -> confirm to join
 	Addresses     []GroupAddress `json:"addresses"`
@@ -218,7 +218,6 @@ func (o *Group) Encoders() map[string]func(io.Writer) error {
 	return defaultEncoders(o)
 }
 
-
 // Directory ("Controller") //////////////////////////////////////////
 
 type t_dirGroups struct {
@@ -242,7 +241,7 @@ func newDirGroups() t_dirGroups {
 			type EnumerateGroup struct {
 				Id            string
 				Existence     string
-			        Read          string
+				Read          string
 				Post          string
 				Join          string
 				Addresses     []GroupAddress
@@ -267,9 +266,9 @@ func newDirGroups() t_dirGroups {
 			type postfmt struct {
 				Groupname string    `json:"groupname"`
 				Existence Existence `json:"existence"`
-				Read Read           `json:"read"`
-				Post Post           `json:"post"`
-				Join Join           `json:"join"`
+				Read      Read      `json:"read"`
+				Post      Post      `json:"post"`
+				Join      Join      `json:"join"`
 			}
 			var entity postfmt
 			httperr := safeDecodeJSON(req.Entity, &entity)
