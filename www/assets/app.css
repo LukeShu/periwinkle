@@ -15,8 +15,6 @@
 	}
 }
 
-.address {
-	padding: 0px;
-	margin: 0px;
-	margin-top: -8px;
+.address p {
+	padding-left: 8px;
 }
