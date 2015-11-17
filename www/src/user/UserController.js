@@ -316,6 +316,11 @@
 						self.info.fullName.editing = false;
 						self.info.fullName.loading = false;
 						var i;
+						self.info.addresses = {
+							email: [],
+							sms: [],
+							mms: []
+						};
 						for (i in response.data.addresses) {
 							self.info.addresses[response.data.addresses[i].medium].push({
 								address:		response.data.addresses[i].address,
