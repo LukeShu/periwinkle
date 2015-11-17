@@ -148,11 +148,24 @@ func NewGroup(db *gorm.DB, name string, existence int, read int, post int, join 
 	if name == "" {
 		panic("name can't be empty")
 	}
-	o := Group{Id: name, Existence: existence, Read: read, Post: post, Join: join}
+	o := Group{
+		Id:        name,
+		Existence: CheckInput(existence, 1, 3, 1),
+		Read:      CheckInput(read, 1, 3, 1),
+		Post:      CheckInput(post, 1, 3, 1),
+		Join:      CheckInput(existence, 1, 2, 1),
+	}
 	if err := db.Create(&o).Error; err != nil {
 		panic(err)
 	}
 	return &o
+}
+
+func CheckInput(input int, min int, max int, defaultt int) int {
+	if input < min || input > max {
+		return defaultt
+	}
+	return input
 }
 
 func (o *Group) Save(db *gorm.DB) {
