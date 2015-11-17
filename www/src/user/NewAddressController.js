@@ -52,12 +52,14 @@
 			$scope.title = 'USER.NEW_ADDRESS.TITLE.CREATING';
 			var i;
 			var list = [];
-			for (i in addresses) {
-				var item = {
-					medium:	addresses[i].medium.toLowerCase(),
-					address: addresses[i].address
-				};
-				list.push(item);
+			for (n in addresses) {
+				for(i in addresses[i]) {
+					var item = {
+						medium:	n,
+						address: addresses[i].address
+					};
+					list.push(item);
+				}
 			}
 			var item = {
 				medium:	self.mediums[self.medium].toLowerCase(),
