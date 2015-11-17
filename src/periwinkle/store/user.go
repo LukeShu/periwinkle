@@ -39,7 +39,7 @@ type UserAddress struct {
 	Medium        string         `json:"medium"`
 	Address       string         `json:"address"`
 	SortOrder     uint64         `json:"sort_order"`
-	Confirmed     bool        `json:"confirmed"`
+	Confirmed     bool           `json:"confirmed"`
 	Subscriptions []Subscription `json:"subscriptions"`
 }
 
@@ -86,18 +86,18 @@ func (u *User) populate(db *gorm.DB) {
 	}
 	var addresses []UserAddress
 
-        for i, address := range u.Addresses {
+	for i, address := range u.Addresses {
 		if address.Medium == "noop" {
 			addresses = append(u.Addresses[:i], u.Addresses[i+1:]...)
 			break
 		}
-        }
-        for i, address := range addresses {
+	}
+	for i, address := range addresses {
 		if address.Medium == "admin" {
 			addresses = append(addresses[:i], addresses[i+1:]...)
 			break
 		}
-        }
+	}
 	u.Addresses = addresses
 }
 
