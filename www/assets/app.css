@@ -15,15 +15,11 @@
 	}
 }
 
-.address-table {
+.address {
 	padding: 0px;
 	margin: 0px;
 }
-
-.address-table tr {
-
-}
-.address-table tr td {
-	padding: 0px;
-	padding-bottom: 16px;
+.address p {
+	margin-top: 0px;
+	padding-left: 16px;
 }

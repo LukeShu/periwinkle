@@ -94,8 +94,8 @@
 				</md-toolbar>
 				<md-card-content style="padding-top: 0px; min-height: 72px;">
 					<div ng-repeat="(name, addresses) in user.info.addresses">
-						<h2>{{ "GENERAL.MEDIUMS." + name.toUpperCase() | translate }}:</h2>
-						<div ng-repeat="address in addresses" layout="row">
+						<p style="font-weight: bold">{{ "GENERAL.MEDIUMS." + name.toUpperCase() | translate }}:</p>
+						<div ng-repeat="address in addresses" layout="row" class="address">
 							<p ng-if="address.loading">{{ "USER.INFO.SAVING" | translate }}</p>
 							<p ng-if="!address.loading && !addres.editing">
 								{{address.address}}
