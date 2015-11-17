@@ -127,7 +127,7 @@
 						</div>
 					</div>
 					<div style="position: absolute; bottom: 8px; right: 8px;">
-						<md-button id="new-address-fab" class="md-fab md-mini md-accent" aria-label="change" ng-click="user.info.newAddress($event)">
+						<md-button id="new-address-fab" class="md-fab md-accent" aria-label="change" ng-click="user.info.newAddress($event)">
 							<md-icon md-svg-src="assets/svg/add.svg"></md-icon>
 						</md-button>
 					</div>
@@ -154,10 +154,10 @@
 					<p ng-if="!user.groups.list.length">{{ "USER.GROUPS.NO_GROUPS" | translate }}</p>
 				</md-card-content>
 				<div layout="row" layout-align="end center">
-					<md-fab-speed-dial md-open="user.groups.status.fabOpen" md-direction="left" ng-class="md-scale">
+					<md-fab-speed-dial md-open="user.groups.status.fabOpen" md-direction="left" class="md-scale">
 						<md-fab-trigger>
-							<md-button aria-label="menu" class="md-fab md-mini md-accent" >
-								<md-icon style="color: black;" md-svg-src="assets/svg/menu.svg"></md-icon>
+							<md-button aria-label="menu" class="md-fab md-accent" >
+								<md-icon md-svg-src="assets/svg/menu.svg"></md-icon>
 							</md-button>
 						</md-fab-trigger>
 						<md-fab-actions>
