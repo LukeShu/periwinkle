@@ -95,12 +95,7 @@
 				<md-card-content style="padding-top: 0px; min-height: 72px;">
 					<div ng-repeat="(name, addresses) in user.info.addresses">
 						<p ng-if="addresses.length" style="font-weight: bold">{{ "GENERAL.MEDIUMS." + name.toUpperCase() | translate }}:</p>
-						<div ng-repeat="address in addresses" layout="row" layout-align="space-between center" class="address">
-							<p ng-if="address.loading">{{ "USER.INFO.SAVING" | translate }}</p>
-							<p ng-if="!address.loading && !addres.editing">
-								{{address.address}}
-							</p>
-							<div></div>
+						<div ng-repeat="address in addresses" layout="row" class="address">
 							<md-menu ng-if="!address.loading && !addres.editing && user.info.status.editing">
 								<md-button aria-label="menu" class="md-icon-button" ng-click="openMenu($mdOpenMenu, $event)" >
 									<md-icon md-svg-src="assets/svg/more_horiz.svg"></md-icon>
@@ -118,6 +113,8 @@
 									</md-menu-item>
 								</md-menu-container>
 							</md-menu>
+							<p ng-if="address.loading">{{ "USER.INFO.SAVING" | translate }}</p>
+							<p ng-if="!address.loading && !addres.editing">{{address.address}}</p>
 							<form name="editAddressForm" ng-submit="user.info.save_edit_address(name, $index)" ng-if="address.editing">
 								<md-input-container style="padding-right: 8px;">
 									<label>{{ "GENERAL.MEDIUMS." + address.medium | translate }}</label>
