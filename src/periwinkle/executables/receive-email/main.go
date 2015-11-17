@@ -1,10 +1,12 @@
 // Copyright 2015 Luke Shumaker
+// Copyright 2015 Davis Webb
 
 package main
 
 import (
 	"bufio"
 	"fmt"
+	"io"
 	"log"
 	"os"
 	"periwinkle/cfg"
@@ -15,7 +17,33 @@ import (
 	"strings"
 )
 
+func usage(w io.Writer) {
+	fmt.Fprintf(w, "%s [CONFIG_FILE]\n", os.Args[0])
+}
+
 func main() {
+	config_filename := "./periwinkle.conf"
+	switch len(os.Args) {
+	case 1:
+		// do nothing
+	case 2:
+		config_filename = os.Args[1]
+	default:
+		usage(os.Stderr)
+		os.Exit(2)
+	}
+
+	file, err := os.Open(config_filename)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Could not open %q: %v\n", config_filename, err)
+		os.Exit(1)
+	}
+
+	config, err := cfg.Parse(file)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Could not parse %q: %v\n", config_filename, err)
+		os.Exit(1)
+	}
 	var ret uint8
 	defer func() {
 		if obj := recover(); obj != nil {
@@ -48,7 +76,7 @@ func main() {
 	}
 	domain = strings.ToLower(domain)
 
-	transaction := cfg.DB.Begin()
+	transaction := config.DB.Begin()
 	defer func() {
 		if err := transaction.Commit().Error; err != nil {
 			panic(err)
@@ -56,17 +84,16 @@ func main() {
 	}()
 
 	reader := bufio.NewReader(os.Stdin)
-	_, _, err := reader.ReadLine() // This is done to ignore the first line because it does not fit the RF822 format
-
+	_, _, err = reader.ReadLine() // This is done to ignore the first line because it does not fit the RFC 822 format
 	if err != nil {
 		log.Println(err)
 		ret = postfixpipe.EX_NOINPUT
 		return
 	}
-	handler, ok := cfg.DomainHandlers[domain]
-	if ok {
-		ret = handler(reader, user, transaction)
+
+	if handler, ok := config.DomainHandlers[domain]; ok {
+		ret = handler(reader, user, transaction, config)
 	} else {
-		ret = cfg.DefaultDomainHandler(reader, recipient, transaction)
+		ret = config.DefaultDomainHandler(reader, recipient, transaction, config)
 	}
 }

@@ -3,13 +3,14 @@
 package handlers
 
 import (
-	"periwinkle/cfg"
+	"periwinkle"
 )
 
-func init() {
-	cfg.DomainHandlers = map[string]cfg.DomainHandler{
+func GetHandlers(cfg *periwinkle.Cfg) error {
+	cfg.DomainHandlers = map[string]periwinkle.DomainHandler{
 		"sms.gateway":   HandleSMS,
 		"mms.gateway":   HandleMMS,
 		cfg.GroupDomain: HandleEmail,
 	}
+	return nil
 }

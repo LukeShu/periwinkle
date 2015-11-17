@@ -8,54 +8,58 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jinzhu/gorm"
 	_ "github.com/mattn/go-sqlite3"
+	"gopkg.in/yaml.v2"
 	"io"
+	"io/ioutil"
 	"log"
-	"maildir"
-	"net/http"
 	"os"
+	"periwinkle"
+	"periwinkle/email_handlers" // handlers
 	"postfixpipe"
 )
 
-const Mailstore maildir.Maildir = "/srv/periwinkle/Maildir"
-const WebUiDir http.Dir = "./www"
-const Debug bool = true
-const TrustForwarded = true // whether to trust X-Forwarded: or Forwarded: HTTP headers
+func Parse(in io.Reader) (*periwinkle.Cfg, error) {
+	cfg := periwinkle.Cfg{}
 
-var TwilioAccountId = os.Getenv("TWILIO_ACCOUNTID")
-var TwilioAuthToken = os.Getenv("TWILIO_TOKEN")
-
-var GroupDomain = "periwinkle.lol"
-
-var WebRoot = getWebroot()
-
-func getWebroot() string {
-	hostname, err := os.Hostname()
+	b, err := ioutil.ReadAll(in)
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
-	return hostname + ":8080"
+
+	err = yaml.Unmarshal(b, &cfg)
+	if err != nil {
+		return nil, err
+	}
+	//cfg.Mailstore       = "/srv/periwinkle/Maildir"
+	//cfg.WebUiDir        = "./www"
+	//cfg.Debug           = true
+	//cfg.TrustForwarded  = true
+	//cfg.GroupDomain     = "periwinkle.lol"
+	cfg.TwilioAccountId = os.Getenv("TWILIO_ACCOUNTID")
+	cfg.TwilioAuthToken = os.Getenv("TWILIO_TOKEN")
+	cfg.DB = getConnection(cfg.Debug) // TODO
+
+	handlers.GetHandlers(&cfg)
+	cfg.DefaultDomainHandler = bounceNoHost
+
+	return &cfg, err
 }
 
-var DB *gorm.DB = getConnection()
+func bounceNoHost(io.Reader, string, *gorm.DB, *periwinkle.Cfg) uint8 {
+	return postfixpipe.EX_NOHOST
+}
 
-func getConnection() *gorm.DB {
+func getConnection(debug bool) *gorm.DB {
 	db, err := gorm.Open("mysql", "periwinkle:periwinkle@/periwinkle?charset=utf8&parseTime=True")
 	if err != nil {
-		log.Println("Falling back to SQLite3")
+		log.Println("Falling back to SQLite3...")
+		// here to change database load into memory
 		db, err = gorm.Open("sqlite3", "file:periwinkle.sqlite?cache=shared&mode=rwc")
 		if err != nil {
 			panic(err)
 		}
 		db.DB().SetMaxOpenConns(1)
 	}
-	db.LogMode(Debug)
+	db.LogMode(debug)
 	return &db
-}
-
-type DomainHandler func(io.Reader, string, *gorm.DB) uint8
-
-var DomainHandlers map[string]DomainHandler // set in email_handlers/init.go because import-cycles
-
-var DefaultDomainHandler DomainHandler = func(io.Reader, string, *gorm.DB) uint8 {
-	return postfixpipe.EX_NOHOST
 }

@@ -10,13 +10,13 @@ import (
 	"log"
 	"net"
 	"net/http"
-	"periwinkle/cfg"
+	"periwinkle"
 	"periwinkle/email_handlers"
 	"periwinkle/store"
 	"stoppable"
 )
 
-func makeServer(socket net.Listener) *stoppable.HTTPServer {
+func makeServer(socket net.Listener, cfg *periwinkle.Cfg) *stoppable.HTTPServer {
 	std_decoders := map[string]func(io.Reader, map[string]string) (interface{}, error){
 		"application/x-www-form-urlencoded": heutil.DecoderFormUrlEncoded,
 		"multipart/form-data":               heutil.DecoderFormData,
@@ -26,7 +26,7 @@ func makeServer(socket net.Listener) *stoppable.HTTPServer {
 	}
 	std_middlewares := []he.Middleware{
 		MiddlewarePostHack,
-		MiddlewareDatabase,
+		MiddlewareDatabase(cfg),
 		MiddlewareSession,
 	}
 	mux := http.NewServeMux()

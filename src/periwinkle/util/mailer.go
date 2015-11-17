@@ -5,8 +5,8 @@ package putil
 import (
 	"encoding/base64"
 	"fmt"
+	"maildir"
 	"net/mail"
-	"periwinkle/cfg"
 	"strings"
 )
 
@@ -21,6 +21,7 @@ func (b RecipientBuilder) String() string {
 }
 
 type MessageBuilder struct {
+	Maildir maildir.Maildir
 	Headers map[string]string
 	Body    string
 }
@@ -30,7 +31,7 @@ func (b MessageBuilder) Done() {
 	b.Headers["Content-Type"] = "text/plain; charset=\"utf-8\""
 	b.Headers["Content-Transfer-Encoding"] = "base64"
 
-	writer := cfg.Mailstore.NewMail()
+	writer := b.Maildir.NewMail()
 	for k, v := range b.Headers {
 		fmt.Fprintf(writer, "%s: %s\r\n", k, v)
 	}
