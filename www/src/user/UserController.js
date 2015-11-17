@@ -353,7 +353,7 @@
 			status:		{
 				loading:	true,
 				error:		'',
-				fab_open: false
+				fabOpen:	false
 			},
 			list:		[],
 			'new':	function(ev) {

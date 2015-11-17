@@ -146,17 +146,17 @@
 				<md-card-content style="padding-top: 0px;">
 					<ul ng-if="user.groups.list.length" style="list-style: none; padding: 0; margin: 0;">
 						<li ng-repeat="group in user.groups.list">
-						<div layout="row" layout-align="space-between center">
-							<p style="font-weight: bold" ng-click="user.groups.edit($index)">{{ group.Id }}</p>
-						</div>
+							<div layout="row" layout-align="space-between center">
+								<p style="font-weight: bold" ng-click="user.groups.edit($index)">{{ group.Id }}</p>
+							</div>
 						</li>
 					</ul>
 					<p ng-if="!user.groups.list.length">{{ "USER.GROUPS.NO_GROUPS" | translate }}</p>
 				</md-card-content>
 				<div layout="row" layout-align="end center">
-					<md-fab-speed-dial md-open="user.groups.status.fab_open" md-direction="left" ng-class="md-scale">
+					<md-fab-speed-dial md-open="user.groups.status.fabOpen" md-direction="left" ng-class="md-scale">
 						<md-fab-trigger>
-							<md-button aria-label="menu" class="md-fab md-accent" >
+							<md-button aria-label="menu" class="md-fab md-mini md-accent" >
 								<md-icon style="color: black;" md-svg-src="assets/svg/menu.svg"></md-icon>
 							</md-button>
 						</md-fab-trigger>
@@ -174,7 +174,8 @@
 								<md-icon md-svg-src="assets/svg/add.svg">u</md-icon>
 							</md-button>
 						</md-fab-actions>
-					</div>
+					</md-fab-speed-dial>
+				</div>
 			</md-card>
 		</div>
 	</div>
