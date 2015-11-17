@@ -1,5 +1,5 @@
 <!-- // Copyright 2015 Richard Wisniewski -->
-<md-dialog aria-label="New Address"  ng-cloak>
+<md-dialog aria-label="New Address"  ng-cloak style="position: re;ative;">
 
 	<md-toolbar>
 		<div class="md-toolbar-tools">
@@ -8,8 +8,8 @@
 	</md-toolbar>
 
 	<div>
-		<div ng-if="loading" style="width: 100px; height: 100px margin-top: 1.5em; margin-left: auto; margin-right: auto; margin-bottom: 1.5em;">
-			<md-progress-circular md-mode="indeterminate"></md-progress-circular>
+		<div ng-if="loading" style="position: fixed; z-index: 12; width: 40px; height: 40px; top: 128px; left: 50%; margin-left: -20px; border-color: #f0f0f0; border-style: solid; border-width: 1px; border-radius: 20px; background-color: white;">
+			<md-progress-circular md-diameter="20px" md-mode="indeterminate" style="margin-top: -30px; margin-left: -30px;"></md-progress-circular>
 		</div>
 
 		<form name="newAddressForm" ng-submit="address.create()">
