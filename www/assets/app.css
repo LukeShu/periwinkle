@@ -18,8 +18,5 @@
 .address {
 	padding: 0px;
 	margin: 0px;
-}
-.address p {
-	margin-top: 0px;
-	padding-left: 8px;
+	margin-top: -8px;
 }
