@@ -47,12 +47,13 @@ $(call goget,$(topdir),$(deps))
 $(addprefix %/bin/,$(executables)): $(generate) $(configure) %/src $(call gosrc,$(topdir))
 	$(call goinstall,$*,$(addprefix periwinkle/executables/,$(executables)))
 
-check: build gofmt govet
-	GOPATH='$(abspath $(topdir))' go test -v $(packages)
+check: gofmt govet gotest
 .PHONY: check
 
 gofmt: generate
 	{ gofmt -d $(addprefix $(topdir)/src/,$(packages)) 2>&1 | tee /dev/stderr | test -z "$$(cat)"; } 2>&1
 govet: generate
 	GOPATH='$(abspath $(topdir))' go vet $(packages)
-.PHONY: gofmt govet
+gotest: build
+	GOPATH='$(abspath $(topdir))' go test -cover -v $(packages)
+.PHONY: gofmt govet gotest
