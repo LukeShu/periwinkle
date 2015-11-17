@@ -24,7 +24,7 @@ deps += golang.org/x/crypto/bcrypt
 deps += lukeshu.com/git/go/libsystemd.git
 
 # List of our packages and executables in them
-packages = $(sort $(shell find src -type d -name '*.*' -prune -o -type f -name '*.go' -printf '%h\n'|cut -d/ -f2-))
+packages = $(sort $(shell find src -type d -name '*.*' -not -name lukeshu.com -not -name '*.git' -prune -o -type f -name '*.go' -printf '%h\n'|cut -d/ -f2-))
 executables = $(patsubst periwinkle/executables/%,%,$(filter periwinkle/executables/%,$(packages)))
 
 srcdir := $(abspath $(patsubst %/,%,$(dir $(lastword $(MAKEFILE_LIST)))))
@@ -47,7 +47,7 @@ $(call goget,$(topdir),$(deps))
 $(addprefix %/bin/,$(executables)): $(generate) $(configure) %/src $(call gosrc,$(topdir))
 	$(call goinstall,$*,$(addprefix periwinkle/executables/,$(executables)))
 
-check: build
+check: build gofmt govet
 	GOPATH='$(abspath $(topdir))' go test -v $(packages)
 .PHONY: check
 
