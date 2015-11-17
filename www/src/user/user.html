@@ -95,12 +95,12 @@
 				<md-card-content style="padding-top: 0px; min-height: 72px;">
 					<div ng-repeat="(name, addresses) in user.info.addresses">
 						<p style="font-weight: bold">{{ "GENERAL.MEDIUMS." + name.toUpperCase() | translate }}:</p>
-						<div ng-repeat="address in addresses" layout="row" class="address">
+						<div ng-repeat="address in addresses" layout="row" layout-align="space-between center" class="address">
 							<p ng-if="address.loading">{{ "USER.INFO.SAVING" | translate }}</p>
 							<p ng-if="!address.loading && !addres.editing">
 								{{address.address}}
 							</p>
-							<span flex="" ng-if="!address.loading && !addres.editing && user.info.status.editing"></span>
+							<div><div>
 							<md-menu ng-if="!address.loading && !addres.editing && user.info.status.editing">
 								<md-button aria-label="menu" class="md-icon-button" ng-click="openMenu($mdOpenMenu, $event)" >
 									<md-icon md-svg-src="assets/svg/more_horiz.svg"></md-icon>
