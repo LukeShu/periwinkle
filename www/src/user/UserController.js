@@ -180,7 +180,7 @@
 			},
 			changePassword:	function(ev) {
 				$mdDialog.show({
-					controller:				ChangePasswordController,
+					controller:				'ChangePasswordController',
 					templateUrl:			'src/user/change_password.html',
 					parent:					angular.element(document.body),
 					targetEvent:			ev,
@@ -210,7 +210,7 @@
 			},
 			newAddress:	function(ev) {
 				$mdDialog.show({
-					controller:				NewAddressController,
+					controller:				'NewAddressController',
 					templateUrl:			'src/user/new_address.html',
 					parent:					angular.element(document.body),
 					targetEvent:			ev,
@@ -342,7 +342,7 @@
 			list:		[],
 			'new':	function(ev) {
 				$mdDialog.show({
-					controller:				NewGroupController,
+					controller:				'NewGroupController',
 					templateUrl:			'src/user/new_group.html',
 					parent:					angular.element(document.body),
 					targetEvent:			ev,
@@ -436,183 +436,6 @@
 		};
 
 		self.load();
-	}
-
-	function NewGroupController($scope, $mdDialog, $http) {
-		var self = $scope.group = this;
-
-		$scope.loading = false;
-		$scope.title = 'USER.NEW_GROUP.TITLE.MAIN';
-		$scope.error = '';
-
-		self.name = '';
-
-		self.cancel = function() {
-			$mdDialog.cancel();
-		};
-		self.create = function() {
-			$scope.loading = true;
-			$scope.title = 'USER.NEW_GROUP.TITLE.CREATING';
-			$http({
-				method: 'POST',
-				url: '/v1/groups',
-				headers: {
-					'Content-Type': 'application/json'
-				},
-				data: {
-					'groupname': self.name
-				}
-			}).then(
-				function success(response) {
-					$mdDialog.hide("success");
-				},
-				function fail(response) {
-					if(response.status == 409) {
-						$scope.loading = false;
-						$scope.title = 'USER.NEW_GROUP.ERRORS.409.TITLE';
-						$scope.error = 'USER.NEW_GROUP.ERRORS.409.CONTENT';
-					} else {
-						$mdDialog.hide(response);
-					}
-				}
-			);
-		};
-	}
-
-	function ChangePasswordController($scope, $mdDialog, $http, UserService) {
-		var self = $scope.password = this;
-
-		$scope.loading = false;
-		$scope.title = 'USER.CHANGE_PASSWORD.TITLE.MAIN';
-		$scope.error = '';
-
-		self.oldPassword = '';
-		self.newPassword = ['',''];
-		var isCancel = false;
-
-		self.cancel = function() {
-			$mdDialog.cancel();
-		};
-		self.change = function() {
-			$scope.loading = true;
-			$scope.title = 'USER.CHANGE_PASSWORD.TITLE.CREATING';
-			$http({
-				method: 'PATCH',
-				url: '/v1/users/' + UserService.user_id,
-				headers: {
-					'Content-Type': 'application/json-patch+json'
-				},
-				data: [
-					{
-						'op':		'test',
-						'path':		'/password',
-						'value':	self.oldPassword
-					},
-					{
-						'op':		'replace',
-						'path':		'/password',
-						'value':	self.newPassword[0]
-					}
-				]
-			}).then(
-				function success(response) {
-					$mdDialog.hide("success");
-				},
-				function fail(response) {
-					if(response.status == 409) {
-						$scope.loading = false;
-						$scope.title = 'USER.CHANGE_PASSWORD.ERRORS.409.TITLE';
-						$scope.error = 'USER.CHANGE_PASSWORD.ERRORS.409.CONTENT';
-						self.oldPassword = '';
-						self.newPassword = ['', ''];
-					} else {
-						$mdDialog.hide(response);
-					}
-				}
-			);
-		};
-	}
-
-	function NewAddressController($scope, $mdDialog, $http, UserService, addresses) {
-		var self = $scope.address = this;
-
-		$scope.loading = false;
-		$scope.title = 'USER.NEW_ADDRESS.TITLE.MAIN';
-		$scope.errors = [];
-
-		self.mediums = [
-			'EMAIL',
-			'SMS',
-			'MMS'
-		];
-		self.medium = 0;
-		self.medium_type = function() {
-			switch(self.medium) {
-				case 0:
-					return 'email';
-				case 1:
-				case 2:
-					return 'tel';
-				default:
-					//error
-			}
-		};
-		self.email_address = '';
-		self.tel_address = '';
-		self.address = function() {
-			switch(self.medium) {
-				case 0:
-					return self.email_address;
-				case 1:
-				case 2:
-					return self.tel_address;
-				default:
-					//error
-			}
-		}
-
-		self.cancel = function() {
-			$mdDialog.cancel();
-		};
-		self.create = function() {
-			$scope.loading = true;
-			$scope.title = 'USER.NEW_ADDRESS.TITLE.CREATING';
-			var i;
-			var list = [];
-			for (i in addresses) {
-				var item = {
-					medium:	addresses[i].medium.toLowerCase(),
-					address: addresses[i].address
-				};
-				list.push(item);
-			}
-			var item = {
-				medium:	self.mediums[self.medium].toLowerCase(),
-				address: self.address()
-			};
-			list.push(item);
-			$http({
-				method: 'PATCH',
-				url: '/v1/users/' + UserService.user_id,
-				headers: {
-					'Content-Type': 'application/json-patch+json'
-				},
-				data: [
-					{
-						'op':		'replace',
-						'path':		'/addresses',
-						'value':	list
-					}
-				]
-			}).then(
-				function success (response) {
-					$mdDialog.hide("success");
-				},
-				function fail (response) {
-					$mdDialog.hide(response);
-				}
-			);
-		};
 	}
 
 })();

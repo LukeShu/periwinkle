@@ -16,6 +16,7 @@
 			var title = 'Periwinkle';
 			var $translate = $filter('translate');
 			if($scope.title != '') {
+				debugger;
 				title += " &mdash; ";
 				title += $translate($scope.title);
 			}
