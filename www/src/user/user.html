@@ -117,7 +117,7 @@
 							<p ng-if="!address.loading && !address.editing">{{address.address}}</p>
 							<form name="editAddressForm" ng-submit="user.info.save_edit_address(name, $index)" ng-if="address.editing">
 								<md-input-container style="padding-right: 8px;">
-									<label>{{ "GENERAL.MEDIUMS." + address.medium | translate }}</label>
+									<label>{{ "GENERAL.MEDIUMS." + name.toUpperCase() | translate }}</label>
 									<input name="address" ng-model="address.new_address" type="text" focus-on="edit_address" ng-blur="user.info.save_edit_address(name, $index)" require ></input>
 								</md-input-container>
 								<md-button type="submit" ng-show="false">
