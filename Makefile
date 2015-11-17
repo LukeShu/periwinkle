@@ -21,6 +21,7 @@ deps += github.com/jinzhu/gorm
 deps += github.com/mattbaird/jsonpatch
 deps += github.com/mattn/go-sqlite3
 deps += golang.org/x/crypto/bcrypt
+deps += gopkg.in/yaml.v2
 deps += lukeshu.com/git/go/libsystemd.git
 
 # List of our packages and executables in them

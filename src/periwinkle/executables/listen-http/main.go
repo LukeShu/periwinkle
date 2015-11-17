@@ -11,6 +11,7 @@ import (
 	"net"
 	"os"
 	"os/signal"
+	"periwinkle/cfg"
 	"strconv"
 	"strings"
 	"syscall"
@@ -146,6 +147,29 @@ func sd_get_socket() (socket net.Listener, err error) {
 }
 
 func main() {
+	config_filename := "./periwinkle.conf"
+	switch len(os.Args) {
+	case 1:
+		// do nothing
+	case 2:
+		config_filename = os.Args[1]
+	default:
+		usage(os.Stderr)
+		os.Exit(2)
+	}
+
+	file, err := os.Open(config_filename)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Could not open %q: %v\n", config_filename, err)
+		os.Exit(1)
+	}
+
+	config, err := cfg.Parse(file)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Could not parse %q: %v\n", config_filename, err)
+		os.Exit(1)
+	}
+
 	done := make(chan uint8)
 	signals := make(chan os.Signal)
 	signal.Notify(signals, syscall.SIGTERM, syscall.SIGHUP)
@@ -154,7 +178,7 @@ func main() {
 
 	sd.Notify(false, "READY=1")
 
-	server := makeServer(socket)
+	server := makeServer(socket, *config)
 	server.Start()
 	go func() {
 		err := server.Wait()

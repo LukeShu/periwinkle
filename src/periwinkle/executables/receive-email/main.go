@@ -6,6 +6,7 @@ import (
 	"bufio"
 	"fmt"
 	"log"
+	"io"
 	"os"
 	"periwinkle/cfg"
 	_ "periwinkle/email_handlers" // handlers
@@ -15,7 +16,33 @@ import (
 	"strings"
 )
 
+func usage(w io.Writer) {
+	fmt.Fprintf(w, "%s [CONFIG_FILE]\n", os.Args[0])
+}
+
 func main() {
+	config_filename := "./periwinkle.conf"
+	switch len(os.Args) {
+	case 1:
+		// do nothing
+	case 2:
+		config_filename = os.Args[1]
+	default:
+		usage(os.Stderr)
+		os.Exit(2)
+	}
+
+	file, err := os.Open(config_filename)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Could not open %q: %v\n", config_filename, err)
+		os.Exit(1)
+	}
+
+	config, err := cfg.Parse(file)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Could not parse %q: %v\n", config_filename, err)
+		os.Exit(1)
+	}
 	var ret uint8
 	defer func() {
 		if obj := recover(); obj != nil {
@@ -48,7 +75,7 @@ func main() {
 	}
 	domain = strings.ToLower(domain)
 
-	transaction := cfg.DB.Begin()
+	transaction := config.DB.Begin()
 	defer func() {
 		if err := transaction.Commit().Error; err != nil {
 			panic(err)
@@ -65,8 +92,8 @@ func main() {
 	}
 	handler, ok := cfg.DomainHandlers[domain]
 	if ok {
-		ret = handler(reader, user, transaction)
+		ret = handler(reader, user, transaction, *config)
 	} else {
-		ret = cfg.DefaultDomainHandler(reader, recipient, transaction)
+		ret = cfg.DefaultDomainHandler(reader, recipient, transaction, *config)
 	}
 }

@@ -9,8 +9,8 @@ import (
 	"periwinkle/util" // putil
 )
 
-func MiddlewareDatabase(req he.Request, u *url.URL, handle func(he.Request, *url.URL) he.Response) (res he.Response) {
-	transaction := cfg.DB.Begin()
+func MiddlewareDatabase(req he.Request, u *url.URL, handle func(he.Request, *url.URL) he.Response, config cfg.Config) (res he.Response) {
+	transaction := config.DB.Begin()
 	req.Things["db"] = transaction
 	rollback := true
 	defer func() {

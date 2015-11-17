@@ -25,12 +25,12 @@ type MessageBuilder struct {
 	Body    string
 }
 
-func (b MessageBuilder) Done() {
+func Done(c cfg.Cfg, b MessageBuilder) {
 	b.Headers["MIME-Version"] = "1.0"
 	b.Headers["Content-Type"] = "text/plain; charset=\"utf-8\""
 	b.Headers["Content-Transfer-Encoding"] = "base64"
 
-	writer := cfg.Mailstore.NewMail()
+	writer := c.Mailstore.NewMail()
 	for k, v := range b.Headers {
 		fmt.Fprintf(writer, "%s: %s\r\n", k, v)
 	}

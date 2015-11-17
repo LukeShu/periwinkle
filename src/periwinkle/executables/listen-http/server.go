@@ -16,7 +16,7 @@ import (
 	"stoppable"
 )
 
-func makeServer(socket net.Listener) *stoppable.HTTPServer {
+func makeServer(socket net.Listener, config cfg.Cfg) *stoppable.HTTPServer {
 	std_decoders := map[string]func(io.Reader, map[string]string) (interface{}, error){
 		"application/x-www-form-urlencoded": heutil.DecoderFormUrlEncoded,
 		"multipart/form-data":               heutil.DecoderFormData,
@@ -36,9 +36,9 @@ func makeServer(socket net.Listener) *stoppable.HTTPServer {
 		Root:           store.DirRoot,
 		Decoders:       std_decoders,
 		Middlewares:    std_middlewares,
-		Stacktrace:     cfg.Debug,
-		LogRequest:     cfg.Debug,
-		TrustForwarded: cfg.TrustForwarded,
+		Stacktrace:     config.Debug,
+		LogRequest:     config.Debug,
+		TrustForwarded: config.TrustForwarded,
 	}.Init())
 	// URL shortener service
 	mux.Handle("/s/", he.Router{
@@ -46,13 +46,13 @@ func makeServer(socket net.Listener) *stoppable.HTTPServer {
 		Root:           store.DirShortUrls,
 		Decoders:       std_decoders,
 		Middlewares:    std_middlewares,
-		Stacktrace:     cfg.Debug,
-		LogRequest:     cfg.Debug,
-		TrustForwarded: cfg.TrustForwarded,
+		Stacktrace:     config.Debug,
+		LogRequest:     config.Debug,
+		TrustForwarded: config.TrustForwarded,
 	}.Init())
 
 	// The static web UI
-	mux.Handle("/webui/", http.StripPrefix("/webui/", http.FileServer(cfg.WebUiDir)))
+	mux.Handle("/webui/", http.StripPrefix("/webui/", http.FileServer(config.WebUiDir)))
 
 	smsCallbackServer := handlers.SmsCallbackServer{}
 	go func() {
