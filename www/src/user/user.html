@@ -93,7 +93,7 @@
 					</md-menu>
 				</md-toolbar>
 				<md-card-content style="padding-top: 0px; min-height: 72px;">
-					<table class="address-table" style="width: 100%;">
+					<table class="address-table" style="width: 100%; max-width: 100%;">
 						<tbody ng-repeat="(name, addresses) in user.info.addresses">
 							<tr ng-repeat="address in addresses">
 								<td ng-if="address.loading" colspan="3">{{ "USER.INFO.SAVING" | translate }}</td>
