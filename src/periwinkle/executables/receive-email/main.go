@@ -3,6 +3,7 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
 	"log"
 	"os"
@@ -54,10 +55,18 @@ func main() {
 		}
 	}()
 
+	reader := bufio.NewReader(os.Stdin)
+	_, _, err := reader.ReadLine() // This is done to ignore the first line because it does not fit the RF822 format
+
+	if err != nil {
+		log.Println(err)
+		ret = postfixpipe.EX_NOINPUT
+		return
+	}
 	handler, ok := cfg.DomainHandlers[domain]
 	if ok {
-		ret = handler(os.Stdin, user, transaction)
+		ret = handler(reader, user, transaction)
 	} else {
-		ret = cfg.DefaultDomainHandler(os.Stdin, recipient, transaction)
+		ret = cfg.DefaultDomainHandler(reader, recipient, transaction)
 	}
 }
