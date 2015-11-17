@@ -11,7 +11,7 @@
 		'pascalprecht.translate',
 		'validation.match',
 		'ngSanitize',
-		'as.sortable'.
+		'as.sortable',
 		//periwinkle modules
 		'validation.anti-match',
 		'focusOn',

@@ -14,3 +14,16 @@
 		margin-top: -56px;
 	}
 }
+
+.address-table {
+	padding: 0px;
+	margin: 0px;
+}
+
+.address-table tr {
+
+}
+.address-table tr td {
+	padding: 0px;
+	padding-bottom: 16px;
+}
