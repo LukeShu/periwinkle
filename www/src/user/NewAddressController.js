@@ -53,7 +53,7 @@
 			var i; var n;
 			var list = [];
 			for (n in addresses) {
-				for(i in addresses[i]) {
+				for(i in addresses[n]) {
 					var item = {
 						medium:	n,
 						address: addresses[n][i].address
