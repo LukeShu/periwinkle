@@ -352,8 +352,7 @@
 		self.groups = {
 			status:		{
 				loading:	true,
-				error:		'',
-				fabOpen:	false
+				error:		''
 			},
 			list:		[],
 			'new':	function(ev) {

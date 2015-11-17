@@ -136,7 +136,7 @@
 			</md-card>
 		</div>
 
-		<div flex="100">
+		<div flex="100" ng-init="fabOpen = false;">
 			<md-card id="groups">
 				<md-toolbar class="md-toolbar-tools" style="background-color: white; color: black;">
 					<h1>{{ "USER.GROUPS.GROUPS" | translate }}</h1>
@@ -154,7 +154,7 @@
 					<p ng-if="!user.groups.list.length">{{ "USER.GROUPS.NO_GROUPS" | translate }}</p>
 				</md-card-content>
 				<div layout="row" layout-align="end center" style="margin-bottom: 8px; margin-right: 8px;">
-					<md-fab-speed-dial md-open="user.groups.status.fabOpen" md-direction="left" class="md-scale">
+					<md-fab-speed-dial md-open="fabOpen" md-direction="left" class="md-scale">
 						<md-fab-trigger>
 							<md-button aria-label="menu" class="md-fab md-accent" >
 								<md-icon md-svg-src="assets/svg/menu.svg"></md-icon>
