@@ -94,11 +94,11 @@
 				</md-toolbar>
 				<md-card-content style="padding-top: 0px; min-height: 72px;">
 					<div style="position: absolute; bottom: 8px; right: 8px;">
-						<md-button id="new-address-fab" class="md-fab md-mini md-accent" aria-label="change" ng-click="user.info.newAddress($event)">
+						<md-button id="new-address-fab" class="md-fab md-mini md-accent" aria-label="change" ng-click="user.info.newAddress($event)" ng-style="user.info.status.editing ? 'margin-right: 72px;' : ''">
 							<md-icon md-svg-src="assets/svg/add.svg"></md-icon>
 						</md-button>
 					</div>
-					<table class="address-table">
+					<table class="address-table" style="width: 100%;">
 						<tbody ng-repeat="(name, addresses) in user.info.addresses">
 							<tr ng-repeat="address in addresses">
 								<td ng-if="address.loading" colspan="3">{{ "USER.INFO.SAVING" | translate }}</td>
