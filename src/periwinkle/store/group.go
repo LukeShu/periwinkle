@@ -21,6 +21,10 @@ var dirGroups he.Entity = newDirGroups()
 
 type Group struct {
 	Id            string         `json:"group_id"`
+	Existence     int            `json:"existence"` // 1 -> public, 2 -> confirmed, 3 -> member	
+	Read          int            `json:"read"`      // 1 -> public, 2 -> confirmed, 3 -> member	
+	Post          int            `json:"post"`      // 1 -> public, 2 -> confirmed, 3 -> moderator
+	Join          int            `json:"join"`      // 1 -> auto join, 2 -> confirm to join
 	Addresses     []GroupAddress `json:"addresses"`
 	Subscriptions []Subscription `json:"subscriptions"`
 }
@@ -31,7 +35,11 @@ func (o Group) dbSchema(db *gorm.DB) error {
 
 func (o Group) dbSeed(db *gorm.DB) error {
 	return db.Create(&Group{
-		Id: "test",
+		Id:        "test",
+		Existence: 1,
+		Read:      1,
+		Post:      1,
+		Join:      1,
 		Addresses: []GroupAddress{{
 			Medium:  "twilio",
 			Address: "add_twilio_phone_number",
@@ -136,11 +144,11 @@ func GetAllGroups(db *gorm.DB) []Group {
 	return o
 }
 
-func NewGroup(db *gorm.DB, name string) *Group {
+func NewGroup(db *gorm.DB, name string, existence int, read int, post int, join int) *Group {
 	if name == "" {
 		panic("name can't be empty")
 	}
-	o := Group{Id: name}
+	o := Group{Id: name, Existence: existence, Read: read, Post: post, Join: join}
 	if err := db.Create(&o).Error; err != nil {
 		panic(err)
 	}
@@ -210,6 +218,7 @@ func (o *Group) Encoders() map[string]func(io.Writer) error {
 	return defaultEncoders(o)
 }
 
+
 // Directory ("Controller") //////////////////////////////////////////
 
 type t_dirGroups struct {
@@ -230,15 +239,37 @@ func newDirGroups() t_dirGroups {
 				// groups = GetGroupsByMember(db, *GetUserById(db, sess.UserId))
 			}
 			generic := make([]interface{}, len(groups))
+			type EnumerateGroup struct {
+				Id            string
+				Existence     string
+			        Read          string
+				Post          string
+				Join          string
+				Addresses     []GroupAddress
+				Subscriptions []Subscription
+			}
+
 			for i, group := range groups {
-				generic[i] = group.Id
+				var enum EnumerateGroup
+				enum.Id = group.Id
+				enum.Existence = Existence(group.Existence).String()
+				enum.Read = Read(group.Read).String()
+				enum.Post = Post(group.Post).String()
+				enum.Join = Join(group.Join).String()
+				enum.Addresses = group.Addresses
+				enum.Subscriptions = group.Subscriptions
+				generic[i] = enum
 			}
 			return he.StatusOK(heutil.NetList(generic))
 		},
 		"POST": func(req he.Request) he.Response {
 			db := req.Things["db"].(*gorm.DB)
 			type postfmt struct {
-				Groupname string `json:"groupname"`
+				Groupname string    `json:"groupname"`
+				Existence Existence `json:"existence"`
+				Read Read           `json:"read"`
+				Post Post           `json:"post"`
+				Join Join           `json:"join"`
 			}
 			var entity postfmt
 			httperr := safeDecodeJSON(req.Entity, &entity)
@@ -252,7 +283,14 @@ func newDirGroups() t_dirGroups {
 
 			entity.Groupname = strings.ToLower(entity.Groupname)
 
-			group := NewGroup(db, entity.Groupname)
+			group := NewGroup(
+				db,
+				entity.Groupname,
+				int(entity.Existence),
+				int(entity.Read),
+				int(entity.Post),
+				int(entity.Join),
+			)
 			if group == nil {
 				return he.StatusConflict(heutil.NetString("a group with that name already exists"))
 			} else {
