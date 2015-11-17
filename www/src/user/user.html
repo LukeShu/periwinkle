@@ -114,7 +114,7 @@
 								</md-menu-container>
 							</md-menu>
 							<p ng-if="address.loading">{{ "USER.INFO.SAVING" | translate }}</p>
-							<p ng-if="!address.loading && !addres.editing">{{address.address}}</p>
+							<p ng-if="!address.loading && !address.editing">{{address.address}}</p>
 							<form name="editAddressForm" ng-submit="user.info.save_edit_address(name, $index)" ng-if="address.editing">
 								<md-input-container style="padding-right: 8px;">
 									<label>{{ "GENERAL.MEDIUMS." + address.medium | translate }}</label>
