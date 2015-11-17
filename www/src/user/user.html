@@ -137,28 +137,11 @@
 		</div>
 
 		<div flex="100">
-			<md-card id="groups">
+			<md-card id="groups" ng-init="fabOpen = false;">
 				<md-toolbar class="md-toolbar-tools" style="background-color: white; color: black;">
 					<h1>{{ "USER.GROUPS.GROUPS" | translate }}</h1>
 					<!-- central gap -->
 					<span flex=""></span>
-					<md-menu>
-						<md-button aria-label="menu" class="md-icon-button" ng-click="openMenu($mdOpenMenu, $event)" >
-							<md-icon style="color: black;" md-svg-src="assets/svg/more_vert.svg"></md-icon>
-						</md-button>
-						<md-menu-content>
-							<md-menu-item>
-								<md-button aria-label="Join">
-									{{ "USER.GROUPS.JOIN" | translate }}
-								</md-button>
-							</md-menu-item>
-							<md-menu-item>
-								<md-button aria-label="New" ng-click="user.groups.new(originalEvent)">
-									{{ "USER.GROUPS.NEW" | translate }}
-								</md-button>
-							</md-menu-item>
-						</md-menu-content>
-					</md-menu>
 				</md-toolbar>
 				<md-card-content style="padding-top: 0px;">
 					<ul ng-if="user.groups.list.length" style="list-style: none; padding: 0; margin: 0;">
@@ -170,6 +153,26 @@
 					</ul>
 					<p ng-if="!user.groups.list.length">{{ "USER.GROUPS.NO_GROUPS" | translate }}</p>
 				</md-card-content>
+				<md-fab-speed-dial md-open="fabOpen" md-direction="left" ng-class="md-scale">
+					<md-fab-trigger>
+						<md-button aria-label="menu" class="md-icon-button" ng-click="openMenu($mdOpenMenu, $event)" >
+							<md-icon style="color: black;" md-svg-src="assets/svg/menu.svg"></md-icon>
+						</md-button>
+					</md-fab-trigger>
+					<md-fab-actions>
+						<md-button aria-label="Join">
+							<md-tooltip md-direction="bottom">
+								{{ "USER.GROUPS.JOIN" | translate }}
+							</md-tooltip>
+							<md-icon md-svg-src="assets/svg/reply.svg">u</md-icon>
+						</md-button>
+						<md-button aria-label="New" ng-click="user.groups.new(originalEvent)">
+							<md-tooltip md-direction="bottom">
+								{{ "USER.GROUPS.NEW" | translate }}
+							</md-tooltip>
+							<md-icon md-svg-src="assets/svg/add.svg">u</md-icon>
+						</md-button>
+					</md-fab-actions>
 			</md-card>
 		</div>
 	</div>
