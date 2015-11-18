@@ -45,6 +45,9 @@ endif
 include $(topdir)/golang.mk
 $(call goget,$(topdir),$(deps))
 
+# Build all executables in one shot, because otherwise multiple
+# instances of `go install` will not play nice with eachother in
+# `pkg/`
 $(addprefix %/bin/,$(executables)): $(generate) $(configure) %/src $(call gosrc,$(topdir))
 	$(call goinstall,$*,$(addprefix periwinkle/executables/,$(executables)))
 
