@@ -26,6 +26,7 @@ deps += lukeshu.com/git/go/libsystemd.git
 
 # List of our packages and executables in them
 packages = $(sort $(shell find src -type d -name '*.*' -not -name lukeshu.com -not -name '*.git' -prune -o -type f -name '*.go' -printf '%h\n'|cut -d/ -f2-))
+toppackages = $(sort $(shell find src -type d -name '*.*' -not -name lukeshu.com -not -name '*.git' -prune -o -type f -name '*.go' -printf '%h\n'|cut -d/ -f2))
 executables = $(patsubst periwinkle/executables/%,%,$(filter periwinkle/executables/%,$(packages)))
 
 srcdir := $(abspath $(patsubst %/,%,$(dir $(lastword $(MAKEFILE_LIST)))))
@@ -55,7 +56,7 @@ check: gofmt govet gotest
 .PHONY: check
 
 gofmt: generate
-	{ gofmt -d $(addprefix $(topdir)/src/,$(packages)) 2>&1 | tee /dev/stderr | test -z "$$(cat)"; } 2>&1
+	{ gofmt -d $(addprefix $(topdir)/src/,$(toppackages)) 2>&1 | tee /dev/stderr | test -z "$$(cat)"; } 2>&1
 govet: generate
 	GOPATH='$(abspath $(topdir))' go vet $(packages)
 gotest: build
