@@ -252,13 +252,13 @@ func newDirGroups() t_dirGroups {
 			}
 			generic := make([]interface{}, len(groups))
 			type EnumerateGroup struct {
-				Id            string
-				Existence     string
-				Read          string
-				Post          string
-				Join          string
-				Addresses     []GroupAddress
-				Subscriptions []Subscription
+				Id            string         `json:"id"`
+				Existence     string         `json:"existence"`
+				Read          string         `json:"read"`
+				Post          string         `json:"post"`
+				Join          string         `json:"join"`
+				Addresses     []GroupAddress `json:"addresses"`
+				Subscriptions []Subscription `json:"subscriptions"`
 			}
 
 			for i, group := range groups {
