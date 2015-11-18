@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/LukeShu/periwinkle.svg)](https://travis-ci.org/LukeShu/periwinkle)
+[![Build Status](https://travis-ci.org/LukeShu/periwinkle.svg?branch=master)](https://travis-ci.org/LukeShu/periwinkle)
 
 # periwinkle
 
