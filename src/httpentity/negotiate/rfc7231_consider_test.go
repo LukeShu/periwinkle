@@ -23,7 +23,7 @@ import "testing"
 //     | text/html;level=2 | 0.4           |
 //     | text/html;level=3 | 0.7           |
 //     +-------------------+---------------+
-func TestNegotiateContentType(t *testing.T) {
+func TestConsiderContentType(t *testing.T) {
 	header := "text/*;q=0.3, text/html;q=0.7, text/html;level=1, text/html;level=2;q=0.4, */*;q=0.5"
 	// qvalues are fixed point * 1000
 	correct := map[string]qvalue{
@@ -41,7 +41,7 @@ func TestNegotiateContentType(t *testing.T) {
 		i++
 	}
 
-	max, quality, err := NegotiateContentType(&header, contenttypes)
+	max, quality, err := considerContentTypes(&header, contenttypes)
 	if err != nil {
 		t.Error(err)
 	}
@@ -62,15 +62,15 @@ func TestNegotiateContentType(t *testing.T) {
 	}
 }
 
-func TestNegotiateCharset(t *testing.T) {
+func TestConsiderCharset(t *testing.T) {
 	// TODO
 }
 
-func TestNegotiateEncoding(t *testing.T) {
+func TestConsiderEncoding(t *testing.T) {
 	// TODO
 }
 
-func TestNegotiateLanguage(t *testing.T) {
+func TestConsiderLanguage(t *testing.T) {
 	header := "da, en-gb;q=0.8, en;q=0.7, es-mx;q=0.5"
 	// qvalues are fixed point * 1000
 	correct := map[string]qvalue{
@@ -90,7 +90,7 @@ func TestNegotiateLanguage(t *testing.T) {
 		i++
 	}
 
-	max, quality, err := NegotiateLanguage(&header, languages)
+	max, quality, err := considerLanguages(&header, languages)
 	if err != nil {
 		t.Error(err)
 	}
