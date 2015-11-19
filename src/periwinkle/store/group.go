@@ -25,7 +25,6 @@ type Group struct {
 	Read          int            `json:"read"`      // 1 -> public, 2 -> confirmed, 3 -> member
 	Post          int            `json:"post"`      // 1 -> public, 2 -> confirmed, 3 -> moderator
 	Join          int            `json:"join"`      // 1 -> auto join, 2 -> confirm to join
-	Addresses     []GroupAddress `json:"addresses"`
 	Subscriptions []Subscription `json:"subscriptions"`
 }
 
@@ -35,32 +34,13 @@ func (o Group) dbSchema(db *gorm.DB) error {
 
 func (o Group) dbSeed(db *gorm.DB) error {
 	return db.Create(&Group{
-		Id:        "test",
-		Existence: 1,
-		Read:      1,
-		Post:      1,
-		Join:      1,
-		Addresses: []GroupAddress{{
-			Medium:  "twilio",
-			Address: "add_twilio_phone_number",
-		}},
+		Id:            "test",
+		Existence:     1,
+		Read:          1,
+		Post:          1,
+		Join:          1,
 		Subscriptions: []Subscription{},
 	}).Error
-}
-
-type GroupAddress struct {
-	Id      int64  `json:"group_address_id"`
-	GroupId string `json:"group_id"`
-	Medium  string `json:"medium"`
-	Address string `json:"address"`
-}
-
-func (o GroupAddress) dbSchema(db *gorm.DB) error {
-	return db.CreateTable(&o).
-		AddForeignKey("group_id", "groups(id)", "RESTRICT", "RESTRICT").
-		AddForeignKey("medium", "media(id)", "RESTRICT", "RESTRICT").
-		AddUniqueIndex("uniqueness_idx", "medium", "address").
-		Error
 }
 
 func GetGroupById(db *gorm.DB, id string) *Group {
@@ -71,20 +51,8 @@ func GetGroupById(db *gorm.DB, id string) *Group {
 		}
 		panic(result.Error)
 	}
-	db.Model(&o).Related(&o.Addresses)
 	db.Model(&o).Related(&o.Subscriptions)
 	return &o
-}
-
-func GetGroupAddressByGroupId(db *gorm.DB, groupId string) []GroupAddress {
-	var o []GroupAddress
-	if result := db.Where("group_id = ?", groupId).Find(&o); result.Error != nil {
-		if result.RecordNotFound() {
-			return nil
-		}
-		panic(result.Error)
-	}
-	return o
 }
 
 func GetGroupsByMember(db *gorm.DB, user User) []Group {
@@ -122,17 +90,6 @@ func GetGroupsByMember(db *gorm.DB, user User) []Group {
 	return groups
 }
 
-func GetGroupAddressesByMedium(db *gorm.DB, medium string) []GroupAddress {
-	var o []GroupAddress
-	if result := db.Where("medium = ?", medium).Find(&o); result.Error != nil {
-		if result.RecordNotFound() {
-			return nil
-		}
-		panic(result.Error)
-	}
-	return o
-}
-
 func GetAllGroups(db *gorm.DB) []Group {
 	var o []Group
 	if result := db.Find(&o); result.Error != nil {
@@ -148,12 +105,14 @@ func NewGroup(db *gorm.DB, name string, existence int, read int, post int, join 
 	if name == "" {
 		panic("name can't be empty")
 	}
+	subscriptions := make([]Subscription, 0)
 	o := Group{
-		Id:        name,
-		Existence: CheckInput(existence, 1, 3, 1),
-		Read:      CheckInput(read, 1, 3, 1),
-		Post:      CheckInput(post, 1, 3, 1),
-		Join:      CheckInput(existence, 1, 2, 1),
+		Id:            name,
+		Existence:     CheckInput(existence, 1, 3, 1),
+		Read:          CheckInput(read, 1, 3, 1),
+		Post:          CheckInput(post, 1, 3, 1),
+		Join:          CheckInput(existence, 1, 2, 1),
+		Subscriptions: subscriptions,
 	}
 	if err := db.Create(&o).Error; err != nil {
 		panic(err)
@@ -252,13 +211,12 @@ func newDirGroups() t_dirGroups {
 			}
 			generic := make([]interface{}, len(groups))
 			type EnumerateGroup struct {
-				Id            string
-				Existence     string
-				Read          string
-				Post          string
-				Join          string
-				Addresses     []GroupAddress
-				Subscriptions []Subscription
+				Id            string         `json:"id"`
+				Existence     string         `json:"existence"`
+				Read          string         `json:"read"`
+				Post          string         `json:"post"`
+				Join          string         `json:"join"`
+				Subscriptions []Subscription `json:"subscriptions"`
 			}
 
 			for i, group := range groups {
@@ -268,7 +226,6 @@ func newDirGroups() t_dirGroups {
 				enum.Read = Read(group.Read).String()
 				enum.Post = Post(group.Post).String()
 				enum.Join = Join(group.Join).String()
-				enum.Addresses = group.Addresses
 				enum.Subscriptions = group.Subscriptions
 				generic[i] = enum
 			}
@@ -294,7 +251,6 @@ func newDirGroups() t_dirGroups {
 			}
 
 			entity.Groupname = strings.ToLower(entity.Groupname)
-
 			group := NewGroup(
 				db,
 				entity.Groupname,
@@ -303,6 +259,16 @@ func newDirGroups() t_dirGroups {
 				int(entity.Post),
 				int(entity.Join),
 			)
+			sess := req.Things["session"].(*Session)
+			address := GetAddressByIdAndMedium(db, sess.UserId, "noop")
+			if address != nil {
+				subscription := Subscription{
+					AddressId: address.Id,
+					GroupId:   group.Id,
+					Confirmed: true,
+				}
+				db.Create(&subscription)
+			}
 			if group == nil {
 				return he.StatusConflict(heutil.NetString("a group with that name already exists"))
 			} else {

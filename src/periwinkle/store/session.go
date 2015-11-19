@@ -26,7 +26,7 @@ type Session struct {
 
 func (o Session) dbSchema(db *gorm.DB) error {
 	return db.CreateTable(&o).
-		AddForeignKey("user_id", "users(id)", "RESTRICT", "RESTRICT").
+		AddForeignKey("user_id", "users(id)", "CASCADE", "RESTRICT").
 		Error
 }
 

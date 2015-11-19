@@ -22,8 +22,8 @@ type Subscription struct {
 
 func (o Subscription) dbSchema(db *gorm.DB) error {
 	return db.CreateTable(&o).
-		AddForeignKey("group_id", "groups(id)", "RESTRICT", "RESTRICT").
-		AddForeignKey("address_id", "user_addresses(id)", "RESTRICT", "RESTRICT").
+		AddForeignKey("group_id", "groups(id)", "CASCADE", "RESTRICT").
+		AddForeignKey("address_id", "user_addresses(id)", "CASCADE", "RESTRICT").
 		Error
 }
 

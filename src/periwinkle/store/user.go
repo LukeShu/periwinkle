@@ -45,7 +45,7 @@ type UserAddress struct {
 
 func (o UserAddress) dbSchema(db *gorm.DB) error {
 	return db.CreateTable(&o).
-		AddForeignKey("user_id", "users(id)", "RESTRICT", "RESTRICT").
+		AddForeignKey("user_id", "users(id)", "CASCADE", "RESTRICT").
 		AddForeignKey("medium", "media(id)", "RESTRICT", "RESTRICT").
 		AddUniqueIndex("address_idx", "medium", "address").
 		AddUniqueIndex("user_idx", "user_id", "sort_order").
@@ -99,6 +99,18 @@ func (u *User) populate(db *gorm.DB) {
 		}
 	}
 	u.Addresses = addresses
+}
+
+func GetAddressByIdAndMedium(db *gorm.DB, id string, medium string) *UserAddress {
+	id = strings.ToLower(id)
+	var o UserAddress
+	if result := db.Where(&UserAddress{UserId: id, Medium: medium}).First(&o); result.Error != nil {
+		if result.RecordNotFound() {
+			return nil
+		}
+		panic(result.Error)
+	}
+	return &o
 }
 
 func GetUserById(db *gorm.DB, id string) *User {

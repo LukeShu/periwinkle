@@ -21,11 +21,7 @@
 			},
 			title:		'USER.INFO.USER',
 			username:	'',
-			addresses:	{
-				email:	[],
-				sms:	[],
-				mms:	[]
-			},
+			addresses:	{},
 			fullName:	{
 				editing:	false,
 				loading:	false,
@@ -89,16 +85,19 @@
 				if(self.info.addresses[name][index].address !== self.info.addresses[name][index].new_address) {
 					self.info.addresses[name][index].loading = true;
 					var i; var n;
+					var so_index = 0;
 					var list = [];
 					for (n in self.info.addresses) {
-						for(i in self.info.addresses[i]) {
+						for(i in self.info.addresses[n]) {
 							var item = {
 								medium:	n,
-								address: self.info.addresses[i].address
+								address: self.info.addresses[n][i].address,
+								sort_order: so_index
 							};
 							if(i == index && n == name) {
-								item.address = self.info.addresses[i].new_address;
+								item.address = self.info.addresses[n][i].new_address;
 							}
+							so_index++;
 							list.push(item);
 						}
 					}
@@ -135,17 +134,69 @@
 					);
 				}
 			},
+			address_orderChanged: function() {
+				self.info.status.loading = true;
+				var i; var n;
+				var so_index = 0;
+				var list = [];
+				for (n in self.info.addresses) {
+					for(i in self.info.addresses[n]) {
+						var item = {
+							medium:	n,
+							address: self.info.addresses[n][i].address,
+							sort_order: so_index
+						};
+						so_index++;
+						list.push(item);
+					}
+				}
+				$http({
+					method: 'PATCH',
+					url: '/v1/users/' + userService.user_id,
+					headers: {
+						'Content-Type': 'application/json-patch+json'
+					},
+					data: [
+						{
+							'op':		'replace',
+							'path':		'/addresses',
+							'value':	list
+						}
+					]
+				}).then(
+					function success (response) {
+						self.info.load();
+					},
+					function fail (response) {
+						self.info.status.loading = false;
+						debugger;
+						var status_code = response.status;
+						var reason = response.data;
+						//show alert
+						switch(status_code){
+							case 500:
+								$scope.showError('GENERAL.ERRORS.500.TITLE', 'GENERAL.ERRORS.500.CONTENT', reason, 'body', 'body');
+								break;
+							default:
+								$scope.showError('GENERAL.ERRORS.DEFAULT.TITLE', 'GENERAL.ERRORS.DEFAULT.CONTENT', reason, 'body', 'body');
+						}
+					}
+				);
+			},
 			delete_address: function(name, index) {
 				self.info.addresses[name][index].loading = true;
 				var i; var n;
+				var so_index = 0;
 				var list = [];
 				for (n in self.info.addresses) {
-					for(i in self.info.addresses[i]) {
-						if(i == index && n == name) {
+					for(i in self.info.addresses[n]) {
+						if(i != index && n != name) {
 							var item = {
 								medium:	n,
-								address: self.info.addresses[i].address
+								address: self.info.addresses[n][i].address,
+								sort_order: so_index
 							};
+							so_index++;
 							list.push(item);
 						}
 					}
@@ -321,6 +372,9 @@
 							sms: [],
 							mms: []
 						};
+						response.data.addresses.sort(function(a, b) {
+							return a.sort_order - b.sort_order;
+						});
 						for (i in response.data.addresses) {
 							self.info.addresses[response.data.addresses[i].medium].push({
 								address:		response.data.addresses[i].address,

@@ -53,9 +53,9 @@ func main() {
 
 	for {
 		time.Sleep(time.Second)
-		group_addr := store.GetGroupAddressesByMedium(config.DB, "twilio")
+		numbers := store.GetAllTwilioNumbers(config.DB)
 
-		for _, v := range group_addr {
+		for _, number := range numbers {
 			// clear the array
 			if cur_time_sec != time.Now().UTC().Unix() {
 				for j := 0; j != len(arr_temp); j++ {
@@ -67,7 +67,7 @@ func main() {
 			cur_time_sec = cur_time.Unix()
 
 			// gets url for received  Twilio messages for a given date
-			url := "https://api.twilio.com/2010-04-01/Accounts/" + config.TwilioAccountId + "/Messages.json?To=" + v.Address + "&DateSent>=" + strings.Split(cur_time.String(), " ")[0]
+			url := "https://api.twilio.com/2010-04-01/Accounts/" + config.TwilioAccountId + "/Messages.json?To=" + number.Number + "&DateSent>=" + strings.Split(cur_time.String(), " ")[0]
 
 			client := &http.Client{}
 

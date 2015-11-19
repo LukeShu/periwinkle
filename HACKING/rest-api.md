@@ -209,3 +209,18 @@ Choices") response is returned, containing a list of possibilities.
 				`Message-ID`s, if the group alias points to a valid group
 				that the user is allowed to se; otherwise returns HTTP 403
 				("Forbidden")
+
+		* `/v1/captcha` [`POST`]
+
+			The body of the POST doesn't matter.  Returns HTTP 201
+			("Created") with a document body containing the ID for the
+			created captcha.
+
+			* `/v1/captcha/%{id}` [`GET:{png,wav}`, `PUT`]
+
+				GET returns a PNG or WAV of the captcha (based on the
+				`Accept:` header) with HTTP 200 ("Found"). PUT takes a
+				string of what the user says the captcha said.  If the
+				string matches what it says, it will return a token
+				(proof of solution) with an HTTP 200 ("Found");
+				otherwise it will return HTTP 403 ("Forbidden").
