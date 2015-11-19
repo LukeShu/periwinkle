@@ -36,7 +36,7 @@ func DbSchema(db *gorm.DB) error {
 	errHelper(&errs, (Captcha{}).dbSchema(db))
 	errHelper(&errs, (Medium{}).dbSchema(db))
 	errHelper(&errs, (Group{}).dbSchema(db))
-	errHelper(&errs, (Message{}).dbSchema(db))      // must come after Group
+	errHelper(&errs, (Message{}).dbSchema(db)) // must come after Group
 	errHelper(&errs, (User{}).dbSchema(db))
 	errHelper(&errs, (Session{}).dbSchema(db)) // must come after User
 	errHelper(&errs, (ShortUrl{}).dbSchema(db))

@@ -17,9 +17,9 @@ func (o TwilioNumber) dbSchema(db *gorm.DB) error {
 }
 
 type TwilioPool struct {
-	UserId  string
-	GroupId string
-	NumberId  string
+	UserId   string
+	GroupId  string
+	NumberId string
 }
 
 func (o TwilioPool) dbSchema(db *gorm.DB) error {

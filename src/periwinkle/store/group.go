@@ -34,11 +34,11 @@ func (o Group) dbSchema(db *gorm.DB) error {
 
 func (o Group) dbSeed(db *gorm.DB) error {
 	return db.Create(&Group{
-		Id:        "test",
-		Existence: 1,
-		Read:      1,
-		Post:      1,
-		Join:      1,
+		Id:            "test",
+		Existence:     1,
+		Read:          1,
+		Post:          1,
+		Join:          1,
 		Subscriptions: []Subscription{},
 	}).Error
 }
