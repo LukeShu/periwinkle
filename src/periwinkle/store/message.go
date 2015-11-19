@@ -25,7 +25,7 @@ type Message struct {
 
 func (o Message) dbSchema(db *gorm.DB) error {
 	return db.CreateTable(&o).
-		AddForeignKey("group_id", "groups(id)", "RESTRICT", "RESTRICT").
+		AddForeignKey("group_id", "groups(id)", "CASCADE", "RESTRICT").
 		AddUniqueIndex("filename_idx", "unique").
 		Error
 }
