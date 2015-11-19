@@ -237,7 +237,6 @@
 						afterRevert();
 
 					function afterRevert(){
-						if($placeholder) return;
 						sortingInProgress = false;
 						$placeholder.remove();
 						$helper.remove();

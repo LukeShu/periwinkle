@@ -165,7 +165,7 @@
 					]
 				}).then(
 					function success (response) {
-						self.info.load();
+						//assume it is all up to date
 					},
 					function fail (response) {
 						self.info.status.loading = false;
