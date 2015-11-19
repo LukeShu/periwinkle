@@ -36,13 +36,14 @@ func DbSchema(db *gorm.DB) error {
 	errHelper(&errs, (Captcha{}).dbSchema(db))
 	errHelper(&errs, (Medium{}).dbSchema(db))
 	errHelper(&errs, (Group{}).dbSchema(db))
-	errHelper(&errs, (GroupAddress{}).dbSchema(db)) // must come after Group and Medium
 	errHelper(&errs, (Message{}).dbSchema(db))      // must come after Group
 	errHelper(&errs, (User{}).dbSchema(db))
 	errHelper(&errs, (Session{}).dbSchema(db)) // must come after User
 	errHelper(&errs, (ShortUrl{}).dbSchema(db))
 	errHelper(&errs, (UserAddress{}).dbSchema(db))  // must come after User and Medium
 	errHelper(&errs, (Subscription{}).dbSchema(db)) // must come after Group and UserAddress
+	errHelper(&errs, (TwilioNumber{}).dbSchema(db))
+	errHelper(&errs, (TwilioPool{}).dbSchema(db)) // must come after TwilioNumber, User, and Group
 	errHelper(&errs, (Admin{}).dbSchema(db))
 	return errorList(errs)
 }
@@ -50,17 +51,18 @@ func DbSchema(db *gorm.DB) error {
 func DbDrop(db *gorm.DB) error {
 	// This must be in the reverse order of DbSchema()
 	errs := []error{}
+	errHelper(&errs, db.DropTable(&Admin{}).Error)
+	errHelper(&errs, db.DropTable(&TwilioPool{}).Error)
+	errHelper(&errs, db.DropTable(&TwilioNumber{}).Error)
 	errHelper(&errs, db.DropTable(&Subscription{}).Error)
 	errHelper(&errs, db.DropTable(&UserAddress{}).Error)
 	errHelper(&errs, db.DropTable(&ShortUrl{}).Error)
 	errHelper(&errs, db.DropTable(&Session{}).Error)
 	errHelper(&errs, db.DropTable(&User{}).Error)
 	errHelper(&errs, db.DropTable(&Message{}).Error)
-	errHelper(&errs, db.DropTable(&GroupAddress{}).Error)
 	errHelper(&errs, db.DropTable(&Group{}).Error)
 	errHelper(&errs, db.DropTable(&Medium{}).Error)
 	errHelper(&errs, db.DropTable(&Captcha{}).Error)
-	errHelper(&errs, db.DropTable(&Admin{}).Error)
 	return errorList(errs)
 }
 

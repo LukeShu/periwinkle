@@ -25,7 +25,6 @@ type Group struct {
 	Read          int            `json:"read"`      // 1 -> public, 2 -> confirmed, 3 -> member
 	Post          int            `json:"post"`      // 1 -> public, 2 -> confirmed, 3 -> moderator
 	Join          int            `json:"join"`      // 1 -> auto join, 2 -> confirm to join
-	Addresses     []GroupAddress `json:"addresses"`
 	Subscriptions []Subscription `json:"subscriptions"`
 }
 
@@ -40,27 +39,8 @@ func (o Group) dbSeed(db *gorm.DB) error {
 		Read:      1,
 		Post:      1,
 		Join:      1,
-		Addresses: []GroupAddress{{
-			Medium:  "twilio",
-			Address: "add_twilio_phone_number",
-		}},
 		Subscriptions: []Subscription{},
 	}).Error
-}
-
-type GroupAddress struct {
-	Id      int64  `json:"group_address_id"`
-	GroupId string `json:"group_id"`
-	Medium  string `json:"medium"`
-	Address string `json:"address"`
-}
-
-func (o GroupAddress) dbSchema(db *gorm.DB) error {
-	return db.CreateTable(&o).
-		AddForeignKey("group_id", "groups(id)", "RESTRICT", "RESTRICT").
-		AddForeignKey("medium", "media(id)", "RESTRICT", "RESTRICT").
-		AddUniqueIndex("uniqueness_idx", "medium", "address").
-		Error
 }
 
 func GetGroupById(db *gorm.DB, id string) *Group {
@@ -71,20 +51,8 @@ func GetGroupById(db *gorm.DB, id string) *Group {
 		}
 		panic(result.Error)
 	}
-	db.Model(&o).Related(&o.Addresses)
 	db.Model(&o).Related(&o.Subscriptions)
 	return &o
-}
-
-func GetGroupAddressByGroupId(db *gorm.DB, groupId string) []GroupAddress {
-	var o []GroupAddress
-	if result := db.Where("group_id = ?", groupId).Find(&o); result.Error != nil {
-		if result.RecordNotFound() {
-			return nil
-		}
-		panic(result.Error)
-	}
-	return o
 }
 
 func GetGroupsByMember(db *gorm.DB, user User) []Group {
@@ -120,17 +88,6 @@ func GetGroupsByMember(db *gorm.DB, user User) []Group {
 	}
 	// return them
 	return groups
-}
-
-func GetGroupAddressesByMedium(db *gorm.DB, medium string) []GroupAddress {
-	var o []GroupAddress
-	if result := db.Where("medium = ?", medium).Find(&o); result.Error != nil {
-		if result.RecordNotFound() {
-			return nil
-		}
-		panic(result.Error)
-	}
-	return o
 }
 
 func GetAllGroups(db *gorm.DB) []Group {
@@ -257,7 +214,6 @@ func newDirGroups() t_dirGroups {
 				Read          string         `json:"read"`
 				Post          string         `json:"post"`
 				Join          string         `json:"join"`
-				Addresses     []GroupAddress `json:"addresses"`
 				Subscriptions []Subscription `json:"subscriptions"`
 			}
 
@@ -268,7 +224,6 @@ func newDirGroups() t_dirGroups {
 				enum.Read = Read(group.Read).String()
 				enum.Post = Post(group.Post).String()
 				enum.Join = Join(group.Join).String()
-				enum.Addresses = group.Addresses
 				enum.Subscriptions = group.Subscriptions
 				generic[i] = enum
 			}
