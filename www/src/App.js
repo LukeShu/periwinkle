@@ -13,6 +13,7 @@
 		'ngSanitize',
 		'angular-sortable-view',
 		//periwinkle modules
+		'periwinkle.i18n',
 		'validation.anti-match',
 		'focusOn',
 		'validation.xregex',
@@ -45,11 +46,10 @@
 		};
 	}])
 
-	.config(['$translateProvider', function($translateProvider) {
+	.config(['$translateProvider', 'i18n_en', 'i18n_it', 'lang', function($translateProvider, i18n_en, i18n_it, lang) {
 		$translateProvider
-			.translations('en', localised.en)
-			.translations('it', localised.it)
-			.translations('es', localised.es);
+			.translations('en', i18n_en)
+			.translations('it', i18n_it);
 		$translateProvider.fallbackLanguage('en');
 		$translateProvider.use(lang);
 		$translateProvider.useSanitizeValueStrategy('escape');

@@ -51,20 +51,25 @@
 			$scope.loading = true;
 			$scope.title = 'USER.NEW_ADDRESS.TITLE.CREATING';
 			var i; var n;
+			var so_index = 0;
 			var list = [];
 			for (n in addresses) {
 				for(i in addresses[n]) {
 					var item = {
 						medium:	n,
-						address: addresses[n][i].address
+						address: addresses[n][i].address,
+						sort_order: so_index
 					};
+					so_index++;
 					list.push(item);
 				}
 				if(n == self.mediums[self.medium].toLowerCase()) {
 					var item = {
 						medium:	self.mediums[self.medium].toLowerCase(),
-						address: self.address()
+						address: self.address(),
+						sort_order: so_index
 					};
+					so_index++;
 					list.push(item);
 				}
 			}

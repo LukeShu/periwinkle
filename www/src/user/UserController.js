@@ -85,16 +85,19 @@
 				if(self.info.addresses[name][index].address !== self.info.addresses[name][index].new_address) {
 					self.info.addresses[name][index].loading = true;
 					var i; var n;
+					var so_index = 0;
 					var list = [];
 					for (n in self.info.addresses) {
 						for(i in self.info.addresses[n]) {
 							var item = {
 								medium:	n,
-								address: self.info.addresses[n][i].address
+								address: self.info.addresses[n][i].address,
+								sort_order: so_index
 							};
 							if(i == index && n == name) {
 								item.address = self.info.addresses[n][i].new_address;
 							}
+							so_index++;
 							list.push(item);
 						}
 					}
@@ -134,13 +137,16 @@
 			address_orderChanged: function() {
 				self.info.status.loading = true;
 				var i; var n;
+				var so_index = 0;
 				var list = [];
 				for (n in self.info.addresses) {
 					for(i in self.info.addresses[n]) {
 						var item = {
 							medium:	n,
-							address: self.info.addresses[n][i].address
+							address: self.info.addresses[n][i].address,
+							sort_order: so_index
 						};
+						so_index++;
 						list.push(item);
 					}
 				}
@@ -159,7 +165,7 @@
 					]
 				}).then(
 					function success (response) {
-						self.info.status.loading = false;
+						self.info.load();
 					},
 					function fail (response) {
 						self.info.status.loading = false;
@@ -180,14 +186,17 @@
 			delete_address: function(name, index) {
 				self.info.addresses[name][index].loading = true;
 				var i; var n;
+				var so_index = 0;
 				var list = [];
 				for (n in self.info.addresses) {
 					for(i in self.info.addresses[n]) {
-						if(i == index && n == name) {
+						if(i != index && n != name) {
 							var item = {
 								medium:	n,
-								address: self.info.addresses[n][i].address
+								address: self.info.addresses[n][i].address,
+								sort_order: so_index
 							};
+							so_index++;
 							list.push(item);
 						}
 					}
@@ -363,6 +372,9 @@
 							sms: [],
 							mms: []
 						};
+						response.data.addresses.sort(function(a, b) {
+							return a.sort_order - b.sort_order;
+						});
 						for (i in response.data.addresses) {
 							self.info.addresses[response.data.addresses[i].medium].push({
 								address:		response.data.addresses[i].address,
