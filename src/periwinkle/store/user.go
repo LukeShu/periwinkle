@@ -101,6 +101,18 @@ func (u *User) populate(db *gorm.DB) {
 	u.Addresses = addresses
 }
 
+func GetAddressByIdAndMedium(db *gorm.DB, id string, medium string) *UserAddress {
+	id = strings.ToLower(id)
+	var o UserAddress
+	if result := db.Where(&UserAddress{UserId: id, Medium: medium}).First(&o); result.Error != nil {
+		if result.RecordNotFound() {
+			return nil
+		}
+		panic(result.Error)
+	}
+	return &o
+}
+
 func GetUserById(db *gorm.DB, id string) *User {
 	id = strings.ToLower(id)
 	var o User

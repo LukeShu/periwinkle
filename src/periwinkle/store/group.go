@@ -105,12 +105,14 @@ func NewGroup(db *gorm.DB, name string, existence int, read int, post int, join 
 	if name == "" {
 		panic("name can't be empty")
 	}
+	subscriptions := make([]Subscription, 0)
 	o := Group{
-		Id:        name,
-		Existence: CheckInput(existence, 1, 3, 1),
-		Read:      CheckInput(read, 1, 3, 1),
-		Post:      CheckInput(post, 1, 3, 1),
-		Join:      CheckInput(existence, 1, 2, 1),
+		Id:            name,
+		Existence:     CheckInput(existence, 1, 3, 1),
+		Read:          CheckInput(read, 1, 3, 1),
+		Post:          CheckInput(post, 1, 3, 1),
+		Join:          CheckInput(existence, 1, 2, 1),
+		Subscriptions: subscriptions,
 	}
 	if err := db.Create(&o).Error; err != nil {
 		panic(err)
@@ -249,7 +251,6 @@ func newDirGroups() t_dirGroups {
 			}
 
 			entity.Groupname = strings.ToLower(entity.Groupname)
-
 			group := NewGroup(
 				db,
 				entity.Groupname,
@@ -258,6 +259,16 @@ func newDirGroups() t_dirGroups {
 				int(entity.Post),
 				int(entity.Join),
 			)
+			sess := req.Things["session"].(*Session)
+			address := GetAddressByIdAndMedium(db, sess.UserId, "noop")
+			if address != nil {
+				subscription := Subscription{
+					AddressId: address.Id,
+					GroupId:   group.Id,
+					Confirmed: true,
+				}
+				db.Create(&subscription)
+			}
 			if group == nil {
 				return he.StatusConflict(heutil.NetString("a group with that name already exists"))
 			} else {
