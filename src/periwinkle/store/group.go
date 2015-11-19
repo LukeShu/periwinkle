@@ -192,7 +192,7 @@ func (o *Group) Methods() map[string]func(he.Request) he.Response {
 			// check permissions
 			db := req.Things["db"].(*gorm.DB)
 			sess := req.Things["session"].(*Session)
-			if o.Read != 1 || !IsSubscribed(db, sess.UserId, *o) {
+			if o.Read != 1 && !IsSubscribed(db, sess.UserId, *o) {
 				return he.StatusForbidden(heutil.NetString("Unauthorized user"))
 			}
 			o.Subscriptions = GetSubscriptionsGroupById(db, o.Id)
