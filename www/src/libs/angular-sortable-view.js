@@ -237,9 +237,9 @@
 						afterRevert();
 
 					function afterRevert(){
+						if($placeholder) return;
 						sortingInProgress = false;
-						if($placeholder)
-							$placeholder.remove();
+						$placeholder.remove();
 						$helper.remove();
 						$original.removeClass('ng-hide');
 
