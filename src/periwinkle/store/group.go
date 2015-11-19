@@ -156,6 +156,32 @@ func (o *Group) Save(db *gorm.DB) {
 	}
 }
 
+func IsSubscribed(db *gorm.DB, userid string, group Group) bool {
+	subscriptions := GetSubscriptionsGroupById(db, group.Id)
+	address_ids := make([]int64, len(subscriptions))
+	for i, subscription := range subscriptions {
+		address_ids[i] = subscription.AddressId
+	}
+	var addresses []UserAddress
+	if len(address_ids) > 0 {
+		if result := db.Where("id IN (?)", address_ids).Find(&addresses); result.Error != nil {
+			if !result.RecordNotFound() {
+				panic("cant find any subscriptions corresponding user address")
+			}
+		}
+	} else {
+		// no subscriptions so user cannot possibly be subscribed
+		return false
+	}
+	for _, address := range addresses {
+		if address.UserId == userid {
+			return true
+		}
+	}
+	// could not find user in subscribed user addresses, therefore, he/she isn't subscribed
+	return false
+}
+
 func (o *Group) Subentity(name string, req he.Request) he.Entity {
 	panic("TODO: API: (*Group).Subentity()")
 }
@@ -163,6 +189,13 @@ func (o *Group) Subentity(name string, req he.Request) he.Entity {
 func (o *Group) Methods() map[string]func(he.Request) he.Response {
 	return map[string]func(he.Request) he.Response{
 		"GET": func(req he.Request) he.Response {
+			// check permissions
+			db := req.Things["db"].(*gorm.DB)
+			sess := req.Things["session"].(*Session)
+			if o.Read != 1 || !IsSubscribed(db, sess.UserId, *o) {
+				return he.StatusForbidden(heutil.NetString("Unauthorized user"))
+			}
+			o.Subscriptions = GetSubscriptionsGroupById(db, o.Id)
 			return he.StatusOK(o)
 		},
 		"PUT": func(req he.Request) he.Response {
