@@ -135,7 +135,6 @@
 				}
 			},
 			address_orderChanged: function() {
-				self.info.status.loading = true;
 				var i; var n;
 				var so_index = 0;
 				var list = [];
