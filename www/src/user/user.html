@@ -93,7 +93,7 @@
 					</md-menu>
 				</md-toolbar>
 				<md-card-content style="padding-top: 0px; min-height: 72px;">
-					<div ng-repeat="(name, addresses) in user.info.addresses">
+					<div ng-if="!user.info.status.loading" ng-repeat="(name, addresses) in user.info.addresses">
 						<div  sv-root sv-on-sort="user.info.address_orderChanged()">
 							<p ng-if="addresses.length" style="font-weight: bold">{{ "GENERAL.MEDIUMS." + name.toUpperCase() | translate }}:</p>
 							<ul style="list-style: none; padding: 0; margin: 0;">

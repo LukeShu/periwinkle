@@ -159,7 +159,7 @@
 					]
 				}).then(
 					function success (response) {
-						self.info.status.loading = false;
+						self.info.load();
 					},
 					function fail (response) {
 						self.info.status.loading = false;
@@ -183,7 +183,7 @@
 				var list = [];
 				for (n in self.info.addresses) {
 					for(i in self.info.addresses[n]) {
-						if(i == index && n == name) {
+						if(i != index && n != name) {
 							var item = {
 								medium:	n,
 								address: self.info.addresses[n][i].address
