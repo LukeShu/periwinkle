@@ -1,8 +1,8 @@
 // Copyright 2015 Luke Shumaker
-
+// Copyright 2015 Zhandos Suleimenov
 package store
 
-import (	
+import (
 	"encoding/json"
 	"github.com/jinzhu/gorm"
 	"io/ioutil"
@@ -12,8 +12,8 @@ import (
 )
 
 type TwilioNumber struct {
-	Id     int64
-	Number string
+	Id     int64  `json:"number_id"`
+	Number string `json:"-"`
 	// TODO
 }
 
@@ -22,9 +22,9 @@ func (o TwilioNumber) dbSchema(db *gorm.DB) error {
 }
 
 type TwilioPool struct {
-	UserId   string
-	GroupId  string
-	NumberId string
+	UserId   string `json:"user_id"`
+	GroupId  string `json:"group_id"`
+	NumberId int64  `json:"number_id"`
 }
 
 type Incoming_numbers struct {
@@ -44,7 +44,38 @@ func (o TwilioPool) dbSchema(db *gorm.DB) error {
 }
 
 func GetAllTwilioNumbers(db *gorm.DB) (ret []TwilioNumber) {
-	panic("TODO")
+	var twilio_num []TwilioNumber
+	if result := db.Find(&twilio_num); result.Error != nil {
+		if result.RecordNotFound() {
+			return nil
+		}
+		panic(result.Error)
+	}
+	return twilio_num
+
+}
+
+func GetTwilioNumberByUserAndGroup(db *gorm.DB, username string, groupname string) string {
+
+	var o TwilioPool
+	if result := db.Where(&TwilioPool{UserId: username, GroupId: groupname}).First(&o); result.Error != nil {
+		if result.RecordNotFound() {
+			log.Println("RecordNotFound")
+			return ""
+		}
+		panic(result.Error)
+	}
+
+	var twilio_num TwilioNumber
+	if result := db.Where("number_id = ?", o.NumberId).First(&twilio_num); result.Error != nil {
+		if result.RecordNotFound() {
+			log.Println("RecordNotFound")
+			return ""
+		}
+		panic(result.Error)
+	}
+
+	return twilio_num.Number
 }
 
 func GetAllExistingTwilioNumbers() []string {
@@ -73,7 +104,7 @@ func GetAllExistingTwilioNumbers() []string {
 	if err != nil {
 		log.Println(err)
 		return nil
-	}	
+	}
 
 	defer resp.Body.Close()
 	body, err := ioutil.ReadAll(resp.Body)
@@ -93,7 +124,7 @@ func GetAllExistingTwilioNumbers() []string {
 		return nil
 	}
 
-	if len(numbers.Phone_numbers) > 0 {	
+	if len(numbers.Phone_numbers) > 0 {
 
 		existing_numbers := make([]string, len(numbers.Phone_numbers))
 
@@ -106,6 +137,6 @@ func GetAllExistingTwilioNumbers() []string {
 	} else {
 		log.Println("You do not have a number in your Twilio account")
 		return nil
-	}	
+	}
 
 }
