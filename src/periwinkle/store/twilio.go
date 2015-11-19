@@ -24,8 +24,8 @@ type TwilioPool struct {
 
 func (o TwilioPool) dbSchema(db *gorm.DB) error {
 	return db.CreateTable(&o).
-		AddForeignKey("user_id", "users(id)", "RESTRICT", "RESTRICT").
-		AddForeignKey("group_id", "groups(id)", "RESTRICT", "RESTRICT").
+		AddForeignKey("user_id", "users(id)", "CASCADE", "RESTRICT").
+		AddForeignKey("group_id", "groups(id)", "CASCADE", "RESTRICT").
 		AddForeignKey("number_id", "twilio_numbers(id)", "RESTRICT", "RESTRICT").
 		Error
 }
