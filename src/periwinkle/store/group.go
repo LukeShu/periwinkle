@@ -90,6 +90,29 @@ func GetGroupsByMember(db *gorm.DB, user User) []Group {
 	return groups
 }
 
+func GetPublicAndSubscribedGroups(db *gorm.DB, user User) []Group {
+	groups := GetGroupsByMember(db, user)
+	// also get public groups
+	var publicgroups []Group
+	if result := db.Where(&Group{Existence: 1}).Find(&publicgroups); result.Error != nil {
+		if !result.RecordNotFound() {
+			panic(result.Error)
+		}
+	}
+	// merge public groups and subscribed groups
+	for _, publicgroup := range publicgroups {
+		for _, group := range groups {
+			if group.Id == publicgroup.Id {
+				break
+			}
+		}
+		groups = append(groups, publicgroup)
+	}
+
+	// return them
+	return groups
+}
+
 func GetAllGroups(db *gorm.DB) []Group {
 	var o []Group
 	if result := db.Find(&o); result.Error != nil {
@@ -206,8 +229,8 @@ func newDirGroups() t_dirGroups {
 			if sess == nil {
 				groups = []Group{}
 			} else {
-				groups = GetAllGroups(db)
-				// groups = GetGroupsByMember(db, *GetUserById(db, sess.UserId))
+				//groups = GetAllGroups(db)
+				groups = GetPublicAndSubscribedGroups(db, *GetUserById(db, sess.UserId))
 			}
 			generic := make([]interface{}, len(groups))
 			type EnumerateGroup struct {
