@@ -1,12 +1,12 @@
 // Copyright 2015 Richard Wisniewski
-var lang = "en";
+;(function() {
+	'use strict';
+	var lang = "en";
 
-try {
-	lang = navigator.language.substring(0,2);
-} catch(err) {}
+	try {
+		lang = navigator.language.substring(0,2);
+	} catch(err) {}
 
-var localised = {
-	en: {},
-	it: {},
-	es: {}
-}
+	angular.module( 'periwinkle.i18n', [])
+	.constant('lang', lang);
+})();
