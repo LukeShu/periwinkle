@@ -27,7 +27,7 @@ deps += lukeshu.com/git/go/libsystemd.git
 # List of our packages and executables in them
 packages = $(sort $(shell find src -type d -name '*.*' -not -name lukeshu.com -not -name '*.git' -prune -o -type f -name '*.go' -printf '%h\n'|cut -d/ -f2-))
 toppackages = $(sort $(shell find src -type d -name '*.*' -not -name lukeshu.com -not -name '*.git' -prune -o -type f -name '*.go' -printf '%h\n'|cut -d/ -f2))
-executables = $(patsubst periwinkle/executables/%,%,$(filter periwinkle/executables/%,$(packages)))
+cmds = $(patsubst periwinkle/cmd/%,%,$(filter periwinkle/cmd/%,$(packages)))
 
 srcdir := $(abspath $(patsubst %/,%,$(dir $(lastword $(MAKEFILE_LIST)))))
 topdir := $(srcdir)
@@ -36,7 +36,7 @@ subdirs += $(topdir)/src/postfixpipe $(topdir)/HACKING
 
 generate += $(addprefix $(topdir)/src/,$(deps))
 generate_secondary += $(topdir)/src/*.*/
-build += $(addprefix $(topdir)/bin/,$(executables))
+build += $(addprefix $(topdir)/bin/,$(cmds))
 build_secondary += $(topdir)/bin $(topdir)/pkg $(topdir)/*.sqlite
 
 ifeq (1,$(words $(MAKEFILE_LIST)))
@@ -49,8 +49,8 @@ $(call goget,$(topdir),$(deps))
 # Build all executables in one shot, because otherwise multiple
 # instances of `go install` will not play nice with eachother in
 # `pkg/`
-$(addprefix %/bin/,$(executables)): $(generate) $(configure) %/src $(call gosrc,$(topdir))
-	$(call goinstall,$*,$(addprefix periwinkle/executables/,$(executables)))
+$(addprefix %/bin/,$(cmds)): $(generate) $(configure) %/src $(call gosrc,$(topdir))
+	$(call goinstall,$*,$(addprefix periwinkle/cmd/,$(cmds)))
 
 check: gofmt govet gotest
 .PHONY: check
