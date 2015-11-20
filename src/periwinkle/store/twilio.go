@@ -55,10 +55,59 @@ func GetAllTwilioNumbers(db *gorm.DB) (ret []TwilioNumber) {
 
 }
 
-func GetTwilioNumberByUserAndGroup(db *gorm.DB, username string, groupname string) string {
+func GetTwilioPoolByUserId(db *gorm.DB, userid string) []TwilioPool {
+
+	var o []TwilioPool
+	if result := db.Where("user_id = ?", userid).Find(&o); result.Error != nil {
+		if result.RecordNotFound() {
+			log.Println("RecordNotFound")
+			return nil
+		}
+		panic(result.Error)
+	}
+	return o
+}
+
+func GetUnusedTwilioNumbersByUser(db *gorm.DB, userid string) []string {
+
+	str := []string{}
+	all_twilio_num := GetAllExistingTwilioNumbers()
+	twilio_pools := GetTwilioPoolByUserId(db, userid)
+
+	var used_nums TwilioNumber
+	var isNumberUsed bool
+
+	for _, all_num := range all_twilio_num {
+		isNumberUsed = false
+		for i, _ := range twilio_pools {
+
+			if result := db.Where("number_id = ?", twilio_pools[i].NumberId).First(&used_nums); result.Error != nil {
+				if result.RecordNotFound() {
+					log.Println("RecordNotFound")
+					return nil
+				}
+				panic(result.Error)
+			}
+
+			if all_num == used_nums.Number {
+				isNumberUsed = true
+				break
+			}
+		}
+
+		if isNumberUsed == false {
+			str = append(str, all_num)
+		}
+	}
+
+	return str
+
+}
+
+func GetTwilioNumberByUserAndGroup(db *gorm.DB, userid string, groupid string) string {
 
 	var o TwilioPool
-	if result := db.Where(&TwilioPool{UserId: username, GroupId: groupname}).First(&o); result.Error != nil {
+	if result := db.Where(&TwilioPool{UserId: userid, GroupId: groupid}).First(&o); result.Error != nil {
 		if result.RecordNotFound() {
 			log.Println("RecordNotFound")
 			return ""
