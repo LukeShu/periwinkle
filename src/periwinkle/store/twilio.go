@@ -13,7 +13,7 @@ import (
 
 type TwilioNumber struct {
 	Id     int64  `json:"number_id"`
-	Number string `json:"-"`
+	Number string `json:"number"`
 	// TODO
 }
 
@@ -125,6 +125,65 @@ func GetTwilioNumberByUserAndGroup(db *gorm.DB, userid string, groupid string) s
 	}
 
 	return twilio_num.Number
+}
+
+func AssignTwilioNumber(db *gorm.DB, userid string, groupid string, twilio_num string) *TwilioPool {
+
+	num := TwilioNumber{
+		Number: twilio_num,
+	}
+
+	if err := db.Create(&num).Error; err != nil {
+		panic(err)
+	}
+
+	o := TwilioPool{
+		UserId:   userid,
+		GroupId:  groupid,
+		NumberId: num.Id,
+	}
+
+	if err := db.Create(&o).Error; err != nil {
+		panic(err)
+	}
+
+	return &o
+
+}
+
+func GetGroupByUserAndTwilioNumber(db *gorm.DB, userid string, twilio_num string) *Group {
+
+	var num TwilioNumber
+
+	if result := db.Where("number = ?", twilio_num).First(&num); result.Error != nil {
+		if result.RecordNotFound() {
+			log.Println("RecordNotFound")
+			return nil
+		}
+		panic(result.Error)
+	}
+
+	var o TwilioPool
+
+	if result := db.Where(&TwilioPool{UserId: userid, NumberId: num.Id}).First(&o); result.Error != nil {
+		if result.RecordNotFound() {
+			log.Println("RecordNotFound")
+			return nil
+		}
+		panic(result.Error)
+	}
+
+	var group Group
+
+	if result := db.Where("group_id = ?", o.GroupId).First(&group); result.Error != nil {
+		if result.RecordNotFound() {
+			log.Println("RecordNotFound")
+			return nil
+		}
+		panic(result.Error)
+	}
+
+	return &group
 }
 
 func GetAllExistingTwilioNumbers() []string {
