@@ -9,9 +9,10 @@ import (
 	"io"
 	"maildir"
 	"net/http"
+	"postfixpipe"
 )
 
-type DomainHandler func(io.Reader, string, *gorm.DB, *Cfg) uint8
+type DomainHandler func(io.Reader, string, *gorm.DB, *Cfg) postfixpipe.ExitStatus
 
 type Cfg struct {
 	Mailstore            maildir.Maildir

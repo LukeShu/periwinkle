@@ -17,7 +17,7 @@ import (
 	"postfixpipe"
 )
 
-func HandleEmail(r io.Reader, name string, db *gorm.DB, cfg *periwinkle.Cfg) uint8 {
+func HandleEmail(r io.Reader, name string, db *gorm.DB, cfg *periwinkle.Cfg) postfixpipe.ExitStatus {
 	mdWriter := cfg.Mailstore.NewMail()
 	if mdWriter == nil {
 		log.Printf("Could not open maildir for writing: %s\n", cfg.Mailstore)
@@ -60,7 +60,7 @@ func HandleEmail(r io.Reader, name string, db *gorm.DB, cfg *periwinkle.Cfg) uin
 			mdWriter.Unique())
 	}()
 	if silentbounce {
-		return 0
+		return postfixpipe.EX_OK
 	}
 	mdWriter.Close()
 	mdWriter = nil

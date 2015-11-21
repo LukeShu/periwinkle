@@ -15,14 +15,14 @@ import (
 
 type Error interface {
 	HttpCode() int16
-	PostfixCode() uint8
+	PostfixCode() postfixpipe.ExitStatus
 	httpentity.NetEntity
 	error
 }
 
 type simpleError struct {
 	httpCode    int16
-	postfixCode uint8
+	postfixCode postfixpipe.ExitStatus
 	httpStr     heutil.NetString
 	plainStr    string
 }
@@ -31,7 +31,7 @@ func (e simpleError) HttpCode() int16 {
 	return e.httpCode
 }
 
-func (e simpleError) PostfixCode() uint8 {
+func (e simpleError) PostfixCode() postfixpipe.ExitStatus {
 	return e.postfixCode
 }
 
@@ -43,7 +43,7 @@ func (e simpleError) Error() string {
 	return string(e.plainStr)
 }
 
-func PErrorf(http int16, postfix uint8, format string, a ...interface{}) Error {
+func PErrorf(http int16, postfix postfixpipe.ExitStatus, format string, a ...interface{}) Error {
 	str := fmt.Sprintf(format, a...)
 	return simpleError{
 		httpCode:    http,

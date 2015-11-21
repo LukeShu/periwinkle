@@ -45,7 +45,7 @@ func Parse(in io.Reader) (*periwinkle.Cfg, error) {
 	return &cfg, err
 }
 
-func bounceNoHost(io.Reader, string, *gorm.DB, *periwinkle.Cfg) uint8 {
+func bounceNoHost(io.Reader, string, *gorm.DB, *periwinkle.Cfg) postfixpipe.ExitStatus {
 	return postfixpipe.EX_NOHOST
 }
 

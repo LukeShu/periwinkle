@@ -3,7 +3,7 @@
 srcdir := $(patsubst %/,%,$(dir $(lastword $(MAKEFILE_LIST))))
 topdir ?= ../..
 
-generate := $(generate) $(srcdir)/sysexits.go
+generate := $(generate) $(srcdir)/sysexits.go $(srcdir)/env.go
 
 ifeq (1,$(words $(MAKEFILE_LIST)))
   include $(topdir)/common.mk

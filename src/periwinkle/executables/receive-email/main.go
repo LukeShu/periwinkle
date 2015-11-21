@@ -4,7 +4,6 @@
 package main
 
 import (
-	"bufio"
 	"fmt"
 	"io"
 	"log"
@@ -12,7 +11,7 @@ import (
 	"periwinkle/cfg"
 	_ "periwinkle/email_handlers" // handlers
 	"periwinkle/util"             // putil
-	"postfixpipe"
+	pp "postfixpipe"
 	"runtime"
 	"strings"
 )
@@ -44,14 +43,14 @@ func main() {
 		fmt.Fprintf(os.Stderr, "Could not parse %q: %v\n", config_filename, err)
 		os.Exit(1)
 	}
-	var ret uint8
+	var ret pp.ExitStatus = pp.EX_OK
 	defer func() {
 		if obj := recover(); obj != nil {
 			if err, ok := obj.(error); ok {
 				perror := putil.ErrorToError(err)
 				ret = perror.PostfixCode()
 			} else {
-				ret = postfixpipe.EX_UNAVAILABLE
+				ret = pp.EX_UNAVAILABLE
 			}
 			const size = 64 << 10
 			buf := make([]byte, size)
@@ -61,12 +60,16 @@ func main() {
 				log.Println(line)
 			}
 		}
-		os.Exit(int(ret))
+		pp.Exit(ret)
 	}()
-	recipient := postfixpipe.OriginalRecipient()
+
+	msg := pp.Get()
+
+	recipient := msg.ORIGINAL_RECIPIENT()
 	if recipient == "" {
-		log.Println("ORIGINAL_RECIPIENT or RECIPIENT must be set")
-		os.Exit(int(postfixpipe.EX_USAGE))
+		log.Println("ORIGINAL_RECIPIENT must be set")
+		ret = pp.EX_USAGE
+		return
 	}
 	parts := strings.SplitN(recipient, "@", 2)
 	user := parts[0]
@@ -83,11 +86,10 @@ func main() {
 		}
 	}()
 
-	reader := bufio.NewReader(os.Stdin)
-	_, _, err = reader.ReadLine() // This is done to ignore the first line because it does not fit the RFC 822 format
+	reader, err := msg.Reader()
 	if err != nil {
 		log.Println(err)
-		ret = postfixpipe.EX_NOINPUT
+		ret = pp.EX_NOINPUT
 		return
 	}
 

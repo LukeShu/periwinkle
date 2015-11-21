@@ -24,7 +24,7 @@ import (
 	"time"
 )
 
-func HandleSMS(r io.Reader, name string, db *gorm.DB, cfg *periwinkle.Cfg) uint8 {
+func HandleSMS(r io.Reader, name string, db *gorm.DB, cfg *periwinkle.Cfg) postfixpipe.ExitStatus {
 	message, err := mail.ReadMessage(r)
 	if err != nil {
 		return postfixpipe.EX_NOINPUT
