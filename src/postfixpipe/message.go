@@ -3,9 +3,9 @@
 package postfixpipe
 
 import (
-	"os"
 	"bufio"
 	"io"
+	"os"
 )
 
 type Message struct {
@@ -17,15 +17,15 @@ type Message struct {
 
 func Get() *Message {
 	return &Message{
-		args: os.Args,
+		args:  os.Args,
 		intro: nil,
 		stdin: nil,
-		env: getEnv(),
+		env:   getEnv(),
 	}
 }
 
 func (pm *Message) Intro() (string, error) {
-	if (pm.stdin == nil) {
+	if pm.stdin == nil {
 		pm.stdin = bufio.NewReader(os.Stdin)
 	}
 	if pm.intro == nil {
