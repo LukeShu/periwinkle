@@ -38,6 +38,58 @@ func GetSubscriptionsGroupById(db *gorm.DB, groupId string) []Subscription {
 	return o
 }
 
+func IsSubscribed(db *gorm.DB, userid string, group Group) bool {
+	subscriptions := GetSubscriptionsGroupById(db, group.Id)
+	address_ids := make([]int64, len(subscriptions))
+	for i, subscription := range subscriptions {
+		address_ids[i] = subscription.AddressId
+	}
+	var addresses []UserAddress
+	if len(address_ids) > 0 {
+		if result := db.Where("id IN (?)", address_ids).Find(&addresses); result.Error != nil {
+			if !result.RecordNotFound() {
+				panic("cant find any subscriptions corresponding user address")
+			}
+		}
+	} else {
+		// no subscriptions so user cannot possibly be subscribed
+		return false
+	}
+	for _, address := range addresses {
+		if address.UserId == userid {
+			return true
+		}
+	}
+	// could not find user in subscribed user addresses, therefore, he/she isn't subscribed
+	return false
+}
+
+func IsAdmin(db *gorm.DB, userid string, group Group) bool {
+	subscriptions := GetSubscriptionsGroupById(db, group.Id)
+	address_ids := make([]int64, len(subscriptions))
+	for i, subscription := range subscriptions {
+		address_ids[i] = subscription.AddressId
+	}
+	var addresses []UserAddress
+	if len(address_ids) > 0 {
+		if result := db.Where("id IN (?)", address_ids).Find(&addresses); result.Error != nil {
+			if !result.RecordNotFound() {
+				panic("cant find any subscriptions corresponding user address")
+			}
+		}
+	} else {
+		// no subscriptions so user cannot possibly be subscribed
+		return false
+	}
+	for _, address := range addresses {
+		if address.UserId == userid && address.Medium == "admin" {
+			return true
+		}
+	}
+	// could not find user in subscribed user addresses, therefore, he/she isn't subscribed
+	return false
+}
+
 func (o *Subscription) Methods() map[string]func(he.Request) he.Response {
 	return map[string]func(he.Request) he.Response{
 		"GET": func(req he.Request) he.Response {
