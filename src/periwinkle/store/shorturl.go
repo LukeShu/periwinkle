@@ -4,9 +4,10 @@
 package store
 
 import (
-	"github.com/jinzhu/gorm"
 	he "httpentity"
 	"net/url"
+
+	"github.com/jinzhu/gorm"
 )
 
 var _ he.Entity = &ShortUrl{}

@@ -5,10 +5,6 @@
 package cfg
 
 import (
-	_ "github.com/go-sql-driver/mysql"
-	"github.com/jinzhu/gorm"
-	_ "github.com/mattn/go-sqlite3"
-	"gopkg.in/yaml.v2"
 	"io"
 	"io/ioutil"
 	"log"
@@ -16,6 +12,11 @@ import (
 	"periwinkle"
 	"periwinkle/domain_handlers"
 	"postfixpipe"
+
+	_ "github.com/go-sql-driver/mysql"
+	"github.com/jinzhu/gorm"
+	_ "github.com/mattn/go-sqlite3"
+	yaml "gopkg.in/yaml.v2"
 )
 
 func Parse(in io.Reader) (*periwinkle.Cfg, error) {

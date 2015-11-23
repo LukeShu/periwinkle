@@ -5,11 +5,12 @@
 package store
 
 import (
-	"github.com/dchest/captcha"
-	"github.com/jinzhu/gorm"
 	he "httpentity"
 	"io"
 	"time"
+
+	"github.com/dchest/captcha"
+	"github.com/jinzhu/gorm"
 )
 
 const (

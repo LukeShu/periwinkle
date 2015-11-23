@@ -4,13 +4,14 @@
 package store
 
 import (
-	"github.com/jinzhu/gorm"
 	he "httpentity"
 	"httpentity/heutil"
 	"io"
 	"net/http"
 	"strings"
 	"time"
+
+	"github.com/jinzhu/gorm"
 )
 
 var _ he.NetEntity = &Session{}

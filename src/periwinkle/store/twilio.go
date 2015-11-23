@@ -4,11 +4,12 @@ package store
 
 import (
 	"encoding/json"
-	"github.com/jinzhu/gorm"
 	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
+
+	"github.com/jinzhu/gorm"
 )
 
 type TwilioNumber struct {

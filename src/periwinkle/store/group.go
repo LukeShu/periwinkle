@@ -5,12 +5,13 @@
 package store
 
 import (
-	"github.com/jinzhu/gorm"
 	he "httpentity"
 	"httpentity/heutil"
 	"io"
 	"jsonpatch"
 	"strings"
+
+	"github.com/jinzhu/gorm"
 )
 
 var _ he.Entity = &Group{}

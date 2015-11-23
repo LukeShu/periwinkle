@@ -8,7 +8,6 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"github.com/jinzhu/gorm"
 	"io"
 	"io/ioutil"
 	"log"
@@ -22,6 +21,8 @@ import (
 	"postfixpipe"
 	"strings"
 	"time"
+
+	"github.com/jinzhu/gorm"
 )
 
 func HandleSMS(r io.Reader, name string, db *gorm.DB, cfg *periwinkle.Cfg) postfixpipe.ExitStatus {

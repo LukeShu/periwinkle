@@ -25,6 +25,7 @@ package jsonpatch
 
 import (
 	"encoding/json"
+
 	evan "github.com/evanphx/json-patch"
 )
 

@@ -6,8 +6,6 @@ import (
 	"fmt"
 	"io"
 	"log"
-	sd "lukeshu.com/git/go/libsystemd.git/sd_daemon"
-	"lukeshu.com/git/go/libsystemd.git/sd_daemon/lsb"
 	"net"
 	"os"
 	"os/signal"
@@ -16,6 +14,9 @@ import (
 	"strconv"
 	"strings"
 	"syscall"
+
+	sd "lukeshu.com/git/go/libsystemd.git/sd_daemon"
+	"lukeshu.com/git/go/libsystemd.git/sd_daemon/lsb"
 )
 
 // TODO: allow specifying a config file

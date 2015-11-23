@@ -4,10 +4,11 @@
 package store
 
 import (
-	"github.com/jinzhu/gorm"
 	he "httpentity"
 	"io"
 	"maildir"
+
+	"github.com/jinzhu/gorm"
 )
 
 var _ he.Entity = &Message{}
