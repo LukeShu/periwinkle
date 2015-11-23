@@ -56,7 +56,7 @@ check: gofmt govet gotest
 .PHONY: check
 
 gofmt: generate
-	{ gofmt -d $(addprefix $(topdir)/src/,$(toppackages)) 2>&1 | tee /dev/stderr | test -z "$$(cat)"; } 2>&1
+	{ gofmt -s -d $(addprefix $(topdir)/src/,$(toppackages)) 2>&1 | tee /dev/stderr | test -z "$$(cat)"; } 2>&1
 govet: generate
 	GOPATH='$(abspath $(topdir))' go vet $(packages)
 gotest: build
