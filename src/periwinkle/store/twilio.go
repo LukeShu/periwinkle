@@ -79,7 +79,7 @@ func GetUnusedTwilioNumbersByUser(db *gorm.DB, userid string) []string {
 
 	for _, all_num := range all_twilio_num {
 		isNumberUsed = false
-		for i, _ := range twilio_pools {
+		for i := range twilio_pools {
 
 			if result := db.Where("number_id = ?", twilio_pools[i].NumberId).First(&used_nums); result.Error != nil {
 				if result.RecordNotFound() {

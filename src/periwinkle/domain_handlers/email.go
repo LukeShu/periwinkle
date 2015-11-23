@@ -12,8 +12,8 @@ import (
 	"net/mail"
 	"net/smtp"
 	"periwinkle"
-	"periwinkle/store"
 	"periwinkle/putil"
+	"periwinkle/store"
 	"postfixpipe"
 )
 
