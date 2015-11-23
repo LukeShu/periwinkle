@@ -5,7 +5,7 @@ package main
 import (
 	"encoding/json"
 	he "httpentity"
-	"httpentity/util" // heutil
+	"httpentity/heutil"
 	"net/url"
 	"strings"
 )

@@ -1,6 +1,6 @@
 // Copyright 2015 Luke Shumaker
 
-package handlers
+package domain_handlers
 
 import (
 	"periwinkle"

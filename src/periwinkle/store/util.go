@@ -6,13 +6,14 @@ package store
 import (
 	"crypto/rand"
 	"encoding/json"
-	"github.com/jinzhu/gorm"
 	he "httpentity"
-	"httpentity/util" // heutil
+	"httpentity/heutil"
 	"io"
 	"jsondiff"
 	"math/big"
 	"strings"
+
+	"github.com/jinzhu/gorm"
 )
 
 type errorList []error

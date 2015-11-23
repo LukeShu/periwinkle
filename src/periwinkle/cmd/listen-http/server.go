@@ -5,13 +5,13 @@ package main
 
 import (
 	he "httpentity"
-	"httpentity/util"
+	"httpentity/heutil"
 	"io"
 	"log"
 	"net"
 	"net/http"
 	"periwinkle"
-	"periwinkle/email_handlers"
+	"periwinkle/domain_handlers"
 	"periwinkle/store"
 	"stoppable"
 )
@@ -54,7 +54,7 @@ func makeServer(socket net.Listener, cfg *periwinkle.Cfg) *stoppable.HTTPServer 
 	// The static web UI
 	mux.Handle("/webui/", http.StripPrefix("/webui/", http.FileServer(cfg.WebUiDir)))
 
-	smsCallbackServer := handlers.SmsCallbackServer{}
+	smsCallbackServer := domain_handlers.SmsCallbackServer{}
 	go func() {
 		err := smsCallbackServer.Serve()
 		if err != nil {

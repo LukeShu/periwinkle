@@ -1,12 +1,13 @@
 // Copyright 2015 Davis Webb
 
-package handlers
+package domain_handlers
 
 import (
-	"github.com/jinzhu/gorm"
 	"io"
 	"periwinkle"
 	"postfixpipe"
+
+	"github.com/jinzhu/gorm"
 )
 
 func HandleMMS(r io.Reader, name string, db *gorm.DB, cfg *periwinkle.Cfg) postfixpipe.ExitStatus {

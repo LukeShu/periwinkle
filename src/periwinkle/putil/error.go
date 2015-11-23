@@ -4,13 +4,14 @@ package putil
 
 import (
 	"fmt"
-	"github.com/go-sql-driver/mysql"
-	"github.com/mattn/go-sqlite3" // sqlite3
 	"httpentity"
-	"httpentity/util"
+	"httpentity/heutil"
 	"io"
 	"net/http"
 	"postfixpipe"
+
+	"github.com/go-sql-driver/mysql"
+	sqlite3 "github.com/mattn/go-sqlite3"
 )
 
 type Error interface {

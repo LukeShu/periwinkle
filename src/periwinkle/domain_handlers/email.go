@@ -1,20 +1,21 @@
 // Copyright 2015 Davis Webb
 // Copyright 2015 Luke Shumaker
 
-package handlers
+package domain_handlers
 
 import (
 	"fmt"
-	"github.com/jinzhu/gorm"
 	"io"
 	"io/ioutil"
 	"log"
 	"net/mail"
 	"net/smtp"
 	"periwinkle"
+	"periwinkle/putil"
 	"periwinkle/store"
-	"periwinkle/util" // putil
 	"postfixpipe"
+
+	"github.com/jinzhu/gorm"
 )
 
 func HandleEmail(r io.Reader, name string, db *gorm.DB, cfg *periwinkle.Cfg) postfixpipe.ExitStatus {

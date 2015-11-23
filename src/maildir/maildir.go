@@ -9,11 +9,12 @@
 package maildir
 
 import (
-	"github.com/djherbis/times"
 	"os"
 	"strings"
 	"syscall"
 	"time"
+
+	"github.com/djherbis/times"
 )
 
 // A Maildir is simply a string pathname to where the maildir is.

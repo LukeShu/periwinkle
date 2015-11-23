@@ -5,17 +5,18 @@
 package cfg
 
 import (
-	_ "github.com/go-sql-driver/mysql"
-	"github.com/jinzhu/gorm"
-	_ "github.com/mattn/go-sqlite3"
-	"gopkg.in/yaml.v2"
 	"io"
 	"io/ioutil"
 	"log"
 	"os"
 	"periwinkle"
-	"periwinkle/email_handlers" // handlers
+	"periwinkle/domain_handlers"
 	"postfixpipe"
+
+	_ "github.com/go-sql-driver/mysql"
+	"github.com/jinzhu/gorm"
+	_ "github.com/mattn/go-sqlite3"
+	yaml "gopkg.in/yaml.v2"
 )
 
 func Parse(in io.Reader) (*periwinkle.Cfg, error) {
@@ -43,7 +44,7 @@ func Parse(in io.Reader) (*periwinkle.Cfg, error) {
 	cfg.TwilioAuthToken = os.Getenv("TWILIO_TOKEN")
 	cfg.DB = getConnection(cfg.Debug) // TODO
 
-	handlers.GetHandlers(&cfg)
+	domain_handlers.GetHandlers(&cfg)
 	cfg.DefaultDomainHandler = bounceNoHost
 
 	return &cfg, err

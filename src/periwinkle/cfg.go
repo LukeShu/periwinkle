@@ -5,11 +5,12 @@
 package periwinkle
 
 import (
-	"github.com/jinzhu/gorm"
 	"io"
 	"maildir"
 	"net/http"
 	"postfixpipe"
+
+	"github.com/jinzhu/gorm"
 )
 
 type DomainHandler func(io.Reader, string, *gorm.DB, *Cfg) postfixpipe.ExitStatus

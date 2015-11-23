@@ -3,11 +3,12 @@
 package main
 
 import (
-	"github.com/jinzhu/gorm"
 	he "httpentity"
 	"net/url"
 	"periwinkle/store"
 	"time"
+
+	"github.com/jinzhu/gorm"
 )
 
 func getsession(req he.Request) *store.Session {

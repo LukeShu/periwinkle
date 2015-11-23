@@ -3,7 +3,7 @@
 package httpentity
 
 import (
-	"httpentity/util"
+	"httpentity/heutil"
 	"net/url"
 	"strings"
 )

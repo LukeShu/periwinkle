@@ -2,13 +2,12 @@
 // Copyright 2015 Zhandos Suleimenov
 // Copyright 2015 Luke Shumaker
 
-package handlers
+package domain_handlers
 
 import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"github.com/jinzhu/gorm"
 	"io"
 	"io/ioutil"
 	"log"
@@ -22,6 +21,8 @@ import (
 	"postfixpipe"
 	"strings"
 	"time"
+
+	"github.com/jinzhu/gorm"
 )
 
 func HandleSMS(r io.Reader, name string, db *gorm.DB, cfg *periwinkle.Cfg) postfixpipe.ExitStatus {

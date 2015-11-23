@@ -12,9 +12,9 @@ import (
 	"net/http"
 	"os"
 	"periwinkle/cfg"
+	"periwinkle/putil"
 	"periwinkle/store"
 	"periwinkle/twilio"
-	"periwinkle/util" // putil
 	"strings"
 	"time"
 )
