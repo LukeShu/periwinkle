@@ -16,7 +16,7 @@ func usage(w io.Writer) {
 }
 
 func main() {
-	config_filename := "./periwinkle.conf"
+	config_filename := "./periwinkle.yaml"
 	switch len(os.Args) {
 	case 1:
 		// do nothing

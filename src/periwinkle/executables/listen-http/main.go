@@ -128,7 +128,7 @@ func parse_args() (net.Listener, *periwinkle.Cfg) {
 		os.Exit(int(lsb.EXIT_FAILURE))
 	}
 
-	config_filename := "./periwinkle.conf"
+	config_filename := "./periwinkle.yaml"
 	file, err := os.Open(config_filename)
 	if err != nil {
 		log.Printf("Could not open %q: %v\n", config_filename, err)
