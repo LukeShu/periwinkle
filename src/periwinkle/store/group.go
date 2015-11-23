@@ -163,7 +163,7 @@ func (o *Group) Subentity(name string, req he.Request) he.Entity {
 func (o *Group) Methods() map[string]func(he.Request) he.Response {
 	return map[string]func(he.Request) he.Response{
 		"GET": func(req he.Request) he.Response {
-		return he.StatusOK(o)
+			return he.StatusOK(o)
 		},
 		"PUT": func(req he.Request) he.Response {
 			db := req.Things["db"].(*gorm.DB)
@@ -233,7 +233,6 @@ func newDirGroups() t_dirGroups {
 			if sess == nil {
 				groups = []Group{}
 			} else {
-				//groups = GetAllGroups(db)
 				groups = GetPublicAndSubscribedGroups(db, *GetUserById(db, sess.UserId))
 			}
 			generic := make([]interface{}, len(groups))
@@ -314,10 +313,10 @@ func (d t_dirGroups) Subentity(name string, req he.Request) he.Entity {
 	name = strings.ToLower(name)
 	db := req.Things["db"].(*gorm.DB)
 	// TODO: permissions check
-	db := req.Things["db"].(*gorm.DB)
 	sess := req.Things["session"].(*Session)
-	if o.Read != 1 && !IsSubscribed(db, sess.UserId, *o) {
-		return he.StatusForbidden(heutil.NetString("Unauthorized user"))
+	group := GetGroupById(db, name)
+	if group.Read != 1 && !IsSubscribed(db, sess.UserId, *group) {
+		return nil
 	}
-	return GetGroupById(db, name)
+	return group
 }
