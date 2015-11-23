@@ -57,8 +57,10 @@ check: gofmt govet gotest
 
 gofmt: generate
 	{ gofmt -s -d $(addprefix $(topdir)/src/,$(toppackages)) 2>&1 | tee /dev/stderr | test -z "$$(cat)"; } 2>&1
+goimports: generate
+	{ goimports -d $(addprefix $(topdir)/src/,$(toppackages)) 2>&1 | tee /dev/stderr | test -z "$$(cat)"; } 2>&1
 govet: generate
 	GOPATH='$(abspath $(topdir))' go vet $(packages)
 gotest: build
 	GOPATH='$(abspath $(topdir))' go test -cover -v $(packages)
-.PHONY: gofmt govet gotest
+.PHONY: gofmt govet gotest goimports
