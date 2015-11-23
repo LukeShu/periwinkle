@@ -26,15 +26,19 @@ func Parse(in io.Reader) (*periwinkle.Cfg, error) {
 		return nil, err
 	}
 
-	err = yaml.Unmarshal(b, &cfg)
-	if err != nil {
-		return nil, err
+	// sets defaults if file is empty
+	if string(b) == "" {
+		cfg.Mailstore = "/srv/periwinkle/Maildir"
+		cfg.WebUiDir = "./www"
+		cfg.Debug = true
+		cfg.TrustForwarded = true
+		cfg.GroupDomain = "periwinkle.lol"
+	} else {
+		err = yaml.Unmarshal(b, &cfg)
+		if err != nil {
+			return nil, err
+		}
 	}
-	//cfg.Mailstore       = "/srv/periwinkle/Maildir"
-	//cfg.WebUiDir        = "./www"
-	//cfg.Debug           = true
-	//cfg.TrustForwarded  = true
-	//cfg.GroupDomain     = "periwinkle.lol"
 	cfg.TwilioAccountId = os.Getenv("TWILIO_ACCOUNTID")
 	cfg.TwilioAuthToken = os.Getenv("TWILIO_TOKEN")
 	cfg.DB = getConnection(cfg.Debug) // TODO
