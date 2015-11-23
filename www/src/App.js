@@ -20,7 +20,10 @@
 		'periwinkle.UserService',
 		'login',
 		'dashboard',
-		'user'
+		'user',
+		'messages',
+		'messages.message',
+		'messages.thread'
 	])
 
 	.config(function($mdThemingProvider){
@@ -72,6 +75,18 @@
 			when('/user', {
 				templateUrl:	'src/user/user.html',
 				controller:		'UserController as user'
+			}).
+			when('/messages', {
+				templateUrl:	'src/messages/messages.html',
+				controller:		'MessagesController as messages'
+			}).
+			when('/messages/:group', {
+				templateUrl:	'src/messages/thread/thread.html',
+				controller:		'ThreadController as thread'
+			}).
+			when('/messages/:group/:message', {
+				templateUrl:	'src/messages/message/message.html',
+				controller:		'MessageController as message'
 			}).
 			otherwise({
 				redirectTo:	'/login'
