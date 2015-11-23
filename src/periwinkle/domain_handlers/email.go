@@ -1,7 +1,7 @@
 // Copyright 2015 Davis Webb
 // Copyright 2015 Luke Shumaker
 
-package handlers
+package domain_handlers
 
 import (
 	"fmt"
@@ -13,7 +13,7 @@ import (
 	"net/smtp"
 	"periwinkle"
 	"periwinkle/store"
-	"periwinkle/util" // putil
+	"periwinkle/putil"
 	"postfixpipe"
 )
 

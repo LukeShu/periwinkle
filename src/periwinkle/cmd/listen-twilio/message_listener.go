@@ -14,7 +14,7 @@ import (
 	"periwinkle/cfg"
 	"periwinkle/store"
 	"periwinkle/twilio"
-	"periwinkle/util" // putil
+	"periwinkle/putil"
 	"strings"
 	"time"
 )

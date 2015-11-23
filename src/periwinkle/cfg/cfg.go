@@ -14,7 +14,7 @@ import (
 	"log"
 	"os"
 	"periwinkle"
-	"periwinkle/email_handlers" // handlers
+	"periwinkle/domain_handlers"
 	"postfixpipe"
 )
 
@@ -39,7 +39,7 @@ func Parse(in io.Reader) (*periwinkle.Cfg, error) {
 	cfg.TwilioAuthToken = os.Getenv("TWILIO_TOKEN")
 	cfg.DB = getConnection(cfg.Debug) // TODO
 
-	handlers.GetHandlers(&cfg)
+	domain_handlers.GetHandlers(&cfg)
 	cfg.DefaultDomainHandler = bounceNoHost
 
 	return &cfg, err

@@ -6,7 +6,7 @@ package store
 import (
 	"github.com/jinzhu/gorm"
 	he "httpentity"
-	"httpentity/util"
+	"httpentity/heutil"
 	"io"
 	"net/http"
 	"strings"

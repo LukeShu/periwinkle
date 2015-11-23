@@ -7,7 +7,7 @@ import (
 	"github.com/go-sql-driver/mysql"
 	"github.com/mattn/go-sqlite3" // sqlite3
 	"httpentity"
-	"httpentity/util"
+	"httpentity/heutil"
 	"io"
 	"net/http"
 	"postfixpipe"

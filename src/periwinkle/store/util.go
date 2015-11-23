@@ -8,7 +8,7 @@ import (
 	"encoding/json"
 	"github.com/jinzhu/gorm"
 	he "httpentity"
-	"httpentity/util" // heutil
+	"httpentity/heutil"
 	"io"
 	"jsondiff"
 	"math/big"

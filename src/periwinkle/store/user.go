@@ -9,7 +9,7 @@ import (
 	"github.com/jinzhu/gorm"
 	"golang.org/x/crypto/bcrypt"
 	he "httpentity"
-	"httpentity/util" // heutil
+	"httpentity/heutil"
 	"io"
 	"jsonpatch"
 	"strings"

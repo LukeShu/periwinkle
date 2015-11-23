@@ -6,7 +6,7 @@ import (
 	he "httpentity"
 	"net/url"
 	"periwinkle"
-	"periwinkle/util" // putil
+	"periwinkle/putil"
 )
 
 func MiddlewareDatabase(config *periwinkle.Cfg) func(req he.Request, u *url.URL, handle func(he.Request, *url.URL) he.Response) (res he.Response) {

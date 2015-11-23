@@ -1,6 +1,6 @@
 // Copyright 2015 Davis Webb
 
-package handlers
+package domain_handlers
 
 import (
 	"github.com/jinzhu/gorm"
