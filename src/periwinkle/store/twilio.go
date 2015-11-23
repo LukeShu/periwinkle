@@ -43,7 +43,7 @@ func (o TwilioPool) dbSchema(db *gorm.DB) error {
 		Error
 }
 
-func GetAllTwilioNumbers(db *gorm.DB) (ret []TwilioNumber) {
+func GetAllUsedTwilioNumbers(db *gorm.DB) (ret []TwilioNumber) {
 	var twilio_num []TwilioNumber
 	if result := db.Find(&twilio_num); result.Error != nil {
 		if result.RecordNotFound() {

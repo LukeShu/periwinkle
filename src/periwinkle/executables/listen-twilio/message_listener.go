@@ -53,7 +53,7 @@ func main() {
 
 	for {
 		time.Sleep(time.Second)
-		numbers := store.GetAllTwilioNumbers(config.DB)
+		numbers := store.GetAllUsedTwilioNumbers(config.DB)
 
 		for _, number := range numbers {
 			// clear the array
@@ -117,12 +117,16 @@ func main() {
 						for j := 0; j != len(arr_temp); j++ {
 							if arr_temp[j] == "" {
 								arr_temp[j] = m_sid
+
+								user := store.GetUserByAddress(config.DB, "sms", message.Messages[i].From)
+								group := store.GetGroupByUserAndTwilioNumber(config.DB, user.Id, message.Messages[i].To)
+								//Not yet set: cfg.GroupDomain="periwinkle.lol"
 								putil.MessageBuilder{
 									Maildir: config.Mailstore,
 									Headers: map[string]string{
-										"To":      message.Messages[i].To,
-										"From":    message.Messages[i].From,
-										"Subject": message.Messages[i].Body,
+										"To":      group.Id + "@" + config.GroupDomain,
+										"From":    store.GetAddressByIdAndMedium(config.DB, user.Id, "sms").AsEmailAddress(),
+										"Subject": user.Id + "--> " + message.Messages[i].Body,
 									},
 									Body: "",
 								}.Done()

@@ -27,6 +27,7 @@ import (
 func HandleSMS(r io.Reader, name string, db *gorm.DB, cfg *periwinkle.Cfg) postfixpipe.ExitStatus {
 	message, err := mail.ReadMessage(r)
 	if err != nil {
+		log.Println(err)
 		return postfixpipe.EX_NOINPUT
 	}
 	status, err := sender(*message, name, db, cfg)
@@ -41,13 +42,17 @@ func HandleSMS(r io.Reader, name string, db *gorm.DB, cfg *periwinkle.Cfg) postf
 // Returns the status of the message: queued, sending, sent,
 // delivered, undelivered, failed.  If an error occurs, it returns
 // Error.
-func sender(message mail.Message, to string, db *gorm.DB, cfg *periwinkle.Cfg) (status string, err error) {
-	//group := message.Header.Get("From")
-	user := store.GetUserByAddress(db, "email", message.Header.Get("From"))
+func sender(message mail.Message, sms_to string, db *gorm.DB, cfg *periwinkle.Cfg) (status string, err error) {
 
-	sms_from := "+17653569541"          // TODO: group:numberFor(group)
-	sms_to := strings.Split(to, "@")[0] // test 0 or 1
-	sms_body := user.FullName + ":" + message.Header.Get("Subject")
+	group := message.Header.Get("From")
+	user := store.GetUserByAddress(db, "sms", sms_to)
+
+	sms_from := store.GetTwilioNumberByUserAndGroup(db, user.Id, strings.Split(group, "@")[0])
+	sms_body := message.Header.Get("Subject")
+	//sms_body, err := ioutil.ReadAll(message.Body)
+	//if err != nil {
+	//	return "", err
+	//}
 
 	// account SID for Twilio account
 	account_sid := os.Getenv("TWILIO_ACCOUNTID")
@@ -60,7 +65,7 @@ func sender(message mail.Message, to string, db *gorm.DB, cfg *periwinkle.Cfg) (
 	v := url.Values{}
 	v.Set("From", sms_from)
 	v.Set("To", sms_to)
-	v.Set("Body", sms_body)
+	v.Set("Body", string(sms_body))
 	v.Set("StatusCallback", "http://"+cfg.WebRoot+"/callbacks/twilio-sms")
 
 	client := &http.Client{}
@@ -76,14 +81,14 @@ func sender(message mail.Message, to string, db *gorm.DB, cfg *periwinkle.Cfg) (
 	resp, err := client.Do(req)
 	defer resp.Body.Close()
 	if err != nil {
-		return
+		return "", err
 	}
 
 	if resp.StatusCode == 200 || resp.StatusCode == 201 {
 
 		body, err := ioutil.ReadAll(resp.Body)
 		if err != nil {
-			return "", fmt.Errorf("%v", err)
+			return "", err
 		}
 
 		message := twilio.Message{}
@@ -91,7 +96,7 @@ func sender(message mail.Message, to string, db *gorm.DB, cfg *periwinkle.Cfg) (
 		sms_status, err := SmsWaitForCallback(message.Sid)
 
 		if err != nil {
-			return "", fmt.Errorf("%v", err)
+			return "", err
 		}
 
 		if sms_status.MessageStatus == "undelivered" || sms_status.MessageStatus == "failed" {
@@ -102,7 +107,7 @@ func sender(message mail.Message, to string, db *gorm.DB, cfg *periwinkle.Cfg) (
 			sms_status, err = SmsWaitForCallback(message.Sid)
 
 			if err != nil {
-				return "", fmt.Errorf("%s", err)
+				return "", err
 			}
 		}
 
