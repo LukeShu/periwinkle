@@ -7,7 +7,8 @@ import (
 	"strings"
 )
 
-// Takes the normalized path without the leading slash
+// Takes the normalized path without the leading slash, but *WITH* a
+// trailing slash.
 func findEntity(entity Entity, req Request, upath string) Entity {
 	if entity == nil {
 		return nil // 404
