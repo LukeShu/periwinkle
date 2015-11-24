@@ -29,6 +29,9 @@ deps += lukeshu.com/git/go/libsystemd.git
 packages = $(sort $(shell find src -type d -name '*.*' -not -name lukeshu.com -not -name '*.git' -prune -o -type f -name '*.go' -printf '%h\n'|cut -d/ -f2-))
 toppackages = $(sort $(shell find src -type d -name '*.*' -not -name lukeshu.com -not -name '*.git' -prune -o -type f -name '*.go' -printf '%h\n'|cut -d/ -f2))
 cmds = $(patsubst periwinkle/cmd/%,%,$(filter periwinkle/cmd/%,$(packages)))
+
+# What to ignore from golint
+golint-filter = | grep -vE "/(sysexits|env|exit-status)\.go:[0-9]+:[0-9]+: don't use ALL_CAPS in Go names; use CamelCase"
 
 srcdir := $(abspath $(patsubst %/,%,$(dir $(lastword $(MAKEFILE_LIST)))))
 topdir := $(srcdir)
@@ -56,12 +59,20 @@ $(addprefix %/bin/,$(cmds)): $(generate) $(configure) %/src $(call gosrc,$(topdi
 check: gofmt govet gotest
 .PHONY: check
 
+# directory-oriented
 gofmt: generate
 	{ gofmt -s -d $(addprefix $(topdir)/src/,$(toppackages)) 2>&1 | tee /dev/stderr | test -z "$$(cat)"; } 2>&1
 goimports: generate
 	{ goimports -d $(addprefix $(topdir)/src/,$(toppackages)) 2>&1 | tee /dev/stderr | test -z "$$(cat)"; } 2>&1
-govet: generate
-	GOPATH='$(abspath $(topdir))' go vet $(packages)
+.PHONY: gofmt goimports
+
+# package-oriented
 gotest: build
 	GOPATH='$(abspath $(topdir))' go test -cover -v $(packages)
-.PHONY: gofmt govet gotest goimports
+govet: generate
+	GOPATH='$(abspath $(topdir))' go vet $(packages)
+.PHONY: gotest govet
+
+golint: generate
+	export GOPATH='$(abspath $(topdir))'; { { $(foreach p,$(packages),golint $p; )} $(golint-filter) | tee /dev/stderr | test -z "$$(cat)"; } 2>&1
+.PHONY: golint
