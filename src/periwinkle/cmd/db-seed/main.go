@@ -5,42 +5,39 @@ package main
 
 import (
 	"fmt"
-	"io"
 	"os"
 	"periwinkle/backend"
 	"periwinkle/cfg"
-	//"periwinkle/test"
+
+	docopt "github.com/docopt/docopt-go"
+	"lukeshu.com/git/go/libsystemd.git/sd_daemon/lsb"
 )
 
-func usage(w io.Writer) {
-	fmt.Fprintf(w, "%s [CONFIG_FILE]\n", os.Args[0])
-}
+var usage = fmt.Sprintf(`
+Usage: %[1]s [-c CONFIG_FILE]
+       %[1]s -h | --help
+Set up the RDBMS schema and seed data.
+
+Options:
+  -h --help       Display this message.
+  -c CONFIG_FILE  Specify the configuration file [default: ./config.yaml].`,
+	os.Args[0])
 
 func main() {
-	configFilename := "./periwinkle.yaml"
-	switch len(os.Args) {
-	case 1:
-		// do nothing
-	case 2:
-		configFilename = os.Args[1]
-	default:
-		usage(os.Stderr)
-		os.Exit(2)
+	options, _ := docopt.Parse(usage, os.Args[1:], true, "", false, true)
+
+	configFile, err := os.Open(options["-c"].(string))
+	if err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		os.Exit(int(lsb.EXIT_NOTCONFIGURED))
 	}
 
-	file, err := os.Open(configFilename)
+	config, err := cfg.Parse(configFile)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Could not open %q: %v\n", configFilename, err)
-		os.Exit(1)
-	}
-
-	config, err := cfg.Parse(file)
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "Could not parse %q: %v\n", configFilename, err)
-		os.Exit(1)
+		fmt.Fprintln(os.Stderr, err)
+		os.Exit(int(lsb.EXIT_NOTCONFIGURED))
 	}
 
 	backend.DbSchema(config.DB)
 	backend.DbSeed(config.DB)
-	//test.Test(config.DB)
 }

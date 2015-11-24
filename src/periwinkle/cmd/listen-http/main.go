@@ -4,7 +4,6 @@ package main
 
 import (
 	"fmt"
-	"log"
 	"net"
 	"os"
 	"os/signal"
@@ -116,7 +115,7 @@ func parseArgs(args []string) net.Listener {
 		}
 	}
 	if err != nil {
-		log.Println(err)
+		fmt.Fprintln(os.Stderr, err)
 		os.Exit(int(lsb.EXIT_FAILURE))
 	}
 	return socket
@@ -154,13 +153,13 @@ func main() {
 
 	configFile, err := os.Open(options["-c"].(string))
 	if err != nil {
-		log.Println("Could read configuration file", err)
+		fmt.Fprintln(os.Stderr, err)
 		os.Exit(int(lsb.EXIT_NOTCONFIGURED))
 	}
 
 	config, err := cfg.Parse(configFile)
 	if err != nil {
-		log.Println(err)
+		fmt.Fprintln(os.Stderr, err)
 		os.Exit(int(lsb.EXIT_NOTCONFIGURED))
 	}
 
@@ -175,7 +174,7 @@ func main() {
 	go func() {
 		err := server.Wait()
 		if err != nil {
-			log.Println(err)
+			fmt.Fprintln(os.Stderr, err)
 			done <- 1
 		} else {
 			done <- 0

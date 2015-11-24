@@ -5,8 +5,6 @@ package main
 
 import (
 	"fmt"
-	"io"
-	"log"
 	"os"
 	"periwinkle/cfg"
 	_ "periwinkle/domain_handlers"
@@ -14,35 +12,36 @@ import (
 	pp "postfixpipe"
 	"runtime"
 	"strings"
+
+	docopt "github.com/docopt/docopt-go"
+	"lukeshu.com/git/go/libsystemd.git/sd_daemon/lsb"
 )
 
-func usage(w io.Writer) {
-	fmt.Fprintf(w, "%s [CONFIG_FILE]\n", os.Args[0])
-}
+var usage = fmt.Sprintf(`
+Usage: %[1]s [-c CONFIG_FILE]
+       %[1]s -h | --help
+Install this in your Postfix ~/.forward or aliases file.
+
+Options:
+  -h --help       Display this message.
+  -c CONFIG_FILE  Specify the configuration file [default: ./config.yaml].`,
+	os.Args[0])
 
 func main() {
-	configFilename := "./periwinkle.yaml"
-	switch len(os.Args) {
-	case 1:
-		// do nothing
-	case 2:
-		configFilename = os.Args[1]
-	default:
-		usage(os.Stderr)
-		os.Exit(2)
+	options, _ := docopt.Parse(usage, os.Args[1:], true, "", false, true)
+
+	configFile, err := os.Open(options["-c"].(string))
+	if err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		os.Exit(int(lsb.EXIT_NOTCONFIGURED))
 	}
 
-	file, err := os.Open(configFilename)
+	config, err := cfg.Parse(configFile)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Could not open %q: %v\n", configFilename, err)
-		os.Exit(1)
+		fmt.Fprintln(os.Stderr, err)
+		os.Exit(int(lsb.EXIT_NOTCONFIGURED))
 	}
 
-	config, err := cfg.Parse(file)
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "Could not parse %q: %v\n", configFilename, err)
-		os.Exit(1)
-	}
 	var ret pp.ExitStatus = pp.EX_OK
 	defer func() {
 		if obj := recover(); obj != nil {
@@ -57,7 +56,7 @@ func main() {
 			buf = buf[:runtime.Stack(buf, false)]
 			text := fmt.Sprintf("%T(%#v) => %v\n\n%s\n", obj, obj, obj, string(buf))
 			for _, line := range strings.Split(text, "\n") {
-				log.Println(line)
+				fmt.Fprintln(os.Stderr, line)
 			}
 		}
 		pp.Exit(ret)
@@ -67,7 +66,7 @@ func main() {
 
 	recipient := msg.ORIGINAL_RECIPIENT()
 	if recipient == "" {
-		log.Println("ORIGINAL_RECIPIENT must be set")
+		fmt.Fprintln(os.Stderr, "ORIGINAL_RECIPIENT must be set")
 		ret = pp.EX_USAGE
 		return
 	}
@@ -88,7 +87,7 @@ func main() {
 
 	reader, err := msg.Reader()
 	if err != nil {
-		log.Println(err)
+		fmt.Fprintln(os.Stderr, err)
 		ret = pp.EX_NOINPUT
 		return
 	}
