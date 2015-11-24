@@ -25,6 +25,8 @@ func normalizeURL(u1 *url.URL) (u *url.URL, mimetype string) {
 	return
 }
 
+// Init initializes the hidden fields; should be called before any other
+// method.
 func (r Router) Init() *Router {
 	r.initHandlers()
 	return &r

@@ -6,6 +6,8 @@ import (
 	"fmt"
 )
 
+// ParseError is an error that was encountered while parsing the
+// value for Header.
 type ParseError struct {
 	Header  string
 	Message error

@@ -1,7 +1,7 @@
 // Copyright 2015 Luke Shumaker
 
-// The httpentity "framework" provides a system for providing
-// resources over HTTP.
+// Package httpentity provides a "framework" for exposing resources
+// over HTTP.
 //
 // Within the framework, an "Entity" is simply something that can be
 // accessed over HTTP.  A "NetEntity" is something that is capable of
@@ -52,7 +52,7 @@ type Router struct {
 
 ////////////////////////////////////////////////////////////////////////////////
 
-// Represents an incoming HTTP request to be handled.
+// Request is an incoming HTTP request to be handled.
 type Request struct {
 	Method  string
 	URL     *url.URL
@@ -62,7 +62,7 @@ type Request struct {
 	cookies map[string]*http.Cookie // cached
 }
 
-// The response to an HTTP request.  Create it using the appropriate
+// The Response to an HTTP request.  Create it using the appropriate
 // (*Request).StatusDESCRIPTION method.
 //
 // That is; StatusSomething helper methods exist off of the request
@@ -86,6 +86,8 @@ type Entity interface {
 // 400 Bad Request
 // 500 Internal Server Error
 
+// An EntityGroup is an Entity that also has child entities (i.e., a
+// directory or folder).
 type EntityGroup interface {
 	Entity
 
@@ -105,11 +107,14 @@ type EntityGroup interface {
 	SubentityNotFound(name string, request Request) Response
 }
 
+// EntityExtra is an Entity that provides a custom HTTP 405 ("Method
+// Not Allowed") handler.
 type EntityExtra interface {
 	Entity
 	MethodNotAllowed(request Request) Response
 }
 
+// RootEntity is the union of EntityGroup and EntityExtra.
 type RootEntity interface {
 	Entity
 	Subentity(name string, request Request) Entity

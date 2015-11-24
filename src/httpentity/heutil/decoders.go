@@ -21,7 +21,7 @@ func fuckitJSON(entity interface{}) (interface{}, error) {
 	return json.NewDecoder(strings.NewReader(string(str))), nil
 }
 
-// application/x-www-form-urlencoded => json.Decoder # because fuckit
+// DecoderFormURLEncoded maps application/x-www-form-urlencoded => json.Decoder # because fuckit
 func DecoderFormURLEncoded(r io.Reader, params map[string]string) (interface{}, error) {
 	bytes, err := ioutil.ReadAll(r)
 	if err != nil {
@@ -34,7 +34,7 @@ func DecoderFormURLEncoded(r io.Reader, params map[string]string) (interface{}, 
 	return fuckitJSON(entity)
 }
 
-// multipart/form-data => json.Decoder # because fuckit
+// DecoderFormData maps multipart/form-data => json.Decoder # because fuckit
 func DecoderFormData(r io.Reader, params map[string]string) (interface{}, error) {
 	boundary, ok := params["boundary"]
 	if !ok {
@@ -70,12 +70,12 @@ func DecoderFormData(r io.Reader, params map[string]string) (interface{}, error)
 	return fuckitJSON(entity)
 }
 
-// application/json => json.Decoder
+// DecoderJSON maps application/json => json.Decoder
 func DecoderJSON(r io.Reader, params map[string]string) (interface{}, error) {
 	return json.NewDecoder(r), nil
 }
 
-// application/json-patch+json => jsonpatch.Patch
+// DecoderJSONPatch maps application/json-patch+json => jsonpatch.Patch
 func DecoderJSONPatch(r io.Reader, params map[string]string) (interface{}, error) {
 	bytes, err := ioutil.ReadAll(r)
 	if err != nil {
@@ -89,7 +89,7 @@ func DecoderJSONPatch(r io.Reader, params map[string]string) (interface{}, error
 	return jsonpatch.Patch(patch), err
 }
 
-// application/merge-patch+json => jsonpatch.Patch
+// DecoderJSONMergePatch maps application/merge-patch+json => jsonpatch.Patch
 func DecoderJSONMergePatch(r io.Reader, params map[string]string) (interface{}, error) {
 	bytes, err := ioutil.ReadAll(r)
 	if err != nil {
@@ -103,7 +103,7 @@ func DecoderJSONMergePatch(r io.Reader, params map[string]string) (interface{}, 
 	return jsonpatch.Patch(patch), err
 }
 
-// application/octet-stream => io.Reader
+// DecoderOctetStream maps application/octet-stream => io.Reader
 func DecoderOctetStream(r io.Reader, params map[string]string) (interface{}, error) {
 	return r, nil
 }

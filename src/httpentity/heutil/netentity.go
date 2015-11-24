@@ -8,13 +8,15 @@ import (
 	"io"
 )
 
-// A string that implements httpentity.NetEntity.
+// NetString is a string that implements httpentity.NetEntity.
 type NetString string
 
+// NetPrintf is fmt.Sprintf as a NetString.
 func NetPrintf(format string, a ...interface{}) NetString {
 	return NetString(fmt.Sprintf(format, a...))
 }
 
+// Encoders fulfills the httpentity.NetEntity interface.
 func (s NetString) Encoders() map[string]func(out io.Writer) error {
 	return map[string]func(out io.Writer) error{
 		"text/plain":       s.text,
@@ -36,9 +38,10 @@ func (s NetString) json(w io.Writer) (err error) {
 	return
 }
 
-// An array that implements httpentity.NetEntity.
+// NetList is an array that implements httpentity.NetEntity.
 type NetList []interface{}
 
+// Encoders fulfills the httpentity.NetEntity interface.
 func (l NetList) Encoders() map[string]func(out io.Writer) error {
 	return map[string]func(out io.Writer) error{
 		"text/plain":       l.text,
@@ -65,8 +68,11 @@ func (l NetList) json(w io.Writer) (err error) {
 	return
 }
 
+// NetMap is a map[string]interface{} that implements
+// httpentity.NetEntity.
 type NetMap map[string]interface{}
 
+// Encoders fulfills the httpentity.NetEntity interface.
 func (l NetMap) Encoders() map[string]func(out io.Writer) error {
 	return map[string]func(out io.Writer) error{
 		"text/plain":       l.text,

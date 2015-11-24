@@ -32,13 +32,19 @@ import (
 var _ Patch = JSONPatch{}
 var _ Patch = JSONMergePatch{}
 
+// JSONPatch is an RFC 6902 JSON Patch document.
 type JSONPatch evan.Patch
+
+// JSONMergePatch is an RFC 7286 JSON Merge Patch document.
 type JSONMergePatch json.RawMessage
 
+// A Patch document.
 type Patch interface {
 	Apply(in interface{}, out interface{}) error
 }
 
+// Apply the patch to an object; as if the object were
+// marshalled/unmarshalled JSON.
 func (patch JSONPatch) Apply(in interface{}, out interface{}) error {
 	inBytes, err := json.Marshal(in)
 	if err != nil {
@@ -51,6 +57,8 @@ func (patch JSONPatch) Apply(in interface{}, out interface{}) error {
 	return json.Unmarshal(outBytes, out)
 }
 
+// Apply the patch to an object; as if the object were
+// marshalled/unmarshalled JSON.
 func (patch JSONMergePatch) Apply(in interface{}, out interface{}) error {
 	inBytes, err := json.Marshal(in)
 	if err != nil {

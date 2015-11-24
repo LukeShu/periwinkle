@@ -9,7 +9,6 @@
 //     srv.Start() // does not block
 //     srv.Stop() // does not block
 //     err := srv.Wait() // blocks
-
 package stoppable
 
 import (
@@ -18,6 +17,7 @@ import (
 	"sync"
 )
 
+// HTTPServer provides an HTTP Server that can be gracefully stopped.
 type HTTPServer struct {
 	Server http.Server
 	Socket net.Listener
@@ -34,7 +34,7 @@ func (ss *HTTPServer) handleConnStateChange(conn net.Conn, state http.ConnState)
 	}
 }
 
-// Does not block.
+// Start the server; does not block.
 func (ss *HTTPServer) Start() {
 	ss.Server.ConnState = ss.handleConnStateChange
 	ss.wg.Add(1)
@@ -44,13 +44,13 @@ func (ss *HTTPServer) Start() {
 	}()
 }
 
-// Does not block.
+// Stop tells the server to stop; does not block.
 func (ss *HTTPServer) Stop() {
 	ss.Server.SetKeepAlivesEnabled(false)
 	ss.Socket.Close()
 }
 
-// Blocks.
+// Wait for the server to stop; blocks.
 func (ss *HTTPServer) Wait() error {
 	ss.wg.Wait()
 	return ss.err

@@ -26,6 +26,8 @@ func methods2string(methods map[string]func(request he.Request) he.Response) str
 	return strings.Join(list, ", ")
 }
 
+// Middleware is a good default middleware for httpentity that
+// provides much of the boilerplate for RFC 7231 semantics.
 var Middleware = he.Middleware{
 	Inside: func(request he.Request, entity he.Entity, handle func(he.Request, he.Entity) he.Response) (response he.Response) {
 		switch request.Method {

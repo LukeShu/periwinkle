@@ -6,7 +6,7 @@ import (
 	"net/http"
 )
 
-// Parses the cookies from an HTTP request.
+// ParseCookies parses the cookies from an HTTP request.
 func ParseCookies(h http.Header) map[string]*http.Cookie {
 	req := http.Request{
 		Header: h,

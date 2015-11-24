@@ -8,6 +8,7 @@ import (
 	"github.com/jinzhu/gorm"
 )
 
+// A Group or mailing list that users may subscribe to.
 type Group struct {
 	ID            string         `json:"group_id"`
 	Existence     int            `json:"existence"` // 1 -> public, 2 -> confirmed, 3 -> member
@@ -122,6 +123,7 @@ func NewGroup(db *gorm.DB, name string, existence int, read int, post int, join 
 	return &o
 }
 
+// TODO: we should have the database do this.
 func CheckInput(input int, min int, max int, defaultt int) int {
 	if input < min || input > max {
 		return defaultt

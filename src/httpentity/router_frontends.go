@@ -79,6 +79,8 @@ func (h *Router) serveHTTP(w http.ResponseWriter, r *http.Request) (res Response
 	return
 }
 
+// ServeHTTP makes the Router fulfill the "net/http".Handler
+// interface.
 func (h *Router) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	res := h.serveHTTP(w, req)
 	// Adapt the response from `httpentity` format to `net/http` format

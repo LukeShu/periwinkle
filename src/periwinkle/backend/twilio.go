@@ -79,6 +79,7 @@ func GetUnusedTwilioNumbersByUser(cfg *periwinkle.Cfg, db *gorm.DB, userid strin
 	var usedNums TwilioNumber
 	var isNumberUsed bool
 
+	// TODO: no queries inside of loops!
 	for _, allNum := range allTwilioNum {
 		isNumberUsed = false
 		for i := range twilioPools {
