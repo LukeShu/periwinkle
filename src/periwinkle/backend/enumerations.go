@@ -12,6 +12,17 @@ const (
 	confirmation = 2
 )
 
+var reverse = map[string]int{
+	"public":       1,
+	"confirmed":    2,
+	"member":       3,
+	"moderator":    3,
+	"auto":         1,
+	"confirmation": 2,
+}
+
+func Reverse(m string) int { return reverse[m] }
+
 var existence = [...]string{
 	"public",
 	"confirmed",
