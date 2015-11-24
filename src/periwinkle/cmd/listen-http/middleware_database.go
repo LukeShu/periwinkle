@@ -21,7 +21,7 @@ func MiddlewareDatabase(config *periwinkle.Cfg) func(req he.Request, u *url.URL,
 				}
 				if err, ok := obj.(error); ok {
 					perror := putil.ErrorToError(err)
-					if perror.HttpCode() != 500 {
+					if perror.HTTPCode() != 500 {
 						res = putil.ErrorToHTTP(perror)
 						return
 					}

@@ -12,9 +12,9 @@ func (accept accept) Acceptable(contenttype string) (bool, error) {
 	if err != nil {
 		return false, err
 	}
-	mediatype_parts := strings.SplitN(mediafulltype, "/", 2)
-	mediatype := mediatype_parts[0]
-	mediasubtype := mediatype_parts[1]
+	mediatypeParts := strings.SplitN(mediafulltype, "/", 2)
+	mediatype := mediatypeParts[0]
+	mediasubtype := mediatypeParts[1]
 
 	if accept.Type != mediatype && accept.Type != "*" {
 		return false, nil
@@ -36,18 +36,18 @@ type precedence struct {
 }
 
 func comparePrecedence(a precedence, b precedence) int8 {
-	var _a, _b uint
+	var cmpA, cmpB uint
 	if a.major == b.major {
-		_a = a.major
-		_b = b.major
+		cmpA = a.major
+		cmpB = b.major
 	} else {
-		_a = a.major
-		_b = b.major
+		cmpA = a.major
+		cmpB = b.major
 	}
 	switch {
-	case _a == _b:
+	case cmpA == cmpB:
 		return 0
-	case _a < _b:
+	case cmpA < cmpB:
 		return -1
 	default:
 		return 1

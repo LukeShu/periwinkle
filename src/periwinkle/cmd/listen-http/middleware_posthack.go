@@ -36,10 +36,10 @@ func MiddlewarePostHack(req he.Request, u *url.URL, handle func(he.Request, *url
 		req.Method = method
 	}
 
-	xsrf_token, ok := hash["_xsrf_token"].(string)
+	xsrfToken, ok := hash["_xsrf_token"].(string)
 	delete(hash, "_xsrf_token")
 	if ok {
-		req.Headers.Set("X-XSRF-TOKEN", xsrf_token)
+		req.Headers.Set("X-XSRF-TOKEN", xsrfToken)
 	}
 
 	body, ok := hash["_body"]

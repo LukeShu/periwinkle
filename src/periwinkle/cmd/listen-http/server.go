@@ -17,14 +17,14 @@ import (
 )
 
 func makeServer(socket net.Listener, cfg *periwinkle.Cfg) *stoppable.HTTPServer {
-	std_decoders := map[string]func(io.Reader, map[string]string) (interface{}, error){
-		"application/x-www-form-urlencoded": heutil.DecoderFormUrlEncoded,
+	stdDecoders := map[string]func(io.Reader, map[string]string) (interface{}, error){
+		"application/x-www-form-urlencoded": heutil.DecoderFormURLEncoded,
 		"multipart/form-data":               heutil.DecoderFormData,
 		"application/json":                  heutil.DecoderJSON,
 		"application/json-patch+json":       heutil.DecoderJSONPatch,
 		"application/merge-patch+json":      heutil.DecoderJSONMergePatch,
 	}
-	std_middlewares := []he.Middleware{
+	stdMiddlewares := []he.Middleware{
 		MiddlewarePostHack,
 		MiddlewareDatabase(cfg),
 		MiddlewareSession,
@@ -34,8 +34,8 @@ func makeServer(socket net.Listener, cfg *periwinkle.Cfg) *stoppable.HTTPServer 
 	mux.Handle("/v1/", he.Router{
 		Prefix:         "/v1/",
 		Root:           httpapi.DirRoot,
-		Decoders:       std_decoders,
-		Middlewares:    std_middlewares,
+		Decoders:       stdDecoders,
+		Middlewares:    stdMiddlewares,
 		Stacktrace:     cfg.Debug,
 		LogRequest:     cfg.Debug,
 		TrustForwarded: cfg.TrustForwarded,
@@ -43,16 +43,16 @@ func makeServer(socket net.Listener, cfg *periwinkle.Cfg) *stoppable.HTTPServer 
 	// URL shortener service
 	mux.Handle("/s/", he.Router{
 		Prefix:         "/s/",
-		Root:           httpapi.DirShortUrls,
-		Decoders:       std_decoders,
-		Middlewares:    std_middlewares,
+		Root:           httpapi.DirShortURLs,
+		Decoders:       stdDecoders,
+		Middlewares:    stdMiddlewares,
 		Stacktrace:     cfg.Debug,
 		LogRequest:     cfg.Debug,
 		TrustForwarded: cfg.TrustForwarded,
 	}.Init())
 
 	// The static web UI
-	mux.Handle("/webui/", http.StripPrefix("/webui/", http.FileServer(cfg.WebUiDir)))
+	mux.Handle("/webui/", http.StripPrefix("/webui/", http.FileServer(cfg.WebUIDir)))
 
 	smsCallbackServer := domain_handlers.SmsCallbackServer{}
 	go func() {

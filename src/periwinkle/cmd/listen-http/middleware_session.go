@@ -16,14 +16,14 @@ func getsession(req he.Request) *backend.Session {
 	if cookie == nil {
 		return nil
 	}
-	session_id := cookie.Value
+	sessionID := cookie.Value
 
 	switch req.Method {
 	case "OPTIONS", "GET", "HEAD":
 		// do nothing
 	default:
 		header := req.Headers.Get("X-XSRF-TOKEN")
-		if header != session_id {
+		if header != sessionID {
 			return nil
 		}
 	}
@@ -33,7 +33,7 @@ func getsession(req he.Request) *backend.Session {
 	if !ok {
 		return nil
 	}
-	sess := backend.GetSessionById(db, session_id)
+	sess := backend.GetSessionByID(db, sessionID)
 	if sess != nil {
 		sess.LastUsed = time.Now()
 		func() {

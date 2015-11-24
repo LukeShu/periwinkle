@@ -17,10 +17,10 @@ type DomainHandler func(io.Reader, string, *gorm.DB, *Cfg) postfixpipe.ExitStatu
 
 type Cfg struct {
 	Mailstore            maildir.Maildir
-	WebUiDir             http.Dir
+	WebUIDir             http.Dir
 	Debug                bool
 	TrustForwarded       bool // whether to trust X-Forwarded: or Forwarded: HTTP headers
-	TwilioAccountId      string
+	TwilioAccountID      string
 	TwilioAuthToken      string
 	GroupDomain          string
 	WebRoot              string

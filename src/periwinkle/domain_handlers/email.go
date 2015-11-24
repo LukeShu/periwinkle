@@ -35,7 +35,7 @@ func HandleEmail(r io.Reader, name string, db *gorm.DB, cfg *periwinkle.Cfg) pos
 		return postfixpipe.EX_NOINPUT
 	}
 
-	group := backend.GetGroupById(db, name)
+	group := backend.GetGroupByID(db, name)
 	if group == nil {
 		return postfixpipe.EX_NOUSER
 	}
@@ -47,7 +47,7 @@ func HandleEmail(r io.Reader, name string, db *gorm.DB, cfg *periwinkle.Cfg) pos
 			if obj := recover(); obj != nil {
 				if err, ok := obj.(error); ok {
 					perror := putil.ErrorToError(err)
-					if perror.HttpCode() == 409 {
+					if perror.HTTPCode() == 409 {
 						silentbounce = true
 					}
 				}
@@ -67,23 +67,23 @@ func HandleEmail(r io.Reader, name string, db *gorm.DB, cfg *periwinkle.Cfg) pos
 	mdWriter = nil
 
 	// collect IDs of addresses subscribed to the group
-	address_ids := make([]int64, len(group.Subscriptions))
+	addressIDs := make([]int64, len(group.Subscriptions))
 	for i := range group.Subscriptions {
-		address_ids[i] = group.Subscriptions[i].AddressId
+		addressIDs[i] = group.Subscriptions[i].AddressID
 	}
 
 	// fetch all of those addresses
-	var address_list []backend.UserAddress
-	if len(address_ids) > 0 {
-		db.Where("id IN (?)", address_ids).Find(&address_list)
+	var addressList []backend.UserAddress
+	if len(addressIDs) > 0 {
+		db.Where("id IN (?)", addressIDs).Find(&addressList)
 	} else {
-		address_list = make([]backend.UserAddress, 0)
+		addressList = make([]backend.UserAddress, 0)
 	}
 
 	// convert that list into a set
-	forward_set := make(map[string]bool, len(address_list))
-	for _, addr := range address_list {
-		forward_set[addr.AsEmailAddress()] = true
+	forwardSet := make(map[string]bool, len(addressList))
+	for _, addr := range addressList {
+		forwardSet[addr.AsEmailAddress()] = true
 	}
 
 	// prune addresses that (should) already have the message
@@ -93,15 +93,15 @@ func HandleEmail(r io.Reader, name string, db *gorm.DB, cfg *periwinkle.Cfg) pos
 			log.Printf("Parsing %q Header: %v\n", header, err)
 		}
 		for _, addr := range addresses {
-			delete(forward_set, addr.Address)
+			delete(forwardSet, addr.Address)
 		}
 	}
 
 	// convert the set into an array
-	forward_ary := make([]string, len(forward_set))
+	forwardAry := make([]string, len(forwardSet))
 	i := uint(0)
-	for addr := range forward_set {
-		forward_ary[i] = addr
+	for addr := range forwardSet {
+		forwardAry[i] = addr
 		i++
 	}
 
@@ -114,14 +114,14 @@ func HandleEmail(r io.Reader, name string, db *gorm.DB, cfg *periwinkle.Cfg) pos
 	body, _ := ioutil.ReadAll(msg.Body) // TODO: error handling
 	msg822 = append(msg822, body...)
 	log.Println("MSG822\n" + string(msg822))
-	log.Println("RECIPIENTS:", forward_ary)
+	log.Println("RECIPIENTS:", forwardAry)
 
-	if len(forward_ary) > 0 {
+	if len(forwardAry) > 0 {
 		// send the message out
 		err = smtp.SendMail("localhost:25",
 			smtp.PlainAuth("", "", "", ""),
 			msg.Header.Get("From"),
-			forward_ary,
+			forwardAry,
 			msg822)
 		if err != nil {
 			log.Println("Error sending:", err)

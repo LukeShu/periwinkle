@@ -13,7 +13,7 @@ import (
 	"strings"
 )
 
-func fuckit_json(entity interface{}) (interface{}, error) {
+func fuckitJSON(entity interface{}) (interface{}, error) {
 	str, err := json.Marshal(entity)
 	if err != nil {
 		return nil, err
@@ -22,7 +22,7 @@ func fuckit_json(entity interface{}) (interface{}, error) {
 }
 
 // application/x-www-form-urlencoded => json.Decoder # because fuckit
-func DecoderFormUrlEncoded(r io.Reader, params map[string]string) (interface{}, error) {
+func DecoderFormURLEncoded(r io.Reader, params map[string]string) (interface{}, error) {
 	bytes, err := ioutil.ReadAll(r)
 	if err != nil {
 		return nil, err
@@ -31,7 +31,7 @@ func DecoderFormUrlEncoded(r io.Reader, params map[string]string) (interface{}, 
 	if err != nil {
 		return nil, err
 	}
-	return fuckit_json(entity)
+	return fuckitJSON(entity)
 }
 
 // multipart/form-data => json.Decoder # because fuckit
@@ -67,7 +67,7 @@ func DecoderFormData(r io.Reader, params map[string]string) (interface{}, error)
 			entity[k] = v
 		}
 	}
-	return fuckit_json(entity)
+	return fuckitJSON(entity)
 }
 
 // application/json => json.Decoder

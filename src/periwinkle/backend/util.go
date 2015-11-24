@@ -35,7 +35,7 @@ func DbSchema(db *gorm.DB) error {
 	errHelper(&errs, (Message{}).dbSchema(db)) // must come after Group
 	errHelper(&errs, (User{}).dbSchema(db))
 	errHelper(&errs, (Session{}).dbSchema(db)) // must come after User
-	errHelper(&errs, (ShortUrl{}).dbSchema(db))
+	errHelper(&errs, (ShortURL{}).dbSchema(db))
 	errHelper(&errs, (UserAddress{}).dbSchema(db))  // must come after User and Medium
 	errHelper(&errs, (Subscription{}).dbSchema(db)) // must come after Group and UserAddress
 	errHelper(&errs, (TwilioNumber{}).dbSchema(db))
@@ -52,7 +52,7 @@ func DbDrop(db *gorm.DB) error {
 	errHelper(&errs, db.DropTable(&TwilioNumber{}).Error)
 	errHelper(&errs, db.DropTable(&Subscription{}).Error)
 	errHelper(&errs, db.DropTable(&UserAddress{}).Error)
-	errHelper(&errs, db.DropTable(&ShortUrl{}).Error)
+	errHelper(&errs, db.DropTable(&ShortURL{}).Error)
 	errHelper(&errs, db.DropTable(&Session{}).Error)
 	errHelper(&errs, db.DropTable(&User{}).Error)
 	errHelper(&errs, db.DropTable(&Message{}).Error)
@@ -71,12 +71,12 @@ func DbSeed(db *gorm.DB) error {
 
 const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
 
-var alphabet_len = big.NewInt(int64(len(alphabet)))
+var alphabetLen = big.NewInt(int64(len(alphabet)))
 
 func randomString(size int) string {
 	bytes := make([]byte, size)
 	for i := 0; i < size; i++ {
-		bigint, err := rand.Int(rand.Reader, alphabet_len)
+		bigint, err := rand.Int(rand.Reader, alphabetLen)
 		if err != nil {
 			panic(err)
 		}

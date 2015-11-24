@@ -43,39 +43,39 @@ func HandleSMS(r io.Reader, name string, db *gorm.DB, cfg *periwinkle.Cfg) postf
 // Returns the status of the message: queued, sending, sent,
 // delivered, undelivered, failed.  If an error occurs, it returns
 // Error.
-func sender(message mail.Message, sms_to string, db *gorm.DB, cfg *periwinkle.Cfg) (status string, err error) {
+func sender(message mail.Message, smsTo string, db *gorm.DB, cfg *periwinkle.Cfg) (status string, err error) {
 
 	group := message.Header.Get("From")
-	user := backend.GetUserByAddress(db, "sms", sms_to)
+	user := backend.GetUserByAddress(db, "sms", smsTo)
 
-	sms_from := backend.GetTwilioNumberByUserAndGroup(db, user.Id, strings.Split(group, "@")[0])
-	sms_body := message.Header.Get("Subject")
-	//sms_body, err := ioutil.ReadAll(message.Body)
+	smsFrom := backend.GetTwilioNumberByUserAndGroup(db, user.ID, strings.Split(group, "@")[0])
+	smsBody := message.Header.Get("Subject")
+	//smsBody, err := ioutil.ReadAll(message.Body)
 	//if err != nil {
 	//	return "", err
 	//}
 
 	// account SID for Twilio account
-	account_sid := os.Getenv("TWILIO_ACCOUNTID")
+	accountSID := os.Getenv("TWILIO_ACCOUNTID")
 
 	// Authorization token for Twilio account
-	auth_token := os.Getenv("TWILIO_TOKEN")
+	authToken := os.Getenv("TWILIO_TOKEN")
 
-	messages_url := "https://api.twilio.com/2010-04-01/Accounts/" + account_sid + "/Messages.json"
+	messagesURL := "https://api.twilio.com/2010-04-01/Accounts/" + accountSID + "/Messages.json"
 
 	v := url.Values{}
-	v.Set("From", sms_from)
-	v.Set("To", sms_to)
-	v.Set("Body", string(sms_body))
+	v.Set("From", smsFrom)
+	v.Set("To", smsTo)
+	v.Set("Body", string(smsBody))
 	v.Set("StatusCallback", "http://"+cfg.WebRoot+"/callbacks/twilio-sms")
 
 	client := &http.Client{}
 
-	req, err := http.NewRequest("POST", messages_url, bytes.NewBuffer([]byte(v.Encode())))
+	req, err := http.NewRequest("POST", messagesURL, bytes.NewBuffer([]byte(v.Encode())))
 	if err != nil {
 		return
 	}
-	req.SetBasicAuth(account_sid, auth_token)
+	req.SetBasicAuth(accountSID, authToken)
 	req.Header.Add("Accept", "application/json")
 	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
 
@@ -94,29 +94,29 @@ func sender(message mail.Message, sms_to string, db *gorm.DB, cfg *periwinkle.Cf
 
 		message := twilio.Message{}
 		json.Unmarshal([]byte(body), &message)
-		sms_status, err := SmsWaitForCallback(message.Sid)
+		smsStatus, err := SmsWaitForCallback(message.Sid)
 
 		if err != nil {
 			return "", err
 		}
 
-		if sms_status.MessageStatus == "undelivered" || sms_status.MessageStatus == "failed" {
-			return sms_status.MessageStatus, fmt.Errorf("%s", sms_status.ErrorCode)
+		if smsStatus.MessageStatus == "undelivered" || smsStatus.MessageStatus == "failed" {
+			return smsStatus.MessageStatus, fmt.Errorf("%s", smsStatus.ErrorCode)
 		}
-		if sms_status.MessageStatus == "queued" || sms_status.MessageStatus == "sending" || sms_status.MessageStatus == "sent" {
+		if smsStatus.MessageStatus == "queued" || smsStatus.MessageStatus == "sending" || smsStatus.MessageStatus == "sent" {
 			time.Sleep(time.Second)
-			sms_status, err = SmsWaitForCallback(message.Sid)
+			smsStatus, err = SmsWaitForCallback(message.Sid)
 
 			if err != nil {
 				return "", err
 			}
 		}
 
-		if sms_status.MessageStatus == "undelivered" || sms_status.MessageStatus == "failed" {
-			return sms_status.MessageStatus, fmt.Errorf("%s", sms_status.ErrorCode)
+		if smsStatus.MessageStatus == "undelivered" || smsStatus.MessageStatus == "failed" {
+			return smsStatus.MessageStatus, fmt.Errorf("%s", smsStatus.ErrorCode)
 		}
 
-		status = sms_status.MessageStatus
+		status = smsStatus.MessageStatus
 		err = nil
 		return status, err
 	} else {

@@ -24,7 +24,7 @@ const (
 )
 
 type Captcha struct {
-	Id         string
+	ID         string
 	Value      string
 	Token      string
 	Expiration time.Time
@@ -36,7 +36,7 @@ func (o Captcha) dbSchema(db *gorm.DB) error {
 
 func NewCaptcha(db *gorm.DB) *Captcha {
 	o := Captcha{
-		Id:    captcha.New(),
+		ID:    captcha.New(),
 		Value: string(captcha.RandomDigits(DefaultLen)),
 	}
 	if err := db.Create(&o).Error; err != nil {
@@ -49,7 +49,7 @@ func UseCaptcha(db *gorm.DB, token string) bool {
 	panic("TODO")
 }
 
-func GetCaptchaById(db *gorm.DB, id string) *Captcha {
+func GetCaptchaByID(db *gorm.DB, id string) *Captcha {
 	var o Captcha
 	if result := db.First(&o, "id = ?", id); result.Error != nil {
 		if result.RecordNotFound() {
@@ -62,10 +62,10 @@ func GetCaptchaById(db *gorm.DB, id string) *Captcha {
 
 func (o *Captcha) MarshalPNG(w io.Writer) error {
 	// TODO: generate PNG and write it to w
-	return captcha.WriteImage(w, o.Id, DefaultWidth, DefaultHeight)
+	return captcha.WriteImage(w, o.ID, DefaultWidth, DefaultHeight)
 }
 
 func (o *Captcha) MarshalWAV(w io.Writer) error {
 	// TODO: generate WAV and write it to w
-	return captcha.WriteAudio(w, o.Id, "en")
+	return captcha.WriteAudio(w, o.ID, "en")
 }

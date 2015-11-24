@@ -47,7 +47,7 @@ func (o *User) patchPassword(patch *jsonpatch.Patch) *he.Response {
 	if err != nil {
 		return nil
 	}
-	out_ops := make([]patchop, 0, len(ops))
+	outOps := make([]patchop, 0, len(ops))
 	checkedpass := false
 	for _, op := range ops {
 		if op.Path == "/password" {
@@ -73,10 +73,10 @@ func (o *User) patchPassword(patch *jsonpatch.Patch) *he.Response {
 				return &ret
 			}
 		} else {
-			out_ops = append(out_ops, op)
+			outOps = append(outOps, op)
 		}
 	}
-	str, err = json.Marshal(out_ops)
+	str, err = json.Marshal(outOps)
 	if err != nil {
 		panic(err)
 	}
@@ -97,29 +97,29 @@ func (user *User) Methods() map[string]func(he.Request) he.Response {
 		"PUT": func(req he.Request) he.Response {
 			db := req.Things["db"].(*gorm.DB)
 			sess := req.Things["session"].(*backend.Session)
-			if sess.UserId != user.Id {
+			if sess.UserID != user.ID {
 				return he.StatusForbidden(heutil.NetString("Unauthorized user"))
 			}
-			var new_user User
-			httperr := safeDecodeJSON(req.Entity, &new_user)
+			var newUser User
+			httperr := safeDecodeJSON(req.Entity, &newUser)
 			if httperr != nil {
 				return *httperr
 			}
-			if user.Id != new_user.Id {
+			if user.ID != newUser.ID {
 				return he.StatusConflict(heutil.NetString("Cannot change user id"))
 			}
 			// TODO: this won't play nice with the
 			// password hash (because it's private), or
 			// with addresses (because the (private) IDs
 			// need to be made to match up)
-			*user = new_user
+			*user = newUser
 			user.backend().Save(db)
 			return he.StatusOK(user)
 		},
 		"PATCH": func(req he.Request) he.Response {
 			db := req.Things["db"].(*gorm.DB)
 			sess := req.Things["session"].(*backend.Session)
-			if sess.UserId != user.Id {
+			if sess.UserID != user.ID {
 				return he.StatusForbidden(heutil.NetString("Unauthorized user"))
 			}
 			patch, ok := req.Entity.(jsonpatch.Patch)
@@ -130,37 +130,37 @@ func (user *User) Methods() map[string]func(he.Request) he.Response {
 			if httperr != nil {
 				return *httperr
 			}
-			var new_user User
-			err := patch.Apply(user, &new_user)
+			var newUser User
+			err := patch.Apply(user, &newUser)
 			if err != nil {
 				return he.StatusConflict(heutil.NetString(err.Error()))
 			}
-			if user.Id != new_user.Id {
+			if user.ID != newUser.ID {
 				return he.StatusConflict(heutil.NetString("Cannot change user id"))
 			}
 			// some mucking around with private fields to make things match up
-			new_user.PwHash = user.PwHash
-			delete_address_ids := []int64{}
+			newUser.PwHash = user.PwHash
+			deleteAddressIDs := []int64{}
 			for o := range user.Addresses {
-				old_addr := &user.Addresses[o]
+				oldAddr := &user.Addresses[o]
 				match := false
-				for n := range new_user.Addresses {
-					new_addr := &new_user.Addresses[n]
-					if new_addr.Medium == old_addr.Medium && new_addr.Address == old_addr.Address {
-						new_addr.Id = old_addr.Id
+				for n := range newUser.Addresses {
+					newAddr := &newUser.Addresses[n]
+					if newAddr.Medium == oldAddr.Medium && newAddr.Address == oldAddr.Address {
+						newAddr.ID = oldAddr.ID
 						match = true
 					}
 				}
 				if !match {
-					delete_address_ids = append(delete_address_ids, old_addr.Id)
+					deleteAddressIDs = append(deleteAddressIDs, oldAddr.ID)
 				}
 			}
 			// save
 
-			*user = new_user
+			*user = newUser
 			user.backend().Save(db)
-			if len(delete_address_ids) > 0 {
-				if err = db.Where("id IN (?)", delete_address_ids).Delete(backend.UserAddress{}).Error; err != nil {
+			if len(deleteAddressIDs) > 0 {
+				if err = db.Where("id IN (?)", deleteAddressIDs).Delete(backend.UserAddress{}).Error; err != nil {
 					panic(err)
 				}
 			}
@@ -217,10 +217,10 @@ func newDirUsers() t_dirUsers {
 			entity.Username = strings.ToLower(entity.Username)
 
 			user := backend.NewUser(db, entity.Username, entity.Password, entity.Email)
-			backend.NewUserAddress(db, user.Id, "noop", "", true)
-			backend.NewUserAddress(db, user.Id, "admin", "", true)
+			backend.NewUserAddress(db, user.ID, "noop", "", true)
+			backend.NewUserAddress(db, user.ID, "admin", "", true)
 			req.Things["user"] = user
-			return he.StatusCreated(r, user.Id, req)
+			return he.StatusCreated(r, user.ID, req)
 		},
 	}
 	return r
@@ -238,13 +238,13 @@ func (d t_dirUsers) Subentity(name string, req he.Request) he.Entity {
 		if !ok {
 			return nil
 		}
-		if user.Id == name {
+		if user.ID == name {
 			return &user
 		}
 		return nil
-	} else if sess.UserId != name {
+	} else if sess.UserID != name {
 		return nil
 	}
 	db := req.Things["db"].(*gorm.DB)
-	return (*User)(backend.GetUserById(db, name))
+	return (*User)(backend.GetUserByID(db, name))
 }

@@ -13,7 +13,7 @@ import (
 	"time"
 )
 
-var num_deliveries = big.NewInt(0)
+var numDeliveries = big.NewInt(0)
 
 func newUnique() Unique {
 	// http://cr.yp.to/proto/maildir.html
@@ -25,21 +25,21 @@ func newUnique() Unique {
 	}
 	hostname = strings.Replace(strings.Replace(hostname, ":", "\\072", -1), "/", "\\057", -1)
 
-	delivery_id := ""
-	// delivery_id += fmt.Sprintf("#%x", unix_sequencenumber())
-	// delivery_id += fmt.Sprintf("X%x", unix_bootnumber())
-	random_data := make([]byte, 16)
-	_, err = rand.Read(random_data)
+	deliveryID := ""
+	// deliveryID += fmt.Sprintf("#%x", unix_sequencenumber())
+	// deliveryID += fmt.Sprintf("X%x", unix_bootnumber())
+	randomData := make([]byte, 16)
+	_, err = rand.Read(randomData)
 	if err != nil {
-		delivery_id += fmt.Sprintf("R%x", random_data)
+		deliveryID += fmt.Sprintf("R%x", randomData)
 	}
-	// delivery_id += fmt.Sprintf("I%x", inode) // inodes are hard in go
-	delivery_id += fmt.Sprintf("M%d", (now.UnixNano()/1000)-(now.Unix()*1000000))
-	delivery_id += fmt.Sprintf("P%d", os.Getpid())
-	delivery_id += fmt.Sprintf("Q%v", num_deliveries)
-	num_deliveries.Add(big.NewInt(1), num_deliveries)
+	// deliveryID += fmt.Sprintf("I%x", inode) // inodes are hard in go
+	deliveryID += fmt.Sprintf("M%d", (now.UnixNano()/1000)-(now.Unix()*1000000))
+	deliveryID += fmt.Sprintf("P%d", os.Getpid())
+	deliveryID += fmt.Sprintf("Q%v", numDeliveries)
+	numDeliveries.Add(big.NewInt(1), numDeliveries)
 
-	return Unique(fmt.Sprintf("%v.%v.%v", now.Unix(), delivery_id, hostname))
+	return Unique(fmt.Sprintf("%v.%v.%v", now.Unix(), deliveryID, hostname))
 }
 
 type Writer interface {

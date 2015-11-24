@@ -58,5 +58,5 @@ func (d t_dirMessages) Methods() map[string]func(he.Request) he.Response {
 
 func (d t_dirMessages) Subentity(name string, req he.Request) he.Entity {
 	db := req.Things["db"].(*gorm.DB)
-	return (*Message)(backend.GetMessageById(db, name))
+	return (*Message)(backend.GetMessageByID(db, name))
 }

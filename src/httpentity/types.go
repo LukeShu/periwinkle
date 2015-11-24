@@ -11,7 +11,7 @@
 //
 // An Entity is accessed using the method allowed in
 // (*Entity).Methods().  An entity may also have children--these are
-// accessed with (*Entity).Subentities(child_name, request).
+// accessed with (*Entity).Subentities(childName, request).
 //
 // A Router is the entire Entity tree; it mostly just takes the root
 // Entity of the tree.  It handles dispatching Requests to the correct

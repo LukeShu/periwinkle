@@ -52,7 +52,7 @@ this message is displayed.
 `, os.Args[0])
 }
 
-func parse_args() (net.Listener, *periwinkle.Cfg) {
+func parseArgs() (net.Listener, *periwinkle.Cfg) {
 	var stype, saddr string
 
 	switch len(os.Args) - 1 {
@@ -104,7 +104,7 @@ func parse_args() (net.Listener, *periwinkle.Cfg) {
 	if stype == "fd" {
 		switch saddr {
 		case "systemd":
-			socket, err = sd_get_socket()
+			socket, err = sdGetSocket()
 		case "stdin":
 			socket, err = listenfd(0, "/dev/stdin")
 		case "stdout":
@@ -129,10 +129,10 @@ func parse_args() (net.Listener, *periwinkle.Cfg) {
 		os.Exit(int(lsb.EXIT_FAILURE))
 	}
 
-	config_filename := "./periwinkle.yaml"
-	file, err := os.Open(config_filename)
+	configFilename := "./periwinkle.yaml"
+	file, err := os.Open(configFilename)
 	if err != nil {
-		log.Printf("Could not open %q: %v\n", config_filename, err)
+		log.Printf("Could not open %q: %v\n", configFilename, err)
 		os.Exit(int(lsb.EXIT_NOTCONFIGURED))
 	}
 	config, err := cfg.Parse(file)
@@ -148,7 +148,7 @@ func listenfd(fd int, name string) (net.Listener, error) {
 	return net.FileListener(os.NewFile(uintptr(fd), name))
 }
 
-func sd_get_socket() (socket net.Listener, err error) {
+func sdGetSocket() (socket net.Listener, err error) {
 	fds := sd.ListenFds(true)
 	if fds == nil {
 		err = fmt.Errorf("Failed to aquire sockets from systemd")
@@ -168,7 +168,7 @@ func main() {
 	signals := make(chan os.Signal)
 	signal.Notify(signals, syscall.SIGTERM, syscall.SIGHUP)
 
-	socket, config := parse_args()
+	socket, config := parseArgs()
 
 	sd.Notify(false, "READY=1")
 

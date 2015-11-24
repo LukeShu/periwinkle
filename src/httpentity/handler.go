@@ -47,10 +47,10 @@ func (router *Router) defaultHandler(request Request, u *url.URL) Response {
 		callmethod = "GET"
 	}
 	methods := entity.Methods()
-	handler, method_allowed := methods[request.Method]
+	handler, methodAllowed := methods[request.Method]
 
 	var response Response
-	if method_allowed {
+	if methodAllowed {
 		response = handler(request)
 	} else {
 		if callmethod == "OPTIONS" {

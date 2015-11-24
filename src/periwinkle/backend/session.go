@@ -10,8 +10,8 @@ import (
 )
 
 type Session struct {
-	Id       string    `json:"session_id"`
-	UserId   string    `json:"user_id"`
+	ID       string    `json:"session_id"`
+	UserID   string    `json:"user_id"`
 	LastUsed time.Time `json:"-"`
 }
 
@@ -26,8 +26,8 @@ func NewSession(db *gorm.DB, user *User, password string) *Session {
 		return nil
 	}
 	o := Session{
-		Id:       randomString(24),
-		UserId:   user.Id,
+		ID:       randomString(24),
+		UserID:   user.ID,
 		LastUsed: time.Now(),
 	}
 	if err := db.Create(&o).Error; err != nil {
@@ -36,7 +36,7 @@ func NewSession(db *gorm.DB, user *User, password string) *Session {
 	return &o
 }
 
-func GetSessionById(db *gorm.DB, id string) *Session {
+func GetSessionByID(db *gorm.DB, id string) *Session {
 	var o Session
 	if result := db.First(&o, "id = ?", id); result.Error != nil {
 		if result.RecordNotFound() {

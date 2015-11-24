@@ -9,7 +9,7 @@ import (
 )
 
 type Group struct {
-	Id            string         `json:"group_id"`
+	ID            string         `json:"group_id"`
 	Existence     int            `json:"existence"` // 1 -> public, 2 -> confirmed, 3 -> member
 	Read          int            `json:"read"`      // 1 -> public, 2 -> confirmed, 3 -> member
 	Post          int            `json:"post"`      // 1 -> public, 2 -> confirmed, 3 -> moderator
@@ -23,7 +23,7 @@ func (o Group) dbSchema(db *gorm.DB) error {
 
 func (o Group) dbSeed(db *gorm.DB) error {
 	return db.Create(&Group{
-		Id:            "test",
+		ID:            "test",
 		Existence:     1,
 		Read:          1,
 		Post:          1,
@@ -32,7 +32,7 @@ func (o Group) dbSeed(db *gorm.DB) error {
 	}).Error
 }
 
-func GetGroupById(db *gorm.DB, id string) *Group {
+func GetGroupByID(db *gorm.DB, id string) *Group {
 	var o Group
 	if result := db.First(&o, "id = ?", id); result.Error != nil {
 		if result.RecordNotFound() {
@@ -46,14 +46,14 @@ func GetGroupById(db *gorm.DB, id string) *Group {
 
 func GetGroupsByMember(db *gorm.DB, user User) []Group {
 	// turn the User's list of addresses into a list of address IDs
-	user_address_ids := make([]int64, len(user.Addresses))
-	for i, user_address := range user.Addresses {
-		user_address_ids[i] = user_address.Id
+	userAddressIDs := make([]int64, len(user.Addresses))
+	for i, userAddress := range user.Addresses {
+		userAddressIDs[i] = userAddress.ID
 	}
 	// use the list of address IDs to get a list of subscriptions
 	var subscriptions []Subscription
-	if len(user_address_ids) > 0 {
-		if result := db.Where("address_id IN (?)", user_address_ids).Find(&subscriptions); result.Error != nil {
+	if len(userAddressIDs) > 0 {
+		if result := db.Where("addressID IN (?)", userAddressIDs).Find(&subscriptions); result.Error != nil {
 			if result.RecordNotFound() {
 				return nil
 			}
@@ -63,13 +63,13 @@ func GetGroupsByMember(db *gorm.DB, user User) []Group {
 		subscriptions = make([]Subscription, 0)
 	}
 	// turn the list of subscriptions into a list of group IDs
-	group_ids := make([]string, len(subscriptions))
+	groupIDs := make([]string, len(subscriptions))
 	for i, subscription := range subscriptions {
-		group_ids[i] = subscription.GroupId
+		groupIDs[i] = subscription.GroupID
 	}
 	// use the list of group IDs to get the groups
 	var groups []Group
-	if result := db.Where(group_ids).Find(&groups); result.Error != nil {
+	if result := db.Where(groupIDs).Find(&groups); result.Error != nil {
 		if result.RecordNotFound() {
 			return nil
 		}
@@ -91,7 +91,7 @@ func GetPublicAndSubscribedGroups(db *gorm.DB, user User) []Group {
 	// merge public groups and subscribed groups
 	for _, publicgroup := range publicgroups {
 		for _, group := range groups {
-			if group.Id == publicgroup.Id {
+			if group.ID == publicgroup.ID {
 				break
 			}
 		}
@@ -119,7 +119,7 @@ func NewGroup(db *gorm.DB, name string, existence int, read int, post int, join 
 	}
 	subscriptions := make([]Subscription, 0)
 	o := Group{
-		Id:            name,
+		ID:            name,
 		Existence:     CheckInput(existence, 1, 3, 1),
 		Read:          CheckInput(read, 1, 3, 1),
 		Post:          CheckInput(post, 1, 3, 1),

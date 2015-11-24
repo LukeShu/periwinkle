@@ -35,8 +35,8 @@ func (o *Captcha) Methods() map[string]func(he.Request) he.Response {
 			"PUT": func(req he.Request) he.Response {
 				db := req.Things["db"].(*gorm.DB)
 				sess := req.Things["session"].(*backend.Session)
-				var new_captcha Captcha
-				httperr := safeDecodeJSON(req.Entity, &new_captcha)
+				var newCaptcha Captcha
+				httperr := safeDecodeJSON(req.Entity, &newCaptcha)
 				if httperr != nil {
 					return *httperr
 				}
@@ -74,7 +74,7 @@ func newDirCaptchas() t_dirCaptchas {
 	r.methods = map[string]func(he.Request) he.Response{
 		"POST": func(req he.Request) he.Response {
 			db := req.Things["db"].(*gorm.DB)
-			return he.StatusCreated(r, backend.NewCaptcha(db).Id, req)
+			return he.StatusCreated(r, backend.NewCaptcha(db).ID, req)
 		},
 	}
 	return r
@@ -86,5 +86,5 @@ func (d t_dirCaptchas) Methods() map[string]func(he.Request) he.Response {
 
 func (d t_dirCaptchas) Subentity(name string, req he.Request) he.Entity {
 	db := req.Things["db"].(*gorm.DB)
-	return (*Captcha)(backend.GetCaptchaById(db, name))
+	return (*Captcha)(backend.GetCaptchaByID(db, name))
 }

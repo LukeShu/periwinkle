@@ -71,7 +71,7 @@ type accept struct {
 // this captures both `parameter` and accept-parames/accept-ext, with
 // the exception that it converts the accept-ext LHS to lowercase,
 // which it shouldn't do.
-func _parseParameter(lhs, rhs string) (string, string, error) {
+func parseParameter(lhs, rhs string) (string, string, error) {
 	var err error
 	if !isToken(lhs) {
 		return "", "", fmt.Errorf("%q is not a valid RFC 7230 token", lhs)
@@ -142,19 +142,19 @@ func parseAccept(header *string) ([]accept, error) {
 						return nil, perrorf("Accept", "%q is not a valid RFC 7231 qvalue", asgn[1])
 					}
 				} else {
-					lhs, rhs, err := _parseParameter(asgn[0], asgn[1])
+					lhs, rhs, err := parseParameter(asgn[0], asgn[1])
 					if err != nil {
 						return nil, ParseError{"Accept", err}
 					}
 					acc.TypeParams[lhs] = rhs
 				}
 			} else {
-				_, rhs, err := _parseParameter(asgn[0], asgn[1])
+				_, rhs, err := parseParameter(asgn[0], asgn[1])
 				if err != nil {
 					return nil, ParseError{"Accept", err}
 				}
 				// use asgn[0] instead of lhs because
-				// _parseParameter downcases it.
+				// parseParameter downcases it.
 				acc.AcceptParams[asgn[0]] = rhs
 			}
 		}

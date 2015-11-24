@@ -15,7 +15,7 @@ import (
 )
 
 type Error interface {
-	HttpCode() int16
+	HTTPCode() int16
 	PostfixCode() postfixpipe.ExitStatus
 	httpentity.NetEntity
 	error
@@ -28,7 +28,7 @@ type simpleError struct {
 	plainStr    string
 }
 
-func (e simpleError) HttpCode() int16 {
+func (e simpleError) HTTPCode() int16 {
 	return e.httpCode
 }
 
@@ -76,7 +76,7 @@ func ErrorToError(err error) Error {
 
 func ErrorToHTTP(err Error) httpentity.Response {
 	return httpentity.Response{
-		Status:  err.HttpCode(),
+		Status:  err.HTTPCode(),
 		Headers: http.Header{},
 		Entity:  err,
 	}

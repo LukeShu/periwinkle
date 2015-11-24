@@ -8,7 +8,7 @@ import (
 )
 
 type Medium struct {
-	Id string
+	ID string
 }
 
 func (o Medium) dbSchema(db *gorm.DB) error {

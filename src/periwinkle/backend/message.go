@@ -10,8 +10,8 @@ import (
 )
 
 type Message struct {
-	Id      string
-	GroupId string
+	ID      string
+	GroupID string
 	Unique  string
 	// cached fields??????
 }
@@ -25,11 +25,11 @@ func (o Message) dbSchema(db *gorm.DB) error {
 
 func NewMessage(db *gorm.DB, id string, group Group, unique maildir.Unique) Message {
 	if id == "" {
-		panic("Message Id can't be emtpy")
+		panic("Message ID can't be emtpy")
 	}
 	o := Message{
-		Id:      id,
-		GroupId: group.Id,
+		ID:      id,
+		GroupID: group.ID,
 		Unique:  string(unique),
 	}
 	if err := db.Create(&o).Error; err != nil {
@@ -38,7 +38,7 @@ func NewMessage(db *gorm.DB, id string, group Group, unique maildir.Unique) Mess
 	return o
 }
 
-func GetMessageById(db *gorm.DB, id string) *Message {
+func GetMessageByID(db *gorm.DB, id string) *Message {
 	var o Message
 	if result := db.First(&o, "id = ?", id); result.Error != nil {
 		if result.RecordNotFound() {

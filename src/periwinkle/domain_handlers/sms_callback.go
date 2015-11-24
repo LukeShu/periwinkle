@@ -44,12 +44,12 @@ func (server *SmsCallbackServer) Serve() (err error) {
 		}
 		go func() {
 			reader := bufio.NewReader(conn)
-			message_sid, _, err := reader.ReadLine()
+			messageSID, _, err := reader.ReadLine()
 			if err != nil {
 				log.Println("Read:", err)
 			}
 			server.connsLock.Lock()
-			server.conns[string(message_sid)] = conn
+			server.conns[string(messageSID)] = conn
 			server.connsLock.Unlock()
 		}()
 	}
@@ -71,7 +71,7 @@ func (server *SmsCallbackServer) ServeHTTP(w http.ResponseWriter, req *http.Requ
 	status.MessageStatus = values.Get("MessageStatus")
 	status.ErrorCode = values.Get("ErrorCode")
 	status.MessageSid = values.Get("MessageSid")
-	status_json, err := json.Marshal(status)
+	statusJSON, err := json.Marshal(status)
 
 	server.connsLock.Lock()
 	conn, ok := server.conns[status.MessageSid]
@@ -79,7 +79,7 @@ func (server *SmsCallbackServer) ServeHTTP(w http.ResponseWriter, req *http.Requ
 		return
 	}
 	defer conn.Close()
-	_, err = conn.Write(status_json)
+	_, err = conn.Write(statusJSON)
 	// TODO: check err
 	delete(server.conns, status.MessageSid)
 	server.connsLock.Unlock()
@@ -99,10 +99,10 @@ func SmsWaitForCallback(MessageSid string) (status SmsStatus, err error) {
 		return
 	}
 	reader := bufio.NewReader(conn)
-	status_json, _, err := reader.ReadLine()
+	statusJSON, _, err := reader.ReadLine()
 	if err != nil {
 		return
 	}
-	err = json.Unmarshal([]byte(status_json), &status)
+	err = json.Unmarshal([]byte(statusJSON), &status)
 	return
 }

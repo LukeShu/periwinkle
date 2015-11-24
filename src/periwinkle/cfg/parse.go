@@ -30,7 +30,7 @@ func Parse(in io.Reader) (*periwinkle.Cfg, error) {
 	// sets defaults if file is empty
 	if string(b) == "" {
 		cfg.Mailstore = "/srv/periwinkle/Maildir"
-		cfg.WebUiDir = "./www"
+		cfg.WebUIDir = "./www"
 		cfg.Debug = true
 		cfg.TrustForwarded = true
 		cfg.GroupDomain = "periwinkle.lol"
@@ -40,7 +40,7 @@ func Parse(in io.Reader) (*periwinkle.Cfg, error) {
 			return nil, err
 		}
 	}
-	cfg.TwilioAccountId = os.Getenv("TWILIO_ACCOUNTID")
+	cfg.TwilioAccountID = os.Getenv("TWILIO_ACCOUNTID")
 	cfg.TwilioAuthToken = os.Getenv("TWILIO_TOKEN")
 	cfg.DB = getConnection(cfg.Debug) // TODO
 

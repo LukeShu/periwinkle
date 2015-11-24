@@ -9,14 +9,14 @@
 //     bytes, err := ioutil.ReadAll(inputstream)
 //     var patch jsonpatch.JSONPatch
 //     err := json.Unmarshal(bytes, &patch)
-//     err := patch.Apply(old_obj, &new_obj)
+//     err := patch.Apply(oldObj, &newObj)
 //
 // or
 //
 //     bytes, err := ioutil.ReadAll(inputstream)
 //     var patch jsonpatch.JSONMergePatch
 //     err := json.Unmarshal(bytes, &patch)
-//     err := patch.Apply(old_obj, &new_obj)
+//     err := patch.Apply(oldObj, &newObj)
 //
 // It does this by wrapping github.com/evanphx/json-patch ; there's
 // very little actual code here; it is just a set of wrappers to
@@ -40,25 +40,25 @@ type Patch interface {
 }
 
 func (patch JSONPatch) Apply(in interface{}, out interface{}) error {
-	in_bytes, err := json.Marshal(in)
+	inBytes, err := json.Marshal(in)
 	if err != nil {
 		return err
 	}
-	out_bytes, err := (evan.Patch(patch)).Apply(in_bytes)
+	outBytes, err := (evan.Patch(patch)).Apply(inBytes)
 	if err != nil {
 		return err
 	}
-	return json.Unmarshal(out_bytes, out)
+	return json.Unmarshal(outBytes, out)
 }
 
 func (patch JSONMergePatch) Apply(in interface{}, out interface{}) error {
-	in_bytes, err := json.Marshal(in)
+	inBytes, err := json.Marshal(in)
 	if err != nil {
 		return err
 	}
-	out_bytes, err := evan.MergePatch(in_bytes, patch)
+	outBytes, err := evan.MergePatch(inBytes, patch)
 	if err != nil {
 		return err
 	}
-	return json.Unmarshal(out_bytes, out)
+	return json.Unmarshal(outBytes, out)
 }

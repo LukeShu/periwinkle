@@ -8,7 +8,7 @@ import (
 )
 
 type Admin struct {
-	UserId string `json:"user_id"`
+	UserID string `json:"user_id"`
 }
 
 func (o Admin) dbSchema(db *gorm.DB) error {

@@ -20,29 +20,29 @@ import (
 func NewPhoneNum() (string, error) {
 
 	// account SID for Twilio account
-	account_sid := os.Getenv("TWILIO_ACCOUNTID")
+	accountSID := os.Getenv("TWILIO_ACCOUNTID")
 
 	// Authorization token for Twilio account
-	auth_token := os.Getenv("TWILIO_TOKEN")
+	authToken := os.Getenv("TWILIO_TOKEN")
 
 	// gets url for available numbers
 
-	availNum_url := "https://api.twilio.com/2010-04-01/Accounts/" + account_sid + "/AvailablePhoneNumbers/US/Local.json?SmsEnabled=true&MmsEnabled=true"
+	availNumURL := "https://api.twilio.com/2010-04-01/Accounts/" + accountSID + "/AvailablePhoneNumbers/US/Local.json?SmsEnabled=true&MmsEnabled=true"
 
 	// gets url for a new phone number
 
-	newPhoneNum_url := "https://api.twilio.com/2010-04-01/Accounts/" + account_sid + "/IncomingPhoneNumbers.json"
+	newPhoneNumURL := "https://api.twilio.com/2010-04-01/Accounts/" + accountSID + "/IncomingPhoneNumbers.json"
 
 	client := &http.Client{}
 
-	req, err := http.NewRequest("GET", availNum_url, nil)
+	req, err := http.NewRequest("GET", availNumURL, nil)
 
 	if err != nil {
 		log.Println(err)
 		return "", err
 	}
 
-	req.SetBasicAuth(account_sid, auth_token)
+	req.SetBasicAuth(accountSID, authToken)
 
 	resp, err := client.Do(req)
 	defer resp.Body.Close()
@@ -65,7 +65,7 @@ func NewPhoneNum() (string, error) {
 			return "", err
 		}
 
-		req.SetBasicAuth(account_sid, auth_token)
+		req.SetBasicAuth(accountSID, authToken)
 		resp, err = client.Do(req)
 		defer resp.Body.Close()
 		if err != nil {
@@ -92,24 +92,24 @@ func NewPhoneNum() (string, error) {
 		return "", err
 	}
 
-	avail_number := twilio.Avail_ph_num{}
-	json.Unmarshal(body, &avail_number)
+	availNumber := twilio.AvailPhNum{}
+	json.Unmarshal(body, &availNumber)
 
-	if len(avail_number.PhoneNumberList) != 0 {
+	if len(availNumber.PhoneNumberList) != 0 {
 
-		number := avail_number.PhoneNumberList[0].PhoneNumber
+		number := availNumber.PhoneNumberList[0].PhoneNumber
 
 		val := url.Values{}
-		val.Set("PhoneNumber", avail_number.PhoneNumberList[0].PhoneNumber)
+		val.Set("PhoneNumber", availNumber.PhoneNumberList[0].PhoneNumber)
 		val.Set("SmsUrl", "http://twimlets.com/echo?Twiml=%3CResponse%3E%3C%2FResponse%3E")
 
-		req, err = http.NewRequest("POST", newPhoneNum_url, bytes.NewBuffer([]byte(val.Encode())))
+		req, err = http.NewRequest("POST", newPhoneNumURL, bytes.NewBuffer([]byte(val.Encode())))
 		if err != nil {
 			log.Println(err)
 			return "", err
 		}
 
-		req.SetBasicAuth(account_sid, auth_token)
+		req.SetBasicAuth(accountSID, authToken)
 		req.Header.Add("Accept", "application/json")
 		req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
 

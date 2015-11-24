@@ -16,26 +16,26 @@ func usage(w io.Writer) {
 }
 
 func main() {
-	config_filename := "./periwinkle.yaml"
+	configFilename := "./periwinkle.yaml"
 	switch len(os.Args) {
 	case 1:
 		// do nothing
 	case 2:
-		config_filename = os.Args[1]
+		configFilename = os.Args[1]
 	default:
 		usage(os.Stderr)
 		os.Exit(2)
 	}
 
-	file, err := os.Open(config_filename)
+	file, err := os.Open(configFilename)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Could not open %q: %v\n", config_filename, err)
+		fmt.Fprintf(os.Stderr, "Could not open %q: %v\n", configFilename, err)
 		os.Exit(1)
 	}
 
 	config, err := cfg.Parse(file)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Could not parse %q: %v\n", config_filename, err)
+		fmt.Fprintf(os.Stderr, "Could not parse %q: %v\n", configFilename, err)
 		os.Exit(1)
 	}
 

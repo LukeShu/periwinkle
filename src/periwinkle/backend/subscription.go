@@ -10,9 +10,9 @@ import (
 
 type Subscription struct {
 	Address   UserAddress `json:"addresses"`
-	AddressId int64       `json:"-"`
+	AddressID int64       `json:"-"`
 	Group     Group       `json:"group"`
-	GroupId   string      `json:"group_id"`
+	GroupID   string      `json:"group_id"`
 	Confirmed bool        `json:"confirmed"`
 }
 
@@ -23,9 +23,9 @@ func (o Subscription) dbSchema(db *gorm.DB) error {
 		Error
 }
 
-func GetSubscriptionsGroupById(db *gorm.DB, groupId string) []Subscription {
+func GetSubscriptionsGroupByID(db *gorm.DB, groupID string) []Subscription {
 	var o []Subscription
-	if result := db.Where("group_id = ?", groupId).Find(&o); result.Error != nil {
+	if result := db.Where("group_id = ?", groupID).Find(&o); result.Error != nil {
 		if result.RecordNotFound() {
 			return nil
 		}
@@ -34,15 +34,15 @@ func GetSubscriptionsGroupById(db *gorm.DB, groupId string) []Subscription {
 	return o
 }
 
-func IsSubscribed(db *gorm.DB, userid string, group Group) bool {
-	subscriptions := GetSubscriptionsGroupById(db, group.Id)
-	address_ids := make([]int64, len(subscriptions))
+func IsSubscribed(db *gorm.DB, userID string, group Group) bool {
+	subscriptions := GetSubscriptionsGroupByID(db, group.ID)
+	addressIDs := make([]int64, len(subscriptions))
 	for i, subscription := range subscriptions {
-		address_ids[i] = subscription.AddressId
+		addressIDs[i] = subscription.AddressID
 	}
 	var addresses []UserAddress
-	if len(address_ids) > 0 {
-		if result := db.Where("id IN (?)", address_ids).Find(&addresses); result.Error != nil {
+	if len(addressIDs) > 0 {
+		if result := db.Where("id IN (?)", addressIDs).Find(&addresses); result.Error != nil {
 			if !result.RecordNotFound() {
 				panic("cant find any subscriptions corresponding user address")
 			}
@@ -52,7 +52,7 @@ func IsSubscribed(db *gorm.DB, userid string, group Group) bool {
 		return false
 	}
 	for _, address := range addresses {
-		if address.UserId == userid {
+		if address.UserID == userID {
 			return true
 		}
 	}
@@ -60,15 +60,15 @@ func IsSubscribed(db *gorm.DB, userid string, group Group) bool {
 	return false
 }
 
-func IsAdmin(db *gorm.DB, userid string, group Group) bool {
-	subscriptions := GetSubscriptionsGroupById(db, group.Id)
-	address_ids := make([]int64, len(subscriptions))
+func IsAdmin(db *gorm.DB, userID string, group Group) bool {
+	subscriptions := GetSubscriptionsGroupByID(db, group.ID)
+	addressIDs := make([]int64, len(subscriptions))
 	for i, subscription := range subscriptions {
-		address_ids[i] = subscription.AddressId
+		addressIDs[i] = subscription.AddressID
 	}
 	var addresses []UserAddress
-	if len(address_ids) > 0 {
-		if result := db.Where("id IN (?)", address_ids).Find(&addresses); result.Error != nil {
+	if len(addressIDs) > 0 {
+		if result := db.Where("id IN (?)", addressIDs).Find(&addresses); result.Error != nil {
 			if !result.RecordNotFound() {
 				panic("cant find any subscriptions corresponding user address")
 			}
@@ -78,7 +78,7 @@ func IsAdmin(db *gorm.DB, userid string, group Group) bool {
 		return false
 	}
 	for _, address := range addresses {
-		if address.UserId == userid && address.Medium == "admin" {
+		if address.UserID == userID && address.Medium == "admin" {
 			return true
 		}
 	}

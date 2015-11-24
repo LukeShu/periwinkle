@@ -18,11 +18,11 @@ func StatusOK(entity NetEntity) Response {
 }
 
 // For when you've created a document with a new URL.
-func StatusCreated(parent Entity, child_name string, req Request) Response {
-	if child_name == "" {
+func StatusCreated(parent Entity, childName string, req Request) Response {
+	if childName == "" {
 		panic("can't call StatusCreated with an empty child name")
 	}
-	child := parent.Subentity(child_name, req)
+	child := parent.Subentity(childName, req)
 	if child == nil {
 		panic("called StatusCreated, but the subentity doesn't exist")
 	}
@@ -31,7 +31,7 @@ func StatusCreated(parent Entity, child_name string, req Request) Response {
 		panic("called StatusCreated, but can't GET the subentity")
 	}
 	response := handler(req)
-	response.Headers.Set("Location", url.QueryEscape(child_name))
+	response.Headers.Set("Location", url.QueryEscape(childName))
 	if response.Entity == nil {
 		panic("called StatusCreated, but GET on subentity doesn't return an entity")
 	}

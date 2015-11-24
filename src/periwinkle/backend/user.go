@@ -12,7 +12,7 @@ import (
 )
 
 type User struct {
-	Id        string        `json:"user_id"`
+	ID        string        `json:"user_id"`
 	FullName  string        `json:"fullname"`
 	PwHash    []byte        `json:"-"`
 	Addresses []UserAddress `json:"addresses"`
@@ -24,8 +24,8 @@ func (o User) dbSchema(db *gorm.DB) error {
 
 type UserAddress struct {
 	// TODO: add a "verified" boolean
-	Id            int64          `json:"-"`
-	UserId        string         `json:"-"`
+	ID            int64          `json:"-"`
+	UserID        string         `json:"-"`
 	Medium        string         `json:"medium"`
 	Address       string         `json:"address"`
 	SortOrder     uint64         `json:"sort_order"`
@@ -52,13 +52,13 @@ func (addr UserAddress) AsEmailAddress() string {
 
 func (u *User) populate(db *gorm.DB) {
 	db.Model(u).Related(&u.Addresses)
-	address_ids := make([]int64, len(u.Addresses))
+	addressIDs := make([]int64, len(u.Addresses))
 	for i, address := range u.Addresses {
-		address_ids[i] = address.Id
+		addressIDs[i] = address.ID
 	}
 	var subscriptions []Subscription
-	if len(address_ids) > 0 {
-		if result := db.Where("address_id IN (?)", address_ids).Find(&subscriptions); result.Error != nil {
+	if len(addressIDs) > 0 {
+		if result := db.Where("address_id IN (?)", addressIDs).Find(&subscriptions); result.Error != nil {
 			if !result.RecordNotFound() {
 				panic(result.Error)
 			}
@@ -69,7 +69,7 @@ func (u *User) populate(db *gorm.DB) {
 	for i := range u.Addresses {
 		u.Addresses[i].Subscriptions = []Subscription{}
 		for _, subscription := range subscriptions {
-			if u.Addresses[i].Id == subscription.AddressId {
+			if u.Addresses[i].ID == subscription.AddressID {
 				u.Addresses[i].Subscriptions = append(u.Addresses[i].Subscriptions, subscription)
 			}
 		}
@@ -91,10 +91,10 @@ func (u *User) populate(db *gorm.DB) {
 	u.Addresses = addresses
 }
 
-func GetAddressByIdAndMedium(db *gorm.DB, id string, medium string) *UserAddress {
+func GetAddressByIDAndMedium(db *gorm.DB, id string, medium string) *UserAddress {
 	id = strings.ToLower(id)
 	var o UserAddress
-	if result := db.Where(&UserAddress{UserId: id, Medium: medium}).First(&o); result.Error != nil {
+	if result := db.Where(&UserAddress{UserID: id, Medium: medium}).First(&o); result.Error != nil {
 		if result.RecordNotFound() {
 			return nil
 		}
@@ -103,7 +103,7 @@ func GetAddressByIdAndMedium(db *gorm.DB, id string, medium string) *UserAddress
 	return &o
 }
 
-func GetUserById(db *gorm.DB, id string) *User {
+func GetUserByID(db *gorm.DB, id string) *User {
 	id = strings.ToLower(id)
 	var o User
 	if result := db.First(&o, "id = ?", id); result.Error != nil {
@@ -145,7 +145,7 @@ func NewUser(db *gorm.DB, name string, password string, email string) User {
 		panic("name can't be empty")
 	}
 	o := User{
-		Id:        name,
+		ID:        name,
 		FullName:  "",
 		Addresses: []UserAddress{{Medium: "email", Address: email, Confirmed: false}},
 	}
@@ -158,9 +158,9 @@ func NewUser(db *gorm.DB, name string, password string, email string) User {
 	return o
 }
 
-func NewUserAddress(db *gorm.DB, userId string, medium string, address string, confirmed bool) UserAddress {
+func NewUserAddress(db *gorm.DB, userID string, medium string, address string, confirmed bool) UserAddress {
 	o := UserAddress{
-		UserId:        userId,
+		UserID:        userID,
 		Medium:        medium,
 		Address:       address,
 		Subscriptions: make([]Subscription, 0),

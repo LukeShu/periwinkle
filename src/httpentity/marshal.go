@@ -25,8 +25,8 @@ func (req *Request) readEntity(router *Router, reader io.Reader, contenttype str
 		res := statusBadRequest(heutil.NetPrintf("400 Bad Request: Could not parse Content-Type: %v", err))
 		return &res
 	}
-	decoder, found_decoder := router.Decoders[mimetype]
-	if !found_decoder {
+	decoder, foundDecoder := router.Decoders[mimetype]
+	if !foundDecoder {
 		res := StatusUnsupportedMediaType(heutil.NetString("415 Unsupported Media Type: Unsupported MIME type: " + mimetype))
 		return &res
 	}

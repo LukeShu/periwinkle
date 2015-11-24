@@ -56,7 +56,7 @@ func newFileSession() t_fileSession {
 			if strings.Contains(entity.Username, "@") {
 				user = backend.GetUserByAddress(db, "email", entity.Username)
 			} else {
-				user = backend.GetUserById(db, entity.Username)
+				user = backend.GetUserByID(db, entity.Username)
 			}
 
 			sess := (*Session)(backend.NewSession(db, user, entity.Password))
@@ -66,7 +66,7 @@ func newFileSession() t_fileSession {
 				ret := he.StatusOK(sess)
 				cookie := &http.Cookie{
 					Name:     "session_id",
-					Value:    sess.Id,
+					Value:    sess.ID,
 					Secure:   req.Scheme == "https",
 					HttpOnly: req.Scheme == "http",
 				}
