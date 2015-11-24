@@ -6,6 +6,7 @@ package httpapi
 import (
 	he "httpentity"
 	"httpentity/heutil"
+	"httpentity/rfc7231"
 	"io"
 	"net/http"
 	"periwinkle/backend"
@@ -38,7 +39,7 @@ func newFileSession() fileSession {
 	r.methods = map[string]func(he.Request) he.Response{
 		"GET": func(req he.Request) he.Response {
 			sess := req.Things["session"].(*backend.Session)
-			return he.StatusOK((*session)(sess))
+			return rfc7231.StatusOK((*session)(sess))
 		},
 		"POST": func(req he.Request) he.Response {
 			db := req.Things["db"].(*gorm.DB)
@@ -61,9 +62,9 @@ func newFileSession() fileSession {
 
 			sess := (*session)(backend.NewSession(db, user, entity.Password))
 			if sess == nil {
-				return he.StatusForbidden(heutil.NetString("Incorrect username/password"))
+				return rfc7231.StatusForbidden(heutil.NetString("Incorrect username/password"))
 			} else {
-				ret := he.StatusOK(sess)
+				ret := rfc7231.StatusOK(sess)
 				cookie := &http.Cookie{
 					Name:     "session_id",
 					Value:    sess.ID,
@@ -80,7 +81,7 @@ func newFileSession() fileSession {
 			if sess != nil {
 				sess.Delete(db)
 			}
-			return he.StatusNoContent()
+			return rfc7231.StatusNoContent()
 		},
 	}
 	return r

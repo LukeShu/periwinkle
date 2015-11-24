@@ -22,17 +22,17 @@ func (r Response) writeEntity(w io.Writer) error {
 func (req *Request) readEntity(router *Router, reader io.Reader, contenttype string) *Response {
 	mimetype, params, err := mime.ParseMediaType(contenttype)
 	if err != nil {
-		res := statusBadRequest(heutil.NetPrintf("400 Bad Request: Could not parse Content-Type: %v", err))
+		res := router.responseBadRequest(heutil.NetPrintf("400 Bad Request: Could not parse Content-Type: %v", err))
 		return &res
 	}
 	decoder, foundDecoder := router.Decoders[mimetype]
 	if !foundDecoder {
-		res := StatusUnsupportedMediaType(heutil.NetString("415 Unsupported Media Type: Unsupported MIME type: " + mimetype))
+		res := router.responseUnsupportedMediaType(heutil.NetString("415 Unsupported Media Type: Unsupported MIME type: " + mimetype))
 		return &res
 	}
 	entity, err := decoder(reader, params)
 	if err != nil {
-		res := StatusUnsupportedMediaType(heutil.NetPrintf("415 Unsupported Media Type: Error reading request body (%s): %v", mimetype, err))
+		res := router.responseUnsupportedMediaType(heutil.NetPrintf("415 Unsupported Media Type: Error reading request body (%s): %v", mimetype, err))
 		return &res
 	}
 	req.Entity = entity

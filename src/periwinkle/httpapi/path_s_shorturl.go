@@ -5,6 +5,7 @@ package httpapi
 
 import (
 	he "httpentity"
+	"httpentity/rfc7231"
 	"net/url"
 	"periwinkle/backend"
 
@@ -28,7 +29,7 @@ func (o *shortURL) Methods() map[string]func(he.Request) he.Response {
 	return map[string]func(he.Request) he.Response{
 		"GET": func(req he.Request) he.Response {
 			u, _ := url.Parse(o.Dest) // TODO: automatic unmarshal
-			return he.StatusMovedPermanently(u)
+			return rfc7231.StatusMovedPermanently(u)
 		},
 	}
 }

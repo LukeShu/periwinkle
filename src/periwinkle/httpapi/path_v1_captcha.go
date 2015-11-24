@@ -6,6 +6,7 @@ package httpapi
 
 import (
 	he "httpentity"
+	"httpentity/rfc7231"
 	"io"
 	"periwinkle/backend"
 
@@ -29,7 +30,7 @@ func (o *captcha) Subentity(name string, req he.Request) he.Entity {
 func (o *captcha) Methods() map[string]func(he.Request) he.Response {
 	return map[string]func(he.Request) he.Response{
 		"GET": func(req he.Request) he.Response {
-			return he.StatusOK(o)
+			return rfc7231.StatusOK(o)
 		},
 		"PUT": func(req he.Request) he.Response {
 			db := req.Things["db"].(*gorm.DB)
@@ -40,7 +41,7 @@ func (o *captcha) Methods() map[string]func(he.Request) he.Response {
 			}
 			*o = newCaptcha
 			o.backend().Save(db)
-			return he.StatusOK(o)
+			return rfc7231.StatusOK(o)
 		},
 		/*
 			"PATCH": func(req he.Request) he.Response {
@@ -74,7 +75,7 @@ func newDirCaptchas() dirCaptchas {
 	r.methods = map[string]func(he.Request) he.Response{
 		"POST": func(req he.Request) he.Response {
 			db := req.Things["db"].(*gorm.DB)
-			return he.StatusCreated(r, backend.NewCaptcha(db).ID, req)
+			return rfc7231.StatusCreated(r, backend.NewCaptcha(db).ID, req)
 		},
 	}
 	return r

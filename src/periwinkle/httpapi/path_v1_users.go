@@ -8,6 +8,7 @@ import (
 	"encoding/json"
 	he "httpentity"
 	"httpentity/heutil"
+	"httpentity/rfc7231"
 	"io"
 	"jsonpatch"
 	"periwinkle/backend"
@@ -54,22 +55,22 @@ func (o *user) patchPassword(patch *jsonpatch.Patch) *he.Response {
 			switch op.Op {
 			case "test":
 				if !o.backend().CheckPassword(op.Value) {
-					ret := he.StatusConflict(heutil.NetString("old password didn't match"))
+					ret := rfc7231.StatusConflict(heutil.NetString("old password didn't match"))
 					return &ret
 				}
 				checkedpass = true
 			case "replace":
 				if !checkedpass {
-					ret := he.StatusUnsupportedMediaType(heutil.NetString("you must submit and old password (using 'test') before setting a new one"))
+					ret := rfc7231.StatusUnsupportedMediaType(heutil.NetString("you must submit and old password (using 'test') before setting a new one"))
 					return &ret
 				}
 				if o.backend().CheckPassword(op.Value) {
-					ret := he.StatusConflict(heutil.NetString("that new password is the same as the old one"))
+					ret := rfc7231.StatusConflict(heutil.NetString("that new password is the same as the old one"))
 					return &ret
 				}
 				o.backend().SetPassword(op.Value)
 			default:
-				ret := he.StatusUnsupportedMediaType(heutil.NetString("you may only 'set' or 'replace' the password"))
+				ret := rfc7231.StatusUnsupportedMediaType(heutil.NetString("you may only 'set' or 'replace' the password"))
 				return &ret
 			}
 		} else {
@@ -92,13 +93,13 @@ func (o *user) patchPassword(patch *jsonpatch.Patch) *he.Response {
 func (usr *user) Methods() map[string]func(he.Request) he.Response {
 	return map[string]func(he.Request) he.Response{
 		"GET": func(req he.Request) he.Response {
-			return he.StatusOK(usr)
+			return rfc7231.StatusOK(usr)
 		},
 		"PUT": func(req he.Request) he.Response {
 			db := req.Things["db"].(*gorm.DB)
 			sess := req.Things["session"].(*backend.Session)
 			if sess.UserID != usr.ID {
-				return he.StatusForbidden(heutil.NetString("Unauthorized user"))
+				return rfc7231.StatusForbidden(heutil.NetString("Unauthorized user"))
 			}
 			var newUser user
 			httperr := safeDecodeJSON(req.Entity, &newUser)
@@ -106,7 +107,7 @@ func (usr *user) Methods() map[string]func(he.Request) he.Response {
 				return *httperr
 			}
 			if usr.ID != newUser.ID {
-				return he.StatusConflict(heutil.NetString("Cannot change user id"))
+				return rfc7231.StatusConflict(heutil.NetString("Cannot change user id"))
 			}
 			// TODO: this won't play nice with the
 			// password hash (because it's private), or
@@ -114,17 +115,17 @@ func (usr *user) Methods() map[string]func(he.Request) he.Response {
 			// need to be made to match up)
 			*usr = newUser
 			usr.backend().Save(db)
-			return he.StatusOK(usr)
+			return rfc7231.StatusOK(usr)
 		},
 		"PATCH": func(req he.Request) he.Response {
 			db := req.Things["db"].(*gorm.DB)
 			sess := req.Things["session"].(*backend.Session)
 			if sess.UserID != usr.ID {
-				return he.StatusForbidden(heutil.NetString("Unauthorized user"))
+				return rfc7231.StatusForbidden(heutil.NetString("Unauthorized user"))
 			}
 			patch, ok := req.Entity.(jsonpatch.Patch)
 			if !ok {
-				return he.StatusUnsupportedMediaType(heutil.NetString("PATCH request must have a patch media type"))
+				return rfc7231.StatusUnsupportedMediaType(heutil.NetString("PATCH request must have a patch media type"))
 			}
 			httperr := usr.patchPassword(&patch)
 			if httperr != nil {
@@ -133,10 +134,10 @@ func (usr *user) Methods() map[string]func(he.Request) he.Response {
 			var newUser user
 			err := patch.Apply(usr, &newUser)
 			if err != nil {
-				return he.StatusConflict(heutil.NetString(err.Error()))
+				return rfc7231.StatusConflict(heutil.NetString(err.Error()))
 			}
 			if usr.ID != newUser.ID {
-				return he.StatusConflict(heutil.NetString("Cannot change user id"))
+				return rfc7231.StatusConflict(heutil.NetString("Cannot change user id"))
 			}
 			// some mucking around with private fields to make things match up
 			newUser.PwHash = usr.PwHash
@@ -164,12 +165,12 @@ func (usr *user) Methods() map[string]func(he.Request) he.Response {
 					panic(err)
 				}
 			}
-			return he.StatusOK(usr)
+			return rfc7231.StatusOK(usr)
 		},
 		"DELETE": func(req he.Request) he.Response {
 			db := req.Things["db"].(*gorm.DB)
 			db.Delete(usr)
-			return he.StatusNoContent()
+			return rfc7231.StatusNoContent()
 		},
 	}
 }
@@ -204,13 +205,13 @@ func newDirUsers() dirUsers {
 			}
 
 			if entity.Username == "" || entity.Email == "" || entity.Password == "" {
-				return he.StatusUnsupportedMediaType(heutil.NetString("username, email, and password can't be emtpy"))
+				return rfc7231.StatusUnsupportedMediaType(heutil.NetString("username, email, and password can't be emtpy"))
 			}
 
 			if entity.PasswordVerification != "" {
 				if entity.Password != entity.PasswordVerification {
 					// Passwords don't match
-					return he.StatusConflict(heutil.NetString("password and password_verification don't match"))
+					return rfc7231.StatusConflict(heutil.NetString("password and password_verification don't match"))
 				}
 			}
 
@@ -220,7 +221,7 @@ func newDirUsers() dirUsers {
 			backend.NewUserAddress(db, usr.ID, "noop", "", true)
 			backend.NewUserAddress(db, usr.ID, "admin", "", true)
 			req.Things["user"] = usr
-			return he.StatusCreated(r, usr.ID, req)
+			return rfc7231.StatusCreated(r, usr.ID, req)
 		},
 	}
 	return r

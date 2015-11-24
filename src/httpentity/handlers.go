@@ -4,6 +4,7 @@ package httpentity
 
 import (
 	"httpentity/heutil"
+	"net/http"
 	"net/url"
 	"strings"
 )
@@ -39,7 +40,7 @@ func (mwh middlewareHolder) handler(request Request, u *url.URL) Response {
 func (router *Router) defaultHandler(request Request, u *url.URL) Response {
 	entity := findEntity(router.Root, request, strings.TrimPrefix(u.Path, router.Prefix))
 	if entity == nil {
-		return statusNotFound()
+		return router.responseNotFound()
 	}
 
 	callmethod := request.Method
@@ -54,9 +55,13 @@ func (router *Router) defaultHandler(request Request, u *url.URL) Response {
 		response = handler(request)
 	} else {
 		if callmethod == "OPTIONS" {
-			response = StatusOK(nil)
+			response = Response{
+				Status:  200,
+				Headers: http.Header{},
+				Entity:  nil,
+			}
 		} else {
-			response = statusMethodNotAllowed(methods2string(methods))
+			response = router.responseMethodNotAllowed(methods2string(methods))
 		}
 	}
 	if callmethod == "OPTIONS" {
@@ -69,7 +74,7 @@ func (router *Router) defaultHandler(request Request, u *url.URL) Response {
 		response.Headers.Set("Location", u2.String())
 		// XXX: this is pretty hacky, because it is tightly
 		// integrated with the entity format used by
-		// (Request).StatusCreated()
+		// rfc7231.StatusCreated()
 		if response.Status == 201 {
 			ilist := []interface{}(response.Entity.(heutil.NetList))
 			slist := make([]string, len(ilist))

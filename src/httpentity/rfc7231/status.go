@@ -1,16 +1,17 @@
 // Copyright 2015 Luke Shumaker
 
-package httpentity
+package rfc7231
 
 import (
+	he "httpentity"
 	"httpentity/heutil"
 	"net/http"
 	"net/url"
 )
 
 // For when you're returning a document, with nothing special.
-func StatusOK(entity NetEntity) Response {
-	return Response{
+func StatusOK(entity he.NetEntity) he.Response {
+	return he.Response{
 		Status:  200,
 		Headers: http.Header{},
 		Entity:  entity,
@@ -18,7 +19,7 @@ func StatusOK(entity NetEntity) Response {
 }
 
 // For when you've created a document with a new URL.
-func StatusCreated(parent Entity, childName string, req Request) Response {
+func StatusCreated(parent he.Entity, childName string, req he.Request) he.Response {
 	if childName == "" {
 		panic("can't call StatusCreated with an empty child name")
 	}
@@ -37,7 +38,7 @@ func StatusCreated(parent Entity, childName string, req Request) Response {
 	}
 	mimetypes := encoders2mimetypes(response.Entity.Encoders())
 	u, _ := url.Parse("") // create a blank dummy url.URL
-	return Response{
+	return he.Response{
 		Status:  201,
 		Headers: response.Headers,
 		// XXX: .Entity gets modified by (*Router).route()
@@ -48,8 +49,8 @@ func StatusCreated(parent Entity, childName string, req Request) Response {
 
 // For when you've received a request, but haven't completed it yet
 // (ex, it has been added to a queue).
-func StatusAccepted(e NetEntity) Response {
-	return Response{
+func StatusAccepted(e he.NetEntity) he.Response {
+	return he.Response{
 		Status:  202,
 		Headers: http.Header{},
 		Entity:  e,
@@ -58,8 +59,8 @@ func StatusAccepted(e NetEntity) Response {
 
 // For when you've successfully done something, but have no body to
 // return.
-func StatusNoContent() Response {
-	return Response{
+func StatusNoContent() he.Response {
+	return he.Response{
 		Status:  204,
 		Headers: http.Header{},
 		Entity:  nil,
@@ -67,8 +68,8 @@ func StatusNoContent() Response {
 }
 
 // The client should reset the form of whatever view it currently has.
-func StatusResetContent() Response {
-	return Response{
+func StatusResetContent() he.Response {
+	return he.Response{
 		Status:  205,
 		Headers: http.Header{},
 		Entity:  nil,
@@ -77,8 +78,8 @@ func StatusResetContent() Response {
 
 // For when you have document in multiple formats, but you're not sure
 // which the user wants.
-func statusMultipleChoices(u *url.URL, mimetypes []string) Response {
-	return Response{
+func statusMultipleChoices(u *url.URL, mimetypes []string) he.Response {
+	return he.Response{
 		Status:  300,
 		Headers: http.Header{},
 		Entity:  mimetypes2net(u, mimetypes),
@@ -87,8 +88,8 @@ func statusMultipleChoices(u *url.URL, mimetypes []string) Response {
 
 // For when the document the user requested has permantly moved to a
 // new address.
-func StatusMovedPermanently(u *url.URL) Response {
-	return Response{
+func StatusMovedPermanently(u *url.URL) he.Response {
+	return he.Response{
 		Status: 301,
 		Headers: http.Header{
 			"Location": {u.String()},
@@ -102,8 +103,8 @@ func StatusMovedPermanently(u *url.URL) Response {
 //
 // The client may change a POST to a GET request when trying the new
 // location.
-func StatusFound(u *url.URL) Response {
-	return Response{
+func StatusFound(u *url.URL) he.Response {
+	return he.Response{
 		Status: 302,
 		Headers: http.Header{
 			"Location": {u.String()},
@@ -112,8 +113,8 @@ func StatusFound(u *url.URL) Response {
 	}
 }
 
-func StatusSeeOther(u *url.URL) Response {
-	return Response{
+func StatusSeeOther(u *url.URL) he.Response {
+	return he.Response{
 		Status: 303,
 		Headers: http.Header{
 			"Location": {u.String()},
@@ -126,8 +127,8 @@ func StatusSeeOther(u *url.URL) Response {
 //
 // The client must repeate the request exactly the same, except for
 // the URL.
-func StatusTemporaryRedirect(u *url.URL) Response {
-	return Response{
+func StatusTemporaryRedirect(u *url.URL) he.Response {
+	return he.Response{
 		Status: 307,
 		Headers: http.Header{
 			"Location": {u.String()},
@@ -137,38 +138,38 @@ func StatusTemporaryRedirect(u *url.URL) Response {
 }
 
 // For when the *user* has screwed up a request.
-func statusBadRequest(e NetEntity) Response {
+func statusBadRequest(e he.NetEntity) he.Response {
 	if e == nil {
 		e = heutil.NetString("400 Bad Request")
 	}
-	return Response{
+	return he.Response{
 		Status:  400,
 		Headers: http.Header{},
 		Entity:  e,
 	}
 }
 
-func StatusForbidden(e NetEntity) Response {
+func StatusForbidden(e he.NetEntity) he.Response {
 	if e == nil {
 		e = heutil.NetString("403 Forbidden")
 	}
-	return Response{
+	return he.Response{
 		Status:  403,
 		Headers: http.Header{},
 		Entity:  e,
 	}
 }
 
-func statusNotFound() Response {
-	return Response{
+func statusNotFound() he.Response {
+	return he.Response{
 		Status:  404,
 		Headers: http.Header{},
 		Entity:  heutil.NetString("404 Not Found"),
 	}
 }
 
-func statusMethodNotAllowed(methods string) Response {
-	return Response{
+func statusMethodNotAllowed(methods string) he.Response {
+	return he.Response{
 		Status: 405,
 		Headers: http.Header{
 			"Allow": {methods},
@@ -177,8 +178,8 @@ func statusMethodNotAllowed(methods string) Response {
 	}
 }
 
-func statusNotAcceptable(u *url.URL, mimetypes []string) Response {
-	return Response{
+func statusNotAcceptable(u *url.URL, mimetypes []string) he.Response {
+	return he.Response{
 		Status:  406,
 		Headers: http.Header{},
 		Entity:  mimetypes2net(u, mimetypes),
@@ -187,8 +188,8 @@ func statusNotAcceptable(u *url.URL, mimetypes []string) Response {
 
 // For when the user asked us to make a change conflicting with the
 // current state of things.
-func StatusConflict(entity NetEntity) Response {
-	return Response{
+func StatusConflict(entity he.NetEntity) he.Response {
+	return he.Response{
 		Status:  409,
 		Headers: http.Header{},
 		Entity:  entity,
@@ -196,19 +197,19 @@ func StatusConflict(entity NetEntity) Response {
 }
 
 // For the resource has been deleted, and will never ever return.
-func StatusGone(entity NetEntity) Response {
-	return Response{
+func StatusGone(entity he.NetEntity) he.Response {
+	return he.Response{
 		Status:  410,
 		Headers: http.Header{},
 		Entity:  entity,
 	}
 }
 
-func StatusUnsupportedMediaType(e NetEntity) Response {
+func StatusUnsupportedMediaType(e he.NetEntity) he.Response {
 	if e == nil {
 		e = heutil.NetString("415 Unsupported Media Type")
 	}
-	return Response{
+	return he.Response{
 		Status:  415,
 		Headers: http.Header{},
 		Entity:  e,
@@ -218,8 +219,8 @@ func StatusUnsupportedMediaType(e NetEntity) Response {
 // TODO: StatusExpectationFailed (417)
 // TODO: StatusUpgradeRequired (426)
 
-func statusInternalServerError(err interface{}) Response {
-	return Response{
+func statusInternalServerError(err interface{}) he.Response {
+	return he.Response{
 		Status: 500,
 		Headers: http.Header{
 			"Content-Type": {"text/plain; charset=utf-8"},
@@ -228,8 +229,8 @@ func statusInternalServerError(err interface{}) Response {
 	}
 }
 
-func StatusNotImplemented(e NetEntity) Response {
-	return Response{
+func StatusNotImplemented(e he.NetEntity) he.Response {
+	return he.Response{
 		Status:  501,
 		Headers: http.Header{},
 		Entity:  e,

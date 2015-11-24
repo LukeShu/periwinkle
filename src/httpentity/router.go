@@ -3,12 +3,9 @@
 package httpentity
 
 import (
-	"fmt"
-	"log"
 	"mime"
 	"net/url"
 	"path"
-	"runtime"
 	"strings"
 
 	"bitbucket.org/ww/goautoneg"
@@ -38,17 +35,7 @@ func (r Router) Init() *Router {
 func (r *Router) finish(req Request, u *url.URL, res *Response) {
 	// generate a 500 error if we paniced
 	if err := recover(); err != nil {
-		reason := err
-		if r.Stacktrace {
-			const size = 64 << 10
-			buf := make([]byte, size)
-			buf = buf[:runtime.Stack(buf, false)]
-			reason = fmt.Sprintf("%T(%#v) => %v\n\n%s\n", err, err, err, string(buf))
-			for _, line := range strings.Split(reason.(string), "\n") {
-				log.Println(line)
-			}
-		}
-		*res = statusInternalServerError(reason)
+		*res = r.responseServerError(err)
 	}
 	// figure out the content type of the response
 	if res.Entity != nil && res.Headers.Get("Content-Type") == "" {
@@ -56,7 +43,7 @@ func (r *Router) finish(req Request, u *url.URL, res *Response) {
 		mimetypes := encoders2mimetypes(encoders)
 		accept := req.Headers.Get("Accept")
 		if len(encoders) > 1 && accept == "" {
-			*res = statusMultipleChoices(u, mimetypes)
+			*res = r.responseMultipleChoices(u, mimetypes)
 		} else {
 			// TODO: long term: In the event of a tie,
 			// goautoneg returns the first match in the
@@ -66,7 +53,7 @@ func (r *Router) finish(req Request, u *url.URL, res *Response) {
 			// means forking or re-implementing goautoneg.
 			mimetype := goautoneg.Negotiate(accept, mimetypes)
 			if mimetype == "" {
-				*res = statusNotAcceptable(u, mimetypes)
+				*res = r.responseNotAcceptable(u, mimetypes)
 			} else {
 				res.Headers.Set("Content-Type", mimetype+"; charset=utf-8")
 			}

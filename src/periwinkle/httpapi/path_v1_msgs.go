@@ -5,6 +5,7 @@ package httpapi
 
 import (
 	he "httpentity"
+	"httpentity/rfc7231"
 	"io"
 	"periwinkle/backend"
 
@@ -29,7 +30,7 @@ func (o *message) Methods() map[string]func(he.Request) he.Response {
 	return map[string]func(he.Request) he.Response{
 		"GET": func(req he.Request) he.Response {
 			// TODO: permission check
-			return he.StatusOK(o)
+			return rfc7231.StatusOK(o)
 		},
 	}
 }
