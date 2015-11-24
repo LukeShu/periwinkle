@@ -4,27 +4,24 @@ package main
 
 import (
 	"fmt"
-	"io"
 	"log"
 	"net"
 	"os"
 	"os/signal"
-	"periwinkle"
 	"periwinkle/cfg"
 	"periwinkle/httpapi"
 	"strconv"
 	"strings"
 	"syscall"
 
+	docopt "github.com/docopt/docopt-go"
 	sd "lukeshu.com/git/go/libsystemd.git/sd_daemon"
 	"lukeshu.com/git/go/libsystemd.git/sd_daemon/lsb"
 )
 
-// TODO: allow specifying a config file
-
-func usage(w io.Writer) {
-	fmt.Fprintf(w,
-		`Usage: %s [ADDR_TYPE] [ADDR]
+var usage = fmt.Sprintf(`
+Usage: %[1]s [-c CONFIG_FILE] [ADDR_TYPE] [ADDR]
+       %[1]s -h | --help
 Do the HTTP that you do, baby.
 
 Address types are "tcp", "tcp4", "tcp6", "unix", and "fd".
@@ -48,54 +45,47 @@ cases. "stdin", "stdout", and "stderr" are aliases for "0", "1", and
 2", respectively. "systemd" causes it to look up the file descriptor
 from systemd socket-activation.
 
-If one argument is given, and it starts with a "-" or is "help", then
-this message is displayed.
-`, os.Args[0])
-}
+Options:
+  -h --help       Display this message.
+  -c CONFIG_FILE  Specify the configuration file [default: ./config.yaml].`,
+	os.Args[0])
 
-func parseArgs() (net.Listener, *periwinkle.Cfg) {
+func parseArgs(args []string) net.Listener {
 	var stype, saddr string
 
-	switch len(os.Args) - 1 {
+	switch len(args) - 1 {
 	case 0:
 		stype = "tcp"
 		saddr = ":8080"
 	case 1:
-		if strings.HasPrefix(os.Args[1], "-") {
-			usage(os.Stdout)
-			os.Exit(int(lsb.EXIT_SUCCESS))
-		}
-		switch os.Args[1] {
+		switch args[0] {
 		case "tcp", "tcp4", "tcp6":
-			stype = os.Args[1]
+			stype = args[0]
 			saddr = ":8080"
 		case "unix":
-			stype = os.Args[1]
+			stype = args[0]
 			saddr = "./http.sock"
 		case "fd":
-			stype = os.Args[1]
+			stype = args[0]
 			saddr = "stdin"
 		case "systemd", "stdin", "stdout", "stderr":
 			stype = "fd"
-			saddr = os.Args[1]
-		case "help":
-			usage(os.Stdout)
-			os.Exit(int(lsb.EXIT_SUCCESS))
+			saddr = args[0]
 		default:
-			if strings.ContainsRune(os.Args[1], '/') {
+			if strings.ContainsRune(args[0], '/') {
 				stype = "unix"
-			} else if _, err := strconv.Atoi(os.Args[1]); err == nil {
+			} else if _, err := strconv.Atoi(args[0]); err == nil {
 				stype = "fd"
 			} else {
 				stype = "tcp"
 			}
-			saddr = os.Args[1]
+			saddr = args[0]
 		}
 	case 2:
-		stype = os.Args[1]
-		saddr = os.Args[2]
+		stype = args[0]
+		saddr = args[1]
 	default:
-		usage(os.Stderr)
+		fmt.Fprint(os.Stderr, usage)
 		os.Exit(int(lsb.EXIT_FAILURE))
 	}
 
@@ -129,20 +119,7 @@ func parseArgs() (net.Listener, *periwinkle.Cfg) {
 		log.Println(err)
 		os.Exit(int(lsb.EXIT_FAILURE))
 	}
-
-	configFilename := "./periwinkle.yaml"
-	file, err := os.Open(configFilename)
-	if err != nil {
-		log.Printf("Could not open %q: %v\n", configFilename, err)
-		os.Exit(int(lsb.EXIT_NOTCONFIGURED))
-	}
-	config, err := cfg.Parse(file)
-	if err != nil {
-		log.Println(err)
-		os.Exit(int(lsb.EXIT_NOTCONFIGURED))
-	}
-
-	return socket, config
+	return socket
 }
 
 func listenfd(fd int, name string) (net.Listener, error) {
@@ -165,14 +142,34 @@ func sdGetSocket() (socket net.Listener, err error) {
 }
 
 func main() {
-	done := make(chan uint8)
+	options, _ := docopt.Parse(usage, os.Args[1:], true, "", false, true)
+	args := []string{}
+	if options["ADDR_TYPE"] != nil {
+		args = append(args, options["ADDR_TYPE"].(string))
+	}
+	if options["ADDR"] != nil {
+		args = append(args, options["ADDR"].(string))
+	}
+	socket := parseArgs(args)
+
+	configFile, err := os.Open(options["-c"].(string))
+	if err != nil {
+		log.Println("Could read configuration file", err)
+		os.Exit(int(lsb.EXIT_NOTCONFIGURED))
+	}
+
+	config, err := cfg.Parse(configFile)
+	if err != nil {
+		log.Println(err)
+		os.Exit(int(lsb.EXIT_NOTCONFIGURED))
+	}
+
 	signals := make(chan os.Signal)
 	signal.Notify(signals, syscall.SIGTERM, syscall.SIGHUP)
 
-	socket, config := parseArgs()
-
 	sd.Notify(false, "READY=1")
 
+	done := make(chan uint8)
 	server := httpapi.MakeServer(socket, config)
 	server.Start()
 	go func() {
