@@ -9,8 +9,8 @@ import (
 	"httpentity/heutil"
 	"io"
 	"jsonpatch"
-	"strings"
 	"periwinkle/backend"
+	"strings"
 
 	"github.com/jinzhu/gorm"
 )
@@ -106,11 +106,11 @@ func newDirGroups() t_dirGroups {
 			}
 			generic := make([]interface{}, len(groups))
 			type EnumerateGroup struct {
-				Id            string         `json:"id"`
-				Existence     string         `json:"existence"`
-				Read          string         `json:"read"`
-				Post          string         `json:"post"`
-				Join          string         `json:"join"`
+				Id            string                 `json:"id"`
+				Existence     string                 `json:"existence"`
+				Read          string                 `json:"read"`
+				Post          string                 `json:"post"`
+				Join          string                 `json:"join"`
 				Subscriptions []backend.Subscription `json:"subscriptions"`
 			}
 

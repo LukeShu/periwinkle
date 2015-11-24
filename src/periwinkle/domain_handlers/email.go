@@ -11,8 +11,8 @@ import (
 	"net/mail"
 	"net/smtp"
 	"periwinkle"
-	"periwinkle/putil"
 	"periwinkle/backend"
+	"periwinkle/putil"
 	"postfixpipe"
 
 	"github.com/jinzhu/gorm"

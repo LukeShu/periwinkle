@@ -7,8 +7,8 @@ import (
 	"fmt"
 	"io"
 	"os"
-	"periwinkle/cfg"
 	"periwinkle/backend"
+	"periwinkle/cfg"
 )
 
 func usage(w io.Writer) {
