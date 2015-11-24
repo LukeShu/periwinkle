@@ -1,5 +1,5 @@
 <!-- // Copyright 2015 Richard Wisniewski -->
-<md-toolbar class="md-tall" style="z-index: 1;">
+<md-toolbar class="md-tall">
 	<div class="md-toolbar-tools">
 		<h1 id="title">
 			<span>{{ title  | translate}}</span>
@@ -12,12 +12,12 @@
 	</div>
 </md-toolbar>
 
-<md-content id="content" class="tall-bar-content md-padding" ng-cloak="">
+<md-content class="tall-bar-content md-padding" style="position: relative;">
 
 	<div ng-if="loading" style="position: fixed; z-index: 12; width: 40px; height: 40px; top: 128px; left: 50%; margin-left: -20px; border-color: #f0f0f0; border-style: solid; border-width: 1px; border-radius: 20px; background-color: white;">
 		<md-progress-circular md-diameter="20px" md-mode="indeterminate" style="margin-top: -30px; margin-left: -30px;"></md-progress-circular>
 	</div>
-	<div layout="row" layout-wrap style="max-width: 600px; margin-left: auto; margin-right: auto; z-index: 2;">
+	<div layout="column" style="max-width: 600px; margin-left: auto; margin-right: auto;">
 		<div flex="100">
 			<md-card id="user">
 				<md-toolbar class="md-toolbar-tools" style="background-color: white; color: black;">
@@ -174,7 +174,7 @@
 								</md-tooltip>
 								<md-icon md-svg-src="assets/svg/reply.svg">u</md-icon>
 							</md-button>
-							<md-button aria-label="New" ng-click="user.groups.new(originalEvent)" class="md-fab md-raised md-mini">
+							<md-button aria-label="New" ng-click="user.groups.new($event)" class="md-fab md-raised md-mini">
 								<md-tooltip md-direction="bottom">
 									{{ "USER.GROUPS.NEW" | translate }}
 								</md-tooltip>

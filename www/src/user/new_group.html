@@ -1,47 +1,46 @@
 <!-- // Copyright 2015 Richard Wisniewski -->
 <md-dialog aria-label="New Group"  ng-cloak>
-
-	<md-toolbar>
-		<div class="md-toolbar-tools">
-			<h1>{{ title | translate }}</h1>
-		</div>
-	</md-toolbar>
-
-	<div ng-if="!loading">
-		<form name="newGroupForm" ng-submit="group.create()">
-			<md-dialog-content style="max-width: 150mm; max-height: 100mm;">
-				<div class="md-dialog-content">
-					<p style="color: red;" ng-if="error != ''">{{ error | translate }}</p>
-					<md-input-container>
-						<label>{{ "USER.NEW_GROUP.GROUP_NAME" | translate}}</label>
-						<input ng-model="group.name" type="text" required/>
-					</md-input-container>
-					<md-input-container>
-						<label>Who see it?</label>
+	<form name="newGroupForm" ng-submit="group.create()" layout="column">
+		<md-toolbar>
+			<div class="md-toolbar-tools">
+				<h2>{{ title | translate }}</h2>
+			</div>
+		</md-toolbar>
+		<md-dialog-content style="max-width: 500px; max-height: 400px;">
+			<div class="md-dialog-content" layout="column">
+				<md-input-container layout-fill>
+					<label>{{ "USER.NEW_GROUP.GROUP_NAME" | translate}}</label>
+					<input ng-model="group.name" type="text" required/>
+				</md-input-container>
+				<div layout="row" layout-sm="column" layout-fill>
+					<md-input-container flex>
+						<label>Existance</label>
 						<md-select name="type" ng-model="group.exists">
 							<md-option ng-repeat="type in group.exists_prms" ng-value="$index">
 								{{type.text}}
 							</md-option>
 						</md-select>
 					</md-input-container>
-					<md-input-container>
-						<label>Who see the messages?</label>
+					<md-input-container flex>
+						<label>Read</label>
 						<md-select name="type" ng-model="group.read">
 							<md-option ng-repeat="type in group.read_prms" ng-value="$index">
 								{{type.text}}
 							</md-option>
 						</md-select>
 					</md-input-container>
-					<md-input-container>
-						<label>Who can send messages?</label>
+				</div>
+				<div layout="row" layout-sm="column" layout-fill>
+					<md-input-container flex>
+						<label>Post</label>
 						<md-select name="type" ng-model="group.post">
 							<md-option ng-repeat="type in group.post_prms" ng-value="$index">
 								{{type.text}}
 							</md-option>
 						</md-select>
 					</md-input-container>
-					<md-input-container>
-						<label>How are users added?</label>
+					<md-input-container flex>
+						<label>Join</label>
 						<md-select name="type" ng-model="group.join">
 							<md-option ng-repeat="type in group.join_prms" ng-value="$index">
 								{{type.text}}
@@ -49,20 +48,16 @@
 						</md-select>
 					</md-input-container>
 				</div>
-			</md-dialog-content>
-			<div style="clear: both;"></div>
-			<div class="md-actions" layout="row">
-				<md-button type="button" ng-click="group.cancel()">
-					{{ "GENERAL.FORM.RESPONSE.CANCEL" | translate }}
-				</md-button>
-				<md-button type="submit">
-					{{ "GENERAL.FORM.RESPONSE.CREATE" | translate }}
-				</md-button>
 			</div>
-		</form>
-	</div>
-
-	<div ng-if="loading" style="width: 100px; height: 100px margin-top: 1.5em; margin-left: auto; margin-right: auto; margin-bottom: 1.5em;">
-		<md-progress-circular md-mode="indeterminate"></md-progress-circular>
-	</div>
+		</md-dialog-content>
+		<md-dialog-actions layout="row">
+			<span flex></span>
+			<md-button type="button" ng-click="group.cancel()">
+				{{ "GENERAL.FORM.RESPONSE.CANCEL" | translate }}
+			</md-button>
+			<md-button type="submit">
+				{{ "GENERAL.FORM.RESPONSE.CREATE" | translate }}
+			</md-button>
+		</md-dialog-actions>
+	</form>
 </md-dialog>
