@@ -4,10 +4,11 @@ import (
 	"fmt"
 	"github.com/jinzhu/gorm"
 	"log"
+	"periwinkle"
 	"periwinkle/backend"
 )
 
-func Test(db *gorm.DB) {
+func Test(cfg *periwinkle.Cfg, db *gorm.DB) {
 
 	err := db.Create(&backend.User{
 		ID:        "Alex",
@@ -75,8 +76,8 @@ func Test(db *gorm.DB) {
 		log.Println(err)
 	}
 
-	fmt.Println("All existing twilio numbers: ", backend.GetAllExistingTwilioNumbers())
-	fmt.Println("All unused numbers for John", backend.GetUnusedTwilioNumbersByUser(db, "John"))
+	fmt.Println("All existing twilio numbers: ", backend.GetAllExistingTwilioNumbers(cfg))
+	fmt.Println("All unused numbers for John", backend.GetUnusedTwilioNumbersByUser(cfg, db, "John"))
 	//backend.AssignTwilioNumber(db, "John", "Purdue", backend.GetUnusedTwilioNumbersByUser(db, "John")[0])
 	//fmt.Println("All unused numbers for John", backend.GetUnusedTwilioNumbersByUser(db, "John"))
 

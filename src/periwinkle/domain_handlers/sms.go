@@ -14,7 +14,6 @@ import (
 	"net/http"
 	"net/mail"
 	"net/url"
-	"os"
 	"periwinkle"
 	"periwinkle/backend"
 	"periwinkle/twilio"
@@ -55,13 +54,7 @@ func sender(message mail.Message, smsTo string, db *gorm.DB, cfg *periwinkle.Cfg
 	//	return "", err
 	//}
 
-	// account SID for Twilio account
-	accountSID := os.Getenv("TWILIO_ACCOUNTID")
-
-	// Authorization token for Twilio account
-	authToken := os.Getenv("TWILIO_TOKEN")
-
-	messagesURL := "https://api.twilio.com/2010-04-01/Accounts/" + accountSID + "/Messages.json"
+	messagesURL := "https://api.twilio.com/2010-04-01/Accounts/" + cfg.TwilioAccountID + "/Messages.json"
 
 	v := url.Values{}
 	v.Set("From", smsFrom)
@@ -75,7 +68,7 @@ func sender(message mail.Message, smsTo string, db *gorm.DB, cfg *periwinkle.Cfg
 	if err != nil {
 		return
 	}
-	req.SetBasicAuth(accountSID, authToken)
+	req.SetBasicAuth(cfg.TwilioAccountID, cfg.TwilioAuthToken)
 	req.Header.Add("Accept", "application/json")
 	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
 

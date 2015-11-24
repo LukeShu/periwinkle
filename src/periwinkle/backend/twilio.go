@@ -7,7 +7,7 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
-	"os"
+	"periwinkle"
 
 	"github.com/jinzhu/gorm"
 )
@@ -69,10 +69,10 @@ func GetTwilioPoolByUserID(db *gorm.DB, userid string) []TwilioPool {
 	return o
 }
 
-func GetUnusedTwilioNumbersByUser(db *gorm.DB, userid string) []string {
+func GetUnusedTwilioNumbersByUser(cfg *periwinkle.Cfg, db *gorm.DB, userid string) []string {
 
 	str := []string{}
-	allTwilioNum := GetAllExistingTwilioNumbers()
+	allTwilioNum := GetAllExistingTwilioNumbers(cfg)
 	twilioPools := GetTwilioPoolByUserID(db, userid)
 
 	var usedNums TwilioNumber
@@ -187,16 +187,9 @@ func GetGroupByUserAndTwilioNumber(db *gorm.DB, userid string, twilioNum string)
 	return &group
 }
 
-func GetAllExistingTwilioNumbers() []string {
-
-	// account SID for Twilio account
-	accountSID := os.Getenv("TWILIO_ACCOUNTID")
-
-	// Authorization token for Twilio account
-	authToken := os.Getenv("TWILIO_TOKEN")
-
+func GetAllExistingTwilioNumbers(cfg *periwinkle.Cfg) []string {
 	// gets url for the numbers we own in the Twilio Account
-	incomingNumURL := "https://api.twilio.com/2010-04-01/Accounts/" + accountSID + "/IncomingPhoneNumbers.json"
+	incomingNumURL := "https://api.twilio.com/2010-04-01/Accounts/" + cfg.TwilioAccountID + "/IncomingPhoneNumbers.json"
 
 	client := &http.Client{}
 
@@ -206,7 +199,7 @@ func GetAllExistingTwilioNumbers() []string {
 		return nil
 	}
 
-	req.SetBasicAuth(accountSID, authToken)
+	req.SetBasicAuth(cfg.TwilioAccountID, cfg.TwilioAuthToken)
 
 	resp, err := client.Do(req)
 

@@ -10,28 +10,18 @@ import (
 	"log"
 	"net/http"
 	"net/url"
-	"os"
+	"periwinkle"
 	"periwinkle/twilio"
 )
 
 // function returns  a phone number and Status
-//if successful, returns a new phone number and OK
-
-func NewPhoneNum() (string, error) {
-
-	// account SID for Twilio account
-	accountSID := os.Getenv("TWILIO_ACCOUNTID")
-
-	// Authorization token for Twilio account
-	authToken := os.Getenv("TWILIO_TOKEN")
-
+// if successful, returns a new phone number and OK
+func NewPhoneNum(cfg *periwinkle.Cfg) (string, error) {
 	// gets url for available numbers
-
-	availNumURL := "https://api.twilio.com/2010-04-01/Accounts/" + accountSID + "/AvailablePhoneNumbers/US/Local.json?SmsEnabled=true&MmsEnabled=true"
+	availNumURL := "https://api.twilio.com/2010-04-01/Accounts/" + cfg.TwilioAccountID + "/AvailablePhoneNumbers/US/Local.json?SmsEnabled=true&MmsEnabled=true"
 
 	// gets url for a new phone number
-
-	newPhoneNumURL := "https://api.twilio.com/2010-04-01/Accounts/" + accountSID + "/IncomingPhoneNumbers.json"
+	newPhoneNumURL := "https://api.twilio.com/2010-04-01/Accounts/" + cfg.TwilioAccountID + "/IncomingPhoneNumbers.json"
 
 	client := &http.Client{}
 
@@ -42,7 +32,7 @@ func NewPhoneNum() (string, error) {
 		return "", err
 	}
 
-	req.SetBasicAuth(accountSID, authToken)
+	req.SetBasicAuth(cfg.TwilioAccountID, cfg.TwilioAuthToken)
 
 	resp, err := client.Do(req)
 	defer resp.Body.Close()
@@ -65,7 +55,7 @@ func NewPhoneNum() (string, error) {
 			return "", err
 		}
 
-		req.SetBasicAuth(accountSID, authToken)
+		req.SetBasicAuth(cfg.TwilioAccountID, cfg.TwilioAuthToken)
 		resp, err = client.Do(req)
 		defer resp.Body.Close()
 		if err != nil {
@@ -109,7 +99,7 @@ func NewPhoneNum() (string, error) {
 			return "", err
 		}
 
-		req.SetBasicAuth(accountSID, authToken)
+		req.SetBasicAuth(cfg.TwilioAccountID, cfg.TwilioAuthToken)
 		req.Header.Add("Accept", "application/json")
 		req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
 
