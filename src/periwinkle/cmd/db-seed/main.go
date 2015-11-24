@@ -9,6 +9,7 @@ import (
 	"os"
 	"periwinkle/backend"
 	"periwinkle/cfg"
+	//"periwinkle/test"
 )
 
 func usage(w io.Writer) {
@@ -41,4 +42,5 @@ func main() {
 
 	backend.DbSchema(config.DB)
 	backend.DbSeed(config.DB)
+	//test.Test(config.DB)
 }
