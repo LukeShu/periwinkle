@@ -49,6 +49,14 @@ func UseCaptcha(db *gorm.DB, token string) bool {
 	panic("TODO")
 }
 
+func CheckCaptcha(db *gorm.DB, userInput string, captchaID string) bool {
+	o := GetCaptchaByID(db, captchaID)
+	if o == nil {
+		return false
+	}
+	return userInput == o.Value
+}
+
 func GetCaptchaByID(db *gorm.DB, id string) *Captcha {
 	var o Captcha
 	if result := db.First(&o, "id = ?", id); result.Error != nil {
@@ -68,4 +76,10 @@ func (o *Captcha) MarshalPNG(w io.Writer) error {
 func (o *Captcha) MarshalWAV(w io.Writer) error {
 	// TODO: generate WAV and write it to w
 	return captcha.WriteAudio(w, o.ID, "en")
+}
+
+func (o *Captcha) Save(db *gorm.DB) {
+	if err := db.Save(o).Error; err != nil {
+		panic(err)
+	}
 }

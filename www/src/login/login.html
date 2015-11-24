@@ -48,7 +48,7 @@
 						<div style="clear:both;"></div>
 					</md-card-content>
 					<div layout="row" layout-align="end center">
-						<md-button id="login-button"class="md-button md-primary" ng-disabled="loading.is || (loginForm.$invalid && loginForm.$dirty)" aria-label="Sign Up">
+						<md-button id="login-button"class="md-button md-primary" type="submit" ng-disabled="loading || (loginForm.$invalid && loginForm.$dirty)" aria-label="Sign Up">
 							{{ "LOGIN.LOGIN.LOGIN" | translate }}
 						</md-button>
 					</div>
@@ -59,7 +59,7 @@
 				<md-card-content>
 					<p>{{ "LOGIN.SIGNUP.NOT_A_USER" | translate }}</p>
 				</md-card-content>
-				<md-button class="md-button md-primary" aria-label="Sign Up" ng-disabled="loading.is" ng-click="login.togleSignup()">
+				<md-button class="md-button md-primary" aria-label="Sign Up" ng-disabled="loading" ng-click="login.togleSignup()">
 					{{ "LOGIN.SIGNUP.SIGNUP" | translate }}
 				</md-button>
 			</md-card>
@@ -112,7 +112,7 @@
 						<div style="clear:both;"></div>
 					</md-card-content>
 					<div layout="row" layout-align="end center">
-						<md-button id="signup-button" class="md-button md-primary" ng-disabled="loading.is || (signupForm.$invalid && signupForm.$dirty)" aria-label="Sign Up">
+						<md-button id="signup-button" type="submit" class="md-button md-primary" ng-disabled="loading || (signupForm.$invalid && signupForm.$dirty)" aria-label="Sign Up">
 							{{ "LOGIN.SIGNUP.SIGNUP" | translate }}
 						</md-button>
 					</div>
@@ -123,7 +123,7 @@
 				<md-card-content>
 					<p>{{ "LOGIN.SIGNUP.ALREADY_USER" | translate }}</p>
 				</md-card-content>
-				<md-button class="md-button md-primary" aria-label="Sign Up" ng-disabled="loading.is" ng-click="login.togleSignup()">
+				<md-button class="md-button md-primary" aria-label="Sign Up" ng-disabled="loading" ng-click="login.togleSignup()">
 					{{ "LOGIN.LOGIN.LOGIN" | translate }}
 				</md-button>
 			</md-card>

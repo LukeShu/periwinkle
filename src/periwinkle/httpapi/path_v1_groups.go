@@ -129,11 +129,11 @@ func newDirGroups() t_dirGroups {
 		"POST": func(req he.Request) he.Response {
 			db := req.Things["db"].(*gorm.DB)
 			type postfmt struct {
-				Groupname string            `json:"groupname"`
-				Existence backend.Existence `json:"existence"`
-				Read      backend.Read      `json:"read"`
-				Post      backend.Post      `json:"post"`
-				Join      backend.Join      `json:"join"`
+				Groupname string `json:"groupname"`
+				Existence string `json:"existence"`
+				Read      string `json:"read"`
+				Post      string `json:"post"`
+				Join      string `json:"join"`
 			}
 			var entity postfmt
 			httperr := safeDecodeJSON(req.Entity, &entity)
@@ -149,10 +149,10 @@ func newDirGroups() t_dirGroups {
 			group := backend.NewGroup(
 				db,
 				entity.Groupname,
-				int(entity.Existence),
-				int(entity.Read),
-				int(entity.Post),
-				int(entity.Join),
+				backend.Reverse(entity.Existence),
+				backend.Reverse(entity.Read),
+				backend.Reverse(entity.Post),
+				backend.Reverse(entity.Join),
 			)
 			sess := req.Things["session"].(*backend.Session)
 			address := backend.GetAddressByIDAndMedium(db, sess.UserID, "noop")
