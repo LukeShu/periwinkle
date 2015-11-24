@@ -38,8 +38,8 @@ type precedence struct {
 func comparePrecedence(a precedence, b precedence) int8 {
 	var cmpA, cmpB uint
 	if a.major == b.major {
-		cmpA = a.major
-		cmpB = b.major
+		cmpA = a.minor
+		cmpB = b.minor
 	} else {
 		cmpA = a.major
 		cmpB = b.major

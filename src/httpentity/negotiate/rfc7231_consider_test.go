@@ -62,6 +62,45 @@ func TestConsiderContentType(t *testing.T) {
 	}
 }
 
+func TestConsiderContentType2(t *testing.T) {
+	header := "text/*;level=1;foo=bar;q=0.4, text/*;level=1;q=0.1, text/html;q=0.2, text/html;level=1;q=0.3"
+	// qvalues are fixed point * 1000
+	correct := map[string]qvalue{
+		"text/html;level=1":          300,
+		"text/html":                  200,
+		"text/plain;level=1":         100,
+		"image/jpeg":                 0,
+		"text/plain;level=1;foo=bar": 400,
+	}
+	contenttypes := make([]string, len(correct))
+	i := uint(0)
+	for contenttype := range correct {
+		contenttypes[i] = contenttype
+		i++
+	}
+
+	max, quality, err := considerContentTypes(&header, contenttypes)
+	if err != nil {
+		t.Error(err)
+	}
+	if max != 400 {
+		t.Errorf("max:%d != 400", max)
+	}
+	// subtract 1 because q=0 things aren't included
+	if len(quality) != len(contenttypes)-1 {
+		t.Errorf("len(quality):%d != len(contenttypes):%d", len(quality), len(contenttypes))
+		for k, v := range quality {
+			t.Logf(" - quality[%q]:%d", k, v)
+		}
+	}
+	for k, corrv := range correct {
+		testv, _ := quality[k]
+		if testv != corrv {
+			t.Errorf("quality[%q]:%d != corrv:%d", k, testv, corrv)
+		}
+	}
+}
+
 func TestConsiderCharset(t *testing.T) {
 	// TODO
 }
