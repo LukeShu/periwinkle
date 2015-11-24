@@ -47,6 +47,8 @@ ifeq (1,$(words $(MAKEFILE_LIST)))
   include $(topdir)/common.mk
 endif
 
+include $(topdir)/devtools.mk
+
 include $(topdir)/golang.mk
 $(call goget,$(topdir),$(deps))
 
@@ -56,13 +58,13 @@ $(call goget,$(topdir),$(deps))
 $(addprefix %/bin/,$(cmds)): $(generate) $(configure) %/src $(call gosrc,$(topdir))
 	$(call goinstall,$*,$(addprefix periwinkle/cmd/,$(cmds)))
 
-check: gofmt govet gotest
+check: gofmt goimports govet gotest
 .PHONY: check
 
 # directory-oriented
 gofmt: generate
 	{ gofmt -s -d $(addprefix $(topdir)/src/,$(toppackages)) 2>&1 | tee /dev/stderr | test -z "$$(cat)"; } 2>&1
-goimports: generate
+goimports: generate $(GOIMPORTS)
 	{ goimports -d $(addprefix $(topdir)/src/,$(toppackages)) 2>&1 | tee /dev/stderr | test -z "$$(cat)"; } 2>&1
 .PHONY: gofmt goimports
 
@@ -73,6 +75,6 @@ govet: generate
 	GOPATH='$(abspath $(topdir))' go vet $(packages)
 .PHONY: gotest govet
 
-golint: generate
+golint: generate $(GOLINT)
 	export GOPATH='$(abspath $(topdir))'; { { $(foreach p,$(packages),golint $p; )} $(golint-filter) | tee /dev/stderr | test -z "$$(cat)"; } 2>&1
 .PHONY: golint

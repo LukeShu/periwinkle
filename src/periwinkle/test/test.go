@@ -2,10 +2,11 @@ package test
 
 import (
 	"fmt"
-	"github.com/jinzhu/gorm"
 	"log"
 	"periwinkle"
 	"periwinkle/backend"
+
+	"github.com/jinzhu/gorm"
 )
 
 func Test(cfg *periwinkle.Cfg, db *gorm.DB) {
