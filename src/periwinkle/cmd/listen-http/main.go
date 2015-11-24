@@ -11,6 +11,7 @@ import (
 	"os/signal"
 	"periwinkle"
 	"periwinkle/cfg"
+	"periwinkle/httpapi"
 	"strconv"
 	"strings"
 	"syscall"
@@ -172,7 +173,7 @@ func main() {
 
 	sd.Notify(false, "READY=1")
 
-	server := makeServer(socket, config)
+	server := httpapi.MakeServer(socket, config)
 	server.Start()
 	go func() {
 		err := server.Wait()

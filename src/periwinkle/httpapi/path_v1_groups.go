@@ -15,21 +15,21 @@ import (
 	"github.com/jinzhu/gorm"
 )
 
-var _ he.Entity = &Group{}
-var _ he.NetEntity = &Group{}
-var dirGroups he.Entity = newDirGroups()
+var _ he.Entity = &group{}
+var _ he.NetEntity = &group{}
+var _ he.Entity = &dirGroups{}
 
-type Group backend.Group
+type group backend.Group
 
-func (o *Group) backend() *backend.Group { return (*backend.Group)(o) }
+func (o *group) backend() *backend.Group { return (*backend.Group)(o) }
 
 // Model /////////////////////////////////////////////////////////////
 
-func (o *Group) Subentity(name string, req he.Request) he.Entity {
-	panic("TODO: API: (*Group).Subentity()")
+func (o *group) Subentity(name string, req he.Request) he.Entity {
+	panic("TODO: API: (*group).Subentity()")
 }
 
-func (o *Group) Methods() map[string]func(he.Request) he.Response {
+func (o *group) Methods() map[string]func(he.Request) he.Response {
 	return map[string]func(he.Request) he.Response{
 		"GET": func(req he.Request) he.Response {
 			return he.StatusOK(o)
@@ -37,7 +37,7 @@ func (o *Group) Methods() map[string]func(he.Request) he.Response {
 		"PUT": func(req he.Request) he.Response {
 			db := req.Things["db"].(*gorm.DB)
 
-			var newGroup Group
+			var newGroup group
 			httperr := safeDecodeJSON(req.Entity, &newGroup)
 			if httperr != nil {
 				return *httperr
@@ -56,7 +56,7 @@ func (o *Group) Methods() map[string]func(he.Request) he.Response {
 			if !ok {
 				return he.StatusUnsupportedMediaType(heutil.NetString("PATCH request must have a patch media type"))
 			}
-			var newGroup Group
+			var newGroup group
 			err := patch.Apply(o, &newGroup)
 			if err != nil {
 				return he.StatusConflict(heutil.NetPrintf("%v", err))
@@ -82,18 +82,18 @@ func (o *Group) Methods() map[string]func(he.Request) he.Response {
 
 // View //////////////////////////////////////////////////////////////
 
-func (o *Group) Encoders() map[string]func(io.Writer) error {
+func (o *group) Encoders() map[string]func(io.Writer) error {
 	return defaultEncoders(o)
 }
 
 // Directory ("Controller") //////////////////////////////////////////
 
-type t_dirGroups struct {
+type dirGroups struct {
 	methods map[string]func(he.Request) he.Response
 }
 
-func newDirGroups() t_dirGroups {
-	r := t_dirGroups{}
+func newDirGroups() dirGroups {
+	r := dirGroups{}
 	r.methods = map[string]func(he.Request) he.Response{
 		"GET": func(req he.Request) he.Response {
 			db := req.Things["db"].(*gorm.DB)
@@ -114,14 +114,14 @@ func newDirGroups() t_dirGroups {
 				Subscriptions []backend.Subscription `json:"subscriptions"`
 			}
 
-			for i, group := range groups {
+			for i, grp := range groups {
 				var enum EnumerateGroup
-				enum.ID = group.ID
-				enum.Existence = backend.Existence(group.Existence).String()
-				enum.Read = backend.Read(group.Read).String()
-				enum.Post = backend.Post(group.Post).String()
-				enum.Join = backend.Join(group.Join).String()
-				enum.Subscriptions = group.Subscriptions
+				enum.ID = grp.ID
+				enum.Existence = backend.Existence(grp.Existence).String()
+				enum.Read = backend.Read(grp.Read).String()
+				enum.Post = backend.Post(grp.Post).String()
+				enum.Join = backend.Join(grp.Join).String()
+				enum.Subscriptions = grp.Subscriptions
 				generic[i] = enum
 			}
 			return he.StatusOK(heutil.NetList(generic))
@@ -146,7 +146,7 @@ func newDirGroups() t_dirGroups {
 			}
 
 			entity.Groupname = strings.ToLower(entity.Groupname)
-			group := backend.NewGroup(
+			grp := backend.NewGroup(
 				db,
 				entity.Groupname,
 				backend.Reverse(entity.Existence),
@@ -159,33 +159,33 @@ func newDirGroups() t_dirGroups {
 			if address != nil {
 				subscription := backend.Subscription{
 					AddressID: address.ID,
-					GroupID:   group.ID,
+					GroupID:   grp.ID,
 					Confirmed: true,
 				}
 				db.Create(&subscription)
 			}
-			if group == nil {
+			if grp == nil {
 				return he.StatusConflict(heutil.NetString("a group with that name already exists"))
 			} else {
-				return he.StatusCreated(r, group.ID, req)
+				return he.StatusCreated(r, grp.ID, req)
 			}
 		},
 	}
 	return r
 }
 
-func (d t_dirGroups) Methods() map[string]func(he.Request) he.Response {
+func (d dirGroups) Methods() map[string]func(he.Request) he.Response {
 	return d.methods
 }
 
-func (d t_dirGroups) Subentity(name string, req he.Request) he.Entity {
+func (d dirGroups) Subentity(name string, req he.Request) he.Entity {
 	name = strings.ToLower(name)
 	db := req.Things["db"].(*gorm.DB)
 	// TODO: permissions check
 	sess := req.Things["session"].(*backend.Session)
-	group := backend.GetGroupByID(db, name)
-	if group.Read != 1 && !backend.IsSubscribed(db, sess.UserID, *group) {
+	grp := backend.GetGroupByID(db, name)
+	if grp.Read != 1 && !backend.IsSubscribed(db, sess.UserID, *grp) {
 		return nil
 	}
-	return (*Group)(group)
+	return (*group)(grp)
 }

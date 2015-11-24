@@ -11,20 +11,20 @@ import (
 	"github.com/jinzhu/gorm"
 )
 
-var _ he.Entity = &ShortURL{}
-var DirShortURLs he.Entity = newDirShortURLs()
+var _ he.Entity = &shortURL{}
+var _ he.Entity = &dirShortURLs{}
 
-type ShortURL backend.ShortURL
+type shortURL backend.ShortURL
 
-func (o *ShortURL) backend() *backend.ShortURL { return (*backend.ShortURL)(o) }
+func (o *shortURL) backend() *backend.ShortURL { return (*backend.ShortURL)(o) }
 
 // Model /////////////////////////////////////////////////////////////
 
-func (o *ShortURL) Subentity(name string, req he.Request) he.Entity {
+func (o *shortURL) Subentity(name string, req he.Request) he.Entity {
 	return nil
 }
 
-func (o *ShortURL) Methods() map[string]func(he.Request) he.Response {
+func (o *shortURL) Methods() map[string]func(he.Request) he.Response {
 	return map[string]func(he.Request) he.Response{
 		"GET": func(req he.Request) he.Response {
 			u, _ := url.Parse(o.Dest) // TODO: automatic unmarshal
@@ -35,21 +35,21 @@ func (o *ShortURL) Methods() map[string]func(he.Request) he.Response {
 
 // Directory ("Controller") //////////////////////////////////////////
 
-type t_dirShortURLs struct {
+type dirShortURLs struct {
 	methods map[string]func(he.Request) he.Response
 }
 
-func newDirShortURLs() t_dirShortURLs {
-	r := t_dirShortURLs{}
-	r.methods = map[string]func(he.Request) he.Response{}
-	return r
+func NewDirShortURLs() he.Entity {
+	return &dirShortURLs{
+		methods: map[string]func(he.Request) he.Response{},
+	}
 }
 
-func (d t_dirShortURLs) Methods() map[string]func(he.Request) he.Response {
+func (d dirShortURLs) Methods() map[string]func(he.Request) he.Response {
 	return d.methods
 }
 
-func (d t_dirShortURLs) Subentity(name string, req he.Request) he.Entity {
+func (d dirShortURLs) Subentity(name string, req he.Request) he.Entity {
 	db := req.Things["db"].(*gorm.DB)
-	return (*ShortURL)(backend.GetShortURLByID(db, name))
+	return (*shortURL)(backend.GetShortURLByID(db, name))
 }

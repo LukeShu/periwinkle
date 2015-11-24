@@ -4,32 +4,42 @@ package httpapi
 
 import he "httpentity"
 
-var DirRoot he.Entity = newDirRoot()
-
-type t_dirRoot struct {
-	methods map[string]func(he.Request) he.Response
+type dirRoot struct {
+	methods     map[string]func(he.Request) he.Response
+	dirCaptchas he.Entity
+	dirGroups   he.Entity
+	dirMessages he.Entity
+	fileSession he.Entity
+	dirUsers    he.Entity
 }
 
-func newDirRoot() t_dirRoot {
-	return t_dirRoot{methods: make(map[string]func(he.Request) he.Response)}
+func NewDirRoot() he.Entity {
+	return &dirRoot{
+		methods:     make(map[string]func(he.Request) he.Response),
+		dirCaptchas: newDirCaptchas(),
+		dirGroups:   newDirGroups(),
+		dirMessages: newDirMessages(),
+		fileSession: newFileSession(),
+		dirUsers:    newDirUsers(),
+	}
 }
 
-func (d t_dirRoot) Methods() map[string]func(he.Request) he.Response {
+func (d dirRoot) Methods() map[string]func(he.Request) he.Response {
 	return d.methods
 }
 
-func (d t_dirRoot) Subentity(name string, request he.Request) he.Entity {
+func (d dirRoot) Subentity(name string, request he.Request) he.Entity {
 	switch name {
 	case "captcha":
-		return dirCaptchas
+		return d.dirCaptchas
 	case "groups":
-		return dirGroups
+		return d.dirGroups
 	case "msgs":
-		return dirMessages
+		return d.dirMessages
 	case "session":
-		return fileSession
+		return d.fileSession
 	case "users":
-		return dirUsers
+		return d.dirUsers
 	}
 	return nil
 }

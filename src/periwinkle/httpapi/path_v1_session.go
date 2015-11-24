@@ -14,31 +14,31 @@ import (
 	"github.com/jinzhu/gorm"
 )
 
-var _ he.NetEntity = &Session{}
-var fileSession he.Entity = newFileSession()
+var _ he.NetEntity = &session{}
+var _ he.Entity = &fileSession{}
 
-type Session backend.Session
+type session backend.Session
 
-func (o *Session) backend() *backend.Session { return (*backend.Session)(o) }
+func (o *session) backend() *backend.Session { return (*backend.Session)(o) }
 
 // View //////////////////////////////////////////////////////////////
 
-func (sess *Session) Encoders() map[string]func(io.Writer) error {
+func (sess *session) Encoders() map[string]func(io.Writer) error {
 	return defaultEncoders(sess)
 }
 
 // File ("Controller") ///////////////////////////////////////////////
 
-type t_fileSession struct {
+type fileSession struct {
 	methods map[string]func(he.Request) he.Response
 }
 
-func newFileSession() t_fileSession {
-	r := t_fileSession{}
+func newFileSession() fileSession {
+	r := fileSession{}
 	r.methods = map[string]func(he.Request) he.Response{
 		"GET": func(req he.Request) he.Response {
 			sess := req.Things["session"].(*backend.Session)
-			return he.StatusOK((*Session)(sess))
+			return he.StatusOK((*session)(sess))
 		},
 		"POST": func(req he.Request) he.Response {
 			db := req.Things["db"].(*gorm.DB)
@@ -59,7 +59,7 @@ func newFileSession() t_fileSession {
 				user = backend.GetUserByID(db, entity.Username)
 			}
 
-			sess := (*Session)(backend.NewSession(db, user, entity.Password))
+			sess := (*session)(backend.NewSession(db, user, entity.Password))
 			if sess == nil {
 				return he.StatusForbidden(heutil.NetString("Incorrect username/password"))
 			} else {
@@ -86,10 +86,10 @@ func newFileSession() t_fileSession {
 	return r
 }
 
-func (d t_fileSession) Methods() map[string]func(he.Request) he.Response {
+func (d fileSession) Methods() map[string]func(he.Request) he.Response {
 	return d.methods
 }
 
-func (d t_fileSession) Subentity(name string, request he.Request) he.Entity {
+func (d fileSession) Subentity(name string, request he.Request) he.Entity {
 	return nil
 }

@@ -12,28 +12,28 @@ import (
 	"github.com/jinzhu/gorm"
 )
 
-var _ he.Entity = &Captcha{}
-var _ he.NetEntity = &Captcha{}
-var dirCaptchas he.Entity = newDirCaptchas()
+var _ he.Entity = &captcha{}
+var _ he.NetEntity = &captcha{}
+var _ he.Entity = &dirCaptchas{}
 
-type Captcha backend.Captcha
+type captcha backend.Captcha
 
-func (o *Captcha) backend() *backend.Captcha { return (*backend.Captcha)(o) }
+func (o *captcha) backend() *backend.Captcha { return (*backend.Captcha)(o) }
 
 // Model /////////////////////////////////////////////////////////////
 
-func (o *Captcha) Subentity(name string, req he.Request) he.Entity {
+func (o *captcha) Subentity(name string, req he.Request) he.Entity {
 	return nil
 }
 
-func (o *Captcha) Methods() map[string]func(he.Request) he.Response {
+func (o *captcha) Methods() map[string]func(he.Request) he.Response {
 	return map[string]func(he.Request) he.Response{
 		"GET": func(req he.Request) he.Response {
 			return he.StatusOK(o)
 		},
 		"PUT": func(req he.Request) he.Response {
 			db := req.Things["db"].(*gorm.DB)
-			var newCaptcha Captcha
+			var newCaptcha captcha
 			httperr := safeDecodeJSON(req.Entity, &newCaptcha)
 			if httperr != nil {
 				return *httperr
@@ -44,7 +44,7 @@ func (o *Captcha) Methods() map[string]func(he.Request) he.Response {
 		},
 		/*
 			"PATCH": func(req he.Request) he.Response {
-				panic("TODO: API: (*Captcha).Methods()[\"PATCH\"]")
+				panic("TODO: API: (*captcha).Methods()[\"PATCH\"]")
 			},
 		*/
 	}
@@ -52,7 +52,7 @@ func (o *Captcha) Methods() map[string]func(he.Request) he.Response {
 
 // View //////////////////////////////////////////////////////////////
 
-func (o *Captcha) Encoders() map[string]func(io.Writer) error {
+func (o *captcha) Encoders() map[string]func(io.Writer) error {
 	return map[string]func(io.Writer) error{
 		"image/png": func(w io.Writer) error {
 			return o.backend().MarshalPNG(w)
@@ -65,12 +65,12 @@ func (o *Captcha) Encoders() map[string]func(io.Writer) error {
 
 // Directory ("Controller") //////////////////////////////////////////
 
-type t_dirCaptchas struct {
+type dirCaptchas struct {
 	methods map[string]func(he.Request) he.Response
 }
 
-func newDirCaptchas() t_dirCaptchas {
-	r := t_dirCaptchas{}
+func newDirCaptchas() dirCaptchas {
+	r := dirCaptchas{}
 	r.methods = map[string]func(he.Request) he.Response{
 		"POST": func(req he.Request) he.Response {
 			db := req.Things["db"].(*gorm.DB)
@@ -80,11 +80,11 @@ func newDirCaptchas() t_dirCaptchas {
 	return r
 }
 
-func (d t_dirCaptchas) Methods() map[string]func(he.Request) he.Response {
+func (d dirCaptchas) Methods() map[string]func(he.Request) he.Response {
 	return d.methods
 }
 
-func (d t_dirCaptchas) Subentity(name string, req he.Request) he.Entity {
+func (d dirCaptchas) Subentity(name string, req he.Request) he.Entity {
 	db := req.Things["db"].(*gorm.DB)
-	return (*Captcha)(backend.GetCaptchaByID(db, name))
+	return (*captcha)(backend.GetCaptchaByID(db, name))
 }

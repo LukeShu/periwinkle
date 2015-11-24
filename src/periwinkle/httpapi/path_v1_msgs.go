@@ -11,21 +11,21 @@ import (
 	"github.com/jinzhu/gorm"
 )
 
-var _ he.Entity = &Message{}
-var _ he.NetEntity = &Message{}
-var dirMessages he.Entity = newDirMessages()
+var _ he.Entity = &message{}
+var _ he.NetEntity = &message{}
+var _ he.Entity = dirMessages{}
 
-type Message backend.Message
+type message backend.Message
 
-func (o *Message) backend() *backend.Message { return (*backend.Message)(o) }
+func (o *message) backend() *backend.Message { return (*backend.Message)(o) }
 
 // Model /////////////////////////////////////////////////////////////
 
-func (o *Message) Subentity(name string, req he.Request) he.Entity {
-	panic("TODO: SMTP: (*Message).Subentity()")
+func (o *message) Subentity(name string, req he.Request) he.Entity {
+	panic("TODO: SMTP: (*message).Subentity()")
 }
 
-func (o *Message) Methods() map[string]func(he.Request) he.Response {
+func (o *message) Methods() map[string]func(he.Request) he.Response {
 	return map[string]func(he.Request) he.Response{
 		"GET": func(req he.Request) he.Response {
 			// TODO: permission check
@@ -36,27 +36,27 @@ func (o *Message) Methods() map[string]func(he.Request) he.Response {
 
 // View //////////////////////////////////////////////////////////////
 
-func (o *Message) Encoders() map[string]func(io.Writer) error {
-	panic("TODO: API: (*Message).Encoders()")
+func (o *message) Encoders() map[string]func(io.Writer) error {
+	panic("TODO: API: (*message).Encoders()")
 }
 
 // Directory ("Controller") //////////////////////////////////////////
 
-type t_dirMessages struct {
+type dirMessages struct {
 	methods map[string]func(he.Request) he.Response
 }
 
-func newDirMessages() t_dirMessages {
-	r := t_dirMessages{}
+func newDirMessages() dirMessages {
+	r := dirMessages{}
 	r.methods = map[string]func(he.Request) he.Response{}
 	return r
 }
 
-func (d t_dirMessages) Methods() map[string]func(he.Request) he.Response {
+func (d dirMessages) Methods() map[string]func(he.Request) he.Response {
 	return d.methods
 }
 
-func (d t_dirMessages) Subentity(name string, req he.Request) he.Entity {
+func (d dirMessages) Subentity(name string, req he.Request) he.Entity {
 	db := req.Things["db"].(*gorm.DB)
-	return (*Message)(backend.GetMessageByID(db, name))
+	return (*message)(backend.GetMessageByID(db, name))
 }

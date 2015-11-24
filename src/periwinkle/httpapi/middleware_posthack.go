@@ -1,6 +1,6 @@
 // Copyright 2015 Luke Shumaker
 
-package main
+package httpapi
 
 import (
 	"encoding/json"

@@ -1,7 +1,7 @@
 // Copyright 2015 Luke Shumaker
 // Copyright 2015 Zhandos Suleimenov
 
-package main
+package httpapi
 
 import (
 	he "httpentity"
@@ -12,11 +12,10 @@ import (
 	"net/http"
 	"periwinkle"
 	"periwinkle/domain_handlers"
-	"periwinkle/httpapi"
 	"stoppable"
 )
 
-func makeServer(socket net.Listener, cfg *periwinkle.Cfg) *stoppable.HTTPServer {
+func MakeServer(socket net.Listener, cfg *periwinkle.Cfg) *stoppable.HTTPServer {
 	stdDecoders := map[string]func(io.Reader, map[string]string) (interface{}, error){
 		"application/x-www-form-urlencoded": heutil.DecoderFormURLEncoded,
 		"multipart/form-data":               heutil.DecoderFormData,
@@ -33,7 +32,7 @@ func makeServer(socket net.Listener, cfg *periwinkle.Cfg) *stoppable.HTTPServer 
 	// The main REST API
 	mux.Handle("/v1/", he.Router{
 		Prefix:         "/v1/",
-		Root:           httpapi.DirRoot,
+		Root:           NewDirRoot(),
 		Decoders:       stdDecoders,
 		Middlewares:    stdMiddlewares,
 		Stacktrace:     cfg.Debug,
@@ -43,7 +42,7 @@ func makeServer(socket net.Listener, cfg *periwinkle.Cfg) *stoppable.HTTPServer 
 	// URL shortener service
 	mux.Handle("/s/", he.Router{
 		Prefix:         "/s/",
-		Root:           httpapi.DirShortURLs,
+		Root:           NewDirShortURLs(),
 		Decoders:       stdDecoders,
 		Middlewares:    stdMiddlewares,
 		Stacktrace:     cfg.Debug,
