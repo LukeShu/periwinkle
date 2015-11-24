@@ -1,6 +1,8 @@
-/pkg/
+/config.yaml
+
 /bin/
+/pkg/
 /src/*.*/
-.var.*
+
 *.sqlite
-/.rm/
+.var.*
