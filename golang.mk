@@ -19,6 +19,6 @@ define goinstall
 			done                                                 \
 		fi                                                           \
 	done
-	GOPATH='$(abspath $1)' go install -x $2
+	GOPATH='$(abspath $1)' go install $2
 	$(Q)true $(foreach e,$(notdir $2), && test -f $1/bin/$e -a -x $1/bin/$e && touch $1/bin/$e)
 endef
