@@ -3,23 +3,28 @@
 
 # Environment variables we get from Postfix (see `local(8postfix)`)
 vars=(
-	SHELL
-	HOME
-	USER
-	EXTENSION
-	DOMAIN
-	LOGNAME
-	LOCAL
-	ORIGINAL_RECIPIENT
-	RECIPIENT
-	SENDER
-	CLIENT_ADDRESS
-	CLIENT_HELO
-	CLIENT_HOSTNAME
-	CLIENT_PROTOCOL
-	SASL_METHOD
-	SASL_SENDER
-	SASL_USERNAME
+	SHELL:"The recipient user's login shell."
+	HOME:"The recipient user's home directory."
+	USER:'The bare recipient name.'
+	EXTENSION:'The optional recipient address extension.'
+	DOMAIN:'The recipient address domain part.'
+	LOGNAME:'The bare recipient name.'
+	LOCAL:'The entire recipient address localpart (text to the left of the rightmost @ character).'
+	ORIGINAL_RECIPIENT:'The entire recipient address, before any address rewriting or aliasing (Postfix 2.5 and later).'
+	RECIPIENT:'The entire recipient address.'
+	SENDER:'The entire sender address.'
+
+	# Additional remote client information is made available via
+	# the following environment variables, all of which are
+	# available since Postfix 2.2:
+
+	CLIENT_ADDRESS:'Remote client network address.'
+	CLIENT_HELO:'Remote client EHLO command parameter.'
+	CLIENT_HOSTNAME:'Remote client hostname.'
+	CLIENT_PROTOCOL:'Remote client protocol.'
+	SASL_METHOD:'SASL authentication method specified in the remote client AUTH command.'
+	SASL_SENDER:'SASL sender address specified in the remote client MAIL FROM command.'
+	SASL_USERNAME:'SASL username specified in the remote client AUTH command.'
 )
 
 {
@@ -31,20 +36,23 @@ echo package postfixpipe
 echo 'import "os"'
 
 echo 'type env struct {'
-for var in "${vars[@]}"; do
+for var in "${vars[@]%%:*}"; do
 	echo "$var string"
 done
 echo '}'
 
 echo 'func getEnv() env {'
 echo 'return env{'
-for var in "${vars[@]}"; do
+for var in "${vars[@]%%:*}"; do
 	echo "$var: os.Getenv(\"$var\"),"
 done
 echo '}'
 echo '}'
 
-for var in "${vars[@]}"; do
+for line in "${vars[@]}"; do
+	var="${line%%:*}"
+	desc="${line#*:}"
+	echo "// $var : $desc"
 	echo "func (m Message) $var() string { return m.env.$var }"
 done
 

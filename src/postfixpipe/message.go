@@ -1,5 +1,7 @@
 // Copyright 2015 Luke Shumaker
 
+// Package postfixpipe provides helpers for writing programs for
+// Postfix dot-forwards and aliases.
 package postfixpipe
 
 import (
@@ -8,6 +10,8 @@ import (
 	"os"
 )
 
+// A Message is a context for a Postfix-pipe helper process; it is
+// what Postix passes us.
 type Message struct {
 	args  []string
 	intro *string // a pointer so that it is nullable
@@ -15,6 +19,7 @@ type Message struct {
 	env   env
 }
 
+// Get instantiates a new Postfix-pipe context for this process.
 func Get() *Message {
 	return &Message{
 		args:  os.Args,
@@ -24,6 +29,8 @@ func Get() *Message {
 	}
 }
 
+// Intro returns the envelope line insertet by Postfix before the RFC
+// 822-style message.
 func (pm *Message) Intro() (string, error) {
 	if pm.stdin == nil {
 		pm.stdin = bufio.NewReader(os.Stdin)
@@ -38,6 +45,7 @@ func (pm *Message) Intro() (string, error) {
 	return *pm.intro, nil
 }
 
+// Reader returns an io.Reader for the RFC 822-style message.
 func (pm *Message) Reader() (io.Reader, error) {
 	_, err := pm.Intro()
 	if err != nil {
@@ -46,6 +54,7 @@ func (pm *Message) Reader() (io.Reader, error) {
 	return pm.stdin, nil
 }
 
+// Args returns the command line arguments passed in by Postfix.
 func (pm *Message) Args() []string {
 	return pm.args
 }
