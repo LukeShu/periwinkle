@@ -1,3 +1,5 @@
+# Copyright 2015 Luke Shumaker
+
 _devtools_rest = $(wordlist 2,$(words $1),$1)
 _devtools_merge = $(firstword $2)$(if $(call _devtools_rest,$2),$1$(call _devtools_merge,$1,$(call _devtools_rest,$2)))
 _devtools_pathsearch = $(firstword $(wildcard $(addsuffix /$(1),$(subst :, ,$(PATH)))) $(topdir)/devtools/$(1)/bin/$(1))
