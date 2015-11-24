@@ -2,14 +2,9 @@
 // Copyright 2015 Luke Shumaker
 // Copyright 2015 Mark Pundmann
 
-package store
+package backend
 
 import (
-	he "httpentity"
-	"httpentity/heutil"
-	"io"
-	"strings"
-
 	"github.com/jinzhu/gorm"
 )
 
@@ -89,66 +84,4 @@ func IsAdmin(db *gorm.DB, userid string, group Group) bool {
 	}
 	// could not find user in subscribed user addresses, therefore, he/she isn't subscribed
 	return false
-}
-
-func (o *Subscription) Methods() map[string]func(he.Request) he.Response {
-	return map[string]func(he.Request) he.Response{
-		"GET": func(req he.Request) he.Response {
-			return he.StatusOK(o)
-		},
-		"DELETE": func(req he.Request) he.Response {
-			db := req.Things["db"].(*gorm.DB)
-			db.Delete(o)
-			return he.StatusNoContent()
-		},
-	}
-}
-
-type t_dirSubscriptions struct {
-	methods map[string]func(he.Request) he.Response
-}
-
-func newDirSubscriptions() t_dirSubscriptions {
-	r := t_dirSubscriptions{}
-	r.methods = map[string]func(he.Request) he.Response{
-		"GET": func(req he.Request) he.Response {
-			db := req.Things["db"].(*gorm.DB)
-			type getfmt struct {
-				GroupId string `json:"groupid"`
-			}
-			var entity getfmt
-			httperr := safeDecodeJSON(req.Entity, &entity)
-			if httperr != nil {
-				return *httperr
-			}
-
-			if entity.GroupId == "" {
-				return he.StatusUnsupportedMediaType(heutil.NetString("groupname can't be emtpy"))
-			}
-			entity.GroupId = strings.ToLower(entity.GroupId)
-			var subscriptions []Subscription
-			subscriptions = GetSubscriptionsGroupById(db, entity.GroupId)
-			generic := make([]interface{}, len(subscriptions))
-			for i, subscription := range subscriptions {
-				generic[i] = subscription.Address.Address
-			}
-
-			return he.StatusOK(heutil.NetList(generic))
-		},
-	}
-	return r
-}
-
-func (o *Subscription) Encoders() map[string]func(io.Writer) error {
-	return defaultEncoders(o)
-}
-
-func (d t_dirSubscriptions) Methods() map[string]func(he.Request) he.Response {
-	return d.methods
-}
-
-func (d t_dirSubscriptions) Subentity(user_id string, group_name string, req he.Request) he.Entity {
-	//group_name = strings.ToLower(group_name)
-	//db := req.Things["db"].(*gorm.DB)
-	panic("Not yet implemented")
 }

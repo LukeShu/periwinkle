@@ -12,7 +12,7 @@ import (
 	"net/smtp"
 	"periwinkle"
 	"periwinkle/putil"
-	"periwinkle/store"
+	"periwinkle/backend"
 	"postfixpipe"
 
 	"github.com/jinzhu/gorm"
@@ -35,7 +35,7 @@ func HandleEmail(r io.Reader, name string, db *gorm.DB, cfg *periwinkle.Cfg) pos
 		return postfixpipe.EX_NOINPUT
 	}
 
-	group := store.GetGroupById(db, name)
+	group := backend.GetGroupById(db, name)
 	if group == nil {
 		return postfixpipe.EX_NOUSER
 	}
@@ -54,7 +54,7 @@ func HandleEmail(r io.Reader, name string, db *gorm.DB, cfg *periwinkle.Cfg) pos
 				panic(obj)
 			}
 		}()
-		store.NewMessage(
+		backend.NewMessage(
 			db,
 			msg.Header.Get("Message-Id"),
 			*group,
@@ -73,11 +73,11 @@ func HandleEmail(r io.Reader, name string, db *gorm.DB, cfg *periwinkle.Cfg) pos
 	}
 
 	// fetch all of those addresses
-	var address_list []store.UserAddress
+	var address_list []backend.UserAddress
 	if len(address_ids) > 0 {
 		db.Where("id IN (?)", address_ids).Find(&address_list)
 	} else {
-		address_list = make([]store.UserAddress, 0)
+		address_list = make([]backend.UserAddress, 0)
 	}
 
 	// convert that list into a set

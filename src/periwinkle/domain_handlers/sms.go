@@ -16,7 +16,7 @@ import (
 	"net/url"
 	"os"
 	"periwinkle"
-	"periwinkle/store"
+	"periwinkle/backend"
 	"periwinkle/twilio"
 	"postfixpipe"
 	"strings"
@@ -46,9 +46,9 @@ func HandleSMS(r io.Reader, name string, db *gorm.DB, cfg *periwinkle.Cfg) postf
 func sender(message mail.Message, sms_to string, db *gorm.DB, cfg *periwinkle.Cfg) (status string, err error) {
 
 	group := message.Header.Get("From")
-	user := store.GetUserByAddress(db, "sms", sms_to)
+	user := backend.GetUserByAddress(db, "sms", sms_to)
 
-	sms_from := store.GetTwilioNumberByUserAndGroup(db, user.Id, strings.Split(group, "@")[0])
+	sms_from := backend.GetTwilioNumberByUserAndGroup(db, user.Id, strings.Split(group, "@")[0])
 	sms_body := message.Header.Get("Subject")
 	//sms_body, err := ioutil.ReadAll(message.Body)
 	//if err != nil {

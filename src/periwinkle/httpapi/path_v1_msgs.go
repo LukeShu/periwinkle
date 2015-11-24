@@ -1,12 +1,12 @@
 // Copyright 2015 Davis Webb
 // Copyright 2015 Luke Shumaker
 
-package store
+package httpapi
 
 import (
 	he "httpentity"
 	"io"
-	"maildir"
+	"periwinkle/backend"
 
 	"github.com/jinzhu/gorm"
 )
@@ -15,47 +15,11 @@ var _ he.Entity = &Message{}
 var _ he.NetEntity = &Message{}
 var dirMessages he.Entity = newDirMessages()
 
+type Message backend.Message
+
+func (o *Message) backend() *backend.Message { return (*backend.Message)(o) }
+
 // Model /////////////////////////////////////////////////////////////
-
-type Message struct {
-	Id      string
-	GroupId string
-	Unique  string
-	// cached fields??????
-}
-
-func (o Message) dbSchema(db *gorm.DB) error {
-	return db.CreateTable(&o).
-		AddForeignKey("group_id", "groups(id)", "CASCADE", "RESTRICT").
-		AddUniqueIndex("filename_idx", "unique").
-		Error
-}
-
-func NewMessage(db *gorm.DB, id string, group Group, unique maildir.Unique) Message {
-	if id == "" {
-		panic("Message Id can't be emtpy")
-	}
-	o := Message{
-		Id:      id,
-		GroupId: group.Id,
-		Unique:  string(unique),
-	}
-	if err := db.Create(&o).Error; err != nil {
-		panic(err)
-	}
-	return o
-}
-
-func GetMessageById(db *gorm.DB, id string) *Message {
-	var o Message
-	if result := db.First(&o, "id = ?", id); result.Error != nil {
-		if result.RecordNotFound() {
-			return nil
-		}
-		panic(result.Error)
-	}
-	return &o
-}
 
 func (o *Message) Subentity(name string, req he.Request) he.Entity {
 	panic("TODO: SMTP: (*Message).Subentity()")
@@ -94,5 +58,5 @@ func (d t_dirMessages) Methods() map[string]func(he.Request) he.Response {
 
 func (d t_dirMessages) Subentity(name string, req he.Request) he.Entity {
 	db := req.Things["db"].(*gorm.DB)
-	return GetMessageById(db, name)
+	return (*Message)(backend.GetMessageById(db, name))
 }

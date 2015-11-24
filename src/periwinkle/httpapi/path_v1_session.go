@@ -1,7 +1,7 @@
 // Copyright 2015 Davis Webb
 // Copyright 2015 Luke Shumaker
 
-package store
+package httpapi
 
 import (
 	he "httpentity"
@@ -9,7 +9,7 @@ import (
 	"io"
 	"net/http"
 	"strings"
-	"time"
+	"periwinkle/backend"
 
 	"github.com/jinzhu/gorm"
 )
@@ -17,55 +17,9 @@ import (
 var _ he.NetEntity = &Session{}
 var fileSession he.Entity = newFileSession()
 
-// Model /////////////////////////////////////////////////////////////
+type Session backend.Session
 
-type Session struct {
-	Id       string    `json:"session_id"`
-	UserId   string    `json:"user_id"`
-	LastUsed time.Time `json:"-"`
-}
-
-func (o Session) dbSchema(db *gorm.DB) error {
-	return db.CreateTable(&o).
-		AddForeignKey("user_id", "users(id)", "CASCADE", "RESTRICT").
-		Error
-}
-
-func NewSession(db *gorm.DB, user *User, password string) *Session {
-	if user == nil || !user.CheckPassword(password) {
-		return nil
-	}
-	o := Session{
-		Id:       randomString(24),
-		UserId:   user.Id,
-		LastUsed: time.Now(),
-	}
-	if err := db.Create(&o).Error; err != nil {
-		panic(err)
-	}
-	return &o
-}
-
-func GetSessionById(db *gorm.DB, id string) *Session {
-	var o Session
-	if result := db.First(&o, "id = ?", id); result.Error != nil {
-		if result.RecordNotFound() {
-			return nil
-		}
-		panic(result.Error)
-	}
-	return &o
-}
-
-func (o *Session) Delete(db *gorm.DB) {
-	db.Delete(o)
-}
-
-func (o *Session) Save(db *gorm.DB) {
-	if err := db.Save(o).Error; err != nil {
-		panic(err)
-	}
-}
+func (o *Session) backend() *backend.Session { return (*backend.Session)(o) }
 
 // View //////////////////////////////////////////////////////////////
 
@@ -83,8 +37,8 @@ func newFileSession() t_fileSession {
 	r := t_fileSession{}
 	r.methods = map[string]func(he.Request) he.Response{
 		"GET": func(req he.Request) he.Response {
-			sess := req.Things["session"].(*Session)
-			return he.StatusOK(sess)
+			sess := req.Things["session"].(*backend.Session)
+			return he.StatusOK((*Session)(sess))
 		},
 		"POST": func(req he.Request) he.Response {
 			db := req.Things["db"].(*gorm.DB)
@@ -98,14 +52,14 @@ func newFileSession() t_fileSession {
 				return *httperr
 			}
 
-			var user *User
+			var user *backend.User
 			if strings.Contains(entity.Username, "@") {
-				user = GetUserByAddress(db, "email", entity.Username)
+				user = backend.GetUserByAddress(db, "email", entity.Username)
 			} else {
-				user = GetUserById(db, entity.Username)
+				user = backend.GetUserById(db, entity.Username)
 			}
 
-			sess := NewSession(db, user, entity.Password)
+			sess := (*Session)(backend.NewSession(db, user, entity.Password))
 			if sess == nil {
 				return he.StatusForbidden(heutil.NetString("Incorrect username/password"))
 			} else {
@@ -122,7 +76,7 @@ func newFileSession() t_fileSession {
 		},
 		"DELETE": func(req he.Request) he.Response {
 			db := req.Things["db"].(*gorm.DB)
-			sess := req.Things["session"].(*Session)
+			sess := req.Things["session"].(*backend.Session)
 			if sess != nil {
 				sess.Delete(db)
 			}

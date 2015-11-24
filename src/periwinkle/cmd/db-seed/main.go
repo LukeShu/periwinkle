@@ -8,7 +8,7 @@ import (
 	"io"
 	"os"
 	"periwinkle/cfg"
-	"periwinkle/store"
+	"periwinkle/backend"
 )
 
 func usage(w io.Writer) {
@@ -39,6 +39,6 @@ func main() {
 		os.Exit(1)
 	}
 
-	store.DbSchema(config.DB)
-	store.DbSeed(config.DB)
+	backend.DbSchema(config.DB)
+	backend.DbSeed(config.DB)
 }

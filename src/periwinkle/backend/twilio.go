@@ -1,6 +1,6 @@
 // Copyright 2015 Luke Shumaker
 // Copyright 2015 Zhandos Suleimenov
-package store
+package backend
 
 import (
 	"encoding/json"

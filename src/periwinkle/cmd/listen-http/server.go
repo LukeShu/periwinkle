@@ -12,7 +12,7 @@ import (
 	"net/http"
 	"periwinkle"
 	"periwinkle/domain_handlers"
-	"periwinkle/store"
+	"periwinkle/httpapi"
 	"stoppable"
 )
 
@@ -33,7 +33,7 @@ func makeServer(socket net.Listener, cfg *periwinkle.Cfg) *stoppable.HTTPServer 
 	// The main REST API
 	mux.Handle("/v1/", he.Router{
 		Prefix:         "/v1/",
-		Root:           store.DirRoot,
+		Root:           httpapi.DirRoot,
 		Decoders:       std_decoders,
 		Middlewares:    std_middlewares,
 		Stacktrace:     cfg.Debug,
@@ -43,7 +43,7 @@ func makeServer(socket net.Listener, cfg *periwinkle.Cfg) *stoppable.HTTPServer 
 	// URL shortener service
 	mux.Handle("/s/", he.Router{
 		Prefix:         "/s/",
-		Root:           store.DirShortUrls,
+		Root:           httpapi.DirShortUrls,
 		Decoders:       std_decoders,
 		Middlewares:    std_middlewares,
 		Stacktrace:     cfg.Debug,

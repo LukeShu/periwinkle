@@ -1,6 +1,6 @@
 // Copyright 2015 Luke Shumaker
 
-package store
+package httpapi
 
 import he "httpentity"
 

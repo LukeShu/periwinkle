@@ -5,13 +5,13 @@ package main
 import (
 	he "httpentity"
 	"net/url"
-	"periwinkle/store"
+	"periwinkle/backend"
 	"time"
 
 	"github.com/jinzhu/gorm"
 )
 
-func getsession(req he.Request) *store.Session {
+func getsession(req he.Request) *backend.Session {
 	cookie := req.Cookie("session_id")
 	if cookie == nil {
 		return nil
@@ -33,7 +33,7 @@ func getsession(req he.Request) *store.Session {
 	if !ok {
 		return nil
 	}
-	sess := store.GetSessionById(db, session_id)
+	sess := backend.GetSessionById(db, session_id)
 	if sess != nil {
 		sess.LastUsed = time.Now()
 		func() {
