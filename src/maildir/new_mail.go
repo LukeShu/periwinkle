@@ -6,6 +6,7 @@ package maildir
 import (
 	"crypto/rand"
 	"fmt"
+	"io"
 	"math/big"
 	"os"
 	"strings"
@@ -42,10 +43,10 @@ func newUnique() Unique {
 	return Unique(fmt.Sprintf("%v.%v.%v", now.Unix(), deliveryID, hostname))
 }
 
+// Writer is an interface for writing a message to the maildir.
 type Writer interface {
+	io.WriteCloser
 	Cancel() error
-	Close() error
-	Write([]byte) (int, error)
 	Unique() Unique
 }
 
@@ -81,9 +82,9 @@ func (w *mailWriter) Unique() Unique {
 	return w.unique
 }
 
-// Start the delivery of a new message to the maildir.  This function
-// returns an io.WriteCloser; when .Close() is called on it, the
-// message is delivered.
+// NewMail starts the delivery of a new message to the maildir.  This
+// function returns an io.WriteCloser; when .Close() is called on it,
+// the message is delivered.
 func (md Maildir) NewMail() Writer {
 	unique := newUnique()
 	file, err := os.OpenFile(string(md)+"/tmp/"+string(unique), os.O_WRONLY|os.O_CREATE, 0666)

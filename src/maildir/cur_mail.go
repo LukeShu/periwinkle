@@ -12,7 +12,7 @@ import (
 	"syscall"
 )
 
-// A handle on an Acknowledge()ed (not newly-delivered) message in the
+// CurMail is a handle on an Acknowledge()ed (not newly-delivered) message in the
 // maildir.
 type CurMail struct {
 	md   Maildir
@@ -56,12 +56,12 @@ func (md Maildir) Acknowledge(u Unique) (mail *CurMail, err error) {
 	return
 }
 
-// Return the unique idenfier for the message.
+// GetUnique returns the unique idenfier for the message.
 func (m *CurMail) GetUnique() Unique {
 	return m.uniq
 }
 
-// Return the info string for the message, which "is morally
+// GetInfo returns the info string for the message, which "is morally
 // equivalent to the Status field used by mbox readers."
 //
 // This package treats info as an opaque string, but obviously it
@@ -72,8 +72,8 @@ func (m *CurMail) GetInfo() string {
 	return m.info
 }
 
-// Set the info string for the message, which "is morally equivalent
-// to the Status field used by mbox readers."
+// SetInfo sets the info string for the message, which "is morally
+// equivalent to the Status field used by mbox readers."
 //
 // This package treats info as an opaque string, but obviously it
 // would be good for it to have a common format between
@@ -92,14 +92,15 @@ func (m *CurMail) Delete() error {
 	return syscall.Unlink(m.path())
 }
 
+// Reader is the union of io.{Reader,Closer,Seeker}.
 type Reader interface {
 	io.Reader
 	io.Closer
 	io.Seeker
 }
 
-// Return an io.{Reader,Seeker,Closer} for the message, so that you
-// can read its contents.
+// Reader returns an io.{Reader,Seeker,Closer} for the message, so
+// that you can read its contents.
 func (m *CurMail) Reader() Reader {
 	file, err := os.Open(m.path())
 	if err != nil {

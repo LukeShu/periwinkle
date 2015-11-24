@@ -39,7 +39,8 @@ type Unique string
 //    attempt to parse filenames." --
 //    http://www.qmail.org/qmail-manual-html/man5/maildir.html
 
-// Remove files in `md+"/tmp/"` not accessed in the last 36 hours.
+// Clean (remove) files in `md+"/tmp/"` not accessed in the last 36
+// hours.
 func (md Maildir) Clean() error {
 	dir, err := os.Open(string(md) + "/tmp")
 	if err != nil {
@@ -65,7 +66,8 @@ func (md Maildir) Clean() error {
 	return err
 }
 
-// List the identifiers of newly delivered messages in the maildir.
+// ListNew lists the identifiers of newly delivered messages in the
+// maildir.
 func (md Maildir) ListNew() (mails []Unique, err error) {
 	dir, err := os.Open(string(md) + "/new")
 	if err != nil {
@@ -85,7 +87,7 @@ func (md Maildir) ListNew() (mails []Unique, err error) {
 	return
 }
 
-// List old messages in the maildir.
+// ListCur lists current/old messages in the maildir.
 func (md Maildir) ListCur() (mails []*CurMail, err error) {
 	dir, err := os.Open(string(md) + "/cur")
 	if err != nil {
