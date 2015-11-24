@@ -31,17 +31,17 @@ func (o *Captcha) Methods() map[string]func(he.Request) he.Response {
 		"GET": func(req he.Request) he.Response {
 			return he.StatusOK(o)
 		},
-		/*
-			"PUT": func(req he.Request) he.Response {
-				db := req.Things["db"].(*gorm.DB)
-				sess := req.Things["session"].(*backend.Session)
-				var new_captcha Captcha
-				httperr := safeDecodeJSON(req.Entity, &new_captcha)
-				if httperr != nil {
-					return *httperr
-				}
-			},
-		*/
+		"PUT": func(req he.Request) he.Response {
+			db := req.Things["db"].(*gorm.DB)
+			var new_captcha Captcha
+			httperr := safeDecodeJSON(req.Entity, &new_captcha)
+			if httperr != nil {
+				return *httperr
+			}
+			*o = new_captcha
+			o.backend().Save(db)
+			return he.StatusOK(o)
+		},
 		/*
 			"PATCH": func(req he.Request) he.Response {
 				panic("TODO: API: (*Captcha).Methods()[\"PATCH\"]")
