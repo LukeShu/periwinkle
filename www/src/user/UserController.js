@@ -449,7 +449,10 @@
 				self.groups.status.loading = true;
 				$http({
 					method:	'GET',
-					url:	'/v1/groups'
+					url:	'/v1/groups',
+					data: {
+						visibility: 'subscribed'
+					}
 				}).then(
 					function success(response) {
 						self.groups.list = response.data;

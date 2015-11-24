@@ -14,6 +14,29 @@
 		$scope.error = '';
 
 		self.name = '';
+		self.exists_prms = [
+			{text: 'Public', server: 'public'},
+			{text: 'Confirmed', server: 'confirmed'},
+			{text: 'Member', server: 'member'}
+		];
+		self.exists = 0;
+		self.read_prms = [
+			{text: 'Public', server: 'public'},
+			{text: 'Confirmed', server: 'confirmed'},
+			{text: 'Member', server: 'member'}
+		];
+		self.read = 2;
+		self.post_prms = [
+			{text: 'Public', server: 'public'},
+			{text: 'Confirmed Members', server: 'confirmed'},
+			{text: 'Moderator', server: 'moderator'}
+		];
+		self.post = 1;
+		self.join_prms = [
+			{text: 'Auto Allow', server: 'auto'},
+			{text: 'Require Confirmation', server: 'confirm'}
+		];
+		self.join = 0;
 
 		self.cancel = function() {
 			$mdDialog.cancel();
@@ -28,7 +51,11 @@
 					'Content-Type': 'application/json'
 				},
 				data: {
-					'groupname': self.name
+					'groupname': self.name,
+					'existence': self.exists_prms[self.exists].server,
+					'read': self.read_prms[self.read].server,
+					'post': self.post_prms[self.post].server,
+					'join': self.join_prms[self.join].server
 				}
 			}).then(
 				function success(response) {

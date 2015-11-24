@@ -8,30 +8,58 @@
 	</md-toolbar>
 
 	<div ng-if="!loading">
-		<form ng-submit="group.create()">
+		<form name="newGroupForm" ng-submit="group.create()">
 			<md-dialog-content style="max-width: 150mm; max-height: 100mm;">
 				<div class="md-dialog-content">
 					<p style="color: red;" ng-if="error != ''">{{ error | translate }}</p>
 					<md-input-container>
 						<label>{{ "USER.NEW_GROUP.GROUP_NAME" | translate}}</label>
-						<input ng-model="group.name" type="text" />
+						<input ng-model="group.name" type="text" required/>
+					</md-input-container>
+					<md-input-container>
+						<label>Who see it?</label>
+						<md-select name="type" ng-model="group.exists">
+							<md-option ng-repeat="type in group.exists_prms" ng-value="$index">
+								{{type.text}}
+							</md-option>
+						</md-select>
+					</md-input-container>
+					<md-input-container>
+						<label>Who see the messages?</label>
+						<md-select name="type" ng-model="group.read">
+							<md-option ng-repeat="type in group.read_prms" ng-value="$index">
+								{{type.text}}
+							</md-option>
+						</md-select>
+					</md-input-container>
+					<md-input-container>
+						<label>Who can send messages?</label>
+						<md-select name="type" ng-model="group.post">
+							<md-option ng-repeat="type in group.post_prms" ng-value="$index">
+								{{type.text}}
+							</md-option>
+						</md-select>
+					</md-input-container>
+					<md-input-container>
+						<label>How are users added?</label>
+						<md-select name="type" ng-model="group.join">
+							<md-option ng-repeat="type in group.join_prms" ng-value="$index">
+								{{type.text}}
+							</md-option>
+						</md-select>
 					</md-input-container>
 				</div>
 			</md-dialog-content>
 			<div style="clear: both;"></div>
-			<md-button type="submit" ng-show="false">
-				Submit
-			</md-button>
+			<div class="md-actions" layout="row">
+				<md-button type="button" ng-click="group.cancel()">
+					{{ "GENERAL.FORM.RESPONSE.CANCEL" | translate }}
+				</md-button>
+				<md-button type="submit">
+					{{ "GENERAL.FORM.RESPONSE.CREATE" | translate }}
+				</md-button>
+			</div>
 		</form>
-
-		<div class="md-actions" layout="row">
-			<md-button ng-click="group.cancel()">
-				{{ "GENERAL.FORM.RESPONSE.CANCEL" | translate }}
-			</md-button>
-			<md-button ng-click="group.create()">
-				{{ "GENERAL.FORM.RESPONSE.CREATE" | translate }}
-			</md-button>
-		</div>
 	</div>
 
 	<div ng-if="loading" style="width: 100px; height: 100px margin-top: 1.5em; margin-left: auto; margin-right: auto; margin-bottom: 1.5em;">
