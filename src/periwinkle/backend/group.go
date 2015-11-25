@@ -5,6 +5,7 @@
 package backend
 
 import (
+	"fmt"
 	"github.com/jinzhu/gorm"
 )
 
@@ -45,38 +46,29 @@ func GetGroupByID(db *gorm.DB, id string) *Group {
 }
 
 func GetGroupsByMember(db *gorm.DB, user User) []Group {
-	// turn the User's list of addresses into a list of address IDs
-	userAddressIDs := make([]int64, len(user.Addresses))
-	for i, userAddress := range user.Addresses {
-		userAddressIDs[i] = userAddress.ID
+	subscribed := user.GetUserSubscriptions(db)
+	var subscriptions map[string]int
+        subscriptions = make(map[string]int)
+        for _, sub := range subscribed {
+                subscriptions[sub.GroupID] = 1
+        }
+        groupids := make([]string, 0, len(subscriptions))
+        for key := range subscriptions {
+                groupids = append(groupids, key)
+        }
+	fmt.Println("%v", subscriptions)
+        // use the list of group IDs to get the groups
+        var groups []Group
+        if len(groupids) > 0 {
+		if result := db.Where(groupids).Find(&groups); result.Error != nil {
+                	if result.RecordNotFound() {
+                	        return nil
+                	}
+        	        panic(result.Error)
+        	}
 	}
-	// use the list of address IDs to get a list of subscriptions
-	var subscriptions []Subscription
-	if len(userAddressIDs) > 0 {
-		if result := db.Where("addressID IN (?)", userAddressIDs).Find(&subscriptions); result.Error != nil {
-			if result.RecordNotFound() {
-				return nil
-			}
-			panic(result.Error)
-		}
-	} else {
-		subscriptions = make([]Subscription, 0)
-	}
-	// turn the list of subscriptions into a list of group IDs
-	groupIDs := make([]string, len(subscriptions))
-	for i, subscription := range subscriptions {
-		groupIDs[i] = subscription.GroupID
-	}
-	// use the list of group IDs to get the groups
-	var groups []Group
-	if result := db.Where(groupIDs).Find(&groups); result.Error != nil {
-		if result.RecordNotFound() {
-			return nil
-		}
-		panic(result.Error)
-	}
-	// return them
-	return groups
+        // return them
+        return groups
 }
 
 func GetPublicAndSubscribedGroups(db *gorm.DB, user User) []Group {

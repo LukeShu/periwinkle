@@ -99,11 +99,21 @@ func newDirGroups() dirGroups {
 			db := req.Things["db"].(*gorm.DB)
 			sess := req.Things["session"].(*backend.Session)
 			var groups []backend.Group
-			if sess == nil {
-				groups = []backend.Group{}
-			} else {
-				groups = backend.GetPublicAndSubscribedGroups(db, *backend.GetUserByID(db, sess.UserID))
-			}
+			type getfmt struct {
+                                visibility string
+                        }
+                        var entity getfmt
+                        httperr := safeDecodeJSON(req.Entity, &entity)
+                        if httperr != nil {
+                                entity.visibility = "subscribed"
+                        }
+                        if sess == nil {
+                                groups = []backend.Group{}
+                        } else if entity.visibility == "subscribed" {
+                                groups = backend.GetGroupsByMember(db, *backend.GetUserByID(db, sess.UserID))
+                        } else {
+                                groups = backend.GetPublicAndSubscribedGroups(db, *backend.GetUserByID(db, sess.UserID))
+                        }
 			generic := make([]interface{}, len(groups))
 			type EnumerateGroup struct {
 				ID            string                 `json:"id"`
