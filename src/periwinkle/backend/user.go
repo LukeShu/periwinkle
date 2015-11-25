@@ -92,21 +92,21 @@ func (u *User) populate(db *gorm.DB) {
 }
 
 func (u *User) GetUserSubscriptions(db *gorm.DB) []Subscription {
-        db.Model(u).Related(&u.Addresses)
-        addressIDs := make([]int64, len(u.Addresses))
-        for i, address := range u.Addresses {
-                addressIDs[i] = address.ID
-        }
-        var subscriptions []Subscription
-        if len(addressIDs) > 0 {
-                if result := db.Where("address_id IN (?)", addressIDs).Find(&subscriptions); result.Error != nil {
-                        if !result.RecordNotFound() {
-                                panic(result.Error)
-                        }
-                }
-        } else {
-                subscriptions = make([]Subscription, 0)
-        }
+	db.Model(u).Related(&u.Addresses)
+	addressIDs := make([]int64, len(u.Addresses))
+	for i, address := range u.Addresses {
+		addressIDs[i] = address.ID
+	}
+	var subscriptions []Subscription
+	if len(addressIDs) > 0 {
+		if result := db.Where("address_id IN (?)", addressIDs).Find(&subscriptions); result.Error != nil {
+			if !result.RecordNotFound() {
+				panic(result.Error)
+			}
+		}
+	} else {
+		subscriptions = make([]Subscription, 0)
+	}
 	return subscriptions
 }
 

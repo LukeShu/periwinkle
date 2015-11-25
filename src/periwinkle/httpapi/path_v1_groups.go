@@ -100,20 +100,20 @@ func newDirGroups() dirGroups {
 			sess := req.Things["session"].(*backend.Session)
 			var groups []backend.Group
 			type getfmt struct {
-                                visibility string
-                        }
-                        var entity getfmt
-                        httperr := safeDecodeJSON(req.Entity, &entity)
-                        if httperr != nil {
-                                entity.visibility = "subscribed"
-                        }
-                        if sess == nil {
-                                groups = []backend.Group{}
-                        } else if entity.visibility == "subscribed" {
-                                groups = backend.GetGroupsByMember(db, *backend.GetUserByID(db, sess.UserID))
-                        } else {
-                                groups = backend.GetPublicAndSubscribedGroups(db, *backend.GetUserByID(db, sess.UserID))
-                        }
+				visibility string
+			}
+			var entity getfmt
+			httperr := safeDecodeJSON(req.Entity, &entity)
+			if httperr != nil {
+				entity.visibility = "subscribed"
+			}
+			if sess == nil {
+				groups = []backend.Group{}
+			} else if entity.visibility == "subscribed" {
+				groups = backend.GetGroupsByMember(db, *backend.GetUserByID(db, sess.UserID))
+			} else {
+				groups = backend.GetPublicAndSubscribedGroups(db, *backend.GetUserByID(db, sess.UserID))
+			}
 			generic := make([]interface{}, len(groups))
 			type EnumerateGroup struct {
 				ID            string                 `json:"id"`

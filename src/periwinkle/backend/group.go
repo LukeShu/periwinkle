@@ -5,7 +5,6 @@
 package backend
 
 import (
-	"fmt"
 	"github.com/jinzhu/gorm"
 )
 
@@ -48,27 +47,26 @@ func GetGroupByID(db *gorm.DB, id string) *Group {
 func GetGroupsByMember(db *gorm.DB, user User) []Group {
 	subscribed := user.GetUserSubscriptions(db)
 	var subscriptions map[string]int
-        subscriptions = make(map[string]int)
-        for _, sub := range subscribed {
-                subscriptions[sub.GroupID] = 1
-        }
-        groupids := make([]string, 0, len(subscriptions))
-        for key := range subscriptions {
-                groupids = append(groupids, key)
-        }
-	fmt.Println("%v", subscriptions)
-        // use the list of group IDs to get the groups
-        var groups []Group
-        if len(groupids) > 0 {
-		if result := db.Where(groupids).Find(&groups); result.Error != nil {
-                	if result.RecordNotFound() {
-                	        return nil
-                	}
-        	        panic(result.Error)
-        	}
+	subscriptions = make(map[string]int)
+	for _, sub := range subscribed {
+		subscriptions[sub.GroupID] = 1
 	}
-        // return them
-        return groups
+	groupids := make([]string, 0, len(subscriptions))
+	for key := range subscriptions {
+		groupids = append(groupids, key)
+	}
+	// use the list of group IDs to get the groups
+	var groups []Group
+	if len(groupids) > 0 {
+		if result := db.Where(groupids).Find(&groups); result.Error != nil {
+			if result.RecordNotFound() {
+				return nil
+			}
+			panic(result.Error)
+		}
+	}
+	// return them
+	return groups
 }
 
 func GetPublicAndSubscribedGroups(db *gorm.DB, user User) []Group {
