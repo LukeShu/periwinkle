@@ -22,7 +22,8 @@ import (
 	"lukeshu.com/git/go/libsystemd.git/sd_daemon/lsb"
 )
 
-var usage = fmt.Sprintf(`
+var usage = fmt.Sprintf(`Periwinkle listen-twilio
+
 Usage: %[1]s [-c CONFIG_FILE]
        %[1]s -h | --help
 Repeatedly poll Twilio for new messages.

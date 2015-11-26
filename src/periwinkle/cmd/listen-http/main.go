@@ -18,7 +18,8 @@ import (
 	"lukeshu.com/git/go/libsystemd.git/sd_daemon/lsb"
 )
 
-var usage = fmt.Sprintf(`
+var usage = fmt.Sprintf(`Periwinkle listen-http
+
 Usage: %[1]s [-c CONFIG_FILE] [ADDR_TYPE] [ADDR]
        %[1]s -h | --help
 Do the HTTP that you do, baby.

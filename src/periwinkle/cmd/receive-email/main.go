@@ -17,7 +17,8 @@ import (
 	"lukeshu.com/git/go/libsystemd.git/sd_daemon/lsb"
 )
 
-var usage = fmt.Sprintf(`
+var usage = fmt.Sprintf(`Periwinkle receive-email
+
 Usage: %[1]s [-c CONFIG_FILE]
        %[1]s -h | --help
 Install this in your Postfix ~/.forward or aliases file.

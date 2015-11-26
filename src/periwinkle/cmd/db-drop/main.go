@@ -13,7 +13,8 @@ import (
 	"lukeshu.com/git/go/libsystemd.git/sd_daemon/lsb"
 )
 
-var usage = fmt.Sprintf(`
+var usage = fmt.Sprintf(`Periwinkle db-drop
+
 Usage: %[1]s [-c CONFIG_FILE]
        %[1]s -h | --help
 Drop the tables in the RDBMS, in the correct order.
