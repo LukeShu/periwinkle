@@ -42,24 +42,6 @@ func (r Router) responseBadRequest(e interface{}) Response {
 	}
 }
 
-func (r Router) responseNotFound() Response {
-	return Response{
-		Status:  404,
-		Headers: http.Header{},
-		Entity:  heutil.NetString("404 Not Found"),
-	}
-}
-
-func (r Router) responseMethodNotAllowed(methods string) Response {
-	return Response{
-		Status: 405,
-		Headers: http.Header{
-			"Allow": {methods},
-		},
-		Entity: heutil.NetString("405 Method Not Allowed"),
-	}
-}
-
 func (r Router) responseUnsupportedMediaType(e NetEntity) Response {
 	if e == nil {
 		e = heutil.NetString("415 Unsupported Media Type")

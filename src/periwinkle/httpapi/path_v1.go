@@ -13,7 +13,7 @@ type dirRoot struct {
 	dirUsers    he.Entity
 }
 
-func NewDirRoot() he.Entity {
+func NewDirRoot() he.RootEntity {
 	return &dirRoot{
 		methods:     make(map[string]func(he.Request) he.Response),
 		dirCaptchas: newDirCaptchas(),
@@ -42,4 +42,12 @@ func (d dirRoot) Subentity(name string, request he.Request) he.Entity {
 		return d.dirUsers
 	}
 	return nil
+}
+
+func (d dirRoot) SubentityNotFound(name string, request he.Request) he.Response {
+	panic("TODO")
+}
+
+func (d dirRoot) MethodNotAllowed(request he.Request) he.Response {
+	panic("TODO")
 }

@@ -32,15 +32,3 @@ func mimetypes2net(u *url.URL, mimetypes []string) NetEntity {
 	}
 	return heutil.NetList(locations)
 }
-
-func extensions2net(u *url.URL, extensions []string) NetEntity {
-	u, _ = u.Parse("") // dup
-	u.Path = strings.TrimSuffix(u.Path, "/")
-	locations := make([]interface{}, len(extensions))
-	for i, extension := range extensions {
-		u2, _ := u.Parse("")
-		u2.Path += extension
-		locations[i] = u2.String()
-	}
-	return heutil.NetList(locations)
-}

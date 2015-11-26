@@ -30,7 +30,7 @@ import (
 // and writing messages to the network socket.
 type Router struct {
 	Prefix      string
-	Root        Entity
+	Root        RootEntity
 	Decoders    map[string]func(io.Reader, map[string]string) (interface{}, error)
 	Middlewares []Middleware
 
@@ -44,17 +44,19 @@ type Router struct {
 	// `Forwarded: proto=`
 	TrustForwarded bool
 
-	handler func(Request, *url.URL) Response
+	MethodNotAllowed func(request Request, u *url.URL) Response
+
+	outsideHandler func(Request) Response
+	insideHandler  func(Request, Entity) Response
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 
 // Represents an incoming HTTP request to be handled.
 type Request struct {
-	Scheme  string
 	Method  string
+	URL     *url.URL
 	Headers http.Header
-	Query   url.Values
 	Entity  interface{}
 	Things  map[string]interface{}  // Objects added by middlewares
 	cookies map[string]*http.Cookie // cached
@@ -87,6 +89,28 @@ type Entity interface {
 	Subentity(name string, request Request) Entity
 }
 
+// 404 Not Found
+// 405 Method Not Allowed
+// 406 Not Acceptable
+// 400 Bad Request
+// 500 Internal Server Error
+
+type EntityGroup interface {
+	Entity
+	SubentityNotFound(name string, request Request) Response
+}
+
+type EntityExtra interface {
+	Entity
+	MethodNotAllowed(request Request) Response
+}
+
+type RootEntity interface {
+	Entity
+	SubentityNotFound(name string, request Request) Response
+	MethodNotAllowed(request Request) Response
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 
 // A NetEntity is just something that is capable of being transmitted
@@ -100,4 +124,10 @@ type NetEntity interface {
 ////////////////////////////////////////////////////////////////////////////////
 
 // A Middleware is something that wraps the request handler.
-type Middleware func(Request, *url.URL, func(Request, *url.URL) Response) Response
+type Middleware struct {
+	// Outside is able to affect the entity that is looked up
+	Outside func(Request, func(Request) Response) Response
+	// Inside cannot affect the entity that is looked up, but it
+	// gets to inspect the entity.
+	Inside func(Request, Entity, func(Request, Entity) Response) Response
+}

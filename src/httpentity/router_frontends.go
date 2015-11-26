@@ -5,44 +5,43 @@ package httpentity
 import (
 	"log"
 	"net/http"
-	"net/url"
 	"strings"
 )
 
-func (r *Router) Route(req Request, u *url.URL) (res Response) {
+func (r *Router) Route(req Request) (res Response) {
 	if r.LogRequest {
-		log.Printf("Route: %s %s %q\n", req.Scheme, req.Method, u.String())
+		log.Printf("Route: %s %q\n", req.Method, req.URL.String())
 	}
-	u, mimetype := normalizeURL(u)
+	u, mimetype := normalizeURL(req.URL)
+	req.URL = u
 	if mimetype != "" {
 		// the file extension overrides the Accept: header
 		req.Headers.Set("Accept", mimetype)
 	}
 
-	defer r.finish(req, u, &res)
-	res = r.handler(req, u)
+	defer r.finish(req, &res)
+	res = r.outsideHandler(req)
 	return
 }
 
 func (h *Router) serveHTTP(w http.ResponseWriter, r *http.Request) (res Response) {
 	// adapt the request from `net/http` format to `httpentity` format
 	req := Request{
-		Scheme:  "http",
 		Method:  r.Method,
+		URL:     r.URL,
 		Headers: r.Header,
-		Query:   r.URL.Query(),
 		Entity:  nil,
 		Things:  map[string]interface{}{},
 	}
 	if r.TLS != nil {
-		req.Scheme = "https"
+		req.URL.Scheme = "https"
 	}
 	if h.LogRequest {
-		log.Printf("ServeHTTP: %s %s %q\n", req.Scheme, req.Method, r.URL.String())
+		log.Printf("ServeHTTP: %s %q\n", req.Method, r.URL.String())
 	}
 	if h.TrustForwarded {
 		if scheme := req.Headers.Get("X-Forwarded-Proto"); scheme != "" {
-			req.Scheme = scheme
+			req.URL.Scheme = scheme
 		}
 		if str := req.Headers.Get("Forwarded"); str != "" {
 			parts := strings.Split(str, ";")
@@ -50,19 +49,20 @@ func (h *Router) serveHTTP(w http.ResponseWriter, r *http.Request) (res Response
 				ary := strings.SplitN(parts[i], "=", 2)
 				if len(ary) == 2 {
 					if strings.EqualFold("proto", ary[0]) {
-						req.Scheme = ary[1]
+						req.URL.Scheme = ary[1]
 					}
 				}
 			}
 		}
 	}
-	u, mimetype := normalizeURL(r.URL)
+	u, mimetype := normalizeURL(req.URL)
+	req.URL = u
 	if mimetype != "" {
 		// the file extension overrides the Accept: header
 		req.Headers.Set("Accept", mimetype)
 	}
 
-	defer h.finish(req, u, &res)
+	defer h.finish(req, &res)
 
 	// parse the submitted entity
 	switch req.Method {
@@ -74,7 +74,7 @@ func (h *Router) serveHTTP(w http.ResponseWriter, r *http.Request) (res Response
 	}
 
 	// run the request
-	res = h.handler(req, u)
+	res = h.outsideHandler(req)
 
 	return
 }

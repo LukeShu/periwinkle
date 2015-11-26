@@ -3,98 +3,64 @@
 package httpentity
 
 import (
-	"httpentity/heutil"
-	"net/http"
-	"net/url"
 	"strings"
 )
 
-func methods2string(methods map[string]func(request Request) Response) string {
-	set := make(map[string]bool, len(methods)+2)
-	for method := range methods {
-		set[method] = true
-	}
-	set["OPTIONS"] = true
-	if _, get := set["GET"]; get {
-		set["HEAD"] = true
-	}
-	list := make([]string, len(set))
-	i := uint(0)
-	for method := range set {
-		list[i] = method
-		i++
-	}
-	return strings.Join(list, ", ")
-}
-
 type middlewareHolder struct {
 	middleware  Middleware
-	nextHandler func(request Request, u *url.URL) Response
+	nextOutside func(request Request) Response
+	nextInside  func(request Request, entity Entity) Response
 }
 
-func (mwh middlewareHolder) handler(request Request, u *url.URL) Response {
-	return mwh.middleware(request, u, mwh.nextHandler)
+func (mwh middlewareHolder) outsideHandler(request Request) Response {
+	return mwh.middleware.Outside(request, mwh.nextOutside)
 }
 
-// assumes that the url has already been passed to normalizeURL()
-func (router *Router) defaultHandler(request Request, u *url.URL) Response {
-	entity := findEntity(router.Root, request, strings.TrimPrefix(u.Path, router.Prefix))
+func (mwh middlewareHolder) insideHandler(request Request, entity Entity) Response {
+	return mwh.middleware.Inside(request, entity, mwh.nextInside)
+}
+
+// assumes that the request.URL has already been passed to normalizeURL()
+func (router *Router) defaultOutsideHandler(request Request) Response {
+	entity, notFound := router.findEntity(strings.TrimPrefix(request.URL.Path, router.Prefix), request)
 	if entity == nil {
-		return router.responseNotFound()
+		return *notFound
 	}
+	return router.insideHandler(request, entity)
+}
 
-	callmethod := request.Method
-	if callmethod == "HEAD" {
-		callmethod = "GET"
-	}
+func (router *Router) defaultInsideHandler(request Request, entity Entity) Response {
 	methods := entity.Methods()
 	handler, methodAllowed := methods[request.Method]
 
-	var response Response
-	if methodAllowed {
-		response = handler(request)
-	} else {
-		if callmethod == "OPTIONS" {
-			response = Response{
-				Status:  200,
-				Headers: http.Header{},
-				Entity:  nil,
-			}
+	if !methodAllowed {
+		var response Response
+		if extra, ok := entity.(EntityExtra); ok {
+			response = extra.MethodNotAllowed(request)
 		} else {
-			response = router.responseMethodNotAllowed(methods2string(methods))
+			response = router.MethodNotAllowed(request, request.URL)
 		}
+		return response
 	}
-	if callmethod == "OPTIONS" {
-		response.Headers.Set("Allow", methods2string(methods))
-	}
-
-	// make sure the Location: header is absolute
-	if l := response.Headers.Get("Location"); l != "" {
-		u2, _ := u.Parse(l)
-		response.Headers.Set("Location", u2.String())
-		// XXX: this is pretty hacky, because it is tightly
-		// integrated with the entity format used by
-		// rfc7231.StatusCreated()
-		if response.Status == 201 {
-			ilist := []interface{}(response.Entity.(heutil.NetList))
-			slist := make([]string, len(ilist))
-			for i, iface := range ilist {
-				slist[i] = iface.(string)
-			}
-			response.Entity = extensions2net(u2, slist)
-		}
-	}
-
-	return response
+	return handler(request)
 }
 
-func (router *Router) initHandler() {
-	handler := router.defaultHandler
+func (router *Router) initHandlers() {
+	outsideHandler := router.defaultOutsideHandler
+	insideHandler := router.defaultInsideHandler
 	for i := 0; i < len(router.Middlewares); i++ {
-		handler = middlewareHolder{
+		holder := middlewareHolder{
 			middleware:  router.Middlewares[len(router.Middlewares)-1-i],
-			nextHandler: handler,
-		}.handler
+			nextOutside: outsideHandler,
+			nextInside:  insideHandler,
+		}
+		if holder.middleware.Outside != nil {
+			outsideHandler = holder.outsideHandler
+		}
+		if holder.middleware.Inside != nil {
+			insideHandler = holder.insideHandler
+		}
 	}
-	router.handler = handler
+	router.outsideHandler = outsideHandler
+	router.insideHandler = insideHandler
 }

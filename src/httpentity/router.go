@@ -26,12 +26,12 @@ func normalizeURL(u1 *url.URL) (u *url.URL, mimetype string) {
 }
 
 func (r Router) Init() *Router {
-	r.initHandler()
+	r.initHandlers()
 	return &r
 }
 
 // assumes that the url has already been passed to normalizeURL()
-func (r *Router) finish(req Request, u *url.URL, res *Response) {
+func (r *Router) finish(req Request, res *Response) {
 	// generate a 500 error if we paniced
 	if err := recover(); err != nil {
 		*res = r.responseServerError(err)
@@ -42,7 +42,7 @@ func (r *Router) finish(req Request, u *url.URL, res *Response) {
 		mimetypes := encoders2mimetypes(encoders)
 		accept := req.Headers.Get("Accept")
 		if len(encoders) > 1 && accept == "" {
-			*res = r.responseMultipleChoices(u, mimetypes)
+			*res = r.responseMultipleChoices(req.URL, mimetypes)
 		} else {
 			options, err := negotiate.NegotiateContentType(&accept, mimetypes)
 			if err != nil {
@@ -50,12 +50,12 @@ func (r *Router) finish(req Request, u *url.URL, res *Response) {
 			} else {
 				switch len(options) {
 				case 0:
-					*res = r.responseNotAcceptable(u, mimetypes)
+					*res = r.responseNotAcceptable(req.URL, mimetypes)
 				case 1:
 					//res.Headers.Set("Content-Type", mimetype+"; charset=utf-8")
 					res.Headers.Set("Content-Type", mimetypes[0])
 				default:
-					*res = r.responseMultipleChoices(u, mimetypes)
+					*res = r.responseMultipleChoices(req.URL, mimetypes)
 				}
 			}
 		}

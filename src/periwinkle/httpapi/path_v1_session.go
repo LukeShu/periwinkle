@@ -68,8 +68,8 @@ func newFileSession() fileSession {
 				cookie := &http.Cookie{
 					Name:     "session_id",
 					Value:    sess.ID,
-					Secure:   req.Scheme == "https",
-					HttpOnly: req.Scheme == "http",
+					Secure:   req.URL.Scheme == "https",
+					HttpOnly: req.URL.Scheme == "http",
 				}
 				ret.Headers.Add("Set-Cookie", cookie.String())
 				return ret

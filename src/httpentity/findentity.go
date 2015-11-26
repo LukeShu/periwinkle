@@ -2,25 +2,38 @@
 
 package httpentity
 
-import (
-	"fmt"
-	"strings"
-)
+import "strings"
 
-// Takes the normalized path without the leading slash, but *WITH* a
-// trailing slash.
-func findEntity(entity Entity, req Request, upath string) Entity {
-	if entity == nil {
-		return nil // 404
-	} else if upath == "" {
-		return entity
-	} else {
-		parts := strings.SplitN(upath, "/", 2)
-		if len(parts) != 2 {
-			panic(fmt.Sprintf("path parser logic failure: %#v", upath))
+func pathSplit(upath string) (string, string) {
+	parts := strings.SplitN(upath, "/", 2)
+	switch len(parts) {
+	case 1:
+		return parts[0], ""
+	case 2:
+		return parts[0], parts[1]
+	}
+	panic("not reached")
+}
+
+// Takes the normalized path without the leading slash, and with or
+// without a trailing slash.
+func (router *Router) findEntity(upath string, request Request) (Entity, *Response) {
+	var entity Entity = router.Root
+	var handle404 func(string, Request) Response
+	for {
+		if g, ok := entity.(EntityGroup); ok {
+			handle404 = g.SubentityNotFound
 		}
-		child := parts[0]
-		grandchildren := parts[1]
-		return findEntity(entity.Subentity(child, req), req, grandchildren)
+		name_child, name_grandchildren := pathSplit(upath)
+		entity := entity.Subentity(name_child, request)
+
+		if entity == nil {
+			response := handle404(name_child, request)
+			return nil, &response
+		} else if name_grandchildren == "" {
+			return entity, nil
+		} else {
+			upath = name_grandchildren
+		}
 	}
 }

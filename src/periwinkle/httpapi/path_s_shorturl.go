@@ -13,7 +13,6 @@ import (
 )
 
 var _ he.Entity = &shortURL{}
-var _ he.Entity = &dirShortURLs{}
 
 type shortURL backend.ShortURL
 
@@ -40,7 +39,7 @@ type dirShortURLs struct {
 	methods map[string]func(he.Request) he.Response
 }
 
-func NewDirShortURLs() he.Entity {
+func NewDirShortURLs() he.RootEntity {
 	return &dirShortURLs{
 		methods: map[string]func(he.Request) he.Response{},
 	}
@@ -53,4 +52,12 @@ func (d dirShortURLs) Methods() map[string]func(he.Request) he.Response {
 func (d dirShortURLs) Subentity(name string, req he.Request) he.Entity {
 	db := req.Things["db"].(*gorm.DB)
 	return (*shortURL)(backend.GetShortURLByID(db, name))
+}
+
+func (d dirShortURLs) SubentityNotFound(name string, request he.Request) he.Response {
+	panic("TODO")
+}
+
+func (d dirShortURLs) MethodNotAllowed(request he.Request) he.Response {
+	panic("TODO")
 }

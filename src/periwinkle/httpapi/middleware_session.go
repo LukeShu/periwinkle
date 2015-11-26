@@ -4,7 +4,6 @@ package httpapi
 
 import (
 	he "httpentity"
-	"net/url"
 	"periwinkle/backend"
 	"time"
 
@@ -44,7 +43,9 @@ func getsession(req he.Request) *backend.Session {
 	return sess
 }
 
-func MiddlewareSession(req he.Request, u *url.URL, handle func(he.Request, *url.URL) he.Response) he.Response {
-	req.Things["session"] = getsession(req)
-	return handle(req, u)
+var MiddlewareSession = he.Middleware{
+	Outside: func(req he.Request, handle func(he.Request) he.Response) he.Response {
+		req.Things["session"] = getsession(req)
+		return handle(req)
+	},
 }
