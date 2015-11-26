@@ -13,7 +13,7 @@ import (
 	"runtime"
 	"strings"
 
-	docopt "github.com/docopt/docopt-go"
+	docopt "github.com/LukeShu/go-docopt"
 	"lukeshu.com/git/go/libsystemd.git/sd_daemon/lsb"
 )
 

@@ -13,7 +13,7 @@ import (
 	"strings"
 	"syscall"
 
-	docopt "github.com/docopt/docopt-go"
+	docopt "github.com/LukeShu/go-docopt"
 	sd "lukeshu.com/git/go/libsystemd.git/sd_daemon"
 	"lukeshu.com/git/go/libsystemd.git/sd_daemon/lsb"
 )
