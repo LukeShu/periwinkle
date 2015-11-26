@@ -20,10 +20,6 @@ func (o *shortURL) backend() *backend.ShortURL { return (*backend.ShortURL)(o) }
 
 // Model /////////////////////////////////////////////////////////////
 
-func (o *shortURL) Subentity(name string, req he.Request) he.Entity {
-	return nil
-}
-
 func (o *shortURL) Methods() map[string]func(he.Request) he.Response {
 	return map[string]func(he.Request) he.Response{
 		"GET": func(req he.Request) he.Response {

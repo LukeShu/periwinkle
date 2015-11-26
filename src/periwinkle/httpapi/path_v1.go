@@ -6,11 +6,11 @@ import he "httpentity"
 
 type dirRoot struct {
 	methods     map[string]func(he.Request) he.Response
-	dirCaptchas he.Entity
-	dirGroups   he.Entity
-	dirMessages he.Entity
+	dirCaptchas he.EntityGroup
+	dirGroups   he.EntityGroup
+	dirMessages he.EntityGroup
 	fileSession he.Entity
-	dirUsers    he.Entity
+	dirUsers    he.EntityGroup
 }
 
 func NewDirRoot() he.RootEntity {

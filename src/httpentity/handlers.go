@@ -24,7 +24,7 @@ func (mwh middlewareHolder) insideHandler(request Request, entity Entity) Respon
 func (router *Router) defaultOutsideHandler(request Request) Response {
 	entity, notFound := router.findEntity(strings.TrimPrefix(request.URL.Path, router.Prefix), request)
 	if entity == nil {
-		return *notFound
+		return notFound
 	}
 	return router.insideHandler(request, entity)
 }

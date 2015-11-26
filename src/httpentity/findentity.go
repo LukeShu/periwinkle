@@ -17,23 +17,23 @@ func pathSplit(upath string) (string, string) {
 
 // Takes the normalized path without the leading slash, and with or
 // without a trailing slash.
-func (router *Router) findEntity(upath string, request Request) (Entity, *Response) {
-	var entity Entity = router.Root
-	var handle404 func(string, Request) Response
+func (router *Router) findEntity(upath string, request Request) (Entity, Response) {
+	var group EntityGroup = router.Root
 	for {
-		if g, ok := entity.(EntityGroup); ok {
-			handle404 = g.SubentityNotFound
-		}
-		name_child, name_grandchildren := pathSplit(upath)
-		entity := entity.Subentity(name_child, request)
+		nameChild, nameGrandchildren := pathSplit(upath)
+		entity := group.Subentity(nameChild, request)
 
 		if entity == nil {
-			response := handle404(name_child, request)
-			return nil, &response
-		} else if name_grandchildren == "" {
-			return entity, nil
+			return nil, group.SubentityNotFound(nameChild, request)
+		} else if nameGrandchildren == "" {
+			return entity, Response{}
 		} else {
-			upath = name_grandchildren
+			if newgroup, ok := entity.(EntityGroup); ok {
+				group = newgroup
+			} else {
+				nameGrandchild, _ := pathSplit(upath)
+				return nil, group.SubentityNotFound(nameChild+"/"+nameGrandchild, request)
+			}
 		}
 	}
 }

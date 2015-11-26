@@ -15,17 +15,13 @@ import (
 
 var _ he.Entity = &captcha{}
 var _ he.NetEntity = &captcha{}
-var _ he.Entity = &dirCaptchas{}
+var _ he.EntityGroup = &dirCaptchas{}
 
 type captcha backend.Captcha
 
 func (o *captcha) backend() *backend.Captcha { return (*backend.Captcha)(o) }
 
 // Model /////////////////////////////////////////////////////////////
-
-func (o *captcha) Subentity(name string, req he.Request) he.Entity {
-	return nil
-}
 
 func (o *captcha) Methods() map[string]func(he.Request) he.Response {
 	return map[string]func(he.Request) he.Response{
@@ -88,4 +84,8 @@ func (d dirCaptchas) Methods() map[string]func(he.Request) he.Response {
 func (d dirCaptchas) Subentity(name string, req he.Request) he.Entity {
 	db := req.Things["db"].(*gorm.DB)
 	return (*captcha)(backend.GetCaptchaByID(db, name))
+}
+
+func (d dirCaptchas) SubentityNotFound(name string, req he.Request) he.Response {
+	return rfc7231.StatusNotFound(nil)
 }

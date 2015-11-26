@@ -78,15 +78,6 @@ type Entity interface {
 	// Methods() returns a map of HTTP request methods to Handlers
 	// that handle requests for this Entity.
 	Methods() map[string]func(Request) Response
-
-	// Subentity(name, request) returns the child of this entity
-	// with the name `name`, or nil if a child with that name
-	// doesn't exist.
-	//
-	// The Request is included in the function call so that it can
-	// be determined if the user has permission to access that
-	// child.
-	Subentity(name string, request Request) Entity
 }
 
 // 404 Not Found
@@ -97,6 +88,20 @@ type Entity interface {
 
 type EntityGroup interface {
 	Entity
+
+	// Subentity(name, request) returns the child of this entity
+	// with the name `name`, or nil if a child with that name
+	// doesn't exist.
+	//
+	// The Request is included in the function call so that it can
+	// be determined if the user has permission to access that
+	// child.
+	Subentity(name string, request Request) Entity
+
+	// SubentityNotFound is called if Subentity returns nil.  If
+	// the name contains a slash; it indicates that the child was
+	// found, but a grandchild was requested, and the child wasn't
+	// an EntityGroup.
 	SubentityNotFound(name string, request Request) Response
 }
 
@@ -107,6 +112,7 @@ type EntityExtra interface {
 
 type RootEntity interface {
 	Entity
+	Subentity(name string, request Request) Entity
 	SubentityNotFound(name string, request Request) Response
 	MethodNotAllowed(request Request) Response
 }

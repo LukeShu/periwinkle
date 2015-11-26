@@ -14,7 +14,7 @@ import (
 
 var _ he.Entity = &message{}
 var _ he.NetEntity = &message{}
-var _ he.Entity = dirMessages{}
+var _ he.EntityGroup = dirMessages{}
 
 type message backend.Message
 
@@ -41,6 +41,10 @@ func (o *message) Encoders() map[string]func(io.Writer) error {
 	panic("TODO: API: (*message).Encoders()")
 }
 
+func (o *message) SubentityNotFound(name string, req he.Request) he.Response {
+	panic("TODO: SMTP: (*message).SubentityNotFound()")
+}
+
 // Directory ("Controller") //////////////////////////////////////////
 
 type dirMessages struct {
@@ -60,4 +64,8 @@ func (d dirMessages) Methods() map[string]func(he.Request) he.Response {
 func (d dirMessages) Subentity(name string, req he.Request) he.Entity {
 	db := req.Things["db"].(*gorm.DB)
 	return (*message)(backend.GetMessageByID(db, name))
+}
+
+func (d dirMessages) SubentityNotFound(name string, req he.Request) he.Response {
+	return rfc7231.StatusNotFound(nil)
 }

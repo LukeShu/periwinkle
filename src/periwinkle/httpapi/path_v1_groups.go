@@ -16,9 +16,9 @@ import (
 	"github.com/jinzhu/gorm"
 )
 
-var _ he.Entity = &group{}
+var _ he.EntityGroup = &group{}
 var _ he.NetEntity = &group{}
-var _ he.Entity = &dirGroups{}
+var _ he.EntityGroup = &dirGroups{}
 
 type group backend.Group
 
@@ -28,6 +28,10 @@ func (o *group) backend() *backend.Group { return (*backend.Group)(o) }
 
 func (o *group) Subentity(name string, req he.Request) he.Entity {
 	panic("TODO: API: (*group).Subentity()")
+}
+
+func (o *group) SubentityNotFound(name string, req he.Request) he.Response {
+	panic("TODO: API: (*group).SubentityNotFound()")
 }
 
 func (o *group) Methods() map[string]func(he.Request) he.Response {
@@ -113,6 +117,7 @@ func newDirGroups() dirGroups {
 			} else if entity.visibility == "subscribed" {
 				groups = backend.GetGroupsByMember(db, *backend.GetUserByID(db, sess.UserID))
 			} else {
+				//groups = GetAllGroups(db)
 				groups = backend.GetPublicAndSubscribedGroups(db, *backend.GetUserByID(db, sess.UserID))
 			}
 			generic := make([]interface{}, len(groups))
@@ -199,4 +204,8 @@ func (d dirGroups) Subentity(name string, req he.Request) he.Entity {
 		return nil
 	}
 	return (*group)(grp)
+}
+
+func (d dirGroups) SubentityNotFound(name string, req he.Request) he.Response {
+	return rfc7231.StatusNotFound(nil)
 }

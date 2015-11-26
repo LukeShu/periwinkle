@@ -19,7 +19,7 @@ import (
 
 var _ he.Entity = &user{}
 var _ he.NetEntity = &user{}
-var _ he.Entity = &dirUsers{}
+var _ he.EntityGroup = &dirUsers{}
 
 type user backend.User
 
@@ -248,4 +248,8 @@ func (d dirUsers) Subentity(name string, req he.Request) he.Entity {
 	}
 	db := req.Things["db"].(*gorm.DB)
 	return (*user)(backend.GetUserByID(db, name))
+}
+
+func (d dirUsers) SubentityNotFound(name string, req he.Request) he.Response {
+	return rfc7231.StatusNotFound(nil)
 }

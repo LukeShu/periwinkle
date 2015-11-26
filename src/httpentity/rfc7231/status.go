@@ -19,7 +19,7 @@ func StatusOK(entity he.NetEntity) he.Response {
 }
 
 // For when you've created a document with a new URL.
-func StatusCreated(parent he.Entity, childName string, req he.Request) he.Response {
+func StatusCreated(parent he.EntityGroup, childName string, req he.Request) he.Response {
 	if childName == "" {
 		panic("can't call StatusCreated with an empty child name")
 	}
@@ -160,11 +160,14 @@ func StatusForbidden(e he.NetEntity) he.Response {
 	}
 }
 
-func statusNotFound() he.Response {
+func StatusNotFound(e he.NetEntity) he.Response {
+	if e == nil {
+		e = heutil.NetString("404 Not Found")
+	}
 	return he.Response{
 		Status:  404,
 		Headers: http.Header{},
-		Entity:  heutil.NetString("404 Not Found"),
+		Entity:  e,
 	}
 }
 
