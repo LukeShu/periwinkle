@@ -53,7 +53,7 @@ Options:
 func parseArgs(args []string) net.Listener {
 	var stype, saddr string
 
-	switch len(args) - 1 {
+	switch len(args) {
 	case 0:
 		stype = "tcp"
 		saddr = ":8080"
