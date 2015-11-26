@@ -8,8 +8,8 @@ TrustForwarded:       true
 GroupDomain:          "periwinkle.lol"
 WebRoot:              "periwinkle.lol"
 # DB:
-#   - driver: mysql
-#   - source: "username:password@hostname/database?charset=utf8&parseTime=True"
+#   driver: mysql
+#   source: "username:password@hostname/database?charset=utf8&parseTime=True"
 # DB:
-#   - driver: sqlite3
-#   - source: "file:periwinkle.sqlite?cache=shared&mode=rwc"
+#   driver: sqlite3
+#   source: "file:periwinkle.sqlite?cache=shared&mode=rwc"
