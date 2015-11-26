@@ -12,7 +12,6 @@ CGO_CFLAGS = $(CFLAGS) -Wno-unused-parameter
 CGO_ENABLED = 1
 
 # Set deps to be a list of import strings of external packages we need to import
-deps += bitbucket.org/ww/goautoneg
 deps += github.com/LukeShu/go-docopt
 deps += github.com/dchest/captcha
 deps += github.com/djherbis/times

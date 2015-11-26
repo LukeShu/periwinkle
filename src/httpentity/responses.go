@@ -26,14 +26,19 @@ func (r Router) responseNotAcceptable(u *url.URL, mimetypes []string) Response {
 	}
 }
 
-func (r Router) responseBadRequest(e NetEntity) Response {
+func (r Router) responseBadRequest(e interface{}) Response {
+	var ne NetEntity
 	if e == nil {
-		e = heutil.NetString("400 Bad Request")
+		ne = heutil.NetString("400 Bad Request")
+	} else if ne2, ok := e.(NetEntity); ok {
+		ne = ne2
+	} else {
+		ne = heutil.NetString(fmt.Sprintf("400 Bad Request: %v", e))
 	}
 	return Response{
 		Status:  400,
 		Headers: http.Header{},
-		Entity:  e,
+		Entity:  ne,
 	}
 }
 

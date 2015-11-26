@@ -3,12 +3,11 @@
 package httpentity
 
 import (
+	"httpentity/negotiate"
 	"mime"
 	"net/url"
 	"path"
 	"strings"
-
-	"bitbucket.org/ww/goautoneg"
 )
 
 func normalizeURL(u1 *url.URL) (u *url.URL, mimetype string) {
@@ -45,17 +44,19 @@ func (r *Router) finish(req Request, u *url.URL, res *Response) {
 		if len(encoders) > 1 && accept == "" {
 			*res = r.responseMultipleChoices(u, mimetypes)
 		} else {
-			// TODO: long term: In the event of a tie,
-			// goautoneg returns the first match in the
-			// mimetypes array, which in our case is
-			// essentially random.  Instead, we should
-			// return an HTTP 300 Multiple Choices.  This
-			// means forking or re-implementing goautoneg.
-			mimetype := goautoneg.Negotiate(accept, mimetypes)
-			if mimetype == "" {
-				*res = r.responseNotAcceptable(u, mimetypes)
+			options, err := negotiate.NegotiateContentType(&accept, mimetypes)
+			if err != nil {
+				*res = r.responseBadRequest(err)
 			} else {
-				res.Headers.Set("Content-Type", mimetype+"; charset=utf-8")
+				switch len(options) {
+				case 0:
+					*res = r.responseNotAcceptable(u, mimetypes)
+				case 1:
+					//res.Headers.Set("Content-Type", mimetype+"; charset=utf-8")
+					res.Headers.Set("Content-Type", mimetypes[0])
+				default:
+					*res = r.responseMultipleChoices(u, mimetypes)
+				}
 			}
 		}
 	}
