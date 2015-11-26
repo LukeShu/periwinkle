@@ -84,8 +84,8 @@ func parseArgs(args []string) net.Listener {
 		stype = args[0]
 		saddr = args[1]
 	default:
-		fmt.Fprint(os.Stderr, usage)
-		os.Exit(int(lsb.EXIT_FAILURE))
+		fmt.Fprintln(os.Stderr, usage)
+		os.Exit(int(lsb.EXIT_INVALIDARGUMENT))
 	}
 
 	var socket net.Listener
