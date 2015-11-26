@@ -15,13 +15,13 @@ import (
 
 const (
 	// Default number of digits in captcha solution.
-	DefaultLen = 6
-	// Expiration time of captchas used by default store.
-	DefaultExpiration = 20 * time.Minute
-	//	Default Captcha Image Width
-	DefaultWidth = 640
-	//	Default Captcha Image Height
-	DefaultHeight = 480
+	defaultLen = 6
+	// Expiration time of captchas used by default backend.
+	defaultExpiration = 20 * time.Minute
+	// Default Captcha Image Width
+	defaultWidth = 640
+	// Default Captcha Image Height
+	defaultHeight = 480
 )
 
 type Captcha struct {
@@ -38,7 +38,7 @@ func (o Captcha) dbSchema(db *gorm.DB) error {
 func NewCaptcha(db *gorm.DB) *Captcha {
 	o := Captcha{
 		ID:    captcha.New(),
-		Value: string(captcha.RandomDigits(DefaultLen)),
+		Value: string(captcha.RandomDigits(defaultLen)),
 	}
 	if err := db.Create(&o).Error; err != nil {
 		panic(err)
@@ -82,7 +82,7 @@ func GetCaptchaByID(db *gorm.DB, id string) *Captcha {
 
 func (o *Captcha) MarshalPNG(w io.Writer) error {
 	// TODO: generate PNG and write it to w
-	return captcha.WriteImage(w, o.ID, DefaultWidth, DefaultHeight)
+	return captcha.WriteImage(w, o.ID, defaultWidth, defaultHeight)
 }
 
 func (o *Captcha) MarshalWAV(w io.Writer) error {

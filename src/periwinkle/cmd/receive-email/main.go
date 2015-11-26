@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"os"
 	"periwinkle/cfg"
-	_ "periwinkle/domain_handlers"
 	"periwinkle/putil"
 	pp "postfixpipe"
 	"runtime"

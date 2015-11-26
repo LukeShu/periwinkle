@@ -111,10 +111,10 @@ func NewGroup(db *gorm.DB, name string, existence int, read int, post int, join 
 	subscriptions := make([]Subscription, 0)
 	o := Group{
 		ID:            name,
-		Existence:     CheckInput(existence, 1, 3, 1),
-		Read:          CheckInput(read, 1, 3, 1),
-		Post:          CheckInput(post, 1, 3, 1),
-		Join:          CheckInput(existence, 1, 2, 1),
+		Existence:     checkInput(existence, 1, 3, 1),
+		Read:          checkInput(read, 1, 3, 1),
+		Post:          checkInput(post, 1, 3, 1),
+		Join:          checkInput(existence, 1, 2, 1),
 		Subscriptions: subscriptions,
 	}
 	if err := db.Create(&o).Error; err != nil {
@@ -124,7 +124,7 @@ func NewGroup(db *gorm.DB, name string, existence int, read int, post int, join 
 }
 
 // TODO: we should have the database do this.
-func CheckInput(input int, min int, max int, defaultt int) int {
+func checkInput(input int, min int, max int, defaultt int) int {
 	if input < min || input > max {
 		return defaultt
 	}

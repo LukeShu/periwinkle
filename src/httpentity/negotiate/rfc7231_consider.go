@@ -156,7 +156,7 @@ func considerLanguages(header *string, languageTags []string) (max qvalue, quali
 	}
 	quality = map[string]qvalue{}
 	precedence := map[string]uint{}
-	var def *acceptLanguage = nil
+	var def *acceptLanguage
 	for _, language := range languageTags {
 		for _, accept := range accepts {
 			if accept.LanguageRange == "*" {

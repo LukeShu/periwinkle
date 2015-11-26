@@ -78,7 +78,7 @@ func StatusResetContent() he.Response {
 
 // For when you have document in multiple formats, but you're not sure
 // which the user wants.
-func statusMultipleChoices(u *url.URL, mimetypes []string) he.Response {
+func StatusMultipleChoices(u *url.URL, mimetypes []string) he.Response {
 	return he.Response{
 		Status:  300,
 		Headers: http.Header{},
@@ -138,7 +138,7 @@ func StatusTemporaryRedirect(u *url.URL) he.Response {
 }
 
 // For when the *user* has screwed up a request.
-func statusBadRequest(e he.NetEntity) he.Response {
+func StatusBadRequest(e he.NetEntity) he.Response {
 	if e == nil {
 		e = heutil.NetString("400 Bad Request")
 	}
@@ -171,7 +171,7 @@ func StatusNotFound(e he.NetEntity) he.Response {
 	}
 }
 
-func statusMethodNotAllowed(methods string) he.Response {
+func StatusMethodNotAllowed(methods string) he.Response {
 	return he.Response{
 		Status: 405,
 		Headers: http.Header{
@@ -181,7 +181,7 @@ func statusMethodNotAllowed(methods string) he.Response {
 	}
 }
 
-func statusNotAcceptable(u *url.URL, mimetypes []string) he.Response {
+func StatusNotAcceptable(u *url.URL, mimetypes []string) he.Response {
 	return he.Response{
 		Status:  406,
 		Headers: http.Header{},
@@ -222,7 +222,7 @@ func StatusUnsupportedMediaType(e he.NetEntity) he.Response {
 // TODO: StatusExpectationFailed (417)
 // TODO: StatusUpgradeRequired (426)
 
-func statusInternalServerError(err interface{}) he.Response {
+func StatusInternalServerError(err interface{}) he.Response {
 	return he.Response{
 		Status: 500,
 		Headers: http.Header{

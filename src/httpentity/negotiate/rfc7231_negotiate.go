@@ -49,7 +49,7 @@ func NegotiateEncoding(header *string, encodings []string) (options []string, er
 
 // NegotiateLanguage negotiates the language (use the `Accept-Language:` header).
 func NegotiateLanguage(header *string, languageTags []string) (options []string, err error) {
-	max, qualities, err := considerContentTypes(header, languageTags)
+	max, qualities, err := considerLanguages(header, languageTags)
 	if err != nil {
 		return nil, err
 	}

@@ -8,8 +8,9 @@ import (
 	"strings"
 )
 
-func (r *Router) Route(req Request) (res Response) {
-	if r.LogRequest {
+// Route routes and handles a request, returning the response.
+func (router *Router) Route(req Request) (res Response) {
+	if router.LogRequest {
 		log.Printf("Route: %s %q\n", req.Method, req.URL.String())
 	}
 	u, mimetype := normalizeURL(req.URL)
@@ -19,12 +20,12 @@ func (r *Router) Route(req Request) (res Response) {
 		req.Headers.Set("Accept", mimetype)
 	}
 
-	defer r.finish(req, &res)
-	res = r.outsideHandler(req)
+	defer router.finish(req, &res)
+	res = router.outsideHandler(req)
 	return
 }
 
-func (h *Router) serveHTTP(w http.ResponseWriter, r *http.Request) (res Response) {
+func (router *Router) serveHTTP(w http.ResponseWriter, r *http.Request) (res Response) {
 	// adapt the request from `net/http` format to `httpentity` format
 	req := Request{
 		Method:  r.Method,
@@ -36,10 +37,10 @@ func (h *Router) serveHTTP(w http.ResponseWriter, r *http.Request) (res Response
 	if r.TLS != nil {
 		req.URL.Scheme = "https"
 	}
-	if h.LogRequest {
+	if router.LogRequest {
 		log.Printf("ServeHTTP: %s %q\n", req.Method, r.URL.String())
 	}
-	if h.TrustForwarded {
+	if router.TrustForwarded {
 		if scheme := req.Headers.Get("X-Forwarded-Proto"); scheme != "" {
 			req.URL.Scheme = scheme
 		}
@@ -62,31 +63,34 @@ func (h *Router) serveHTTP(w http.ResponseWriter, r *http.Request) (res Response
 		req.Headers.Set("Accept", mimetype)
 	}
 
-	defer h.finish(req, &res)
+	defer router.finish(req, &res)
 
 	// parse the submitted entity
 	switch req.Method {
 	case "POST", "PUT", "PATCH":
-		resperr := req.readEntity(h, r.Body, r.Header.Get("Content-Type"))
+		resperr := req.readEntity(router, r.Body, r.Header.Get("Content-Type"))
 		if resperr != nil {
 			return *resperr
 		}
 	}
 
 	// run the request
-	res = h.outsideHandler(req)
+	res = router.outsideHandler(req)
 
 	return
 }
 
 // ServeHTTP makes the Router fulfill the "net/http".Handler
 // interface.
-func (h *Router) ServeHTTP(w http.ResponseWriter, req *http.Request) {
-	res := h.serveHTTP(w, req)
+func (router *Router) ServeHTTP(w http.ResponseWriter, req *http.Request) {
+	res := router.serveHTTP(w, req)
 	// Adapt the response from `httpentity` format to `net/http` format
 	for k, v := range res.Headers {
 		w.Header().Set(k, strings.Join(v, ", "))
 	}
 	w.WriteHeader(int(res.Status))
-	res.writeEntity(w)
+	err := res.writeEntity(w)
+	if err != nil {
+		log.Printf("writeEntity err: %v\n", err)
+	}
 }
