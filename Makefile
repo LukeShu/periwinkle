@@ -28,7 +28,7 @@ deps += lukeshu.com/git/go/libsystemd.git
 # List of our packages and executables in them
 packages = $(sort $(shell find src -type d -name '*.*' -not -name lukeshu.com -not -name '*.git' -prune -o -type f -name '*.go' -printf '%h\n'|cut -d/ -f2-))
 toppackages = $(sort $(shell find src -type d -name '*.*' -not -name lukeshu.com -not -name '*.git' -prune -o -type f -name '*.go' -printf '%h\n'|cut -d/ -f2))
-cmds = $(patsubst periwinkle/cmd/%,%,$(filter periwinkle/cmd/%,$(packages)))
+cmds = $(filter periwinkle/cmd/% locale/cmd/%,$(packages))
 
 # What to ignore from golint
 golint-filter = | grep -vE "/(sysexits|env|exit-status)\.go:[0-9]+:[0-9]+: don't use ALL_CAPS in Go names; use CamelCase"
@@ -40,7 +40,7 @@ subdirs += $(topdir)/src/postfixpipe $(topdir)/HACKING
 
 generate += $(addprefix $(topdir)/src/,$(deps))
 generate_secondary += $(topdir)/src/*.*/
-build += $(addprefix $(topdir)/bin/,$(cmds))
+build += $(addprefix $(topdir)/bin/,$(notdir $(cmds)))
 build_secondary += $(topdir)/bin $(topdir)/pkg $(topdir)/*.sqlite
 
 ifeq (1,$(words $(MAKEFILE_LIST)))
@@ -55,8 +55,8 @@ $(call goget,$(topdir),$(deps))
 # Build all executables in one shot, because otherwise multiple
 # instances of `go install` will not play nice with eachother in
 # `pkg/`
-$(addprefix %/bin/,$(cmds)): $(generate) $(configure) %/src $(call gosrc,$(topdir))
-	$(call goinstall,$*,$(addprefix periwinkle/cmd/,$(cmds)))
+$(addprefix %/bin/,$(notdir $(cmds))): $(generate) $(configure) %/src $(call gosrc,$(topdir))
+	$(call goinstall,$*,$(cmds))
 
 check: gofmt goimports govet gotest
 .PHONY: check
