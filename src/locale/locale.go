@@ -12,7 +12,7 @@ type MessageCatalog interface {
 	Translate(locale Spec, str string) string
 	TranslateN(locale Spec, singular, plural string, n int) string
 	TranslateP(locale Spec, ctxt, str string) string
-	TranslateNP(locale Spec, ctxt, singular, plural string) string
+	TranslateNP(locale Spec, ctxt, singular, plural string, n int) string
 }
 
 // Stringer is a localizable fmt.Stringer.

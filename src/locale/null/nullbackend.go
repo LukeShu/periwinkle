@@ -7,6 +7,8 @@ import (
 	"locale"
 )
 
+var _ locale.MessageCatalog = NullMessageCatalog{}
+
 type NullMessageCatalog struct{}
 
 func (NullMessageCatalog) Translate(locale locale.Spec, str string) string {
