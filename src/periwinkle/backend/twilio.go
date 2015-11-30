@@ -24,9 +24,9 @@ func (o TwilioNumber) dbSchema(db *gorm.DB) locale.Error {
 }
 
 type TwilioPool struct {
-	UserID   string `json:"user_id"`
-	GroupID  string `json:"group_id"`
-	NumberID int64  `json:"number_id"`
+	UserID   string `json:"user_id"   sql:"type:varchar(255) REFERENCES users(id)          ON DELETE CASCADE  ON UPDATE RESTRICT"`
+	GroupID  string `json:"group_id"  sql:"type:varchar(255) REFERENCES groups(id)         ON DELETE CASCADE  ON UPDATE RESTRICT"`
+	NumberID int64  `json:"number_id" sql:"type:bigint       REFERENCES twilio_numbers(id) ON DELETE RESTRICT ON UPDATE RESTRICT"`
 }
 
 type IncomingNumbers struct {
@@ -38,11 +38,7 @@ type IncomingNumber struct {
 }
 
 func (o TwilioPool) dbSchema(db *gorm.DB) locale.Error {
-	return locale.UntranslatedError(db.CreateTable(&o).
-		AddForeignKey("user_id", "users(id)", "CASCADE", "RESTRICT").
-		AddForeignKey("group_id", "groups(id)", "CASCADE", "RESTRICT").
-		AddForeignKey("number_id", "twilio_numbers(id)", "RESTRICT", "RESTRICT").
-		Error)
+	return locale.UntranslatedError(db.CreateTable(&o).Error)
 }
 
 func GetAllUsedTwilioNumbers(db *gorm.DB) (ret []TwilioNumber) {

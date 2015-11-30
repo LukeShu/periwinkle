@@ -12,14 +12,13 @@ import (
 
 type Message struct {
 	ID      string
-	GroupID string
+	GroupID string `json:"-" sql:"type:varchar(255) REFERENCES groups(id) ON DELETE CASCADE ON UPDATE RESTRICT"`
 	Unique  string
 	// cached fields??????
 }
 
 func (o Message) dbSchema(db *gorm.DB) locale.Error {
 	return locale.UntranslatedError(db.CreateTable(&o).
-		AddForeignKey("group_id", "groups(id)", "CASCADE", "RESTRICT").
 		AddUniqueIndex("filename_idx", "unique").
 		Error)
 }

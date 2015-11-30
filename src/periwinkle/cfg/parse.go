@@ -103,11 +103,11 @@ func Parse(in io.Reader) (cfgptr *periwinkle.Cfg, e locale.Error) {
 					gotoError(locale.Errorf("unknown field: %v", "DB."+key.(string)))
 				}
 			}
-			db, err := gorm.Open(driver, source)
+			db, err := openDB(driver, source)
 			if err != nil {
-				gotoError(locale.UntranslatedError(err))
+				gotoError(err)
 			}
-			cfg.DB = &db
+			cfg.DB = db
 		default:
 			gotoError(locale.Errorf("unknown field: %v", key))
 		}
@@ -116,16 +116,16 @@ func Parse(in io.Reader) (cfgptr *periwinkle.Cfg, e locale.Error) {
 	// Set the default database
 	if cfg.DB == nil {
 		periwinkle.Logf("DB not configured, trying MySQL periwinkle:periwinkle@localhost/periwinkle")
-		db, err := gorm.Open("mysql", "periwinkle:periwinkle@/periwinkle?charset=utf8&parseTime=True")
+		db, err := openDB("mysql", "periwinkle:periwinkle@/periwinkle?charset=utf8&parseTime=True")
 		if err != nil {
-			periwinkle.Logf("%v", locale.UntranslatedError(err))
+			periwinkle.LogErr(locale.UntranslatedError(err))
 			periwinkle.Logf("Failed to connect to MySQL, trying SQLite3 file:periwinkle.sqlite")
-			db, err = gorm.Open("sqlite3", "file:periwinkle.sqlite?cache=shared&mode=rwc")
+			db, err = openDB("sqlite3", "file:periwinkle.sqlite?cache=shared&mode=rwc")
 			if err != nil {
 				gotoError(locale.UntranslatedError(err))
 			}
 		}
-		cfg.DB = &db
+		cfg.DB = db
 	}
 
 	cfg.DB.LogMode(cfg.Debug)
@@ -149,6 +149,14 @@ func getBool(key string, val interface{}) bool {
 		gotoError(locale.Errorf("value for %q is not a Boolean", key))
 	}
 	return b
+}
+
+func openDB(driver, source string) (*gorm.DB, locale.Error) {
+	db, err := gorm.Open(driver, source)
+	if err != nil && driver == "sqlite3" {
+		err = db.Exec("PRAGMA foreign_keys = ON").Error
+	}
+	return &db, locale.UntranslatedError(err)
 }
 
 func bounceNoHost(io.Reader, string, *gorm.DB, *periwinkle.Cfg) postfixpipe.ExitStatus {

@@ -26,8 +26,8 @@ func (o User) dbSchema(db *gorm.DB) locale.Error {
 type UserAddress struct {
 	// TODO: add a "verified" boolean
 	ID            int64          `json:"-"`
-	UserID        string         `json:"-"`
-	Medium        string         `json:"medium"`
+	UserID        string         `json:"-"      sql:"type:varchar(255) REFERENCES users(id) ON DELETE CASCADE  ON UPDATE RESTRICT"`
+	Medium        string         `json:"medium" sql:"type:varchar(255) REFERENCES media(id) ON DELETE RESTRICT ON UPDATE RESTRICT"`
 	Address       string         `json:"address"`
 	SortOrder     uint64         `json:"sort_order"`
 	Confirmed     bool           `json:"confirmed"`
@@ -36,8 +36,6 @@ type UserAddress struct {
 
 func (o UserAddress) dbSchema(db *gorm.DB) locale.Error {
 	return locale.UntranslatedError(db.CreateTable(&o).
-		AddForeignKey("user_id", "users(id)", "CASCADE", "RESTRICT").
-		AddForeignKey("medium", "media(id)", "RESTRICT", "RESTRICT").
 		AddUniqueIndex("address_idx", "medium", "address").
 		AddUniqueIndex("user_idx", "user_id", "sort_order").
 		Error)

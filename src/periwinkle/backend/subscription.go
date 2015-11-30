@@ -12,17 +12,14 @@ import (
 
 type Subscription struct {
 	Address   UserAddress `json:"addresses"`
-	AddressID int64       `json:"-"`
+	AddressID int64       `json:"-"        sql:"type:bigint       REFERENCES user_addresses(id) ON DELETE CASCADE  ON UPDATE RESTRICT"`
 	Group     Group       `json:"group"`
-	GroupID   string      `json:"group_id"`
+	GroupID   string      `json:"group_id" sql:"type:varchar(255) REFERENCES groups(id)         ON DELETE CASCADE  ON UPDATE RESTRICT"`
 	Confirmed bool        `json:"confirmed"`
 }
 
 func (o Subscription) dbSchema(db *gorm.DB) locale.Error {
-	return locale.UntranslatedError(db.CreateTable(&o).
-		AddForeignKey("group_id", "groups(id)", "CASCADE", "RESTRICT").
-		AddForeignKey("address_id", "user_addresses(id)", "CASCADE", "RESTRICT").
-		Error)
+	return locale.UntranslatedError(db.CreateTable(&o).Error)
 }
 
 func GetSubscriptionsGroupByID(db *gorm.DB, groupID string) []Subscription {

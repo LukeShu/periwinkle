@@ -12,14 +12,12 @@ import (
 
 type Session struct {
 	ID       string    `json:"session_id"`
-	UserID   string    `json:"user_id"`
+	UserID   string    `json:"user_id" sql:"type:varchar(255) REFERENCES users(id) ON DELETE CASCADE ON UPDATE CASCADE"`
 	LastUsed time.Time `json:"-"`
 }
 
 func (o Session) dbSchema(db *gorm.DB) locale.Error {
-	return locale.UntranslatedError(db.CreateTable(&o).
-		AddForeignKey("user_id", "users(id)", "CASCADE", "RESTRICT").
-		Error)
+	return locale.UntranslatedError(db.CreateTable(&o).Error)
 }
 
 func NewSession(db *gorm.DB, user *User, password string) *Session {
