@@ -1,0 +1,5 @@
+---
+Debug: false
+DB:
+   driver: sqlite3
+   source: "file:@srcdir@/relational-model-diagram.sqlite?cache=shared&mode=rwc"

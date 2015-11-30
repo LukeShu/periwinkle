@@ -21,3 +21,10 @@ endif
 	pandoc -s -f markdown -t html5 $< > $@
 %.pdf: %.md
 	pandoc -s -f markdown -t pdf $< > $@
+
+$(srcdir)/relational-model-diagram.config.yaml: $(srcdir)/relational-model-diagram.config.yaml.in .var.srcdir
+	sed 's|@srcdir@|$(srcdir)|g' < $< > $@
+$(srcdir)/relational-model-diagram.sqlite: $(srcdir)/relational-model-diagram.config.yaml
+	$(topdir)/bin/db-schema -c $<
+$(srcdir)/relational-model-diagram.sql: $(srcdir)/relational-model-diagram.sqlite
+	sqlite3 $< .dump > $@

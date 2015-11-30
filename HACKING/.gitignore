@@ -2,3 +2,7 @@
 *.pdf
 *.png
 *.svg
+
+/relational-model-diagram.config.yaml
+/relational-model-diagram.sqlite
+/relational-model-diagram.sql
