@@ -36,46 +36,49 @@ func errHelper(errs *errorList, err locale.Error) {
 	}
 }
 
-func DbSchema(db *gorm.DB) error {
-	errs := errorList{}
-	errHelper(&errs, (Captcha{}).dbSchema(db))
-	errHelper(&errs, (Medium{}).dbSchema(db))
-	errHelper(&errs, (Group{}).dbSchema(db))
-	errHelper(&errs, (Message{}).dbSchema(db)) // must come after Group
-	errHelper(&errs, (User{}).dbSchema(db))
-	errHelper(&errs, (Session{}).dbSchema(db)) // must come after User
-	errHelper(&errs, (ShortURL{}).dbSchema(db))
-	errHelper(&errs, (UserAddress{}).dbSchema(db))  // must come after User and Medium
-	errHelper(&errs, (Subscription{}).dbSchema(db)) // must come after Group and UserAddress
-	errHelper(&errs, (TwilioNumber{}).dbSchema(db))
-	errHelper(&errs, (TwilioPool{}).dbSchema(db)) // must come after TwilioNumber, User, and Group
-	errHelper(&errs, (Admin{}).dbSchema(db))
-	return errs
+type table interface {
+	dbSchema(*gorm.DB) locale.Error
 }
 
-func DbDrop(db *gorm.DB) error {
-	// This must be in the reverse order of DbSchema()
-	errs := errorList{}
-	errHelper(&errs, locale.UntranslatedError(db.DropTable(&Admin{}).Error))
-	errHelper(&errs, locale.UntranslatedError(db.DropTable(&TwilioPool{}).Error))
-	errHelper(&errs, locale.UntranslatedError(db.DropTable(&TwilioNumber{}).Error))
-	errHelper(&errs, locale.UntranslatedError(db.DropTable(&Subscription{}).Error))
-	errHelper(&errs, locale.UntranslatedError(db.DropTable(&UserAddress{}).Error))
-	errHelper(&errs, locale.UntranslatedError(db.DropTable(&ShortURL{}).Error))
-	errHelper(&errs, locale.UntranslatedError(db.DropTable(&Session{}).Error))
-	errHelper(&errs, locale.UntranslatedError(db.DropTable(&User{}).Error))
-	errHelper(&errs, locale.UntranslatedError(db.DropTable(&Message{}).Error))
-	errHelper(&errs, locale.UntranslatedError(db.DropTable(&Group{}).Error))
-	errHelper(&errs, locale.UntranslatedError(db.DropTable(&Medium{}).Error))
-	errHelper(&errs, locale.UntranslatedError(db.DropTable(&Captcha{}).Error))
-	return errs
+type tableSeed interface {
+	table
+	dbSeed(*gorm.DB) locale.Error
 }
 
-func DbSeed(db *gorm.DB) error {
+func DbSchema(db *gorm.DB) locale.Error {
 	errs := errorList{}
-	errHelper(&errs, locale.UntranslatedError((Medium{}).dbSeed(db)))
-	errHelper(&errs, locale.UntranslatedError((Group{}).dbSeed(db)))
-	return errs
+	for _, table := range tables {
+		errHelper(&errs, table.dbSchema(db))
+	}
+	if len(errs) > 0 {
+		return errs
+	}
+	return nil
+}
+
+func DbDrop(db *gorm.DB) locale.Error {
+	errs := errorList{}
+	for i := range tables {
+		table := tables[len(tables)-1-i]
+		errHelper(&errs, locale.UntranslatedError(db.DropTable(table).Error))
+	}
+	if len(errs) > 0 {
+		return errs
+	}
+	return nil
+}
+
+func DbSeed(db *gorm.DB) locale.Error {
+	errs := errorList{}
+	for _, table := range tables {
+		if seeder, ok := table.(tableSeed); ok {
+			errHelper(&errs, seeder.dbSeed(db))
+		}
+	}
+	if len(errs) > 0 {
+		return errs
+	}
+	return nil
 }
 
 // Panic, but a little nicer

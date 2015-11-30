@@ -21,5 +21,8 @@ func (o Medium) dbSeed(db *gorm.DB) locale.Error {
 	errs := errorList{}
 	errHelper(&errs, locale.UntranslatedError(db.Create(&Medium{"email"}).Error))
 	errHelper(&errs, locale.UntranslatedError(db.Create(&Medium{"twilio"}).Error))
-	return errs
+	if len(errs) > 0 {
+		return errs
+	}
+	return nil
 }

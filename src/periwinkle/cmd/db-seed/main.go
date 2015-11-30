@@ -29,18 +29,27 @@ Options:
 func main() {
 	options, _ := docopt.Parse(usage, os.Args[1:], true, "", false, true)
 
-	configFile, err1 := os.Open(options["-c"].(string))
-	if err1 != nil {
-		periwinkle.LogErr(locale.UntranslatedError(err1))
+	configFile, uerr := os.Open(options["-c"].(string))
+	if uerr != nil {
+		periwinkle.LogErr(locale.UntranslatedError(uerr))
 		os.Exit(int(lsb.EXIT_NOTCONFIGURED))
 	}
 
-	config, err2 := cfg.Parse(configFile)
-	if err2 != nil {
-		periwinkle.LogErr(err2)
+	config, err := cfg.Parse(configFile)
+	if err != nil {
+		periwinkle.LogErr(err)
 		os.Exit(int(lsb.EXIT_NOTCONFIGURED))
 	}
 
-	backend.DbSchema(config.DB)
-	backend.DbSeed(config.DB)
+	err = backend.DbSchema(config.DB)
+	if err != nil {
+		periwinkle.LogErr(err)
+		os.Exit(int(lsb.EXIT_FAILURE))
+	}
+
+	err = backend.DbSeed(config.DB)
+	if err != nil {
+		periwinkle.LogErr(err)
+		os.Exit(int(lsb.EXIT_FAILURE))
+	}
 }
