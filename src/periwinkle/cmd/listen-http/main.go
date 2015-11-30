@@ -3,7 +3,6 @@
 package main
 
 import (
-	"fmt"
 	"locale"
 	"net"
 	"os"
@@ -84,7 +83,7 @@ func parseArgs(args []string) net.Listener {
 		stype = args[0]
 		saddr = args[1]
 	default:
-		fmt.Fprintln(os.Stderr, usage)
+		periwinkle.Logf(usage, os.Args[0])
 		os.Exit(int(lsb.EXIT_INVALIDARGUMENT))
 	}
 
@@ -155,15 +154,15 @@ func main() {
 	}
 	socket := parseArgs(args)
 
-	configFile, err := os.Open(options["-c"].(string))
-	if err != nil {
-		fmt.Fprintln(os.Stderr, err)
+	configFile, uerr := os.Open(options["-c"].(string))
+	if uerr != nil {
+		periwinkle.LogErr(locale.UntranslatedError(uerr))
 		os.Exit(int(lsb.EXIT_NOTCONFIGURED))
 	}
 
 	config, err := cfg.Parse(configFile)
 	if err != nil {
-		fmt.Fprintln(os.Stderr, err)
+		periwinkle.LogErr(err)
 		os.Exit(int(lsb.EXIT_NOTCONFIGURED))
 	}
 
@@ -178,7 +177,7 @@ func main() {
 	go func() {
 		err := server.Wait()
 		if err != nil {
-			fmt.Fprintln(os.Stderr, err)
+			periwinkle.LogErr(err)
 			done <- 1
 		} else {
 			done <- 0

@@ -15,6 +15,7 @@ import (
 	"net"
 	"net/http"
 	"sync"
+	"locale"
 )
 
 // HTTPServer provides an HTTP Server that can be gracefully stopped.
@@ -22,7 +23,7 @@ type HTTPServer struct {
 	Server http.Server
 	Socket net.Listener
 	wg     sync.WaitGroup
-	err    error
+	err    locale.Error
 }
 
 func (ss *HTTPServer) handleConnStateChange(conn net.Conn, state http.ConnState) {
@@ -40,7 +41,7 @@ func (ss *HTTPServer) Start() {
 	ss.wg.Add(1)
 	go func() {
 		defer ss.wg.Done()
-		ss.err = ss.Server.Serve(ss.Socket)
+		ss.err = locale.UntranslatedError(ss.Server.Serve(ss.Socket))
 	}()
 }
 
@@ -51,7 +52,7 @@ func (ss *HTTPServer) Stop() {
 }
 
 // Wait for the server to stop; blocks.
-func (ss *HTTPServer) Wait() error {
+func (ss *HTTPServer) Wait() locale.Error {
 	ss.wg.Wait()
 	return ss.err
 }

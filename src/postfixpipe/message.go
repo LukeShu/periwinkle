@@ -8,6 +8,7 @@ import (
 	"bufio"
 	"io"
 	"os"
+	"locale"
 )
 
 // A Message is a context for a Postfix-pipe helper process; it is
@@ -31,14 +32,14 @@ func Get() *Message {
 
 // Intro returns the envelope line insertet by Postfix before the RFC
 // 822-style message.
-func (pm *Message) Intro() (string, error) {
+func (pm *Message) Intro() (string, locale.Error) {
 	if pm.stdin == nil {
 		pm.stdin = bufio.NewReader(os.Stdin)
 	}
 	if pm.intro == nil {
 		intro, err := pm.stdin.ReadString('\n')
 		if err != nil {
-			return "", err
+			return "", locale.UntranslatedError(err)
 		}
 		pm.intro = &intro
 	}
@@ -46,7 +47,7 @@ func (pm *Message) Intro() (string, error) {
 }
 
 // Reader returns an io.Reader for the RFC 822-style message.
-func (pm *Message) Reader() (io.Reader, error) {
+func (pm *Message) Reader() (io.Reader, locale.Error) {
 	_, err := pm.Intro()
 	if err != nil {
 		return nil, err

@@ -4,7 +4,7 @@
 package main
 
 import (
-	"fmt"
+	"locale"
 	"os"
 	"periwinkle"
 	"periwinkle/cfg"
@@ -28,15 +28,15 @@ Options:
 func main() {
 	options := periwinkle.Docopt(usage)
 
-	configFile, err := os.Open(options["-c"].(string))
-	if err != nil {
-		fmt.Fprintln(os.Stderr, err)
+	configFile, uerr := os.Open(options["-c"].(string))
+	if uerr != nil {
+		periwinkle.LogErr(locale.UntranslatedError(uerr))
 		os.Exit(int(lsb.EXIT_NOTCONFIGURED))
 	}
 
 	config, err := cfg.Parse(configFile)
 	if err != nil {
-		fmt.Fprintln(os.Stderr, err)
+		periwinkle.LogErr(err)
 		os.Exit(int(lsb.EXIT_NOTCONFIGURED))
 	}
 
@@ -52,10 +52,7 @@ func main() {
 			const size = 64 << 10
 			buf := make([]byte, size)
 			buf = buf[:runtime.Stack(buf, false)]
-			text := fmt.Sprintf("%T(%#v) => %v\n\n%s\n", obj, obj, obj, string(buf))
-			for _, line := range strings.Split(text, "\n") {
-				fmt.Fprintln(os.Stderr, line)
-			}
+			periwinkle.Logf("%T(%#v) => %v\n\n%s", obj, obj, obj, string(buf))
 		}
 		pp.Exit(ret)
 	}()
@@ -64,7 +61,7 @@ func main() {
 
 	recipient := msg.ORIGINAL_RECIPIENT()
 	if recipient == "" {
-		fmt.Fprintln(os.Stderr, "ORIGINAL_RECIPIENT must be set")
+		periwinkle.Logf("ORIGINAL_RECIPIENT must be set")
 		ret = pp.EX_USAGE
 		return
 	}
@@ -85,7 +82,7 @@ func main() {
 
 	reader, err := msg.Reader()
 	if err != nil {
-		fmt.Fprintln(os.Stderr, err)
+		periwinkle.LogErr(err)
 		ret = pp.EX_NOINPUT
 		return
 	}
