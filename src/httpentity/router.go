@@ -11,6 +11,12 @@ import (
 	"strings"
 )
 
+type nilLog struct {}
+
+func (l nilLog) Printf(format string, v ...interface{}) {}
+
+func (l nilLog) Println(v ...interface{}) {}
+
 func normalizeURL(u1 *url.URL) (u *url.URL, mimetype string) {
 	u, _ = u1.Parse("") // normalize
 	// the file extension overrides the Accept: header
@@ -29,6 +35,9 @@ func normalizeURL(u1 *url.URL) (u *url.URL, mimetype string) {
 // Init initializes the hidden fields; should be called before any other
 // method.
 func (r Router) Init() *Router {
+	if r.Log == nil {
+		r.Log = nilLog{}
+	}
 	r.initHandlers()
 	return &r
 }

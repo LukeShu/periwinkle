@@ -36,7 +36,7 @@ func MakeServer(socket net.Listener, cfg *periwinkle.Cfg) *stoppable.HTTPServer 
 		Decoders:       stdDecoders,
 		Middlewares:    stdMiddlewares,
 		Stacktrace:     cfg.Debug,
-		LogRequest:     cfg.Debug,
+		Log:            heutil.StderrLog,
 		TrustForwarded: cfg.TrustForwarded,
 	}.Init())
 	// URL shortener service
@@ -46,7 +46,7 @@ func MakeServer(socket net.Listener, cfg *periwinkle.Cfg) *stoppable.HTTPServer 
 		Decoders:       stdDecoders,
 		Middlewares:    stdMiddlewares,
 		Stacktrace:     cfg.Debug,
-		LogRequest:     cfg.Debug,
+		Log:            heutil.StderrLog,
 		TrustForwarded: cfg.TrustForwarded,
 	}.Init())
 

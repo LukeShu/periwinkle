@@ -3,16 +3,13 @@
 package httpentity
 
 import (
-	"log"
 	"net/http"
 	"strings"
 )
 
 // Route routes and handles a request, returning the response.
 func (router *Router) Route(req Request) (res Response) {
-	if router.LogRequest {
-		log.Printf("Route: %s %q\n", req.Method, req.URL.String())
-	}
+	router.Log.Printf("Route: %s %q\n", req.Method, req.URL.String())
 	u, mimetype := normalizeURL(req.URL)
 	req.URL = u
 	if mimetype != "" {
@@ -37,9 +34,7 @@ func (router *Router) serveHTTP(w http.ResponseWriter, r *http.Request) (res Res
 	if r.TLS != nil {
 		req.URL.Scheme = "https"
 	}
-	if router.LogRequest {
-		log.Printf("ServeHTTP: %s %q\n", req.Method, r.URL.String())
-	}
+	router.Log.Printf("ServeHTTP: %s %q\n", req.Method, r.URL.String())
 	if router.TrustForwarded {
 		if scheme := req.Headers.Get("X-Forwarded-Proto"); scheme != "" {
 			req.URL.Scheme = scheme
@@ -91,6 +86,6 @@ func (router *Router) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	w.WriteHeader(int(res.Status))
 	err := res.writeEntity(w)
 	if err != nil {
-		log.Printf("writeEntity err: %v\n", err)
+		router.Log.Printf("writeEntity err: %v\n", err)
 	}
 }

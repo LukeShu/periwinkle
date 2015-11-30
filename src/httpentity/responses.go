@@ -3,11 +3,9 @@ package httpentity
 import (
 	"fmt"
 	"httpentity/heutil"
-	"log"
 	"net/http"
 	"net/url"
 	"runtime"
-	"strings"
 )
 
 func (r Router) responseMultipleChoices(u *url.URL, mimetypes []string) Response {
@@ -57,10 +55,8 @@ func (r Router) responseServerError(reason interface{}) Response {
 	const size = 64 << 10
 	buf := make([]byte, size)
 	buf = buf[:runtime.Stack(buf, false)]
-	st := fmt.Sprintf("%T(%#v) => %v\n\n%s\n", reason, reason, reason, string(buf))
-	for _, line := range strings.Split(st, "\n") {
-		log.Println(line)
-	}
+	st := fmt.Sprintf("%[1]T(%#[1]v) => %[1]v\n\n%[2]s", reason, string(buf))
+	r.Log.Println(st)
 	if r.Stacktrace {
 		reason = st
 	}

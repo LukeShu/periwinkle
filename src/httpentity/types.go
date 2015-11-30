@@ -24,6 +24,11 @@ import (
 	"net/url"
 )
 
+type Logger interface {
+	Printf(format string, v ...interface{})
+	Println(v ...interface{})
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 
 // A Router represents the root of an Entity tree, and handles reading
@@ -37,8 +42,7 @@ type Router struct {
 	// Whether to include stacktraces in HTTP 500 responses
 	Stacktrace bool
 
-	// Whether to log requests
-	LogRequest bool
+	Log Logger
 
 	// Whether to trust `X-Forwarded-Scheme:` and RFC 7239
 	// `Forwarded: proto=`
