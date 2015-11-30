@@ -2,7 +2,9 @@
 
 package negotiate
 
-import "fmt"
+import (
+	"locale"
+)
 
 func isToken(tok string) bool {
 	// 7230 is specified using the US-ASCII core rules; if there
@@ -31,10 +33,10 @@ func isObsText(char byte) bool {
 	return 0x80 <= char && char <= 0xFF
 }
 
-func parseQuotedString(str string) (string, error) {
+func parseQuotedString(str string) (string, locale.Error) {
 	// strip the quotes
 	if str[0] != '"' || str[len(str)-1] != '"' {
-		return "", fmt.Errorf("%q does not look like an RFC 7230 quoted-string", str)
+		return "", locale.Errorf("%q does not look like an RFC 7230 quoted-string", str)
 	}
 	in := str[1 : len(str)-1]
 	// main algo
@@ -52,10 +54,10 @@ func parseQuotedString(str string) (string, error) {
 				out[o] = in[i]
 				o++
 			default:
-				return "", fmt.Errorf("%c is not a legal character to follow a backslash in an RFC 7230 quoted-string", in[i])
+				return "", locale.Errorf("%c is not a legal character to follow a backslash in an RFC 7230 quoted-string", in[i])
 			}
 		default:
-			return "", fmt.Errorf("%c is not a legal character in an RFC 7230 quoted-string", in[i])
+			return "", locale.Errorf("%c is not a legal character in an RFC 7230 quoted-string", in[i])
 		}
 	}
 	// return

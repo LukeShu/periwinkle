@@ -2,8 +2,12 @@
 
 package negotiate
 
+import (
+	"locale"
+)
+
 // NegotiateContentType negotiates the content type (use the `Accept:` header).
-func NegotiateContentType(header *string, contenttypes []string) (options []string, err error) {
+func NegotiateContentType(header *string, contenttypes []string) (options []string, err locale.Error) {
 	max, qualities, err := considerContentTypes(header, contenttypes)
 	if err != nil {
 		return nil, err
@@ -18,7 +22,7 @@ func NegotiateContentType(header *string, contenttypes []string) (options []stri
 }
 
 // NegotiateCharset negotiates the character set (use the `Accept-Charset:` header).
-func NegotiateCharset(header *string, charsets []string) (options []string, err error) {
+func NegotiateCharset(header *string, charsets []string) (options []string, err locale.Error) {
 	max, qualities, err := considerCharsets(header, charsets)
 	if err != nil {
 		return nil, err
@@ -33,7 +37,7 @@ func NegotiateCharset(header *string, charsets []string) (options []string, err 
 }
 
 // NegotiateEncoding negotiates the encoding (use the `Accept-Encoding:` header).
-func NegotiateEncoding(header *string, encodings []string) (options []string, err error) {
+func NegotiateEncoding(header *string, encodings []string) (options []string, err locale.Error) {
 	max, qualities, err := considerEncodings(header, encodings)
 	if err != nil {
 		return nil, err
@@ -48,7 +52,7 @@ func NegotiateEncoding(header *string, encodings []string) (options []string, er
 }
 
 // NegotiateLanguage negotiates the language (use the `Accept-Language:` header).
-func NegotiateLanguage(header *string, languageTags []string) (options []string, err error) {
+func NegotiateLanguage(header *string, languageTags []string) (options []string, err locale.Error) {
 	max, qualities, err := considerLanguages(header, languageTags)
 	if err != nil {
 		return nil, err

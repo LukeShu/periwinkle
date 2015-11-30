@@ -3,7 +3,7 @@
 package negotiate
 
 import (
-	"fmt"
+	"locale"
 	"strconv"
 	"strings"
 )
@@ -71,26 +71,26 @@ type accept struct {
 // this captures both `parameter` and accept-parames/accept-ext, with
 // the exception that it converts the accept-ext LHS to lowercase,
 // which it shouldn't do.
-func parseParameter(lhs, rhs string) (string, string, error) {
-	var err error
+func parseParameter(lhs, rhs string) (string, string, locale.Error) {
+	var err locale.Error
 	if !isToken(lhs) {
-		return "", "", fmt.Errorf("%q is not a valid RFC 7230 token", lhs)
+		return "", "", locale.Errorf("%q is not a valid RFC 7230 token", lhs)
 	}
 	if rhs[0] == '"' {
 		rhs, err = parseQuotedString(rhs)
 		if err != nil {
-			return "", "", fmt.Errorf("%q is not a valid RFC 7230 token or [quoted string]", rhs)
+			return "", "", locale.Errorf("%q is not a valid RFC 7230 token or [quoted string]", rhs)
 		}
 	} else {
 		if !isToken(rhs) {
-			return "", "", fmt.Errorf("%q is not a valid RFC 7230 [token] or quoted string", rhs)
+			return "", "", locale.Errorf("%q is not a valid RFC 7230 [token] or quoted string", rhs)
 		}
 	}
 	lhs = strings.ToLower(lhs)
 	return lhs, rhs, nil
 }
 
-func parseAccept(header *string) ([]accept, error) {
+func parseAccept(header *string) ([]accept, locale.Error) {
 	if header == nil {
 		return []accept{{
 			Type:         "*",
@@ -170,7 +170,7 @@ type acceptCharset struct {
 	Weight  qvalue
 }
 
-func parseAcceptCharset(header *string) ([]acceptCharset, error) {
+func parseAcceptCharset(header *string) ([]acceptCharset, locale.Error) {
 	if header == nil {
 		return []acceptCharset{{
 			Charset: "*",
@@ -218,7 +218,7 @@ type acceptEncoding struct {
 	Weight qvalue
 }
 
-func parseAcceptEncoding(header *string) ([]acceptEncoding, error) {
+func parseAcceptEncoding(header *string) ([]acceptEncoding, locale.Error) {
 	if header == nil {
 		return []acceptEncoding{{
 			Coding: "*",
@@ -267,7 +267,7 @@ type acceptLanguage struct {
 	Weight        qvalue
 }
 
-func parseAcceptLanguage(header *string) ([]acceptLanguage, error) {
+func parseAcceptLanguage(header *string) ([]acceptLanguage, locale.Error) {
 	if header == nil {
 		return []acceptLanguage{{
 			LanguageRange: "*",

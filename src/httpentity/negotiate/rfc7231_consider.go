@@ -3,14 +3,15 @@
 package negotiate
 
 import (
+	"locale"
 	"mime"
 	"strings"
 )
 
-func (accept accept) Acceptable(contenttype string) (bool, error) {
-	mediafulltype, mediaparams, err := mime.ParseMediaType(contenttype)
-	if err != nil {
-		return false, err
+func (accept accept) Acceptable(contenttype string) (bool, locale.Error) {
+	mediafulltype, mediaparams, uerr := mime.ParseMediaType(contenttype)
+	if uerr != nil {
+		return false, locale.UntranslatedError(uerr)
 	}
 	mediatypeParts := strings.SplitN(mediafulltype, "/", 2)
 	mediatype := mediatypeParts[0]
@@ -73,7 +74,7 @@ func (accept accept) Precedence() (ret precedence) {
 	return
 }
 
-func considerContentTypes(header *string, contenttypes []string) (max qvalue, quality map[string]qvalue, err error) {
+func considerContentTypes(header *string, contenttypes []string) (max qvalue, quality map[string]qvalue, err locale.Error) {
 	accepts, err := parseAccept(header)
 	if err != nil {
 		return -1, nil, err
@@ -107,7 +108,7 @@ func (accept acceptCharset) Acceptable(charset string) bool {
 	return strings.EqualFold(accept.Charset, charset) || accept.Charset == "*"
 }
 
-func considerCharsets(header *string, charsets []string) (max qvalue, quality map[string]qvalue, err error) {
+func considerCharsets(header *string, charsets []string) (max qvalue, quality map[string]qvalue, err locale.Error) {
 	accepts, err := parseAcceptCharset(header)
 	if err != nil {
 		return -1, nil, err
@@ -130,7 +131,7 @@ func (accept acceptEncoding) Acceptable(encoding string) bool {
 	return strings.EqualFold(accept.Coding, encoding) || accept.Coding == "*"
 }
 
-func considerEncodings(header *string, encodings []string) (max qvalue, quality map[string]qvalue, err error) {
+func considerEncodings(header *string, encodings []string) (max qvalue, quality map[string]qvalue, err locale.Error) {
 	accepts, err := parseAcceptEncoding(header)
 	if err != nil {
 		return -1, nil, err
@@ -149,7 +150,7 @@ func considerEncodings(header *string, encodings []string) (max qvalue, quality 
 	return
 }
 
-func considerLanguages(header *string, languageTags []string) (max qvalue, quality map[string]qvalue, err error) {
+func considerLanguages(header *string, languageTags []string) (max qvalue, quality map[string]qvalue, err locale.Error) {
 	accepts, err := parseAcceptLanguage(header)
 	if err != nil {
 		return -1, nil, err
