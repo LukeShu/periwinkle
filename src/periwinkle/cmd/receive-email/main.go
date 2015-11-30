@@ -6,29 +6,27 @@ package main
 import (
 	"fmt"
 	"os"
+	"periwinkle"
 	"periwinkle/cfg"
 	"periwinkle/putil"
 	pp "postfixpipe"
 	"runtime"
 	"strings"
 
-	docopt "github.com/LukeShu/go-docopt"
 	"lukeshu.com/git/go/libsystemd.git/sd_daemon/lsb"
 )
 
-var usage = fmt.Sprintf(`Periwinkle receive-email
-
+const usage = `
 Usage: %[1]s [-c CONFIG_FILE]
        %[1]s -h | --help
 Install this in your Postfix ~/.forward or aliases file.
 
 Options:
-  -h --help       Display this message.
-  -c CONFIG_FILE  Specify the configuration file [default: ./config.yaml].`,
-	os.Args[0])
+  -h, --help      Display this message.
+  -c CONFIG_FILE  Specify the configuration file [default: ./config.yaml].`
 
 func main() {
-	options, _ := docopt.Parse(usage, os.Args[1:], true, "", false, true)
+	options := periwinkle.Docopt(usage)
 
 	configFile, err := os.Open(options["-c"].(string))
 	if err != nil {

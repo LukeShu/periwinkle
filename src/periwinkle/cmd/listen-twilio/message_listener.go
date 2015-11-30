@@ -6,11 +6,12 @@ package main
 
 import (
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
+	"locale"
 	"log"
 	"net/http"
 	"os"
+	"periwinkle"
 	"periwinkle/backend"
 	"periwinkle/cfg"
 	"periwinkle/putil"
@@ -18,33 +19,30 @@ import (
 	"strings"
 	"time"
 
-	docopt "github.com/LukeShu/go-docopt"
 	"lukeshu.com/git/go/libsystemd.git/sd_daemon/lsb"
 )
 
-var usage = fmt.Sprintf(`Periwinkle listen-twilio
-
+const usage = `
 Usage: %[1]s [-c CONFIG_FILE]
        %[1]s -h | --help
 Repeatedly poll Twilio for new messages.
 
 Options:
-  -h --help       Display this message.
-  -c CONFIG_FILE  Specify the configuration file [default: ./config.yaml].`,
-	os.Args[0])
+  -h, --help      Display this message.
+  -c CONFIG_FILE  Specify the configuration file [default: ./config.yaml].`
 
 func main() {
-	options, _ := docopt.Parse(usage, os.Args[1:], true, "", false, true)
+	options := periwinkle.Docopt(usage)
 
-	configFile, err := os.Open(options["-c"].(string))
-	if err != nil {
-		fmt.Fprintln(os.Stderr, err)
+	configFile, uerr := os.Open(options["-c"].(string))
+	if uerr != nil {
+		periwinkle.LogErr(locale.UntranslatedError(uerr))
 		os.Exit(int(lsb.EXIT_NOTCONFIGURED))
 	}
 
 	config, err := cfg.Parse(configFile)
 	if err != nil {
-		fmt.Fprintln(os.Stderr, err)
+		periwinkle.LogErr(err)
 		os.Exit(int(lsb.EXIT_NOTCONFIGURED))
 	}
 

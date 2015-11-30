@@ -4,22 +4,22 @@ package main
 
 import (
 	"fmt"
+	"locale"
 	"net"
 	"os"
 	"os/signal"
+	"periwinkle"
 	"periwinkle/cfg"
 	"periwinkle/httpapi"
 	"strconv"
 	"strings"
 	"syscall"
 
-	docopt "github.com/LukeShu/go-docopt"
 	sd "lukeshu.com/git/go/libsystemd.git/sd_daemon"
 	"lukeshu.com/git/go/libsystemd.git/sd_daemon/lsb"
 )
 
-var usage = fmt.Sprintf(`Periwinkle listen-http
-
+const usage = `
 Usage: %[1]s [-c CONFIG_FILE] [ADDR_TYPE] [ADDR]
        %[1]s -h | --help
 Do the HTTP that you do, baby.
@@ -46,9 +46,8 @@ cases. "stdin", "stdout", and "stderr" are aliases for "0", "1", and
 from systemd socket-activation.
 
 Options:
-  -h --help       Display this message.
-  -c CONFIG_FILE  Specify the configuration file [default: ./config.yaml].`,
-	os.Args[0])
+  -h, --help      Display this message.
+  -c CONFIG_FILE  Specify the configuration file [default: ./config.yaml].`
 
 func parseArgs(args []string) net.Listener {
 	var stype, saddr string
@@ -90,7 +89,7 @@ func parseArgs(args []string) net.Listener {
 	}
 
 	var socket net.Listener
-	var err error
+	var err locale.Error
 
 	if stype == "fd" {
 		switch saddr {
@@ -103,46 +102,50 @@ func parseArgs(args []string) net.Listener {
 		case "stderr":
 			socket, err = listenfd(2, "/dev/stderr")
 		default:
-			var n int
-			n, err = strconv.Atoi(saddr)
-			if err == nil {
+			n, uerr := strconv.Atoi(saddr)
+			if uerr == nil {
 				socket, err = listenfd(n, "/dev/fd/"+saddr)
 			}
 		}
 	} else {
-		socket, err = net.Listen(stype, saddr)
+		var uerr error
+		socket, uerr = net.Listen(stype, saddr)
+		err = locale.UntranslatedError(uerr)
 		if tcpsock, ok := socket.(*net.TCPListener); ok {
 			socket = tcpKeepAliveListener{tcpsock}
 		}
 	}
 	if err != nil {
-		fmt.Fprintln(os.Stderr, err)
+		periwinkle.LogErr(err)
 		os.Exit(int(lsb.EXIT_FAILURE))
 	}
 	return socket
 }
 
-func listenfd(fd int, name string) (net.Listener, error) {
-	return net.FileListener(os.NewFile(uintptr(fd), name))
+func listenfd(fd int, name string) (net.Listener, locale.Error) {
+	l, e := net.FileListener(os.NewFile(uintptr(fd), name))
+	return l, locale.UntranslatedError(e)
 }
 
-func sdGetSocket() (socket net.Listener, err error) {
+func sdGetSocket() (socket net.Listener, err locale.Error) {
 	fds := sd.ListenFds(true)
 	if fds == nil {
-		err = fmt.Errorf("Failed to aquire sockets from systemd")
+		err = locale.Errorf("Failed to aquire sockets from systemd")
 		return
 	}
 	if len(fds) != 1 {
-		err = fmt.Errorf("Wrong number of sockets from systemd: expected %d but got %d", 1, len(fds))
+		err = locale.Errorf("Wrong number of sockets from systemd: expected %d but got %d", 1, len(fds))
 		return
 	}
-	socket, err = net.FileListener(fds[0])
+	socket, uerr := net.FileListener(fds[0])
+	err = locale.UntranslatedError(uerr)
 	fds[0].Close()
 	return
 }
 
 func main() {
-	options, _ := docopt.Parse(usage, os.Args[1:], true, "", false, true)
+	options := periwinkle.Docopt(usage)
+
 	args := []string{}
 	if options["ADDR_TYPE"] != nil {
 		args = append(args, options["ADDR_TYPE"].(string))
