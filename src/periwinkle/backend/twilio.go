@@ -6,7 +6,7 @@ package backend
 import (
 	"encoding/json"
 	"io/ioutil"
-	"log"
+	"locale"
 	"net/http"
 	"periwinkle"
 
@@ -19,8 +19,8 @@ type TwilioNumber struct {
 	// TODO
 }
 
-func (o TwilioNumber) dbSchema(db *gorm.DB) error {
-	return db.CreateTable(&o).Error
+func (o TwilioNumber) dbSchema(db *gorm.DB) locale.Error {
+	return locale.UntranslatedError(db.CreateTable(&o).Error)
 }
 
 type TwilioPool struct {
@@ -37,12 +37,12 @@ type IncomingNumber struct {
 	Number string `json:"phone_number"`
 }
 
-func (o TwilioPool) dbSchema(db *gorm.DB) error {
-	return db.CreateTable(&o).
+func (o TwilioPool) dbSchema(db *gorm.DB) locale.Error {
+	return locale.UntranslatedError(db.CreateTable(&o).
 		AddForeignKey("user_id", "users(id)", "CASCADE", "RESTRICT").
 		AddForeignKey("group_id", "groups(id)", "CASCADE", "RESTRICT").
 		AddForeignKey("number_id", "twilio_numbers(id)", "RESTRICT", "RESTRICT").
-		Error
+		Error)
 }
 
 func GetAllUsedTwilioNumbers(db *gorm.DB) (ret []TwilioNumber) {
@@ -51,7 +51,7 @@ func GetAllUsedTwilioNumbers(db *gorm.DB) (ret []TwilioNumber) {
 		if result.RecordNotFound() {
 			return nil
 		}
-		panic(result.Error)
+		dbError(result.Error)
 	}
 	return twilioNum
 
@@ -62,10 +62,9 @@ func GetTwilioPoolByUserID(db *gorm.DB, userid string) []TwilioPool {
 	var o []TwilioPool
 	if result := db.Where("user_id = ?", userid).Find(&o); result.Error != nil {
 		if result.RecordNotFound() {
-			log.Println("RecordNotFound")
 			return nil
 		}
-		panic(result.Error)
+		dbError(result.Error)
 	}
 	return o
 }
@@ -86,10 +85,9 @@ func GetUnusedTwilioNumbersByUser(cfg *periwinkle.Cfg, db *gorm.DB, userid strin
 
 			if result := db.Where("number_id = ?", twilioPools[i].NumberID).First(&usedNums); result.Error != nil {
 				if result.RecordNotFound() {
-					log.Println("RecordNotFound")
 					return nil
 				}
-				panic(result.Error)
+				dbError(result.Error)
 			}
 
 			if allNum == usedNums.Number {
@@ -112,19 +110,17 @@ func GetTwilioNumberByUserAndGroup(db *gorm.DB, userid string, groupid string) s
 	var o TwilioPool
 	if result := db.Where(&TwilioPool{UserID: userid, GroupID: groupid}).First(&o); result.Error != nil {
 		if result.RecordNotFound() {
-			log.Println("RecordNotFound")
 			return ""
 		}
-		panic(result.Error)
+		dbError(result.Error)
 	}
 
 	var twilioNum TwilioNumber
 	if result := db.Where("number_id = ?", o.NumberID).First(&twilioNum); result.Error != nil {
 		if result.RecordNotFound() {
-			log.Println("RecordNotFound")
 			return ""
 		}
-		panic(result.Error)
+		dbError(result.Error)
 	}
 
 	return twilioNum.Number
@@ -137,7 +133,7 @@ func AssignTwilioNumber(db *gorm.DB, userid string, groupid string, twilioNum st
 	}
 
 	if err := db.Create(&num).Error; err != nil {
-		panic(err)
+		dbError(err)
 	}
 
 	o := TwilioPool{
@@ -147,7 +143,7 @@ func AssignTwilioNumber(db *gorm.DB, userid string, groupid string, twilioNum st
 	}
 
 	if err := db.Create(&o).Error; err != nil {
-		panic(err)
+		dbError(err)
 	}
 
 	return &o
@@ -160,30 +156,27 @@ func GetGroupByUserAndTwilioNumber(db *gorm.DB, userid string, twilioNum string)
 
 	if result := db.Where("number = ?", twilioNum).First(&num); result.Error != nil {
 		if result.RecordNotFound() {
-			log.Println("RecordNotFound")
 			return nil
 		}
-		panic(result.Error)
+		dbError(result.Error)
 	}
 
 	var o TwilioPool
 
 	if result := db.Where(&TwilioPool{UserID: userid, NumberID: num.ID}).First(&o); result.Error != nil {
 		if result.RecordNotFound() {
-			log.Println("RecordNotFound")
 			return nil
 		}
-		panic(result.Error)
+		dbError(result.Error)
 	}
 
 	var group Group
 
 	if result := db.Where("group_id = ?", o.GroupID).First(&group); result.Error != nil {
 		if result.RecordNotFound() {
-			log.Println("RecordNotFound")
 			return nil
 		}
-		panic(result.Error)
+		dbError(result.Error)
 	}
 
 	return &group
@@ -197,7 +190,7 @@ func GetAllExistingTwilioNumbers(cfg *periwinkle.Cfg) []string {
 
 	req, err := http.NewRequest("GET", incomingNumURL, nil)
 	if err != nil {
-		log.Println(err)
+		periwinkle.LogErr(locale.UntranslatedError(err))
 		return nil
 	}
 
@@ -206,25 +199,25 @@ func GetAllExistingTwilioNumbers(cfg *periwinkle.Cfg) []string {
 	resp, err := client.Do(req)
 
 	if err != nil {
-		log.Println(err)
+		periwinkle.LogErr(locale.UntranslatedError(err))
 		return nil
 	}
 
 	defer resp.Body.Close()
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		log.Println(err)
+		periwinkle.LogErr(locale.UntranslatedError(err))
 		return nil
 	}
 
 	if resp.StatusCode != 200 {
-		log.Println(resp.Status)
+		periwinkle.Logf("Response code %s", resp.Status)
 		return nil
 	}
 
 	numbers := IncomingNumbers{}
 	if err := json.Unmarshal(body, &numbers); err != nil {
-		log.Println(err)
+		periwinkle.LogErr(locale.UntranslatedError(err))
 		return nil
 	}
 
@@ -239,8 +232,6 @@ func GetAllExistingTwilioNumbers(cfg *periwinkle.Cfg) []string {
 		return existingNumbers
 
 	} else {
-		log.Println("You do not have a number in your Twilio account")
 		return nil
 	}
-
 }

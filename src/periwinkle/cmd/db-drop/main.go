@@ -5,7 +5,9 @@ package main
 
 import (
 	"fmt"
+	"locale"
 	"os"
+	"periwinkle"
 	"periwinkle/backend"
 	"periwinkle/cfg"
 
@@ -27,15 +29,15 @@ Options:
 func main() {
 	options, _ := docopt.Parse(usage, os.Args[1:], true, "", false, true)
 
-	configFile, err := os.Open(options["-c"].(string))
-	if err != nil {
-		fmt.Fprintln(os.Stderr, err)
+	configFile, err1 := os.Open(options["-c"].(string))
+	if err1 != nil {
+		periwinkle.LogErr(locale.UntranslatedError(err1))
 		os.Exit(int(lsb.EXIT_NOTCONFIGURED))
 	}
 
-	config, err := cfg.Parse(configFile)
-	if err != nil {
-		fmt.Fprintln(os.Stderr, err)
+	config, err2 := cfg.Parse(configFile)
+	if err2 != nil {
+		periwinkle.LogErr(err2)
 		os.Exit(int(lsb.EXIT_NOTCONFIGURED))
 	}
 

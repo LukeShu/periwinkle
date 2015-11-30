@@ -5,6 +5,8 @@
 package backend
 
 import (
+	"locale"
+
 	"github.com/jinzhu/gorm"
 )
 
@@ -18,19 +20,19 @@ type Group struct {
 	Subscriptions []Subscription `json:"subscriptions"`
 }
 
-func (o Group) dbSchema(db *gorm.DB) error {
-	return db.CreateTable(&o).Error
+func (o Group) dbSchema(db *gorm.DB) locale.Error {
+	return locale.UntranslatedError(db.CreateTable(&o).Error)
 }
 
-func (o Group) dbSeed(db *gorm.DB) error {
-	return db.Create(&Group{
+func (o Group) dbSeed(db *gorm.DB) locale.Error {
+	return locale.UntranslatedError(db.Create(&Group{
 		ID:            "test",
 		Existence:     1,
 		Read:          1,
 		Post:          1,
 		Join:          1,
 		Subscriptions: []Subscription{},
-	}).Error
+	}).Error)
 }
 
 func GetGroupByID(db *gorm.DB, id string) *Group {
@@ -39,7 +41,7 @@ func GetGroupByID(db *gorm.DB, id string) *Group {
 		if result.RecordNotFound() {
 			return nil
 		}
-		panic(result.Error)
+		dbError(result.Error)
 	}
 	db.Model(&o).Related(&o.Subscriptions)
 	return &o
@@ -63,7 +65,7 @@ func GetGroupsByMember(db *gorm.DB, user User) []Group {
 			if result.RecordNotFound() {
 				return nil
 			}
-			panic(result.Error)
+			dbError(result.Error)
 		}
 	}
 	// return them
@@ -76,7 +78,7 @@ func GetPublicAndSubscribedGroups(db *gorm.DB, user User) []Group {
 	var publicgroups []Group
 	if result := db.Where(&Group{Existence: 1}).Find(&publicgroups); result.Error != nil {
 		if !result.RecordNotFound() {
-			panic(result.Error)
+			dbError(result.Error)
 		}
 	}
 	// merge public groups and subscribed groups
@@ -99,14 +101,14 @@ func GetAllGroups(db *gorm.DB) []Group {
 		if result.RecordNotFound() {
 			return nil
 		}
-		panic(result.Error)
+		dbError(result.Error)
 	}
 	return o
 }
 
 func NewGroup(db *gorm.DB, name string, existence int, read int, post int, join int) *Group {
 	if name == "" {
-		panic("name can't be empty")
+		programmerError("Group name can't be empty")
 	}
 	subscriptions := make([]Subscription, 0)
 	o := Group{
@@ -118,7 +120,7 @@ func NewGroup(db *gorm.DB, name string, existence int, read int, post int, join 
 		Subscriptions: subscriptions,
 	}
 	if err := db.Create(&o).Error; err != nil {
-		panic(err)
+		dbError(err)
 	}
 	return &o
 }
@@ -133,6 +135,6 @@ func checkInput(input int, min int, max int, defaultt int) int {
 
 func (o *Group) Save(db *gorm.DB) {
 	if err := db.Save(o).Error; err != nil {
-		panic(err)
+		dbError(err)
 	}
 }

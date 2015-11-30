@@ -6,6 +6,7 @@ package backend
 
 import (
 	"io"
+	"locale"
 	"strings"
 	"time"
 
@@ -31,8 +32,8 @@ type Captcha struct {
 	Expiration time.Time
 }
 
-func (o Captcha) dbSchema(db *gorm.DB) error {
-	return db.CreateTable(&o).Error
+func (o Captcha) dbSchema(db *gorm.DB) locale.Error {
+	return locale.UntranslatedError(db.CreateTable(&o).Error)
 }
 
 func NewCaptcha(db *gorm.DB) *Captcha {
@@ -41,7 +42,7 @@ func NewCaptcha(db *gorm.DB) *Captcha {
 		Value: string(captcha.RandomDigits(defaultLen)),
 	}
 	if err := db.Create(&o).Error; err != nil {
-		panic(err)
+		dbError(err)
 	}
 	return &o
 }
@@ -75,23 +76,23 @@ func GetCaptchaByID(db *gorm.DB, id string) *Captcha {
 		if result.RecordNotFound() {
 			return nil
 		}
-		panic(result.Error)
+		dbError(result.Error)
 	}
 	return &o
 }
 
-func (o *Captcha) MarshalPNG(w io.Writer) error {
+func (o *Captcha) MarshalPNG(w io.Writer) locale.Error {
 	// TODO: generate PNG and write it to w
-	return captcha.WriteImage(w, o.ID, defaultWidth, defaultHeight)
+	return locale.UntranslatedError(captcha.WriteImage(w, o.ID, defaultWidth, defaultHeight))
 }
 
-func (o *Captcha) MarshalWAV(w io.Writer) error {
+func (o *Captcha) MarshalWAV(w io.Writer) locale.Error {
 	// TODO: generate WAV and write it to w
-	return captcha.WriteAudio(w, o.ID, "en")
+	return locale.UntranslatedError(captcha.WriteAudio(w, o.ID, "en"))
 }
 
 func (o *Captcha) Save(db *gorm.DB) {
 	if err := db.Save(o).Error; err != nil {
-		panic(err)
+		dbError(err)
 	}
 }

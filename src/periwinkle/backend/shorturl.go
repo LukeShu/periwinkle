@@ -4,6 +4,7 @@
 package backend
 
 import (
+	"locale"
 	"net/url"
 
 	"github.com/jinzhu/gorm"
@@ -14,10 +15,10 @@ type ShortURL struct {
 	Dest string //*url.URL // TODO: figure out how to have (un)marshalling happen automatically
 }
 
-func (o ShortURL) dbSchema(db *gorm.DB) error {
-	return db.CreateTable(&o).
+func (o ShortURL) dbSchema(db *gorm.DB) locale.Error {
+	return locale.UntranslatedError(db.CreateTable(&o).
 		AddUniqueIndex("dest_idx", "dest").
-		Error
+		Error)
 }
 
 func NewShortURL(db *gorm.DB, u *url.URL) *ShortURL {
@@ -26,14 +27,14 @@ func NewShortURL(db *gorm.DB, u *url.URL) *ShortURL {
 		Dest: u.String(), // TODO: automatic marshalling
 	}
 	if err := db.Create(&o).Error; err != nil {
-		panic(err)
+		dbError(err)
 	}
 	return &o
 }
 
 func (o *ShortURL) Save(db *gorm.DB) {
 	if err := db.Save(o).Error; err != nil {
-		panic(err)
+		dbError(err)
 	}
 }
 
@@ -43,7 +44,7 @@ func GetShortURLByID(db *gorm.DB, id string) *ShortURL {
 		if result.RecordNotFound() {
 			return nil
 		}
-		panic(result.Error)
+		dbError(result.Error)
 	}
 	return &o
 }

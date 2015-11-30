@@ -5,6 +5,7 @@
 package backend
 
 import (
+	"locale"
 	"strings"
 
 	"github.com/jinzhu/gorm"
@@ -18,8 +19,8 @@ type User struct {
 	Addresses []UserAddress `json:"addresses"`
 }
 
-func (o User) dbSchema(db *gorm.DB) error {
-	return db.CreateTable(&o).Error
+func (o User) dbSchema(db *gorm.DB) locale.Error {
+	return locale.UntranslatedError(db.CreateTable(&o).Error)
 }
 
 type UserAddress struct {
@@ -33,13 +34,13 @@ type UserAddress struct {
 	Subscriptions []Subscription `json:"subscriptions"`
 }
 
-func (o UserAddress) dbSchema(db *gorm.DB) error {
-	return db.CreateTable(&o).
+func (o UserAddress) dbSchema(db *gorm.DB) locale.Error {
+	return locale.UntranslatedError(db.CreateTable(&o).
 		AddForeignKey("user_id", "users(id)", "CASCADE", "RESTRICT").
 		AddForeignKey("medium", "media(id)", "RESTRICT", "RESTRICT").
 		AddUniqueIndex("address_idx", "medium", "address").
 		AddUniqueIndex("user_idx", "user_id", "sort_order").
-		Error
+		Error)
 }
 
 func (addr UserAddress) AsEmailAddress() string {
@@ -60,7 +61,7 @@ func (u *User) populate(db *gorm.DB) {
 	if len(addressIDs) > 0 {
 		if result := db.Where("address_id IN (?)", addressIDs).Find(&subscriptions); result.Error != nil {
 			if !result.RecordNotFound() {
-				panic(result.Error)
+				dbError(result.Error)
 			}
 		}
 	} else {
@@ -101,7 +102,7 @@ func (u *User) GetUserSubscriptions(db *gorm.DB) []Subscription {
 	if len(addressIDs) > 0 {
 		if result := db.Where("address_id IN (?)", addressIDs).Find(&subscriptions); result.Error != nil {
 			if !result.RecordNotFound() {
-				panic(result.Error)
+				dbError(result.Error)
 			}
 		}
 	} else {
@@ -117,7 +118,7 @@ func GetAddressByIDAndMedium(db *gorm.DB, id string, medium string) *UserAddress
 		if result.RecordNotFound() {
 			return nil
 		}
-		panic(result.Error)
+		dbError(result.Error)
 	}
 	return &o
 }
@@ -129,7 +130,7 @@ func GetUserByID(db *gorm.DB, id string) *User {
 		if result.RecordNotFound() {
 			return nil
 		}
-		panic(result.Error)
+		dbError(result.Error)
 	}
 	o.populate(db)
 	return &o
@@ -137,21 +138,23 @@ func GetUserByID(db *gorm.DB, id string) *User {
 
 func GetUserByAddress(db *gorm.DB, medium string, address string) *User {
 	var o User
-	result := db.Joins("inner join user_addresses on user_addresses.user_id=users.id").Where("user_addresses.medium=? and user_addresses.address=?", medium, address).Find(&o)
+	result := db.Joins("INNER JOIN user_addresses ON user_addresses.user_id=users.id").Where("user_addresses.medium=? and user_addresses.address=?", medium, address).Find(&o)
 	if result.Error != nil {
 		if result.RecordNotFound() {
 			return nil
 		}
-		panic(result.Error)
+		dbError(result.Error)
 	}
 	o.populate(db)
 	return &o
 }
 
-func (u *User) SetPassword(password string) error {
+func (u *User) SetPassword(password string) {
 	hash, err := bcrypt.GenerateFromPassword([]byte(password), -1)
+	if err != nil {
+		panic(err) // Luke says this is OK
+	}
 	u.PwHash = hash
-	return err
 }
 
 func (u *User) CheckPassword(password string) bool {
@@ -161,18 +164,16 @@ func (u *User) CheckPassword(password string) bool {
 
 func NewUser(db *gorm.DB, name string, password string, email string) User {
 	if name == "" {
-		panic("name can't be empty")
+		programmerError("User name can't be empty")
 	}
 	o := User{
 		ID:        name,
 		FullName:  "",
 		Addresses: []UserAddress{{Medium: "email", Address: email, Confirmed: false}},
 	}
-	if err := o.SetPassword(password); err != nil {
-		panic(err)
-	}
+	o.SetPassword(password)
 	if err := db.Create(&o).Error; err != nil {
-		panic(err)
+		dbError(err)
 	}
 	return o
 }
@@ -186,13 +187,13 @@ func NewUserAddress(db *gorm.DB, userID string, medium string, address string, c
 		Confirmed:     confirmed,
 	}
 	if err := db.Create(&o).Error; err != nil {
-		panic(err)
+		dbError(err)
 	}
 	return o
 }
 
 func (o *User) Save(db *gorm.DB) {
 	if err := db.Save(o).Error; err != nil {
-		panic(err)
+		dbError(err)
 	}
 }

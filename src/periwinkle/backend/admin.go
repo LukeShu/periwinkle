@@ -4,6 +4,8 @@
 package backend
 
 import (
+	"locale"
+
 	"github.com/jinzhu/gorm"
 )
 
@@ -11,6 +13,6 @@ type Admin struct {
 	UserID string `json:"user_id"`
 }
 
-func (o Admin) dbSchema(db *gorm.DB) error {
-	return db.CreateTable(&o).Error
+func (o Admin) dbSchema(db *gorm.DB) locale.Error {
+	return locale.UntranslatedError(db.CreateTable(&o).Error)
 }

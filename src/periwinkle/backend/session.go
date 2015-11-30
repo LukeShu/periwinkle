@@ -4,6 +4,7 @@
 package backend
 
 import (
+	"locale"
 	"time"
 
 	"github.com/jinzhu/gorm"
@@ -15,10 +16,10 @@ type Session struct {
 	LastUsed time.Time `json:"-"`
 }
 
-func (o Session) dbSchema(db *gorm.DB) error {
-	return db.CreateTable(&o).
+func (o Session) dbSchema(db *gorm.DB) locale.Error {
+	return locale.UntranslatedError(db.CreateTable(&o).
 		AddForeignKey("user_id", "users(id)", "CASCADE", "RESTRICT").
-		Error
+		Error)
 }
 
 func NewSession(db *gorm.DB, user *User, password string) *Session {
@@ -31,7 +32,7 @@ func NewSession(db *gorm.DB, user *User, password string) *Session {
 		LastUsed: time.Now(),
 	}
 	if err := db.Create(&o).Error; err != nil {
-		panic(err)
+		dbError(err)
 	}
 	return &o
 }
@@ -42,7 +43,7 @@ func GetSessionByID(db *gorm.DB, id string) *Session {
 		if result.RecordNotFound() {
 			return nil
 		}
-		panic(result.Error)
+		dbError(result.Error)
 	}
 	return &o
 }
@@ -53,6 +54,6 @@ func (o *Session) Delete(db *gorm.DB) {
 
 func (o *Session) Save(db *gorm.DB) {
 	if err := db.Save(o).Error; err != nil {
-		panic(err)
+		dbError(err)
 	}
 }

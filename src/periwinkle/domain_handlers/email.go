@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"io"
 	"io/ioutil"
-	"log"
 	"net/mail"
 	"net/smtp"
 	"periwinkle"
@@ -21,7 +20,7 @@ import (
 func HandleEmail(r io.Reader, name string, db *gorm.DB, cfg *periwinkle.Cfg) postfixpipe.ExitStatus {
 	mdWriter := cfg.Mailstore.NewMail()
 	if mdWriter == nil {
-		log.Printf("Could not open maildir for writing: %s\n", cfg.Mailstore)
+		periwinkle.Logf("Could not open maildir for writing: %q\n", cfg.Mailstore)
 		return postfixpipe.EX_IOERR
 	}
 	defer func() {
@@ -90,7 +89,7 @@ func HandleEmail(r io.Reader, name string, db *gorm.DB, cfg *periwinkle.Cfg) pos
 	for _, header := range []string{"To", "From", "Cc"} {
 		addresses, err := msg.Header.AddressList(header)
 		if err != nil {
-			log.Printf("Parsing %q Header: %v\n", header, err)
+			periwinkle.Logf("Parsing %q Header: %v\n", header, err)
 		}
 		for _, addr := range addresses {
 			delete(forwardSet, addr.Address)
@@ -113,8 +112,6 @@ func HandleEmail(r io.Reader, name string, db *gorm.DB, cfg *periwinkle.Cfg) pos
 	msg822 = append(msg822, []byte("\r\n")...)
 	body, _ := ioutil.ReadAll(msg.Body) // TODO: error handling
 	msg822 = append(msg822, body...)
-	log.Println("MSG822\n" + string(msg822))
-	log.Println("RECIPIENTS:", forwardAry)
 
 	if len(forwardAry) > 0 {
 		// send the message out
@@ -124,7 +121,7 @@ func HandleEmail(r io.Reader, name string, db *gorm.DB, cfg *periwinkle.Cfg) pos
 			forwardAry,
 			msg822)
 		if err != nil {
-			log.Println("Error sending:", err)
+			periwinkle.Logf("Error sending: %v", err)
 			return postfixpipe.EX_UNAVAILABLE
 		}
 	}

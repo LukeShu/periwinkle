@@ -5,6 +5,8 @@
 package backend
 
 import (
+	"locale"
+
 	"github.com/jinzhu/gorm"
 )
 
@@ -16,11 +18,11 @@ type Subscription struct {
 	Confirmed bool        `json:"confirmed"`
 }
 
-func (o Subscription) dbSchema(db *gorm.DB) error {
-	return db.CreateTable(&o).
+func (o Subscription) dbSchema(db *gorm.DB) locale.Error {
+	return locale.UntranslatedError(db.CreateTable(&o).
 		AddForeignKey("group_id", "groups(id)", "CASCADE", "RESTRICT").
 		AddForeignKey("address_id", "user_addresses(id)", "CASCADE", "RESTRICT").
-		Error
+		Error)
 }
 
 func GetSubscriptionsGroupByID(db *gorm.DB, groupID string) []Subscription {
@@ -29,7 +31,7 @@ func GetSubscriptionsGroupByID(db *gorm.DB, groupID string) []Subscription {
 		if result.RecordNotFound() {
 			return nil
 		}
-		panic(result.Error)
+		dbError(result.Error)
 	}
 	return o
 }

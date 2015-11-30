@@ -4,6 +4,7 @@
 package backend
 
 import (
+	"locale"
 	"maildir"
 
 	"github.com/jinzhu/gorm"
@@ -16,16 +17,16 @@ type Message struct {
 	// cached fields??????
 }
 
-func (o Message) dbSchema(db *gorm.DB) error {
-	return db.CreateTable(&o).
+func (o Message) dbSchema(db *gorm.DB) locale.Error {
+	return locale.UntranslatedError(db.CreateTable(&o).
 		AddForeignKey("group_id", "groups(id)", "CASCADE", "RESTRICT").
 		AddUniqueIndex("filename_idx", "unique").
-		Error
+		Error)
 }
 
 func NewMessage(db *gorm.DB, id string, group Group, unique maildir.Unique) Message {
 	if id == "" {
-		panic("Message ID can't be emtpy")
+		programmerError("Message ID can't be emtpy")
 	}
 	o := Message{
 		ID:      id,
@@ -33,7 +34,7 @@ func NewMessage(db *gorm.DB, id string, group Group, unique maildir.Unique) Mess
 		Unique:  string(unique),
 	}
 	if err := db.Create(&o).Error; err != nil {
-		panic(err)
+		dbError(err)
 	}
 	return o
 }
@@ -44,7 +45,7 @@ func GetMessageByID(db *gorm.DB, id string) *Message {
 		if result.RecordNotFound() {
 			return nil
 		}
-		panic(result.Error)
+		dbError(result.Error)
 	}
 	return &o
 }

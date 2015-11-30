@@ -5,16 +5,15 @@
 package cfg
 
 import (
-	"fmt"
 	"io"
 	"io/ioutil"
+	"locale"
 	"maildir"
 	"net/http"
 	"os"
 	"periwinkle"
 	"periwinkle/domain_handlers"
 	"postfixpipe"
-	"strings"
 
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jinzhu/gorm"
@@ -22,15 +21,20 @@ import (
 	yaml "gopkg.in/yaml.v2"
 )
 
-func Parse(in io.Reader) (cfgptr *periwinkle.Cfg, err error) {
+func gotoError(err locale.Error) {
+	panic(err)
+}
+
+func Parse(in io.Reader) (cfgptr *periwinkle.Cfg, e locale.Error) {
 	defer func() {
 		if r := recover(); r != nil {
-			e, ok := r.(error)
-			if !ok {
+			cfgptr = nil
+			switch err := r.(type) {
+			case locale.Error:
+				e = err
+			default:
 				panic(r)
 			}
-			cfgptr = nil
-			err = e
 		}
 	}()
 
@@ -50,23 +54,18 @@ func Parse(in io.Reader) (cfgptr *periwinkle.Cfg, err error) {
 
 	datstr, err := ioutil.ReadAll(in)
 	if err != nil {
-		panic(err)
-	}
-
-	// if we didnt get anything from the config, just return
-	if strings.Compare("", string(datstr)) == 0 {
-		return &cfg, err
+		gotoError(locale.UntranslatedError(err))
 	}
 
 	var datint interface{}
 	err = yaml.Unmarshal(datstr, &datint)
 	if err != nil {
-		panic(err)
+		gotoError(locale.UntranslatedError(err))
 	}
 
 	datmap, ok := datint.(map[interface{}]interface{})
 	if !ok {
-		panic(err)
+		gotoError(locale.UntranslatedError(err))
 	}
 
 	for key, val := range datmap {
@@ -90,7 +89,7 @@ func Parse(in io.Reader) (cfgptr *periwinkle.Cfg, err error) {
 		case "DB":
 			m, ok := val.(map[interface{}]interface{})
 			if !ok {
-				panic(fmt.Errorf("value for %q is not a map", key.(string)))
+				gotoError(locale.Errorf("value for %q is not a map", key.(string)))
 			}
 			var driver string
 			var source string
@@ -101,29 +100,29 @@ func Parse(in io.Reader) (cfgptr *periwinkle.Cfg, err error) {
 				case "source":
 					source = getString("DB."+key.(string), val)
 				default:
-					panic(fmt.Errorf("unknown field: %v", "DB."+key.(string)))
+					gotoError(locale.Errorf("unknown field: %v", "DB."+key.(string)))
 				}
 			}
 			db, err := gorm.Open(driver, source)
 			if err != nil {
-				panic(err)
+				gotoError(locale.UntranslatedError(err))
 			}
 			cfg.DB = &db
 		default:
-			panic(fmt.Errorf("unknown field: %v", key))
+			gotoError(locale.Errorf("unknown field: %v", key))
 		}
 	}
 
 	// Set the default database
 	if cfg.DB == nil {
-		fmt.Fprintln(os.Stderr, "DB not configured, trying MySQL periwinkle:periwinkle@localhost/periwinkle")
+		periwinkle.Logf("DB not configured, trying MySQL periwinkle:periwinkle@localhost/periwinkle")
 		db, err := gorm.Open("mysql", "periwinkle:periwinkle@/periwinkle?charset=utf8&parseTime=True")
 		if err != nil {
-			fmt.Fprintln(os.Stderr, err)
-			fmt.Fprintln(os.Stderr, "Failed to connect to MySQL, trying SQLite3 file:periwinkle.sqlite")
+			periwinkle.Logf("%v", locale.UntranslatedError(err))
+			periwinkle.Logf("Failed to connect to MySQL, trying SQLite3 file:periwinkle.sqlite")
 			db, err = gorm.Open("sqlite3", "file:periwinkle.sqlite?cache=shared&mode=rwc")
 			if err != nil {
-				panic(err)
+				gotoError(locale.UntranslatedError(err))
 			}
 		}
 		cfg.DB = &db
@@ -133,13 +132,13 @@ func Parse(in io.Reader) (cfgptr *periwinkle.Cfg, err error) {
 
 	domain_handlers.GetHandlers(&cfg)
 
-	return &cfg, err
+	return &cfg, nil
 }
 
 func getString(key string, val interface{}) string {
 	str, ok := val.(string)
 	if !ok {
-		panic(fmt.Errorf("value for %q is not a string", key))
+		gotoError(locale.Errorf("value for %q is not a string", key))
 	}
 	return str
 }
@@ -147,7 +146,7 @@ func getString(key string, val interface{}) string {
 func getBool(key string, val interface{}) bool {
 	b, ok := val.(bool)
 	if !ok {
-		panic(fmt.Errorf("value for %q is not a Boolean", key))
+		gotoError(locale.Errorf("value for %q is not a Boolean", key))
 	}
 	return b
 }

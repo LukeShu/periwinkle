@@ -4,6 +4,8 @@
 package backend
 
 import (
+	"locale"
+
 	"github.com/jinzhu/gorm"
 )
 
@@ -11,13 +13,13 @@ type Medium struct {
 	ID string
 }
 
-func (o Medium) dbSchema(db *gorm.DB) error {
-	return db.CreateTable(&o).Error
+func (o Medium) dbSchema(db *gorm.DB) locale.Error {
+	return locale.UntranslatedError(db.CreateTable(&o).Error)
 }
 
-func (o Medium) dbSeed(db *gorm.DB) error {
-	errs := []error{}
-	errHelper(&errs, db.Create(&Medium{"email"}).Error)
-	errHelper(&errs, db.Create(&Medium{"twilio"}).Error)
-	return errorList(errs)
+func (o Medium) dbSeed(db *gorm.DB) locale.Error {
+	errs := errorList{}
+	errHelper(&errs, locale.UntranslatedError(db.Create(&Medium{"email"}).Error))
+	errHelper(&errs, locale.UntranslatedError(db.Create(&Medium{"twilio"}).Error))
+	return errs
 }
