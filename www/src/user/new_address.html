@@ -1,47 +1,38 @@
 <!-- // Copyright 2015 Richard Wisniewski -->
 <md-dialog aria-label="New Address"  ng-cloak style="position: relative;">
-
-	<md-toolbar>
-		<div class="md-toolbar-tools">
-			<h1>{{ title | translate }}</h1>
-		</div>
-	</md-toolbar>
-
-	<div>
-		<div ng-if="loading" style="position: fixed; z-index: 12; width: 40px; height: 40px; top: 128px; left: 50%; margin-left: -20px; border-color: #f0f0f0; border-style: solid; border-width: 1px; border-radius: 20px; background-color: white;">
-			<md-progress-circular md-diameter="20px" md-mode="indeterminate" style="margin-top: -30px; margin-left: -30px;"></md-progress-circular>
-		</div>
-
-		<form name="newAddressForm" ng-submit="address.create()">
-			<md-dialog-content style="max-width: 150mm; max-height: 100mm;">
-				<div class="md-dialog-content">
-					<md-input-container>
-						<label>{{ "USER.NEW_ADDRESS.MEDIUM" | translate }}</label>
-						<md-select name="type" ng-model="address.medium">
-							<md-option ng-repeat="medium in address.mediums" ng-value="$index">
-								{{ "GENERAL.MEDIUMS." + medium | translate }}
-							</md-option>
-						</md-select>
-					</md-input-container>
-					<md-input-container ng-if="address.medium_type() == 'email'">
-						<label>{{ "USER.NEW_ADDRESS.ADDRESS" | translate }}</label>
-						<input name="email" ng-model="address.email_address" type="email" ng-required="address.medium_type() == 'email'" />
-					</md-input-container>
-					<md-input-container ng-if="address.medium_type() == 'tel'">
-						<label>{{ "USER.NEW_ADDRESS.ADDRESS" | translate }}</label>
-						<input name="tel" ng-model="address.tel_address" xreg-pattern="[0-9\-\+\(\)\s]+" type='tel' ng-required="address.medium_type() == 'tel'" />
-					</md-input-container>
-				</div>
-			</md-dialog-content>
-			<div style="clear: both;"></div>
-			<div class="md-actions" layout="row">
-				<md-button type="button" ng-click="address.cancel()">
-					{{ "GENERAL.FORM.RESPONSE.CANCEL" | translate }}
-				</md-button>
-				<md-button type="submit" ng-disable="loading || (newAddressForm.$invalid && newAddressForm.$dirty)">
-					{{ "GENERAL.FORM.RESPONSE.ADD" | translate }}
-				</md-button>
+	<form name="newAddressForm" ng-submit="address.create()">
+		<md-toolbar>
+			<div class="md-toolbar-tools">
+				<h1>{{ title | translate }}</h1>
 			</div>
-		</form>
-	</div>
+		</md-toolbar>
+		<md-dialog-content style="max-width: 150mm; max-height: 100mm;">
+			<div class="md-dialog-content" layout="row">
+				<md-input-container>
+					<label>{{ "USER.NEW_ADDRESS.MEDIUM" | translate }}</label>
+					<md-select name="type" ng-model="address.medium">
+						<md-option ng-repeat="medium in address.mediums" ng-value="$index">
+							{{ "GENERAL.MEDIUMS." + medium | translate }}
+						</md-option>
+					</md-select>
+				</md-input-container>
+				<md-input-container ng-if="address.medium_type() == 'email'">
+					<label>{{ "USER.NEW_ADDRESS.ADDRESS" | translate }}</label>
+					<input name="email" ng-model="address.email_address" type="email" ng-required="address.medium_type() == 'email'" />
+				</md-input-container>
+				<md-input-container ng-if="address.medium_type() == 'tel'">
+					<label>{{ "USER.NEW_ADDRESS.ADDRESS" | translate }}</label>
+					<input name="tel" ng-model="address.tel_address" xreg-pattern="[0-9\-\+\(\)\s]+" type='tel' ng-required="address.medium_type() == 'tel'" />
+				</md-input-container>
+			</div>
+		</md-dialog-content>
+		<md-dialog-actions layout="row">
+			<md-button type="button" ng-click="address.cancel()">
+				{{ "GENERAL.FORM.RESPONSE.CANCEL" | translate }}
+			</md-button>
+			<md-button type="submit" ng-disable="loading || (newAddressForm.$invalid && newAddressForm.$dirty)">
+				{{ "GENERAL.FORM.RESPONSE.ADD" | translate }}
+			</md-button>
+		</md-dialog-actions>
+	</form>
 </md-dialog>
