@@ -4,9 +4,21 @@ package gettext
 
 import (
 	"locale"
+	"os"
 )
 
 var _ locale.MessageCatalog = TextDomain{}
+
+type Category int
+
+func GetLocale(c Category) locale.Spec {
+	for _, varname := range []string{"LC_ALL", c.String(), "LANG"} {
+		if val := os.Getenv(varname); val != "" {
+			return locale.Spec(val)
+		}
+	}
+	return locale.Spec("C")
+}
 
 // Translate(N)?(P)?
 //

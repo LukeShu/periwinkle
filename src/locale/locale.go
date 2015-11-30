@@ -25,3 +25,9 @@ type Error interface {
 	error
 	Stringer
 }
+
+var DefaultCatalog MessageCatalog = NullMessageCatalog{}
+
+func SetDefaultCatalog(c MessageCatalog) {
+	DefaultCatalog = c
+}

@@ -36,7 +36,7 @@ golint-filter = | grep -vE "/(sysexits|env|exit-status)\.go:[0-9]+:[0-9]+: don't
 srcdir := $(abspath $(patsubst %/,%,$(dir $(lastword $(MAKEFILE_LIST)))))
 topdir := $(srcdir)
 
-subdirs += $(topdir)/src/postfixpipe $(topdir)/HACKING
+subdirs += $(topdir)/src/postfixpipe $(topdir)/src/locale/gettext $(topdir)/HACKING
 
 generate += $(addprefix $(topdir)/src/,$(deps))
 generate_secondary += $(topdir)/src/*.*/
