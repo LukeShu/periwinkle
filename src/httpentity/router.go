@@ -6,6 +6,7 @@ import (
 	"httpentity/negotiate"
 	"mime"
 	"net/url"
+	"net/http"
 	"path"
 	"strings"
 )
@@ -42,24 +43,44 @@ func (r *Router) finish(req Request, res *Response) {
 	if res.Entity != nil && res.Headers.Get("Content-Type") == "" {
 		encoders := res.Entity.Encoders()
 		mimetypes := encoders2mimetypes(encoders)
-		accept := req.Headers.Get("Accept")
-		if len(encoders) > 1 && accept == "" {
-			*res = r.responseMultipleChoices(req.URL, mimetypes)
+		acceptStrs, haveAccept := req.Headers[http.CanonicalHeaderKey("Accept")]
+		var accept *string
+		if haveAccept && len(acceptStrs) > 0 {
+			accept = &acceptStrs[0]
+		}
+		options, err := negotiate.NegotiateContentType(accept, mimetypes)
+		if err != nil {
+			*res = r.responseBadRequest(err)
 		} else {
-			options, err := negotiate.NegotiateContentType(&accept, mimetypes)
-			if err != nil {
-				*res = r.responseBadRequest(err)
-			} else {
-				switch len(options) {
-				case 0:
-					*res = r.responseNotAcceptable(req.URL, mimetypes)
-				case 1:
-					//res.Headers.Set("Content-Type", mimetype+"; charset=utf-8")
-					res.Headers.Set("Content-Type", mimetypes[0])
-				default:
-					*res = r.responseMultipleChoices(req.URL, mimetypes)
-				}
+			switch len(options) {
+			case 0:
+				*res = r.responseNotAcceptable(req.URL, mimetypes)
+			case 1:
+				//res.Headers.Set("Content-Type", options[0]+"; charset=utf-8")
+				res.Headers.Set("Content-Type", options[0])
+				return
+			default:
+				*res = r.responseMultipleChoices(req.URL, mimetypes)
 			}
+		}
+		// If we make it here, we're either serving a
+		// BadRequest (because parsing Accept failed),
+		// NotAcceptable, or MultipleChoices, but don't know
+		// what content type to send the message as!  We can't
+		// just recurse because we don't want the status code
+		// to change.
+		encoders = res.Entity.Encoders()
+		mimetypes = encoders2mimetypes(encoders)
+		options, err = negotiate.NegotiateContentType(accept, mimetypes)
+		switch len(options) {
+		case 0:
+			// Just pick one
+			res.Headers.Set("Content-Type", mimetypes[0])
+		case 1:
+			res.Headers.Set("Content-Type", options[0])
+		default:
+			// Just pick one
+			res.Headers.Set("Content-Type", options[0])
 		}
 	}
 }
