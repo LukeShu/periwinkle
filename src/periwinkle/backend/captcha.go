@@ -6,6 +6,7 @@ package backend
 
 import (
 	"io"
+	"strings"
 	"time"
 
 	"github.com/dchest/captcha"
@@ -45,8 +46,19 @@ func NewCaptcha(db *gorm.DB) *Captcha {
 	return &o
 }
 
-func UseCaptcha(db *gorm.DB, token string) bool {
-	panic("TODO")
+func UseCaptcha(db *gorm.DB, id, token string) bool {
+	o := GetCaptchaByID(db, id)
+	if o == nil {
+		panic("Captcha " + id + " does not exist.")
+	}
+	if strings.Compare(token, "true") == 0 {
+		// destroy captcha
+		db.Delete(&o)
+		return true
+	}
+	// destroy captcha
+	db.Delete(&o)
+	return false
 }
 
 func CheckCaptcha(db *gorm.DB, userInput string, captchaID string) bool {
