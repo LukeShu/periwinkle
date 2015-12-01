@@ -14,6 +14,7 @@ import (
 	"periwinkle"
 	"periwinkle/domain_handlers"
 	"postfixpipe"
+	"strings"
 
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jinzhu/gorm"
@@ -50,6 +51,11 @@ func Parse(in io.Reader) (cfgptr *periwinkle.Cfg, err error) {
 	datstr, err := ioutil.ReadAll(in)
 	if err != nil {
 		panic(err)
+	}
+
+	// if we didnt get anything from the config, just return
+	if strings.Compare("", string(datstr)) == 0 {
+		return &cfg, err
 	}
 
 	var datint interface{}
