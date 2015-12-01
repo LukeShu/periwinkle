@@ -1,9 +1,8 @@
-/config.yaml
-
 /bin/
 /pkg/
 /src/*.*/
 
+*.yaml
 *.sqlite
 .var.*
 
