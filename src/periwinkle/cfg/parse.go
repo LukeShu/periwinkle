@@ -65,7 +65,7 @@ func Parse(in io.Reader) (cfgptr *periwinkle.Cfg, e locale.Error) {
 
 	datmap, ok := datint.(map[interface{}]interface{})
 	if !ok {
-		gotoError(locale.UntranslatedError(err))
+		gotoError(locale.Errorf("root element is not a map"))
 	}
 
 	for key, val := range datmap {
