@@ -19,6 +19,7 @@
 		'validation.xregex',
 		'periwinkle.UserService',
 		'login',
+		'captcha',
 		'dashboard',
 		'user',
 		'messages',

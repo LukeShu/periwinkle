@@ -26,6 +26,8 @@
 			message: ''
 		};
 		$scope.loading = false;
+		var captcha_id = '';
+		var captcha_key = '';
 
 		//for login redir;
 		if(userService.loginRedir.has == true) {
@@ -106,44 +108,60 @@
 		this.signup = function(ev) {
 			//http signup api call
 			$scope.loading = true;
-			$http({
-				method: 'POST',
-				url: '/v1/users',
-				headers: {
-					'Content-Type': 'application/json'
-				},
-				data: {
-					username: self.username,
-					password: self.password,
-					email: self.email
-				}
-			}).then(
-				function success(response) {
-					//do work with response
-					self.login();
-				},
-				function fail(response) {
-					//do work with response
-					//show error to user
-					var status_code = response.status;
-					var reason = response.data;
-					var $translate = $filter('translate');
-					var $escape = $filter('escapeHTML');
-					$scope.loading = false;
-					//show alert
-					switch(status_code){
-						case 409:
-							$scope.showError('LOGIN.SIGNUP.ERRORS.409.TITLE', 'LOGIN.SIGNUP.ERRORS.409.CONTENT', '', '#signup-button', '#signup-button');
-							break;
-						case 500:
-							$scope.showError('GENERAL.ERRORS.500.TITLE', 'GENERAL.ERRORS.500.CONTENT', '', '#signup-button', '#signup-button');
-							break;
-						default:
-							$scope.showError('GENERAL.ERRORS.DEFAULT.TITLE', 'GENERAL.ERRORS.DEFAULT.CONTENT', '', '#signup-button', '#signup-button');
+			if(false){ //captcha_id == '') {
+				$http({
+					method:	'POST',
+					url:	'/v1/captcha'
+				}).then(
+					function success(response) {
+						//store token
+						captcha_id = response.data.id;
+						//show dialog
+					},
+					function fail(response) {
+
 					}
-					$mdDialog.show(dialog);
-				}
-			);
+				);
+			} else {
+				$http({
+					method: 'POST',
+					url: '/v1/users',
+					headers: {
+						'Content-Type': 'application/json'
+					},
+					data: {
+						username: self.username,
+						password: self.password,
+						email: self.email
+					}
+				}).then(
+					function success(response) {
+						//do work with response
+						self.login();
+					},
+					function fail(response) {
+						//do work with response
+						//show error to user
+						var status_code = response.status;
+						var reason = response.data;
+						var $translate = $filter('translate');
+						var $escape = $filter('escapeHTML');
+						$scope.loading = false;
+						//show alert
+						switch(status_code){
+							case 409:
+								$scope.showError('LOGIN.SIGNUP.ERRORS.409.TITLE', 'LOGIN.SIGNUP.ERRORS.409.CONTENT', '', '#signup-button', '#signup-button');
+								break;
+							case 500:
+								$scope.showError('GENERAL.ERRORS.500.TITLE', 'GENERAL.ERRORS.500.CONTENT', '', '#signup-button', '#signup-button');
+								break;
+							default:
+								$scope.showError('GENERAL.ERRORS.DEFAULT.TITLE', 'GENERAL.ERRORS.DEFAULT.CONTENT', '', '#signup-button', '#signup-button');
+						}
+						$mdDialog.show(dialog);
+					}
+				);
+			}
 		}
 
 		this.togleSignup = function () {

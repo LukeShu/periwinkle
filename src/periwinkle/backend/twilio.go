@@ -79,7 +79,7 @@ func GetUnusedTwilioNumbersByUser(cfg *periwinkle.Cfg, db *gorm.DB, userid strin
 		isNumberUsed = false
 		for i := range twilioPools {
 
-			if result := db.Where("number_id = ?", twilioPools[i].NumberID).First(&usedNums); result.Error != nil {
+			if result := db.Where("id = ?", twilioPools[i].NumberID).First(&usedNums); result.Error != nil {
 				if result.RecordNotFound() {
 					return nil
 				}
@@ -112,7 +112,7 @@ func GetTwilioNumberByUserAndGroup(db *gorm.DB, userid string, groupid string) s
 	}
 
 	var twilioNum TwilioNumber
-	if result := db.Where("number_id = ?", o.NumberID).First(&twilioNum); result.Error != nil {
+	if result := db.Where("id = ?", o.NumberID).First(&twilioNum); result.Error != nil {
 		if result.RecordNotFound() {
 			return ""
 		}
@@ -128,7 +128,7 @@ func AssignTwilioNumber(db *gorm.DB, userid string, groupid string, twilioNum st
 		Number: twilioNum,
 	}
 
-	if err := db.Create(&num).Error; err != nil {
+	if err := db.FirstOrCreate(&num).Error; err != nil {
 		dbError(err)
 	}
 
@@ -168,7 +168,7 @@ func GetGroupByUserAndTwilioNumber(db *gorm.DB, userid string, twilioNum string)
 
 	var group Group
 
-	if result := db.Where("group_id = ?", o.GroupID).First(&group); result.Error != nil {
+	if result := db.Where("id = ?", o.GroupID).First(&group); result.Error != nil {
 		if result.RecordNotFound() {
 			return nil
 		}
@@ -230,4 +230,33 @@ func GetAllExistingTwilioNumbers(cfg *periwinkle.Cfg) []string {
 	} else {
 		return nil
 	}
+}
+
+func DeleteUnusedTwilioNumber(db *gorm.DB, num string) error {
+
+	var twilioNum TwilioNumber
+	if result := db.Where("number = ?", num).First(&twilioNum); result.Error != nil {
+		if result.RecordNotFound() {
+			periwinkle.Logf("RecordNotFound")
+			return result.Error
+		}
+		dbError(result.Error)
+	}
+
+	var twilioPool TwilioPool
+	result := db.Where("number_id = ?", twilioNum.ID).First(&twilioPool)
+	if  result.Error != nil {
+		if result.RecordNotFound() {
+
+			if result := db.Where("number = ?", num).Delete(&TwilioNumber{}); result.Error != nil {
+				dbError(result.Error)
+			}
+
+			periwinkle.Logf("RecordNotFound")
+			return locale.UntranslatedError(result.Error)
+		}
+		dbError(result.Error)
+	}
+
+	return nil
 }

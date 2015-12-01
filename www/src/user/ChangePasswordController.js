@@ -1,5 +1,5 @@
 // Copyright 2015 Richard Wisniewski
-(function(){
+;(function(){
 	'use strict';
 
 	angular
