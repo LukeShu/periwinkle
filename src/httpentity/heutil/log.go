@@ -6,6 +6,7 @@ import (
 	"os"
 	"io"
 	"fmt"
+	"strings"
 )
 
 type wLog struct {
@@ -13,6 +14,9 @@ type wLog struct {
 }
 
 func (l wLog) Printf(format string, v ...interface{}) {
+	if !strings.HasSuffix(format, "\n") {
+		format = format + "\n"
+	}
 	fmt.Fprintf(l.Writer, format, v...)
 }
 

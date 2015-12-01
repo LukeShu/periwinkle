@@ -18,6 +18,22 @@ type errorList []locale.Error
 
 var _ locale.Error = errorList{}
 
+func (e errorList) Locales() []locale.Spec {
+	m := map[locale.Spec]int{}
+	for _, err := range e {
+		for _, l := range err.Locales() {
+			m[l] = m[l]+1
+		}
+	}
+	var ret []locale.Spec
+	for l, c := range m {
+		if c == len(e) {
+			ret = append(ret, l)
+		}
+	}
+	return ret
+}
+
 func (errs errorList) L10NString(l locale.Spec) string {
 	strs := make([]string, len(errs))
 	for i, err := range errs {

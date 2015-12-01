@@ -6,9 +6,7 @@ package httpapi
 
 import (
 	he "httpentity"
-	"httpentity/heutil"
 	"httpentity/rfc7231"
-	"io"
 	"jsonpatch"
 	"periwinkle/backend"
 	"strings"
@@ -48,7 +46,7 @@ func (o *group) Methods() map[string]func(he.Request) he.Response {
 				return *httperr
 			}
 			if o.ID != newGroup.ID {
-				return rfc7231.StatusConflict(heutil.NetString("Cannot change group id"))
+				return rfc7231.StatusConflict(he.NetPrintf("Cannot change group id"))
 			}
 			*o = newGroup
 			o.backend().Save(db)
@@ -59,15 +57,15 @@ func (o *group) Methods() map[string]func(he.Request) he.Response {
 
 			patch, ok := req.Entity.(jsonpatch.Patch)
 			if !ok {
-				return rfc7231.StatusUnsupportedMediaType(heutil.NetString("PATCH request must have a patch media type"))
+				return rfc7231.StatusUnsupportedMediaType(he.NetPrintf("PATCH request must have a patch media type"))
 			}
 			var newGroup group
 			err := patch.Apply(o, &newGroup)
 			if err != nil {
-				return rfc7231.StatusConflict(heutil.NetPrintf("%v", err))
+				return rfc7231.StatusConflict(he.NetPrintf("%v", err))
 			}
 			if o.ID != newGroup.ID {
-				return rfc7231.StatusConflict(heutil.NetString("Cannot change user id"))
+				return rfc7231.StatusConflict(he.NetPrintf("Cannot change user id"))
 			}
 			*o = newGroup
 			o.backend().Save(db)
@@ -77,7 +75,7 @@ func (o *group) Methods() map[string]func(he.Request) he.Response {
 			db := req.Things["db"].(*gorm.DB)
 			sess := req.Things["session"].(*backend.Session)
 			if !backend.IsAdmin(db, sess.UserID, *o.backend()) {
-				return rfc7231.StatusForbidden(heutil.NetString("Unauthorized user"))
+				return rfc7231.StatusForbidden(he.NetPrintf("Unauthorized user"))
 			}
 			db.Delete(o)
 			return rfc7231.StatusNoContent()
@@ -87,7 +85,7 @@ func (o *group) Methods() map[string]func(he.Request) he.Response {
 
 // View //////////////////////////////////////////////////////////////
 
-func (o *group) Encoders() map[string]func(io.Writer) error {
+func (o *group) Encoders() map[string]he.Encoder {
 	return defaultEncoders(o)
 }
 
@@ -120,7 +118,6 @@ func newDirGroups() dirGroups {
 				//groups = GetAllGroups(db)
 				groups = backend.GetPublicAndSubscribedGroups(db, *backend.GetUserByID(db, sess.UserID))
 			}
-			generic := make([]interface{}, len(groups))
 			type EnumerateGroup struct {
 				ID            string                 `json:"id"`
 				Existence     string                 `json:"existence"`
@@ -129,6 +126,7 @@ func newDirGroups() dirGroups {
 				Join          string                 `json:"join"`
 				Subscriptions []backend.Subscription `json:"subscriptions"`
 			}
+			data := make([]EnumerateGroup, len(groups))
 
 			for i, grp := range groups {
 				var enum EnumerateGroup
@@ -138,9 +136,9 @@ func newDirGroups() dirGroups {
 				enum.Post = backend.Post(grp.Post).String()
 				enum.Join = backend.Join(grp.Join).String()
 				enum.Subscriptions = grp.Subscriptions
-				generic[i] = enum
+				data[i] = enum
 			}
-			return rfc7231.StatusOK(heutil.NetList(generic))
+			return rfc7231.StatusOK(he.NetJSON{data})
 		},
 		"POST": func(req he.Request) he.Response {
 			db := req.Things["db"].(*gorm.DB)
@@ -158,7 +156,7 @@ func newDirGroups() dirGroups {
 			}
 
 			if entity.Groupname == "" {
-				return rfc7231.StatusUnsupportedMediaType(heutil.NetString("groupname can't be emtpy"))
+				return rfc7231.StatusUnsupportedMediaType(he.NetPrintf("groupname can't be emtpy"))
 			}
 
 			entity.Groupname = strings.ToLower(entity.Groupname)
@@ -181,7 +179,7 @@ func newDirGroups() dirGroups {
 				db.Create(&subscription)
 			}
 			if grp == nil {
-				return rfc7231.StatusConflict(heutil.NetString("a group with that name already exists"))
+				return rfc7231.StatusConflict(he.NetPrintf("a group with that name already exists"))
 			} else {
 				return rfc7231.StatusCreated(r, grp.ID, req)
 			}

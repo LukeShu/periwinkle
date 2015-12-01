@@ -4,14 +4,12 @@ package rfc7231
 
 import (
 	he "httpentity"
-	"httpentity/heutil"
-	"io"
 	"mime"
 	"net/url"
 	"strings"
 )
 
-func encoders2mimetypes(encoders map[string]func(out io.Writer) error) []string {
+func encoders2contenttypes(encoders map[string]he.Encoder) []string {
 	list := make([]string, len(encoders))
 	i := uint(0)
 	for mimetype := range encoders {
@@ -24,24 +22,12 @@ func encoders2mimetypes(encoders map[string]func(out io.Writer) error) []string 
 func mimetypes2net(u *url.URL, mimetypes []string) he.NetEntity {
 	u, _ = u.Parse("") // dup
 	u.Path = strings.TrimSuffix(u.Path, "/")
-	locations := make([]interface{}, len(mimetypes))
+	locations := make([]*url.URL, len(mimetypes))
 	for i, mimetype := range mimetypes {
-		u2, _ := u.Parse("")
+		u2, _ := u.Parse("") // dup
 		exts, _ := mime.ExtensionsByType(mimetype)
 		u2.Path += exts[0]
-		locations[i] = u2.String()
+		locations[i] = u2
 	}
-	return heutil.NetList(locations)
-}
-
-func extensions2net(u *url.URL, extensions []string) he.NetEntity {
-	u, _ = u.Parse("") // dup
-	u.Path = strings.TrimSuffix(u.Path, "/")
-	locations := make([]interface{}, len(extensions))
-	for i, extension := range extensions {
-		u2, _ := u.Parse("")
-		u2.Path += extension
-		locations[i] = u2.String()
-	}
-	return heutil.NetList(locations)
+	return he.NetLocations(locations)
 }

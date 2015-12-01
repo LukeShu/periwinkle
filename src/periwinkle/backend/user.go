@@ -37,7 +37,7 @@ type UserAddress struct {
 func (o UserAddress) dbSchema(db *gorm.DB) locale.Error {
 	return locale.UntranslatedError(db.CreateTable(&o).
 		AddUniqueIndex("address_idx", "medium", "address").
-		AddUniqueIndex("user_idx", "user_id", "sort_order").
+		//AddUniqueIndex("user_idx", "user_id", "sort_order").
 		Error)
 }
 
@@ -190,8 +190,38 @@ func NewUserAddress(db *gorm.DB, userID string, medium string, address string, c
 	return o
 }
 
-func (o *User) Save(db *gorm.DB) {
-	if err := db.Save(o).Error; err != nil {
-		dbError(err)
+func (usr *User) Save(db *gorm.DB) {
+	if usr.Addresses != nil {
+		var oldAddresses []UserAddress
+		db.Model(usr).Related(&oldAddresses)
+
+		deleteAddressIDs := []int64{}
+		for o := range oldAddresses {
+			oldAddr := &oldAddresses[o]
+			match := false
+			for n := range oldAddresses {
+				newAddr := &usr.Addresses[n]
+				if newAddr.Medium == oldAddr.Medium && newAddr.Address == oldAddr.Address {
+					newAddr.ID = oldAddr.ID
+					match = true
+				}
+			}
+			if !match {
+				deleteAddressIDs = append(deleteAddressIDs, oldAddr.ID)
+			}
+		}
+
+		if err := db.Save(usr).Error; err != nil {
+			dbError(err)
+		}
+		if len(deleteAddressIDs) > 0 {
+			if err := db.Where("id IN (?)", deleteAddressIDs).Delete(UserAddress{}).Error; err != nil {
+				dbError(err)
+			}
+		}
+	} else {
+		if err := db.Save(usr).Error; err != nil {
+			dbError(err)
+		}
 	}
 }

@@ -120,7 +120,7 @@ func Parse(in io.Reader) (cfgptr *periwinkle.Cfg, e locale.Error) {
 		if err != nil {
 			periwinkle.LogErr(locale.UntranslatedError(err))
 			periwinkle.Logf("Failed to connect to MySQL, trying SQLite3 file:periwinkle.sqlite")
-			db, err = openDB("sqlite3", "file:periwinkle.sqlite?cache=shared&mode=rwc")
+			db, err = openDB("sqlite3", "file:periwinkle.sqlite?mode=rwc&_txlock=exclusive")
 			if err != nil {
 				gotoError(locale.UntranslatedError(err))
 			}
@@ -155,6 +155,7 @@ func openDB(driver, source string) (*gorm.DB, locale.Error) {
 	db, err := gorm.Open(driver, source)
 	if err != nil && driver == "sqlite3" {
 		err = db.Exec("PRAGMA foreign_keys = ON").Error
+		db.DB().SetMaxOpenConns(1)
 	}
 	return &db, locale.UntranslatedError(err)
 }

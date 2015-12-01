@@ -15,7 +15,12 @@ import (
 var serverMessageLocale = gettext.GetLocale(gettext.Messages)
 
 func Logf(format string, a ...interface{}) {
-	fmt.Fprintln(os.Stderr, locale.Sprintf(format, a...).L10NString(serverMessageLocale))
+	str := locale.Sprintf(format, a...).L10NString(serverMessageLocale)
+	if strings.HasSuffix(format, "\n") {
+		fmt.Fprint(os.Stderr, str)
+	} else {
+		fmt.Fprintln(os.Stderr, str)
+	}
 }
 
 func LogErr(errs ...locale.Error) {

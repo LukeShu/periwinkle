@@ -20,6 +20,7 @@ package httpentity
 
 import (
 	"io"
+	"locale"
 	"net/http"
 	"net/url"
 )
@@ -36,7 +37,7 @@ type Logger interface {
 type Router struct {
 	Prefix      string
 	Root        RootEntity
-	Decoders    map[string]func(io.Reader, map[string]string) (interface{}, error)
+	Decoders    map[string]func(io.Reader, map[string]string) (interface{}, locale.Error)
 	Middlewares []Middleware
 
 	// Whether to include stacktraces in HTTP 500 responses
@@ -66,15 +67,14 @@ type Request struct {
 	cookies map[string]*http.Cookie // cached
 }
 
-// The Response to an HTTP request.  Create it using the appropriate
-// (*Request).StatusDESCRIPTION method.
-//
-// That is; StatusSomething helper methods exist off of the request
-// that you get passed.
+// The Response to an HTTP request.
 type Response struct {
-	Status  int16
-	Headers http.Header
-	Entity  NetEntity
+	Status                 int16
+	Headers                http.Header
+	Entity                 NetEntity
+	InhibitNotAcceptable   bool
+	InhibitMultipleChoices bool
+	encoder                Encoder
 }
 
 // An Entity is some resource that is accessible over HTTP.
@@ -83,12 +83,6 @@ type Entity interface {
 	// that handle requests for this Entity.
 	Methods() map[string]func(Request) Response
 }
-
-// 404 Not Found
-// 405 Method Not Allowed
-// 406 Not Acceptable
-// 400 Bad Request
-// 500 Internal Server Error
 
 // An EntityGroup is an Entity that also has child entities (i.e., a
 // directory or folder).
@@ -128,12 +122,18 @@ type RootEntity interface {
 
 ////////////////////////////////////////////////////////////////////////////////
 
+type Encoder interface {
+	Locales() []locale.Spec
+	Write(io.Writer, locale.Spec) locale.Error
+	IsText() bool
+}
+
 // A NetEntity is just something that is capable of being transmitted
 // over the network (in a variety of formats).
 type NetEntity interface {
 	// Encoders() returns a map of MIME-types to encoders that
 	// serialize the NetEntity to that type.
-	Encoders() map[string]func(io.Writer) error
+	Encoders() map[string]Encoder
 }
 
 ////////////////////////////////////////////////////////////////////////////////

@@ -8,6 +8,7 @@ import (
 	he "httpentity"
 	"httpentity/rfc7231"
 	"io"
+	"locale"
 	"periwinkle/backend"
 
 	"github.com/jinzhu/gorm"
@@ -49,14 +50,30 @@ func (o *captcha) Methods() map[string]func(he.Request) he.Response {
 
 // View //////////////////////////////////////////////////////////////
 
-func (o *captcha) Encoders() map[string]func(io.Writer) error {
-	return map[string]func(io.Writer) error{
-		"image/png": func(w io.Writer) error {
-			return o.backend().MarshalPNG(w)
-		},
-		"audio/vnd.wave": func(w io.Writer) error {
-			return o.backend().MarshalWAV(w)
-		},
+func (o *captcha) IsText() bool {
+	return false
+}
+
+func (o *captcha) Locales() []locale.Spec {
+	return []locale.Spec{}
+}
+
+type captchaPNG struct { *captcha }
+
+func (o captchaPNG) Write(w io.Writer, l locale.Spec) locale.Error {
+	return o.backend().MarshalPNG(w)
+}
+
+type captchaWAV struct { *captcha }
+
+func (o captchaWAV) Write(w io.Writer, l locale.Spec) locale.Error {
+	return o.backend().MarshalWAV(w)
+}
+
+func (o *captcha) Encoders() map[string]he.Encoder {
+	return map[string]he.Encoder{
+		"image/png": captchaPNG{o},
+		"audio/vnd.wave": captchaWAV{o},
 	}
 }
 

@@ -5,7 +5,7 @@ package httpapi
 import (
 	"encoding/json"
 	he "httpentity"
-	"httpentity/heutil"
+	"locale"
 	"httpentity/rfc7231"
 	"strings"
 )
@@ -23,7 +23,7 @@ var MiddlewarePostHack = he.Middleware{
 		var entity interface{}
 		err := decoder.Decode(&entity)
 		if err != nil {
-			return rfc7231.StatusUnsupportedMediaType(heutil.NetPrintf("Couldn't parse: %v", err))
+			return rfc7231.StatusUnsupportedMediaType(he.ErrorToNetEntity(415, locale.Errorf("Couldn't parse: %v", err)))
 		}
 
 		hash, ok := entity.(map[string]interface{})

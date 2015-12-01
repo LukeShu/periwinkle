@@ -53,3 +53,9 @@ func (s l10nStringer) L10NString(locale Spec) string {
 	}
 	return fmt.Sprintf(s.catalog.Translate(locale, s.format), args...)
 }
+
+func (s l10nStringer) Locales() []Spec {
+	// TODO: this needs to take the intersection of it and
+	// localizable arguments
+	return s.catalog.Locales()
+}

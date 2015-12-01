@@ -9,41 +9,42 @@ import (
 	"jsonpatch"
 	"mime/multipart"
 	"net/http"
+	"locale"
 	"net/url"
 	"strings"
 )
 
-func fuckitJSON(entity interface{}) (interface{}, error) {
-	str, err := json.Marshal(entity)
-	if err != nil {
-		return nil, err
+func fuckitJSON(entity interface{}) (interface{}, locale.Error) {
+	str, uerr := json.Marshal(entity)
+	if uerr != nil {
+		return nil, locale.UntranslatedError(uerr)
 	}
 	return json.NewDecoder(strings.NewReader(string(str))), nil
 }
 
 // DecoderFormURLEncoded maps application/x-www-form-urlencoded => json.Decoder # because fuckit
-func DecoderFormURLEncoded(r io.Reader, params map[string]string) (interface{}, error) {
-	bytes, err := ioutil.ReadAll(r)
-	if err != nil {
-		return nil, err
+func DecoderFormURLEncoded(r io.Reader, params map[string]string) (interface{}, locale.Error) {
+	bytes, uerr := ioutil.ReadAll(r)
+	if uerr != nil {
+		return nil, locale.UntranslatedError(uerr)
 	}
-	entity, err := url.ParseQuery(string(bytes))
-	if err != nil {
-		return nil, err
+	entity, uerr := url.ParseQuery(string(bytes))
+	if uerr != nil {
+		return nil, locale.UntranslatedError(uerr)
 	}
 	return fuckitJSON(entity)
 }
 
 // DecoderFormData maps multipart/form-data => json.Decoder # because fuckit
-func DecoderFormData(r io.Reader, params map[string]string) (interface{}, error) {
+func DecoderFormData(r io.Reader, params map[string]string) (interface{}, locale.Error) {
 	boundary, ok := params["boundary"]
 	if !ok {
-		return nil, http.ErrMissingBoundary
+		return nil, locale.UntranslatedError(http.ErrMissingBoundary)
 	}
 	reader := multipart.NewReader(r, boundary)
-	form, err := reader.ReadForm(0)
-	if err != nil {
-		return nil, err
+	form, uerr := reader.ReadForm(0)
+	if uerr != nil {
+		return nil, locale.UntranslatedError(uerr)
 	}
 	entity := make(map[string]interface{}, len(form.Value)+len(form.File))
 	for k, v := range form.Value {
@@ -71,39 +72,39 @@ func DecoderFormData(r io.Reader, params map[string]string) (interface{}, error)
 }
 
 // DecoderJSON maps application/json => json.Decoder
-func DecoderJSON(r io.Reader, params map[string]string) (interface{}, error) {
+func DecoderJSON(r io.Reader, params map[string]string) (interface{}, locale.Error) {
 	return json.NewDecoder(r), nil
 }
 
 // DecoderJSONPatch maps application/json-patch+json => jsonpatch.Patch
-func DecoderJSONPatch(r io.Reader, params map[string]string) (interface{}, error) {
-	bytes, err := ioutil.ReadAll(r)
-	if err != nil {
-		return nil, err
+func DecoderJSONPatch(r io.Reader, params map[string]string) (interface{}, locale.Error) {
+	bytes, uerr := ioutil.ReadAll(r)
+	if uerr != nil {
+		return nil, locale.UntranslatedError(uerr)
 	}
 	var patch jsonpatch.JSONPatch
-	err = json.Unmarshal(bytes, &patch)
-	if err != nil {
-		return nil, err
+	uerr = json.Unmarshal(bytes, &patch)
+	if uerr != nil {
+		return nil, locale.UntranslatedError(uerr)
 	}
-	return jsonpatch.Patch(patch), err
+	return jsonpatch.Patch(patch), nil
 }
 
 // DecoderJSONMergePatch maps application/merge-patch+json => jsonpatch.Patch
-func DecoderJSONMergePatch(r io.Reader, params map[string]string) (interface{}, error) {
-	bytes, err := ioutil.ReadAll(r)
-	if err != nil {
-		return nil, err
+func DecoderJSONMergePatch(r io.Reader, params map[string]string) (interface{}, locale.Error) {
+	bytes, uerr := ioutil.ReadAll(r)
+	if uerr != nil {
+		return nil, locale.UntranslatedError(uerr)
 	}
 	var patch jsonpatch.JSONMergePatch
-	err = json.Unmarshal(bytes, &patch)
-	if err != nil {
-		return nil, err
+	uerr = json.Unmarshal(bytes, &patch)
+	if uerr != nil {
+		return nil, locale.UntranslatedError(uerr)
 	}
-	return jsonpatch.Patch(patch), err
+	return jsonpatch.Patch(patch), nil
 }
 
 // DecoderOctetStream maps application/octet-stream => io.Reader
-func DecoderOctetStream(r io.Reader, params map[string]string) (interface{}, error) {
+func DecoderOctetStream(r io.Reader, params map[string]string) (interface{}, locale.Error) {
 	return r, nil
 }

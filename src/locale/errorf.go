@@ -12,6 +12,10 @@ func Errorf(format string, args ...interface{}) Error {
 	}
 }
 
+func (s l10nError) Locales() []Spec {
+	return l10nStringer(s).Locales()
+}
+
 func (s l10nError) L10NString(locale Spec) string {
 	return l10nStringer(s).L10NString(locale)
 }

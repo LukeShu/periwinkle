@@ -5,9 +5,7 @@ package httpapi
 
 import (
 	he "httpentity"
-	"httpentity/heutil"
 	"httpentity/rfc7231"
-	"io"
 	"net/http"
 	"periwinkle/backend"
 	"strings"
@@ -24,7 +22,7 @@ func (o *session) backend() *backend.Session { return (*backend.Session)(o) }
 
 // View //////////////////////////////////////////////////////////////
 
-func (sess *session) Encoders() map[string]func(io.Writer) error {
+func (sess *session) Encoders() map[string]he.Encoder {
 	return defaultEncoders(sess)
 }
 
@@ -62,7 +60,7 @@ func newFileSession() fileSession {
 
 			sess := (*session)(backend.NewSession(db, user, entity.Password))
 			if sess == nil {
-				return rfc7231.StatusForbidden(heutil.NetString("Incorrect username/password"))
+				return rfc7231.StatusForbidden(he.NetPrintf("Incorrect username/password"))
 			} else {
 				ret := rfc7231.StatusOK(sess)
 				cookie := &http.Cookie{

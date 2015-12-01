@@ -42,54 +42,79 @@ func (r Router) Init() *Router {
 	return &r
 }
 
-// assumes that the url has already been passed to normalizeURL()
-func (r *Router) finish(req Request, res *Response) {
+func (router *Router) finish(req Request, res *Response) {
 	// generate a 500 error if we paniced
 	if err := recover(); err != nil {
-		*res = r.responseServerError(err)
+		*res = router.responseServerError(err)
 	}
-	// figure out the content type of the response
-	if res.Entity != nil && res.Headers.Get("Content-Type") == "" {
+	// negotiate all the things
+	router.negotiate(req, res)
+}
+
+
+func (router *Router) negotiate(req Request, res *Response) {
+	if res.Entity == nil {
+		return
+	}
+	// Negotiate the content type
+	{	
 		encoders := res.Entity.Encoders()
-		mimetypes := encoders2mimetypes(encoders)
-		acceptStrs, haveAccept := req.Headers[http.CanonicalHeaderKey("Accept")]
+		contenttypes := encoders2contenttypes(encoders)
+
 		var accept *string
-		if haveAccept && len(acceptStrs) > 0 {
-			accept = &acceptStrs[0]
-		}
-		options, err := negotiate.NegotiateContentType(accept, mimetypes)
-		if err != nil {
-			*res = r.responseBadRequest(err)
-		} else {
-			switch len(options) {
-			case 0:
-				*res = r.responseNotAcceptable(req.URL, mimetypes)
-			case 1:
-				//res.Headers.Set("Content-Type", options[0]+"; charset=utf-8")
-				res.Headers.Set("Content-Type", options[0])
-				return
-			default:
-				*res = r.responseMultipleChoices(req.URL, mimetypes)
+		{
+			acceptStrs, haveAccept := req.Headers[http.CanonicalHeaderKey("Accept")]
+			if haveAccept && len(acceptStrs) > 0 {
+				accept = &acceptStrs[0]
 			}
 		}
-		// If we make it here, we're either serving a
-		// BadRequest (because parsing Accept failed),
-		// NotAcceptable, or MultipleChoices, but don't know
-		// what content type to send the message as!  We can't
-		// just recurse because we don't want the status code
-		// to change.
-		encoders = res.Entity.Encoders()
-		mimetypes = encoders2mimetypes(encoders)
-		options, err = negotiate.NegotiateContentType(accept, mimetypes)
+
+		options, err := negotiate.NegotiateContentType(accept, contenttypes)
+		if err != nil {
+			old := res.Status
+			*res = router.responseBadRequest(err)
+			router.Log.Printf("Could not parse Accept header; rewriting response code from %d to %d", old, res.Status)
+			router.negotiate(req, res)
+			return
+		}
 		switch len(options) {
 		case 0:
+			if !res.InhibitNotAcceptable {
+				old := res.Status
+				*res = router.responseNotAcceptable(req.URL, contenttypes)
+				router.Log.Printf("No acceptable content type; rewriting response code from %d to %d", old, res.Status)
+				router.negotiate(req, res)
+				return
+			}
 			// Just pick one
-			res.Headers.Set("Content-Type", mimetypes[0])
+			res.Headers.Set("Content-Type", contenttypes[0])
 		case 1:
 			res.Headers.Set("Content-Type", options[0])
 		default:
+			if !res.InhibitMultipleChoices {
+				old := res.Status
+				*res = router.responseMultipleChoices(req.URL, contenttypes)
+				router.Log.Printf("Multiple choices; rewriting response code from %d to %d", old, res.Status)
+				router.negotiate(req, res)
+				return
+			}
 			// Just pick one
 			res.Headers.Set("Content-Type", options[0])
 		}
+		res.encoder = encoders[res.Headers.Get("Content-Type")]
+	}
+	// Negotiate the charset (if applicable)
+	if res.encoder.IsText() {
+		// TODO
+		res.Headers.Set("Content-Type", res.Headers.Get("Content-Type") + "; charset=utf-8")
+	}
+	// Negotiate the language
+	{
+		// TODO
+		res.Headers.Set("Content-Language", "en-US")
+	}
+	// Negotiate the encoding
+	{
+		// TODO
 	}
 }

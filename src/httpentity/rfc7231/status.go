@@ -4,7 +4,6 @@ package rfc7231
 
 import (
 	he "httpentity"
-	"httpentity/heutil"
 	"net/http"
 	"net/url"
 )
@@ -36,14 +35,13 @@ func StatusCreated(parent he.EntityGroup, childName string, req he.Request) he.R
 	if response.Entity == nil {
 		panic("called StatusCreated, but GET on subentity doesn't return an entity")
 	}
-	mimetypes := encoders2mimetypes(response.Entity.Encoders())
-	u, _ := url.Parse("") // create a blank dummy url.URL
+	mimetypes := encoders2contenttypes(response.Entity.Encoders())
 	return he.Response{
 		Status:  201,
 		Headers: response.Headers,
 		// XXX: .Entity gets modified by (*Router).route()
 		// filled in the rest of the way by Route()
-		Entity: mimetypes2net(u, mimetypes),
+		Entity: mimetypes2net(req.URL, mimetypes),
 	}
 }
 
@@ -94,7 +92,7 @@ func StatusMovedPermanently(u *url.URL) he.Response {
 		Headers: http.Header{
 			"Location": {u.String()},
 		},
-		Entity: heutil.NetString("301 Moved"),
+		Entity: he.NetPrintf("301 Moved"),
 	}
 }
 
@@ -109,7 +107,7 @@ func StatusFound(u *url.URL) he.Response {
 		Headers: http.Header{
 			"Location": {u.String()},
 		},
-		Entity: heutil.NetString("302 Found: " + u.String()),
+		Entity: he.NetPrintf("302 Found: %v", u),
 	}
 }
 
@@ -119,7 +117,7 @@ func StatusSeeOther(u *url.URL) he.Response {
 		Headers: http.Header{
 			"Location": {u.String()},
 		},
-		Entity: heutil.NetString("303 See Other: " + u.String()),
+		Entity: he.NetPrintf("303 See Other: %v", u),
 	}
 }
 
@@ -133,14 +131,14 @@ func StatusTemporaryRedirect(u *url.URL) he.Response {
 		Headers: http.Header{
 			"Location": {u.String()},
 		},
-		Entity: heutil.NetString("307 Temporary Redirect: " + u.String()),
+		Entity: he.NetPrintf("307 Temporary Redirect: %v", u),
 	}
 }
 
 // For when the *user* has screwed up a request.
 func StatusBadRequest(e he.NetEntity) he.Response {
 	if e == nil {
-		e = heutil.NetString("400 Bad Request")
+		e = he.NetPrintf("400 Bad Request")
 	}
 	return he.Response{
 		Status:  400,
@@ -151,7 +149,7 @@ func StatusBadRequest(e he.NetEntity) he.Response {
 
 func StatusForbidden(e he.NetEntity) he.Response {
 	if e == nil {
-		e = heutil.NetString("403 Forbidden")
+		e = he.NetPrintf("403 Forbidden")
 	}
 	return he.Response{
 		Status:  403,
@@ -162,7 +160,7 @@ func StatusForbidden(e he.NetEntity) he.Response {
 
 func StatusNotFound(e he.NetEntity) he.Response {
 	if e == nil {
-		e = heutil.NetString("404 Not Found")
+		e = he.NetPrintf("404 Not Found")
 	}
 	return he.Response{
 		Status:  404,
@@ -177,7 +175,7 @@ func StatusMethodNotAllowed(methods string) he.Response {
 		Headers: http.Header{
 			"Allow": {methods},
 		},
-		Entity: heutil.NetString("405 Method Not Allowed"),
+		Entity: he.NetPrintf("405 Method Not Allowed"),
 	}
 }
 
@@ -210,7 +208,7 @@ func StatusGone(entity he.NetEntity) he.Response {
 
 func StatusUnsupportedMediaType(e he.NetEntity) he.Response {
 	if e == nil {
-		e = heutil.NetString("415 Unsupported Media Type")
+		e = he.NetPrintf("415 Unsupported Media Type")
 	}
 	return he.Response{
 		Status:  415,
@@ -228,7 +226,7 @@ func StatusInternalServerError(err interface{}) he.Response {
 		Headers: http.Header{
 			"Content-Type": {"text/plain; charset=utf-8"},
 		},
-		Entity: heutil.NetPrintf("500 Internal Server Error: %v", err),
+		Entity: he.NetPrintf("500 Internal Server Error: %v", err),
 	}
 }
 

@@ -13,6 +13,10 @@ type ParseError struct {
 	Message locale.Error
 }
 
+func (e ParseError) Locales() []locale.Spec {
+	return locale.DefaultCatalog.Locales()
+}
+
 func (e ParseError) L10NString(l locale.Spec) string {
 	return locale.Sprintf("Parse Error: %s: %s", e.Header, e.Message).L10NString(l)
 }

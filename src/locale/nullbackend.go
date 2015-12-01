@@ -7,6 +7,10 @@ var _ MessageCatalog = NullMessageCatalog{}
 
 type NullMessageCatalog struct{}
 
+func (NullMessageCatalog) Locales() []Spec {
+	return []Spec{"C", "en_US"}
+}
+
 func (NullMessageCatalog) Translate(locale Spec, str string) string {
 	return str
 }

@@ -4,7 +4,6 @@ package rfc7231
 
 import (
 	he "httpentity"
-	"httpentity/heutil"
 	"strings"
 )
 
@@ -61,18 +60,6 @@ var Middleware = he.Middleware{
 		if l := response.Headers.Get("Location"); l != "" {
 			u2, _ := request.URL.Parse(l)
 			response.Headers.Set("Location", u2.String())
-
-			// XXX: this is pretty hacky, because it is tightly
-			// integrated with the entity format used by
-			// StatusCreated()
-			if response.Status == 201 {
-				ilist := []interface{}(response.Entity.(heutil.NetList))
-				slist := make([]string, len(ilist))
-				for i, iface := range ilist {
-					slist[i] = iface.(string)
-				}
-				response.Entity = extensions2net(u2, slist)
-			}
 		}
 
 		return

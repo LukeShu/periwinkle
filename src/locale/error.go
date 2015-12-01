@@ -24,6 +24,10 @@ func UntranslatedError(in error) Error {
 	return untranslatedError{in}
 }
 
+func (ue untranslatedError) Locales() []Spec {
+	return internalCatalog.Locales()
+}
+
 func (ue untranslatedError) L10NString(spec Spec) string {
 	// TODO: in the future, this should try to recognize errors
 	// from the Go standard library

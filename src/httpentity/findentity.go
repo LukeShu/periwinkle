@@ -35,5 +35,6 @@ func (router *Router) findEntity(upath string, request Request) (Entity, Respons
 				return nil, group.SubentityNotFound(nameChild+"/"+nameGrandchild, request)
 			}
 		}
+		upath = nameGrandchildren
 	}
 }

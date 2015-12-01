@@ -5,8 +5,6 @@ package putil
 import (
 	"fmt"
 	"httpentity"
-	"httpentity/heutil"
-	"io"
 	"net/http"
 	"postfixpipe"
 
@@ -24,7 +22,7 @@ type Error interface {
 type simpleError struct {
 	httpCode    int16
 	postfixCode postfixpipe.ExitStatus
-	httpStr     heutil.NetString
+	httpStr     httpentity.NetStringer
 	plainStr    string
 }
 
@@ -36,7 +34,7 @@ func (e simpleError) PostfixCode() postfixpipe.ExitStatus {
 	return e.postfixCode
 }
 
-func (e simpleError) Encoders() map[string]func(io.Writer) error {
+func (e simpleError) Encoders() map[string]httpentity.Encoder {
 	return e.httpStr.Encoders()
 }
 
@@ -49,7 +47,7 @@ func PErrorf(http int16, postfix postfixpipe.ExitStatus, format string, a ...int
 	return simpleError{
 		httpCode:    http,
 		postfixCode: postfix,
-		httpStr:     heutil.NetPrintf("%d: %s", http, str),
+		httpStr:     httpentity.NetPrintf("%d: %s", http, str),
 		plainStr:    str,
 	}
 }

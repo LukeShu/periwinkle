@@ -13,10 +13,11 @@ import (
 	"periwinkle"
 	"periwinkle/domain_handlers"
 	"stoppable"
+	"locale"
 )
 
 func MakeServer(socket net.Listener, cfg *periwinkle.Cfg) *stoppable.HTTPServer {
-	stdDecoders := map[string]func(io.Reader, map[string]string) (interface{}, error){
+	stdDecoders := map[string]func(io.Reader, map[string]string) (interface{}, locale.Error){
 		"application/x-www-form-urlencoded": heutil.DecoderFormURLEncoded,
 		"multipart/form-data":               heutil.DecoderFormData,
 		"application/json":                  heutil.DecoderJSON,

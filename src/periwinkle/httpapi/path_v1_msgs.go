@@ -6,7 +6,6 @@ package httpapi
 import (
 	he "httpentity"
 	"httpentity/rfc7231"
-	"io"
 	"periwinkle/backend"
 
 	"github.com/jinzhu/gorm"
@@ -37,7 +36,7 @@ func (o *message) Methods() map[string]func(he.Request) he.Response {
 
 // View //////////////////////////////////////////////////////////////
 
-func (o *message) Encoders() map[string]func(io.Writer) error {
+func (o *message) Encoders() map[string]he.Encoder {
 	panic("TODO: API: (*message).Encoders()")
 }
 

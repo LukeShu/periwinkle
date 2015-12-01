@@ -31,6 +31,10 @@ type TextDomain struct {
 	ContextSep string
 }
 
+func (d TextDomain) Locales() []locale.Spec {
+	panic("TODO")
+}
+
 func (d TextDomain) Translate(locale locale.Spec, str string) string {
 	panic("TODO")
 }

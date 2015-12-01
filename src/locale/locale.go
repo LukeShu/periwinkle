@@ -9,6 +9,7 @@ package locale
 type Spec string
 
 type MessageCatalog interface {
+	Locales() []Spec
 	Translate(locale Spec, str string) string
 	TranslateN(locale Spec, singular, plural string, n int) string
 	TranslateP(locale Spec, ctxt, str string) string
@@ -17,6 +18,7 @@ type MessageCatalog interface {
 
 // Stringer is a localizable fmt.Stringer.
 type Stringer interface {
+	Locales() []Spec
 	L10NString(Spec) string
 }
 
