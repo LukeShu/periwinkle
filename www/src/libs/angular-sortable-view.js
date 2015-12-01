@@ -237,48 +237,52 @@
 						afterRevert();
 
 					function afterRevert(){
-						sortingInProgress = false;
-						$placeholder.remove();
-						$helper.remove();
-						$original.removeClass('ng-hide');
+						try{
+							sortingInProgress = false;
+							$placeholder.remove();
+							$helper.remove();
+							$original.removeClass('ng-hide');
 
-						candidates = void 0;
-						$placeholder = void 0;
-						options = void 0;
-						$helper = void 0;
-						$original = void 0;
+							candidates = void 0;
+							$placeholder = void 0;
+							options = void 0;
+							$helper = void 0;
+							$original = void 0;
 
-						// sv-on-stop callback
-						onStop($scope, {
-							$part: originatingPart.model(originatingPart.scope),
-							$index: index,
-							$item: originatingPart.model(originatingPart.scope)[index]
-						});
+							// sv-on-stop callback
+							onStop($scope, {
+								$part: originatingPart.model(originatingPart.scope),
+								$index: index,
+								$item: originatingPart.model(originatingPart.scope)[index]
+							});
 
-						if($target){
-							$target.element.removeClass('sv-candidate');
-							var spliced = originatingPart.model(originatingPart.scope).splice(index, 1);
-							var targetIndex = $target.targetIndex;
-							if($target.view === originatingPart && $target.targetIndex > index)
-								targetIndex--;
-							if($target.after)
-								targetIndex++;
-							$target.view.model($target.view.scope).splice(targetIndex, 0, spliced[0]);
+							if($target){
+								$target.element.removeClass('sv-candidate');
+								var spliced = originatingPart.model(originatingPart.scope).splice(index, 1);
+								var targetIndex = $target.targetIndex;
+								if($target.view === originatingPart && $target.targetIndex > index)
+									targetIndex--;
+								if($target.after)
+									targetIndex++;
+								$target.view.model($target.view.scope).splice(targetIndex, 0, spliced[0]);
 
-							// sv-on-sort callback
-							if($target.view !== originatingPart || index !== targetIndex)
-								onSort($scope, {
-									$partTo: $target.view.model($target.view.scope),
-									$partFrom: originatingPart.model(originatingPart.scope),
-									$item: spliced[0],
-									$indexTo: targetIndex,
-									$indexFrom: index
-								});
+								// sv-on-sort callback
+								if($target.view !== originatingPart || index !== targetIndex)
+									onSort($scope, {
+										$partTo: $target.view.model($target.view.scope),
+										$partFrom: originatingPart.model(originatingPart.scope),
+										$item: spliced[0],
+										$indexTo: targetIndex,
+										$indexFrom: index
+									});
 
+							}
+							$target = void 0;
+
+							$scope.$root && $scope.$root.$$phase || $scope.$apply();
+						} catch (e) {
+							//console.log(e);
 						}
-						$target = void 0;
-
-						$scope.$root && $scope.$root.$$phase || $scope.$apply();
 					}
 				};
 

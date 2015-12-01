@@ -1,6 +1,6 @@
 <!-- // Copyright 2015 Richard Wisniewski -->
 <md-dialog aria-label="New Address"  ng-cloak style="position: relative;">
-	<form name="newAddressForm" ng-submit="address.create()">
+	<form name="newAddressForm" ng-submit="newAddressForm.$valid && address.create()">
 		<md-toolbar>
 			<div class="md-toolbar-tools">
 				<h1>{{ title | translate }}</h1>

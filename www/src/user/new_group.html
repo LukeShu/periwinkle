@@ -1,6 +1,6 @@
 <!-- // Copyright 2015 Richard Wisniewski -->
 <md-dialog aria-label="New Group"  ng-cloak>
-	<form name="newGroupForm" ng-submit="group.create()" layout="column">
+	<form name="newGroupForm" ng-submit="newGroupForm.$valid && group.create()" layout="column">
 		<md-toolbar>
 			<div class="md-toolbar-tools">
 				<h2>{{ title | translate }}</h2>

@@ -29,7 +29,7 @@
 
 		<div ng-if="!login.isSignup">
 			<md-card id="login">
-				<form name="loginForm" ng-submit="login.login()">
+				<form name="loginForm" ng-submit="loginForm.$valid && login.login()">
 					<md-card-content layout="column">
 						<md-input-container>
 							<label>{{ "GENERAL.USERNAME_EMAIL" | translate }}</label>
@@ -67,7 +67,7 @@
 
 		<div ng-if="login.isSignup">
 			<md-card id="signup">
-				<form name="signupForm" ng-submit="login.signup($event)">
+				<form name="signupForm" ng-submit="signupForm.$valid && login.signup($event)">
 					<md-card-content layout="column">
 						<md-input-container>
 							<label>{{ "GENERAL.USERNAME" | translate }}</label>
@@ -87,7 +87,7 @@
 						</md-input-container>
 						<md-input-container>
 							<label>{{ "LOGIN.SIGNUP.CONFIRM_EMAIL" | translate }}</label>
-							<input ng-model="login.confirmEmail" name="confirm_email" type="email" data-match="signupForm.email" ng-disabled="loading.is" xreg-pattern="^.+@.+\..+$" required></input>
+							<input ng-model="login.confirmEmail" name="confirm_email" type="email" data-match="signupForm.email" ng-disabled="loading.is" xreg-pattern="^.+@.+\..+$" required autocomplete="off"></input>
 							<div ng-messages="signupForm.confirm_email.$error" role="alert" ng-if="!signupForm.confirm_email.$untouched">
 								<div ng-message="required">{{ "GENERAL.FORM.ERROR.REQUIRED_FIELD" | translate }}</div>
 								<div ng-message="xregPattern">That is not a valid email address.</div>
