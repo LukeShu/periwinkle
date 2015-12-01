@@ -60,7 +60,7 @@
 							debugger;
 							var status_code = response.status;
 							var reason = response.data;
-							$scope.loading = false;
+							self.info.fullName.loading = false;
 							switch(status_code){
 								case 403:
 									$scope.showError('LOGIN.LOGIN.ERRORS.403.TITLE', 'LOGIN.LOGIN.ERRORS.403.CONTENT', '', '#login-button', '#login-button');
