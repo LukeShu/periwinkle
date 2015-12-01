@@ -47,6 +47,7 @@
 		$httpProvider.defaults.headers.patch = {
 		    'Content-Type': 'application/json;charset=utf-8'
 		};
+		$httpProvider.defaults.headers.common['Accept'] = "application/json, text/plain;q=0.9, */*;q=0.8";
 	}])
 
 	.config(['$translateProvider', 'i18n_en', 'i18n_it', 'lang', function($translateProvider, i18n_en, i18n_it, lang) {
