@@ -11,53 +11,60 @@ package jsondiff
 import (
 	"encoding/json"
 	"jsonpatch"
+	"locale"
 
 	evan "github.com/evanphx/json-patch"
 	matt "github.com/mattbaird/jsonpatch"
 )
 
 // Diff two objects, and produce an RFC 7386 JSON Merge Patch.
-func NewJSONMergePatch(a interface{}, b interface{}) (jsonpatch.JSONMergePatch, error) {
+func NewJSONMergePatch(a interface{}, b interface{}) (jsonpatch.JSONMergePatch, locale.Error) {
 	// convert a to json
-	aBytes, err := json.Marshal(a)
-	if err != nil {
-		return nil, err
+	aBytes, uerr := json.Marshal(a)
+	if uerr != nil {
+		return nil, locale.UntranslatedError(uerr)
 	}
 	// convert b to json
-	bBytes, err := json.Marshal(b)
-	if err != nil {
-		return nil, err
+	bBytes, uerr := json.Marshal(b)
+	if uerr != nil {
+		return nil, locale.UntranslatedError(uerr)
 	}
 	// diff them
-	pBytes, err := evan.CreateMergePatch(aBytes, bBytes)
-	if err != nil {
-		return nil, err
+	pBytes, uerr := evan.CreateMergePatch(aBytes, bBytes)
+	if uerr != nil {
+		return nil, locale.UntranslatedError(uerr)
 	}
 	// return
 	var ret jsonpatch.JSONMergePatch
-	err = json.Unmarshal(pBytes, &ret)
-	return ret, err
+	uerr = json.Unmarshal(pBytes, &ret)
+	return ret, locale.UntranslatedError(uerr)
 }
 
 // Diff two objects, and produce an RFC 6902 JSON Patch.
-func NewJSONPatch(a interface{}, b interface{}) (jsonpatch.JSONPatch, error) {
+func NewJSONPatch(a interface{}, b interface{}) (jsonpatch.JSONPatch, locale.Error) {
 	// convert a to json
-	aBytes, err := json.Marshal(a)
-	if err != nil {
-		return nil, err
+	aBytes, uerr := json.Marshal(a)
+	if uerr != nil {
+		return nil, locale.UntranslatedError(uerr)
 	}
 	// convert b to json
-	bBytes, err := json.Marshal(b)
-	if err != nil {
-		return nil, err
+	bBytes, uerr := json.Marshal(b)
+	if uerr != nil {
+		return nil, locale.UntranslatedError(uerr)
 	}
 	// diff them
-	p, err := matt.CreatePatch(aBytes, bBytes)
-	pBytes, err := json.Marshal(p)
+	p, uerr := matt.CreatePatch(aBytes, bBytes)
+	if uerr != nil {
+		return nil, locale.UntranslatedError(uerr)
+	}
+	pBytes, uerr := json.Marshal(p)
+	if uerr != nil {
+		return nil, locale.UntranslatedError(uerr)
+	}
 	// return
 	var ret jsonpatch.JSONPatch
-	err = json.Unmarshal(pBytes, &ret)
-	return ret, err
+	uerr = json.Unmarshal(pBytes, &ret)
+	return ret, locale.UntranslatedError(uerr)
 }
 
 // Test whether two objects have equivalent JSON structures.

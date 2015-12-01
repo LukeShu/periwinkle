@@ -24,6 +24,7 @@
 package jsonpatch
 
 import (
+	"locale"
 	"encoding/json"
 
 	evan "github.com/evanphx/json-patch"
@@ -40,33 +41,33 @@ type JSONMergePatch json.RawMessage
 
 // A Patch document.
 type Patch interface {
-	Apply(in interface{}, out interface{}) error
+	Apply(in interface{}, out interface{}) locale.Error
 }
 
 // Apply the patch to an object; as if the object were
 // marshalled/unmarshalled JSON.
-func (patch JSONPatch) Apply(in interface{}, out interface{}) error {
-	inBytes, err := json.Marshal(in)
-	if err != nil {
-		return err
+func (patch JSONPatch) Apply(in interface{}, out interface{}) locale.Error {
+	inBytes, uerr := json.Marshal(in)
+	if uerr != nil {
+		return locale.UntranslatedError(uerr)
 	}
-	outBytes, err := (evan.Patch(patch)).Apply(inBytes)
-	if err != nil {
-		return err
+	outBytes, uerr := (evan.Patch(patch)).Apply(inBytes)
+	if uerr != nil {
+		return locale.UntranslatedError(uerr)
 	}
-	return json.Unmarshal(outBytes, out)
+	return locale.UntranslatedError(json.Unmarshal(outBytes, out))
 }
 
 // Apply the patch to an object; as if the object were
 // marshalled/unmarshalled JSON.
-func (patch JSONMergePatch) Apply(in interface{}, out interface{}) error {
-	inBytes, err := json.Marshal(in)
-	if err != nil {
-		return err
+func (patch JSONMergePatch) Apply(in interface{}, out interface{}) locale.Error {
+	inBytes, uerr := json.Marshal(in)
+	if uerr != nil {
+		return locale.UntranslatedError(uerr)
 	}
-	outBytes, err := evan.MergePatch(inBytes, patch)
-	if err != nil {
-		return err
+	outBytes, uerr := evan.MergePatch(inBytes, patch)
+	if uerr != nil {
+		return locale.UntranslatedError(uerr)
 	}
-	return json.Unmarshal(outBytes, out)
+	return locale.UntranslatedError(json.Unmarshal(outBytes, out))
 }
