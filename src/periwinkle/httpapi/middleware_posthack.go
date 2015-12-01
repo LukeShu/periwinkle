@@ -5,8 +5,8 @@ package httpapi
 import (
 	"encoding/json"
 	he "httpentity"
-	"locale"
 	"httpentity/rfc7231"
+	"locale"
 	"strings"
 )
 

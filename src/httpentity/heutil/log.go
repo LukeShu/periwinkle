@@ -3,9 +3,9 @@
 package heutil
 
 import (
-	"os"
-	"io"
 	"fmt"
+	"io"
+	"os"
 	"strings"
 )
 

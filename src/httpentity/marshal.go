@@ -4,8 +4,8 @@ package httpentity
 
 import (
 	"io"
-	"mime"
 	"locale"
+	"mime"
 )
 
 // If the Response has an entity, write it to the given output stream.

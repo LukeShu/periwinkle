@@ -5,8 +5,8 @@ package httpentity
 
 import (
 	"encoding/json"
-	"locale"
 	"io"
+	"locale"
 )
 
 //////////////////////////////////////////////////////////////////////
@@ -64,7 +64,7 @@ type EncoderTXT struct {
 func (e EncoderTXT) Locales() []locale.Spec {
 	return e.Data.Locales()
 }
-	
+
 func (e EncoderTXT) Write(w io.Writer, l locale.Spec) locale.Error {
 	_, err := w.Write([]byte(e.Data.L10NString(l)))
 	return locale.UntranslatedError(err)

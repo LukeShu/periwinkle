@@ -5,13 +5,13 @@ package httpentity
 import (
 	"httpentity/negotiate"
 	"mime"
-	"net/url"
 	"net/http"
+	"net/url"
 	"path"
 	"strings"
 )
 
-type nilLog struct {}
+type nilLog struct{}
 
 func (l nilLog) Printf(format string, v ...interface{}) {}
 
@@ -51,13 +51,12 @@ func (router *Router) finish(req Request, res *Response) {
 	router.negotiate(req, res)
 }
 
-
 func (router *Router) negotiate(req Request, res *Response) {
 	if res.Entity == nil {
 		return
 	}
 	// Negotiate the content type
-	{	
+	{
 		encoders := res.Entity.Encoders()
 		contenttypes := encoders2contenttypes(encoders)
 
@@ -106,7 +105,7 @@ func (router *Router) negotiate(req Request, res *Response) {
 	// Negotiate the charset (if applicable)
 	if res.encoder.IsText() {
 		// TODO
-		res.Headers.Set("Content-Type", res.Headers.Get("Content-Type") + "; charset=utf-8")
+		res.Headers.Set("Content-Type", res.Headers.Get("Content-Type")+"; charset=utf-8")
 	}
 	// Negotiate the language
 	{

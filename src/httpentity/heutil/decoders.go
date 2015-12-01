@@ -7,9 +7,9 @@ import (
 	"io"
 	"io/ioutil"
 	"jsonpatch"
+	"locale"
 	"mime/multipart"
 	"net/http"
-	"locale"
 	"net/url"
 	"strings"
 )

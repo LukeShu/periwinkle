@@ -7,15 +7,15 @@ import (
 	"encoding/json"
 	he "httpentity"
 	"httpentity/rfc7231"
+	"io"
 	"jsondiff"
 	"jsonpatch"
 	"locale"
-	"io"
 )
 
 type decodeJSONError struct {
 	message locale.Stringer
-	diff jsonpatch.JSONPatch
+	diff    jsonpatch.JSONPatch
 }
 
 // Encoders fulfills the httpentity.NetEntity interface.

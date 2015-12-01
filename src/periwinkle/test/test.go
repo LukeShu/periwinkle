@@ -63,15 +63,15 @@ func Test(cfg *periwinkle.Cfg, db *gorm.DB) {
 			Confirmed: true,
 		},
 
-			{Address:  user2.Addresses[0],
+			{Address: user2.Addresses[0],
 				Confirmed: true,
 			},
 
-			{Address:  user2.Addresses[1],
+			{Address: user2.Addresses[1],
 				Confirmed: true,
 			},
 
-			{Address:  user3.Addresses[0],
+			{Address: user3.Addresses[0],
 				Confirmed: true,
 			},
 		},

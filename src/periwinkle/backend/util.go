@@ -22,7 +22,7 @@ func (e errorList) Locales() []locale.Spec {
 	m := map[locale.Spec]int{}
 	for _, err := range e {
 		for _, l := range err.Locales() {
-			m[l] = m[l]+1
+			m[l] = m[l] + 1
 		}
 	}
 	var ret []locale.Spec

@@ -7,13 +7,13 @@ import (
 	he "httpentity"
 	"httpentity/heutil"
 	"io"
+	"locale"
 	"log"
 	"net"
 	"net/http"
 	"periwinkle"
 	"periwinkle/domain_handlers"
 	"stoppable"
-	"locale"
 )
 
 func MakeServer(socket net.Listener, cfg *periwinkle.Cfg) *stoppable.HTTPServer {

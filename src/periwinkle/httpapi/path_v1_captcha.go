@@ -58,13 +58,13 @@ func (o *captcha) Locales() []locale.Spec {
 	return []locale.Spec{}
 }
 
-type captchaPNG struct { *captcha }
+type captchaPNG struct{ *captcha }
 
 func (o captchaPNG) Write(w io.Writer, l locale.Spec) locale.Error {
 	return o.backend().MarshalPNG(w)
 }
 
-type captchaWAV struct { *captcha }
+type captchaWAV struct{ *captcha }
 
 func (o captchaWAV) Write(w io.Writer, l locale.Spec) locale.Error {
 	return o.backend().MarshalWAV(w)
@@ -72,7 +72,7 @@ func (o captchaWAV) Write(w io.Writer, l locale.Spec) locale.Error {
 
 func (o *captcha) Encoders() map[string]he.Encoder {
 	return map[string]he.Encoder{
-		"image/png": captchaPNG{o},
+		"image/png":      captchaPNG{o},
 		"audio/vnd.wave": captchaWAV{o},
 	}
 }

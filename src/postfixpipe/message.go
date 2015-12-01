@@ -7,8 +7,8 @@ package postfixpipe
 import (
 	"bufio"
 	"io"
-	"os"
 	"locale"
+	"os"
 )
 
 // A Message is a context for a Postfix-pipe helper process; it is

@@ -3,12 +3,12 @@
 package httpentity
 
 import (
-	"locale"
+	"encoding/json"
 	"fmt"
 	"io"
+	"locale"
 	"net/http"
 	"net/url"
-	"encoding/json"
 )
 
 func ErrorToNetEntity(status int16, err locale.Error) NetEntity {
@@ -31,7 +31,7 @@ func NetPrintf(format string, a ...interface{}) NetStringer {
 
 // Encoders fulfills the httpentity.NetEntity interface.
 func (s NetStringer) Encoders() map[string]Encoder {
-	return map[string]Encoder {
+	return map[string]Encoder{
 		"text/plain":       EncoderTXT{s},
 		"application/json": EncoderJSONStr{s},
 	}
@@ -42,7 +42,7 @@ func (s NetStringer) Encoders() map[string]Encoder {
 type NetLocations []*url.URL
 
 type netLocationsTXT struct{ NetLocations }
-type netLocationsJSON struct { NetLocations }
+type netLocationsJSON struct{ NetLocations }
 
 // Encoders fulfills the httpentity.NetEntity interface.
 func (l NetLocations) Encoders() map[string]Encoder {

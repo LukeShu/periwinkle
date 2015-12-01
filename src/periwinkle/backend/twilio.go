@@ -245,7 +245,7 @@ func DeleteUnusedTwilioNumber(db *gorm.DB, num string) error {
 
 	var twilioPool TwilioPool
 	result := db.Where("number_id = ?", twilioNum.ID).First(&twilioPool)
-	if  result.Error != nil {
+	if result.Error != nil {
 		if result.RecordNotFound() {
 
 			if result := db.Where("number = ?", num).Delete(&TwilioNumber{}); result.Error != nil {

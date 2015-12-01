@@ -12,10 +12,10 @@
 package stoppable
 
 import (
+	"locale"
 	"net"
 	"net/http"
 	"sync"
-	"locale"
 )
 
 // HTTPServer provides an HTTP Server that can be gracefully stopped.
