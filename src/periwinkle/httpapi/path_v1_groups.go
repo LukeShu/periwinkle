@@ -138,7 +138,7 @@ func newDirGroups() dirGroups {
 				enum.Subscriptions = grp.Subscriptions
 				data[i] = enum
 			}
-			return rfc7231.StatusOK(he.NetJSON{data})
+			return rfc7231.StatusOK(he.NetJSON{Data: data})
 		},
 		"POST": func(req he.Request) he.Response {
 			db := req.Things["db"].(*gorm.DB)

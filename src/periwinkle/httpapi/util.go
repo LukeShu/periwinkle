@@ -85,6 +85,6 @@ func safeDecodeJSON(in interface{}, out interface{}) *he.Response {
 // Simple dump to JSON, good for most entities
 func defaultEncoders(o interface{}) map[string]he.Encoder {
 	return map[string]he.Encoder{
-		"application/json": he.EncoderJSON{o},
+		"application/json": he.EncoderJSON{Data: o},
 	}
 }
