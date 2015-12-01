@@ -1,7 +1,7 @@
 package test
 
 import (
-	"fmt"
+	//"fmt"
 	"log"
 	"periwinkle"
 	"periwinkle/backend"
@@ -11,39 +11,43 @@ import (
 
 func Test(cfg *periwinkle.Cfg, db *gorm.DB) {
 
-	err := db.Create(&backend.User{
+	num := backend.TwilioNumber{
+		Number: "+13346038139",
+	}
+
+	if err := db.Create(&num).Error; err != nil {
+		panic(err)
+	}
+
+	user1 := backend.User{
 		ID:        "Alex",
 		FullName:  "",
 		Addresses: []backend.UserAddress{{Medium: "email", Address: "zsuleime@purdue.edu", Confirmed: true}},
-	}).Error
+	}
 
+	err := db.Create(&user1).Error
 	if err != nil {
 		log.Println(err)
 	}
 
-	err = db.Create(&backend.User{
+	user2 := backend.User{
 		ID:        "John",
 		FullName:  "",
 		Addresses: []backend.UserAddress{{Medium: "sms", Address: "+17656027006", Confirmed: true}, {Medium: "email", Address: "s.jandos91@gmail.com", Confirmed: true}},
-	}).Error
+	}
 
+	err = db.Create(&user2).Error
 	if err != nil {
 		log.Println(err)
 	}
 
-	benAddr := []backend.UserAddress{
-		{Medium: "email",
-			Address:   "s_jandos@mail.ru",
-			Confirmed: true},
-	}
-	ben := backend.User{
+	user3 := backend.User{
 		ID:        "Ben",
 		FullName:  "",
-		Addresses: benAddr,
+		Addresses: []backend.UserAddress{{Medium: "email", Address: "s_jandos@mail.ru", Confirmed: true}},
 	}
 
-	err = db.Create(&ben).Error
-
+	err = db.Create(&user3).Error
 	if err != nil {
 		log.Println(err)
 	}
@@ -55,19 +59,19 @@ func Test(cfg *periwinkle.Cfg, db *gorm.DB) {
 		Post:      1,
 		Join:      1,
 		Subscriptions: []backend.Subscription{{
-			Address:   backend.UserAddress{UserID: "Alex", Medium: "email", Address: "zsuleime@purdue.edu", Confirmed: true},
+			Address:   user1.Addresses[0],
 			Confirmed: true,
 		},
 
-			{Address: benAddr[0],
+			{Address:  user2.Addresses[0],
 				Confirmed: true,
 			},
 
-			{Address: backend.UserAddress{UserID: "John", Medium: "sms", Address: "+17656027006", Confirmed: true},
+			{Address:  user2.Addresses[1],
 				Confirmed: true,
 			},
 
-			{Address: backend.UserAddress{UserID: "John", Medium: "email", Address: "s.jandos91@gmail.com", Confirmed: true},
+			{Address:  user3.Addresses[0],
 				Confirmed: true,
 			},
 		},
@@ -76,10 +80,5 @@ func Test(cfg *periwinkle.Cfg, db *gorm.DB) {
 	if err != nil {
 		log.Println(err)
 	}
-
-	fmt.Println("All existing twilio numbers: ", backend.GetAllExistingTwilioNumbers(cfg))
-	fmt.Println("All unused numbers for John", backend.GetUnusedTwilioNumbersByUser(cfg, db, "John"))
-	//backend.AssignTwilioNumber(db, "John", "Purdue", backend.GetUnusedTwilioNumbersByUser(db, "John")[0])
-	//fmt.Println("All unused numbers for John", backend.GetUnusedTwilioNumbersByUser(db, "John"))
 
 }

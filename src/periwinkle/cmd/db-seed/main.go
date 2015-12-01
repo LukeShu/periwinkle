@@ -8,7 +8,7 @@ import (
 	"os"
 	"periwinkle/backend"
 	"periwinkle/cfg"
-
+	//"periwinkle/test"
 	docopt "github.com/LukeShu/go-docopt"
 	"lukeshu.com/git/go/libsystemd.git/sd_daemon/lsb"
 )
@@ -41,4 +41,5 @@ func main() {
 
 	backend.DbSchema(config.DB)
 	backend.DbSeed(config.DB)
+	//test.Test(config, config.DB)
 }
