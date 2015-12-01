@@ -3,6 +3,7 @@
 /src/*.*/
 
 *.yaml
+!/config.example.yaml
 *.sqlite
 .var.*
 
