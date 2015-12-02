@@ -48,6 +48,14 @@
 				public: 'bounce',
 				confirmed: 'moderate',
 				member: 'allow'
+			},
+			read: {
+				public: 'no',
+				confirmed: 'no'
+			},
+			exists: {
+				public: 'yes',
+				confirmed: 'yes'
 			}
 		};
 

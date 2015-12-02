@@ -33,9 +33,7 @@
 					    	<md-radio-button value="moderate">Moderate</md-radio-button>
 					    	<md-radio-button value="bounce">Bounce</md-radio-button>
 					    </md-radio-group>
-					</div>
-					<div style="margin: 16px;"></div>
-					<div layout="column">
+						<hr />
 						<p style="font-weight: bold">Join</p>
 						<p>Public</p>
 						<md-radio-group ng-model="group.permissions.join.public" layout="row">
@@ -55,6 +53,32 @@
 					    	<md-radio-button value="moderate">Moderate</md-radio-button>
 					    	<md-radio-button value="bounce">Bounce</md-radio-button>
 					    </md-radio-group>
+					</div>
+					<div style="margin: 16px;"></div>
+					<div layout="column">
+						<p style="font-weight: bold">Read</p>
+						<p>Public</p>
+						<md-radio-group ng-model="group.permissions.read.public" layout="row">
+							<md-radio-button value="yes">Yes</md-radio-button>
+							<md-radio-button value="no">No</md-radio-button>
+						</md-radio-group>
+						<p>Confirmed</p>
+						<md-radio-group ng-model="group.permissions.read.confirmed" layout="row">
+							<md-radio-button value="yes">Yes</md-radio-button>
+							<md-radio-button value="no">No</md-radio-button>
+						</md-radio-group>
+						<hr />
+						<p style="font-weight: bold">Exists</p>
+						<p>Public</p>
+						<md-radio-group ng-model="group.permissions.exists.public" layout="row">
+							<md-radio-button value="yes">Yes</md-radio-button>
+							<md-radio-button value="no">No</md-radio-button>
+						</md-radio-group>
+						<p>Confirmed</p>
+						<md-radio-group ng-model="group.permissions.exists.confirmed" layout="row">
+							<md-radio-button value="yes">Yes</md-radio-button>
+							<md-radio-button value="no">No</md-radio-button>
+						</md-radio-group>
 					</div>
 				</div>
 				<div style="clear: both;"></div>
