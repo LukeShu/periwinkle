@@ -115,14 +115,15 @@ func Parse(in io.Reader) (cfgptr *periwinkle.Cfg, e locale.Error) {
 
 	// Set the default database
 	if cfg.DB == nil {
-		periwinkle.Logf("DB not configured, trying MySQL periwinkle:periwinkle@localhost/periwinkle")
+		periwinkle.Logf("DB not configured, trying MySQL periwinkle:periwinkle@localhost/periwinkle ...")
 		db, err := openDB("mysql", "periwinkle:periwinkle@/periwinkle?charset=utf8&parseTime=True")
 		if err != nil {
-			periwinkle.LogErr(locale.UntranslatedError(err))
-			periwinkle.Logf("Failed to connect to MySQL, trying SQLite3 file:periwinkle.sqlite")
+			periwinkle.Logf("Could not connect to MySQL: %v", locale.UntranslatedError(err))
+			periwinkle.Logf("No MySQL, trying SQLite3 file:periwinkle.sqlite ...")
 			db, err = openDB("sqlite3", "file:periwinkle.sqlite?mode=rwc&_txlock=exclusive")
 			if err != nil {
-				gotoError(locale.UntranslatedError(err))
+				periwinkle.Logf("Could not open SQLite3 DB: %v", locale.UntranslatedError(err))
+				gotoError(locale.Errorf("Could not connect to database"))
 			}
 		}
 		cfg.DB = db
