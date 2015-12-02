@@ -199,7 +199,7 @@ func (usr *User) Save(db *gorm.DB) {
 		for o := range oldAddresses {
 			oldAddr := &oldAddresses[o]
 			match := false
-			for n := range oldAddresses {
+			for n := range usr.Addresses {
 				newAddr := &usr.Addresses[n]
 				if newAddr.Medium == oldAddr.Medium && newAddr.Address == oldAddr.Address {
 					newAddr.ID = oldAddr.ID
