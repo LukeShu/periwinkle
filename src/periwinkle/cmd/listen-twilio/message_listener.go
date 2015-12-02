@@ -9,7 +9,6 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
-	"periwinkle"
 	"periwinkle/backend"
 	"periwinkle/cmdutil"
 	"periwinkle/putil"
@@ -28,7 +27,7 @@ Options:
   -c CONFIG_FILE  Specify the configuration file [default: ./config.yaml].`
 
 func main() {
-	options := periwinkle.Docopt(usage)
+	options := cmdutil.Docopt(usage)
 	config := cmdutil.GetConfig(options["-c"].(string))
 
 	var arrTemp [1000]string

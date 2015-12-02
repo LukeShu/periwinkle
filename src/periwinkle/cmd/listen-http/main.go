@@ -143,7 +143,7 @@ func sdGetSocket() (socket net.Listener, err locale.Error) {
 }
 
 func main() {
-	options := periwinkle.Docopt(usage)
+	options := cmdutil.Docopt(usage)
 
 	args := []string{}
 	if options["ADDR_TYPE"] != nil {

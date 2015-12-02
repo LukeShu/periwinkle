@@ -4,11 +4,14 @@
 package cmdutil
 
 import (
+	"fmt"
 	"locale"
 	"os"
 	"periwinkle"
 	"periwinkle/cfg"
+	"strings"
 
+	docopt "github.com/LukeShu/go-docopt"
 	"lukeshu.com/git/go/libsystemd.git/sd_daemon/lsb"
 )
 
@@ -26,4 +29,10 @@ func GetConfig(filename string) *periwinkle.Cfg {
 	}
 
 	return config
+}
+
+func Docopt(usage string) map[string]interface{} {
+	usage = strings.TrimSpace(fmt.Sprintf(usage, os.Args[0]))
+	options, _ := docopt.Parse(usage, os.Args[1:], true, "", false, true)
+	return options
 }

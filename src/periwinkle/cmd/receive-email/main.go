@@ -22,7 +22,7 @@ Options:
   -c CONFIG_FILE  Specify the configuration file [default: ./config.yaml].`
 
 func main() {
-	options := periwinkle.Docopt(usage)
+	options := cmdutil.Docopt(usage)
 	config := cmdutil.GetConfig(options["-c"].(string))
 
 	var ret pp.ExitStatus = pp.EX_OK
