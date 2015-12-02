@@ -38,6 +38,19 @@
 		];
 		self.join = 0;
 
+		self.permissions = {
+			post : {
+				public: 'bounce',
+				confirmed: 'moderate',
+				member: 'allow'
+			},
+			join : {
+				public: 'bounce',
+				confirmed: 'moderate',
+				member: 'allow'
+			}
+		};
+
 		self.cancel = function() {
 			$mdDialog.cancel();
 		};

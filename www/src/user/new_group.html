@@ -12,42 +12,52 @@
 					<label>{{ "USER.NEW_GROUP.GROUP_NAME" | translate}}</label>
 					<input ng-model="group.name" type="text" required/>
 				</md-input-container>
-				<div layout="row" layout-sm="column" layout-fill>
-					<md-input-container flex>
-						<label>Existance</label>
-						<md-select name="type" ng-model="group.exists">
-							<md-option ng-repeat="type in group.exists_prms" ng-value="$index">
-								{{type.text}}
-							</md-option>
-						</md-select>
-					</md-input-container>
-					<md-input-container flex>
-						<label>Read</label>
-						<md-select name="type" ng-model="group.read">
-							<md-option ng-repeat="type in group.read_prms" ng-value="$index">
-								{{type.text}}
-							</md-option>
-						</md-select>
-					</md-input-container>
+				<div layout="row" layout-sm="column">
+					<div layout="column">
+						<p style="font-weight: bold">Post</p>
+						<p>Public</p>
+						<md-radio-group ng-model="group.permissions.post.public" layout="row">
+					    	<md-radio-button value="allow">Allow</md-radio-button>
+					    	<md-radio-button value="moderate">Moderate</md-radio-button>
+					    	<md-radio-button value="bounce">Bounce</md-radio-button>
+					    </md-radio-group>
+						<p>Confirmed</p>
+						<md-radio-group ng-model="group.permissions.post.confirmed" layout="row">
+					    	<md-radio-button value="allow">Allow</md-radio-button>
+					    	<md-radio-button value="moderate">Moderate</md-radio-button>
+					    	<md-radio-button value="bounce">Bounce</md-radio-button>
+					    </md-radio-group>
+						<p>Member</p>
+						<md-radio-group ng-model="group.permissions.post.member" layout="row">
+					    	<md-radio-button value="allow">Allow</md-radio-button>
+					    	<md-radio-button value="moderate">Moderate</md-radio-button>
+					    	<md-radio-button value="bounce">Bounce</md-radio-button>
+					    </md-radio-group>
+					</div>
+					<div style="margin: 16px;"></div>
+					<div layout="column">
+						<p style="font-weight: bold">Join</p>
+						<p>Public</p>
+						<md-radio-group ng-model="group.permissions.join.public" layout="row">
+					    	<md-radio-button value="allow">Allow</md-radio-button>
+					    	<md-radio-button value="moderate">Moderate</md-radio-button>
+					    	<md-radio-button value="bounce">Bounce</md-radio-button>
+					    </md-radio-group>
+						<p>Confirmed</p>
+						<md-radio-group ng-model="group.permissions.join.confirmed" layout="row">
+					    	<md-radio-button value="allow">Allow</md-radio-button>
+					    	<md-radio-button value="moderate">Moderate</md-radio-button>
+					    	<md-radio-button value="bounce">Bounce</md-radio-button>
+					    </md-radio-group>
+						<p>Member</p>
+						<md-radio-group ng-model="group.permissions.join.member" layout="row">
+					    	<md-radio-button value="allow">Allow</md-radio-button>
+					    	<md-radio-button value="moderate">Moderate</md-radio-button>
+					    	<md-radio-button value="bounce">Bounce</md-radio-button>
+					    </md-radio-group>
+					</div>
 				</div>
-				<div layout="row" layout-sm="column" layout-fill>
-					<md-input-container flex>
-						<label>Post</label>
-						<md-select name="type" ng-model="group.post">
-							<md-option ng-repeat="type in group.post_prms" ng-value="$index">
-								{{type.text}}
-							</md-option>
-						</md-select>
-					</md-input-container>
-					<md-input-container flex>
-						<label>Join</label>
-						<md-select name="type" ng-model="group.join">
-							<md-option ng-repeat="type in group.join_prms" ng-value="$index">
-								{{type.text}}
-							</md-option>
-						</md-select>
-					</md-input-container>
-				</div>
+				<div style="clear: both;"></div>
 			</div>
 		</md-dialog-content>
 		<md-dialog-actions layout="row">
