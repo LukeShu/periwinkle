@@ -8,7 +8,7 @@ import (
 	"os"
 	"os/signal"
 	"periwinkle"
-	"periwinkle/cfg"
+	"periwinkle/cmdutil"
 	"periwinkle/httpapi"
 	"strconv"
 	"strings"
@@ -154,17 +154,7 @@ func main() {
 	}
 	socket := parseArgs(args)
 
-	configFile, uerr := os.Open(options["-c"].(string))
-	if uerr != nil {
-		periwinkle.LogErr(locale.UntranslatedError(uerr))
-		os.Exit(int(lsb.EXIT_NOTCONFIGURED))
-	}
-
-	config, err := cfg.Parse(configFile)
-	if err != nil {
-		periwinkle.LogErr(err)
-		os.Exit(int(lsb.EXIT_NOTCONFIGURED))
-	}
+	config := cmdutil.GetConfig(options["-c"].(string))
 
 	signals := make(chan os.Signal)
 	signal.Notify(signals, syscall.SIGTERM, syscall.SIGHUP)

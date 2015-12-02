@@ -7,19 +7,15 @@ package main
 import (
 	"encoding/json"
 	"io/ioutil"
-	"locale"
 	"log"
 	"net/http"
-	"os"
 	"periwinkle"
 	"periwinkle/backend"
-	"periwinkle/cfg"
+	"periwinkle/cmdutil"
 	"periwinkle/putil"
 	"periwinkle/twilio"
 	"strings"
 	"time"
-
-	"lukeshu.com/git/go/libsystemd.git/sd_daemon/lsb"
 )
 
 const usage = `
@@ -33,18 +29,7 @@ Options:
 
 func main() {
 	options := periwinkle.Docopt(usage)
-
-	configFile, uerr := os.Open(options["-c"].(string))
-	if uerr != nil {
-		periwinkle.LogErr(locale.UntranslatedError(uerr))
-		os.Exit(int(lsb.EXIT_NOTCONFIGURED))
-	}
-
-	config, err := cfg.Parse(configFile)
-	if err != nil {
-		periwinkle.LogErr(err)
-		os.Exit(int(lsb.EXIT_NOTCONFIGURED))
-	}
+	config := cmdutil.GetConfig(options["-c"].(string))
 
 	var arrTemp [1000]string
 	var curTimeSec int64

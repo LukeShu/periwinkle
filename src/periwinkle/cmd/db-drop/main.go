@@ -4,11 +4,10 @@
 package main
 
 import (
-	"locale"
 	"os"
 	"periwinkle"
 	"periwinkle/backend"
-	"periwinkle/cfg"
+	"periwinkle/cmdutil"
 
 	"lukeshu.com/git/go/libsystemd.git/sd_daemon/lsb"
 )
@@ -24,20 +23,9 @@ Options:
 
 func main() {
 	options := periwinkle.Docopt(usage)
+	config := cmdutil.GetConfig(options["-c"].(string))
 
-	configFile, uerr := os.Open(options["-c"].(string))
-	if uerr != nil {
-		periwinkle.LogErr(locale.UntranslatedError(uerr))
-		os.Exit(int(lsb.EXIT_NOTCONFIGURED))
-	}
-
-	config, err := cfg.Parse(configFile)
-	if err != nil {
-		periwinkle.LogErr(err)
-		os.Exit(int(lsb.EXIT_NOTCONFIGURED))
-	}
-
-	err = backend.DbDrop(config.DB)
+	err := backend.DbDrop(config.DB)
 	if err != nil {
 		periwinkle.LogErr(err)
 		os.Exit(int(lsb.EXIT_FAILURE))

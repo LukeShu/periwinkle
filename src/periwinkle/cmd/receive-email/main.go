@@ -4,16 +4,12 @@
 package main
 
 import (
-	"locale"
-	"os"
 	"periwinkle"
-	"periwinkle/cfg"
+	"periwinkle/cmdutil"
 	"periwinkle/putil"
 	pp "postfixpipe"
 	"runtime"
 	"strings"
-
-	"lukeshu.com/git/go/libsystemd.git/sd_daemon/lsb"
 )
 
 const usage = `
@@ -27,18 +23,7 @@ Options:
 
 func main() {
 	options := periwinkle.Docopt(usage)
-
-	configFile, uerr := os.Open(options["-c"].(string))
-	if uerr != nil {
-		periwinkle.LogErr(locale.UntranslatedError(uerr))
-		os.Exit(int(lsb.EXIT_NOTCONFIGURED))
-	}
-
-	config, err := cfg.Parse(configFile)
-	if err != nil {
-		periwinkle.LogErr(err)
-		os.Exit(int(lsb.EXIT_NOTCONFIGURED))
-	}
+	config := cmdutil.GetConfig(options["-c"].(string))
 
 	var ret pp.ExitStatus = pp.EX_OK
 	defer func() {
