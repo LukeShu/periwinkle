@@ -137,7 +137,10 @@ func (usr *user) Methods() map[string]func(he.Request) he.Response {
 			if usr.ID != newUser.ID {
 				return rfc7231.StatusConflict(he.NetPrintf("Cannot change user id"))
 			}
-			//*usr = newUser  This is deleting the password
+			if newUser.PwHash == nil || len(newUser.PwHash) == 0 {
+				newUser.PwHash = usr.PwHash
+			}
+			*usr = newUser
 			usr.backend().Save(db)
 			return rfc7231.StatusOK(usr)
 		},
@@ -208,13 +211,12 @@ func (d dirUsers) Methods() map[string]func(he.Request) he.Response {
 func (d dirUsers) Subentity(name string, req he.Request) he.Entity {
 	name = strings.ToLower(name)
 	sess := req.Things["session"].(*backend.Session)
-	if sess == nil && req.Method == "POST" {
-		usr, ok := req.Things["user"].(backend.User)
-		if !ok {
-			return nil
-		}
-		if usr.ID == name {
-			return (*user)(&usr)
+	if sess == nil {
+		if req.Method == "POST" {
+			usr, ok := req.Things["user"].(backend.User)
+			if ok && usr.ID == name {
+				return (*user)(&usr)
+			}
 		}
 		return nil
 	} else if sess.UserID != name {
