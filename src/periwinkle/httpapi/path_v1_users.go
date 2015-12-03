@@ -137,7 +137,7 @@ func (usr *user) Methods() map[string]func(he.Request) he.Response {
 			if usr.ID != newUser.ID {
 				return rfc7231.StatusConflict(he.NetPrintf("Cannot change user id"))
 			}
-			*usr = newUser
+			//*usr = newUser  This is deleting the password
 			usr.backend().Save(db)
 			return rfc7231.StatusOK(usr)
 		},
