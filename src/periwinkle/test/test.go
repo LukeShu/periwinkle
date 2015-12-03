@@ -50,13 +50,22 @@ func Test(cfg *periwinkle.Cfg, db *gorm.DB) {
 	if err != nil {
 		log.Println(err)
 	}
-
+        existence := [2]int{2, 2}
+        read := [2]int{2, 2}
+        post := [3]int{1, 1, 1}
+        join := [3]int{1, 1, 1}
 	err = db.Create(&backend.Group{
-		ID:        "Purdue",
-		Existence: 1,
-		Read:      1,
-		Post:      1,
-		Join:      1,
+                ID:            "Purdue",
+                ReadPublic: read[0],
+                ReadConfirmed: read[1],
+                ExistencePublic: existence[0],
+                ExistenceConfirmed: existence[1],
+                PostPublic: post[0],
+                PostConfirmed: post[1],
+                PostMember: post[2],
+                JoinPublic: join[0],
+                JoinConfirmed: join[1],
+                JoinMember: join[2],
 		Subscriptions: []backend.Subscription{{
 			Address:   user1.Addresses[0],
 			Confirmed: true,
@@ -75,7 +84,6 @@ func Test(cfg *periwinkle.Cfg, db *gorm.DB) {
 			},
 		},
 	}).Error
-
 	if err != nil {
 		log.Println(err)
 	}

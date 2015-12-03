@@ -30,6 +30,27 @@ func (o Group) dbSchema(db *gorm.DB) locale.Error {
 	return locale.UntranslatedError(db.CreateTable(&o).Error)
 }
 
+func (o Group) dbSeed(db *gorm.DB) locale.Error {
+	existence := [2]int{2, 2}
+	read := [2]int{2, 2}
+	post := [3]int{1, 1, 1}
+	join := [3]int{1, 1, 1}
+	return locale.UntranslatedError(db.Create(&Group{
+		ID:            "test",
+                ReadPublic: read[0],
+                ReadConfirmed: read[1],
+                ExistencePublic: existence[0],
+                ExistenceConfirmed: existence[1],
+                PostPublic: post[0],
+                PostConfirmed: post[1],
+                PostMember: post[2],
+                JoinPublic: join[0],
+                JoinConfirmed: join[1],
+                JoinMember: join[2],
+		Subscriptions: []Subscription{},
+	}).Error)
+}
+
 func GetGroupByID(db *gorm.DB, id string) *Group {
 	var o Group
 	if result := db.First(&o, "id = ?", id); result.Error != nil {
