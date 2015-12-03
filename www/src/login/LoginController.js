@@ -5,9 +5,9 @@
 
 	angular
 		.module('login')
-		.controller('LoginController', ['$cookies', '$http', '$scope', '$interval', '$location', '$mdDialog', '$filter', 'UserService', '$timeout', LoginController]);
+		.controller('LoginController', ['$cookies', '$http', '$scope', '$interval', '$location', '$mdDialog', '$filter', 'UserService', '$timeout', 'focus', LoginController]);
 
-	function LoginController($cookies, $http, $scope, $interval, $location, $mdDialog, $filter, userService, $timeout) {
+	function LoginController($cookies, $http, $scope, $interval, $location, $mdDialog, $filter, userService, $timeout, focus) {
 		//gives us an anchor to the outer object from within sub objects or functions
 		var self = this;
 		//set up public fields
@@ -105,8 +105,11 @@
 			);
 		}
 
-		this.signup = function(ev) {
+		this.signup = function(form, ev, foc) {
 			//http signup api call
+			focus(foc);
+			if(!form.$valid)
+				return;
 			$scope.loading = true;
 			if(false){ //captcha_id == '') {
 				$http({
