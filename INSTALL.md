@@ -30,7 +30,7 @@ directory within the source directory.
     ║          ║    ║                     ╎                     Periwinkle                       ╎             ║
     ║          ║    ║                     ╎                                                      ╎             ║
     ║          ║    ║       ╔═════════╗   ╎   ╔══════════════════════════════════════════╗       ╎   ╔═══════╗ ║
-    ║          ║>───╫───┬──>║ Postfix ║>─────>║ receive-email                            ║<─────────>║       ║ ║
+    ║          ║>───╫───┬──>║ Postfix ║>─────>║ bin/receive-email                        ║<─────────>║       ║ ║
     ║          ║    ║   │   ╚═════════╝   ╎   ╠══════════════════════════════════════════╣       ╎   ║       ║ ║
     ║          ║    ║   │                 ╎   ║ @yourdomain.tld -> incoming mail handler ║       ╎   ║       ║ ║
     ║          ║    ║   │                 ╎   ║ @sms.gateway    -> Twilio Gateway ────────>──┐   ╎   ║       ║ ║
@@ -42,16 +42,36 @@ directory within the source directory.
     ║          ║    ║   ^────────────────────────────────────────────────────────────────────┘   ╎   ║       ║ ║
     ║          ║    ║   │                 ╎                                                      ╎   ║ MySQL ║ ║
     ║          ║    ║   │                 ╎   ╔══════════════════════════════════════════╗<─────────>║       ║ ║
-    ║          ║<───╫───────[polling]────────<║ listen-twilio                            ║       ╎   ║       ║ ║
+    ║          ║<───╫───────[polling]────────<║ bin/listen-twilio                        ║       ╎   ║       ║ ║
     ║          ║    ║   │                 ╎   ╚══════════════════════════════════════════╝>──┐   ╎   ║       ║ ║
-    ║          ║    ║   │                 ╎                                                  │   ╎   ║       ║ ║
-    ║          ║    ║   ^────────────────────────────────────────────────────────────────────┘   ╎   ║       ║ ║
-    ║          ║    ║   │                 ╎                                                      ╎   ║       ║ ║
+    ║          ║    ║   │                 ╎                                  ^               │   ╎   ║       ║ ║
+    ║          ║    ║   ^────────────────────────────────────────────────────│───────────────┘   ╎   ║       ║ ║
+    ║          ║    ║   │                 ╎                                  v                   ╎   ║       ║ ║
     ║          ║    ║   │                 ╎   ╔══════════════════════════════════════════╗<─────────>║       ║ ║
-    ║          ║>───╫────────────────────────>║ listen-http                              ║       ╎   ║       ║ ║
+    ║          ║>───╫────────────────────────>║ bin/listen-http                          ║       ╎   ║       ║ ║
     ║          ║    ║   │                 ╎   ╚══════════════════════════════════════════╝>──┐   ╎   ║       ║ ║
     ║          ║    ║   ^                 ╎                                                  │   ╎   ║       ║ ║
     ║          ║    ║   └────────────────────────────────────────────────────────────────────┘   ╎   ╚═══════╝ ║
     ║          ║    ║                     ╎                                                      ╎             ║
     ╚══════════╝    ╚══════════════════════════════════════════════════════════════════════════════════════════╝
 
+With the exception that SQLite3 can be used instead of MySQL (for
+development purposes), Postfix and MySQL are specifically required;
+not other MTAs or RDBMSs.
+
+Unfortunately, the standard Go language database interface doesn't
+sufficiently abstract certain details of messages that the DB sends
+us, and we must write code for each RDBMS that we wish to support.
+The amount of code that must be written for each RDBMS is very small;
+but thus far we've only done it for for SQLite3 and MySQL.
+
+The contract with Postfix is also not abstracted such that other MTAs
+may be used.  The bits of the contract that it relies on are:
+
+ - The format of stdin for the delivery program; that is:
+   A line with some information (TODO: what information) from Postfix,
+   a newline, then the RFC X822-formatted message.
+ - The environment variable `ORIGINAL_RECIPIENT` set to the address
+   that we received the message on.
+ - The interpretation of exit codes according to <sysexits.h> into
+   SMTP responses.
