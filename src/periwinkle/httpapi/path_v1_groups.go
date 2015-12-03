@@ -119,22 +119,26 @@ func newDirGroups() dirGroups {
 				groups = backend.GetPublicAndSubscribedGroups(db, *backend.GetUserByID(db, sess.UserID))
 			}
 			type EnumerateGroup struct {
-				ID            string                 `json:"id"`
-				Existence     string                 `json:"existence"`
-				Read          string                 `json:"read"`
-				Post          string                 `json:"post"`
-				Join          string                 `json:"join"`
+                                Groupname string `json:"groupname"`
+                                Post map[string]string `json:"post"`
+                                Join map[string]string `json:"join"`
+                                Read map[string]string `json:"read"`
+                                Existence map[string]string `json:"existence"`
 				Subscriptions []backend.Subscription `json:"subscriptions"`
 			}
 			data := make([]EnumerateGroup, len(groups))
 
 			for i, grp := range groups {
 				var enum EnumerateGroup
-				enum.ID = grp.ID
-				enum.Existence = backend.Existence(grp.Existence).String()
-				enum.Read = backend.Read(grp.Read).String()
-				enum.Post = backend.Post(grp.Post).String()
-				enum.Join = backend.Join(grp.Join).String()
+				enum.Groupname = grp.ID
+				exist := [...]int{grp.ExistencePublic, grp.ExistenceConfirmed}
+				enum.Existence = backend.ReadExist(exist)
+                                read := [...]int{grp.ReadPublic, grp.ReadConfirmed}
+				enum.Read = backend.ReadExist(read)
+                                post := [...]int{grp.PostPublic, grp.PostConfirmed, grp.PostMember}
+				enum.Post =  backend.PostJoin(post)
+                                join := [...]int{grp.JoinPublic, grp.JoinConfirmed, grp.JoinMember}
+				enum.Join = backend.PostJoin(join)
 				enum.Subscriptions = grp.Subscriptions
 				data[i] = enum
 			}
@@ -142,18 +146,19 @@ func newDirGroups() dirGroups {
 		},
 		"POST": func(req he.Request) he.Response {
 			db := req.Things["db"].(*gorm.DB)
-			type postfmt struct {
+			type Response1 struct {
 				Groupname string `json:"groupname"`
-				Existence string `json:"existence"`
-				Read      string `json:"read"`
-				Post      string `json:"post"`
-				Join      string `json:"join"`
+				Post map[string]string `json:"post"`
+				Join map[string]string `json:"join"`
+				Read map[string]string `json:"read"`
+				Existence map[string]string `json:"existence"`
 			}
-			var entity postfmt
+			var entity Response1
 			httperr := safeDecodeJSON(req.Entity, &entity)
 			if httperr != nil {
 				return *httperr
 			}
+
 
 			if entity.Groupname == "" {
 				return rfc7231.StatusUnsupportedMediaType(he.NetPrintf("groupname can't be emtpy"))
@@ -163,7 +168,7 @@ func newDirGroups() dirGroups {
 			grp := backend.NewGroup(
 				db,
 				entity.Groupname,
-				backend.Reverse(entity.Existence),
+				backend.Reverse(entity.Post),
 				backend.Reverse(entity.Read),
 				backend.Reverse(entity.Post),
 				backend.Reverse(entity.Join),
@@ -196,11 +201,11 @@ func (d dirGroups) Subentity(name string, req he.Request) he.Entity {
 	name = strings.ToLower(name)
 	db := req.Things["db"].(*gorm.DB)
 	// TODO: permissions check
-	sess := req.Things["session"].(*backend.Session)
+	//sess := req.Things["session"].(*backend.Session)
 	grp := backend.GetGroupByID(db, name)
-	if grp.Read != 1 && !backend.IsSubscribed(db, sess.UserID, *grp) {
+	/*if grp.Read != 1 && !backend.IsSubscribed(db, sess.UserID, *grp) {
 		return nil
-	}
+	}*/
 	return (*group)(grp)
 }
 

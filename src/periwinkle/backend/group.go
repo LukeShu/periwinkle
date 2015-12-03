@@ -13,26 +13,21 @@ import (
 // A Group or mailing list that users may subscribe to.
 type Group struct {
 	ID            string         `json:"group_id"`
-	Existence     int            `json:"existence"` // 1 -> public, 2 -> confirmed, 3 -> member
-	Read          int            `json:"read"`      // 1 -> public, 2 -> confirmed, 3 -> member
-	Post          int            `json:"post"`      // 1 -> public, 2 -> confirmed, 3 -> moderator
-	Join          int            `json:"join"`      // 1 -> auto join, 2 -> confirm to join
+	ReadPublic int `json:"readpublic"`
+	ReadConfirmed int `json:"readconfirmed"`
+	ExistencePublic int `json:"existencepublic"`
+        ExistenceConfirmed int `json:"existenceconfirmed"`
+	PostPublic int `json:"postpublic"`
+        PostConfirmed int `json:"postconformed"`
+        PostMember int `json:"postmember"`
+	JoinPublic int `json:"joinpublic"`
+        JoinConfirmed int `json:"joinconfirmed"`
+        JoinMember int `json:"joinmember"`
 	Subscriptions []Subscription `json:"subscriptions"`
 }
 
 func (o Group) dbSchema(db *gorm.DB) locale.Error {
 	return locale.UntranslatedError(db.CreateTable(&o).Error)
-}
-
-func (o Group) dbSeed(db *gorm.DB) locale.Error {
-	return locale.UntranslatedError(db.Create(&Group{
-		ID:            "test",
-		Existence:     1,
-		Read:          1,
-		Post:          1,
-		Join:          1,
-		Subscriptions: []Subscription{},
-	}).Error)
 }
 
 func GetGroupByID(db *gorm.DB, id string) *Group {
@@ -76,7 +71,7 @@ func GetPublicAndSubscribedGroups(db *gorm.DB, user User) []Group {
 	groups := GetGroupsByMember(db, user)
 	// also get public groups
 	var publicgroups []Group
-	if result := db.Where(&Group{Existence: 1}).Find(&publicgroups); result.Error != nil {
+	if result := db.Where(&Group{ExistencePublic: 1}).Find(&publicgroups); result.Error != nil {
 		if !result.RecordNotFound() {
 			dbError(result.Error)
 		}
@@ -106,17 +101,23 @@ func GetAllGroups(db *gorm.DB) []Group {
 	return o
 }
 
-func NewGroup(db *gorm.DB, name string, existence int, read int, post int, join int) *Group {
+func NewGroup(db *gorm.DB, name string, existence []int, read []int, post []int, join []int) *Group {
 	if name == "" {
 		programmerError("Group name can't be empty")
 	}
 	subscriptions := make([]Subscription, 0)
 	o := Group{
 		ID:            name,
-		Existence:     checkInput(existence, 1, 3, 1),
-		Read:          checkInput(read, 1, 3, 1),
-		Post:          checkInput(post, 1, 3, 1),
-		Join:          checkInput(existence, 1, 2, 1),
+	        ReadPublic: read[0],
+	        ReadConfirmed: read[1],
+	        ExistencePublic: existence[0],
+	        ExistenceConfirmed: existence[1],
+	        PostPublic: post[0],
+	        PostConfirmed: post[1],
+	        PostMember: post[2],
+	        JoinPublic: join[0],
+	        JoinConfirmed: join[1],
+	        JoinMember: join[2],
 		Subscriptions: subscriptions,
 	}
 	if err := db.Create(&o).Error; err != nil {
