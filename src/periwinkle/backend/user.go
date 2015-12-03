@@ -50,7 +50,7 @@ func (addr UserAddress) AsEmailAddress() string {
 }
 
 func (u *User) populate(db *gorm.DB) {
-	db.Model(u).Related(&u.Addresses)
+	db.Where(`user_id = ? AND medium != "noop" AND medium != "admin"`, u.ID).Model(UserAddress{}).Find(&u.Addresses)
 	addressIDs := make([]int64, len(u.Addresses))
 	for i, address := range u.Addresses {
 		addressIDs[i] = address.ID
@@ -73,21 +73,6 @@ func (u *User) populate(db *gorm.DB) {
 			}
 		}
 	}
-	var addresses []UserAddress
-
-	for i, address := range u.Addresses {
-		if address.Medium == "noop" {
-			addresses = append(u.Addresses[:i], u.Addresses[i+1:]...)
-			break
-		}
-	}
-	for i, address := range addresses {
-		if address.Medium == "admin" {
-			addresses = append(addresses[:i], addresses[i+1:]...)
-			break
-		}
-	}
-	u.Addresses = addresses
 }
 
 func (u *User) GetUserSubscriptions(db *gorm.DB) []Subscription {

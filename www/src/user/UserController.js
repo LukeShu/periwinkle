@@ -371,16 +371,18 @@
 							sms: [],
 							mms: []
 						};
-						response.data.addresses.sort(function(a, b) {
-							return a.sort_order - b.sort_order;
-						});
-						for (i in response.data.addresses) {
-							self.info.addresses[response.data.addresses[i].medium].push({
-								address:		response.data.addresses[i].address,
-								new_address:	'',
-								editing:		false,
-								loading:		false
+						if(response.data.addresses != null) {
+							response.data.addresses.sort(function(a, b) {
+								return a.sort_order - b.sort_order;
 							});
+							for (i in response.data.addresses) {
+								self.info.addresses[response.data.addresses[i].medium].push({
+									address:		response.data.addresses[i].address,
+									new_address:	'',
+									editing:		false,
+									loading:		false
+								});
+							}
 						}
 						self.info.status.loading = false;
 					},
