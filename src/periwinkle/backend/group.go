@@ -12,18 +12,18 @@ import (
 
 // A Group or mailing list that users may subscribe to.
 type Group struct {
-	ID            string         `json:"group_id"`
-	ReadPublic int `json:"readpublic"`
-	ReadConfirmed int `json:"readconfirmed"`
-	ExistencePublic int `json:"existencepublic"`
-        ExistenceConfirmed int `json:"existenceconfirmed"`
-	PostPublic int `json:"postpublic"`
-        PostConfirmed int `json:"postconformed"`
-        PostMember int `json:"postmember"`
-	JoinPublic int `json:"joinpublic"`
-        JoinConfirmed int `json:"joinconfirmed"`
-        JoinMember int `json:"joinmember"`
-	Subscriptions []Subscription `json:"subscriptions"`
+	ID                 string         `json:"group_id"`
+	ReadPublic         int            `json:"readpublic"`
+	ReadConfirmed      int            `json:"readconfirmed"`
+	ExistencePublic    int            `json:"existencepublic"`
+	ExistenceConfirmed int            `json:"existenceconfirmed"`
+	PostPublic         int            `json:"postpublic"`
+	PostConfirmed      int            `json:"postconformed"`
+	PostMember         int            `json:"postmember"`
+	JoinPublic         int            `json:"joinpublic"`
+	JoinConfirmed      int            `json:"joinconfirmed"`
+	JoinMember         int            `json:"joinmember"`
+	Subscriptions      []Subscription `json:"subscriptions"`
 }
 
 func (o Group) dbSchema(db *gorm.DB) locale.Error {
@@ -36,18 +36,18 @@ func (o Group) dbSeed(db *gorm.DB) locale.Error {
 	post := [3]int{1, 1, 1}
 	join := [3]int{1, 1, 1}
 	return locale.UntranslatedError(db.Create(&Group{
-		ID:            "test",
-                ReadPublic: read[0],
-                ReadConfirmed: read[1],
-                ExistencePublic: existence[0],
-                ExistenceConfirmed: existence[1],
-                PostPublic: post[0],
-                PostConfirmed: post[1],
-                PostMember: post[2],
-                JoinPublic: join[0],
-                JoinConfirmed: join[1],
-                JoinMember: join[2],
-		Subscriptions: []Subscription{},
+		ID:                 "test",
+		ReadPublic:         read[0],
+		ReadConfirmed:      read[1],
+		ExistencePublic:    existence[0],
+		ExistenceConfirmed: existence[1],
+		PostPublic:         post[0],
+		PostConfirmed:      post[1],
+		PostMember:         post[2],
+		JoinPublic:         join[0],
+		JoinConfirmed:      join[1],
+		JoinMember:         join[2],
+		Subscriptions:      []Subscription{},
 	}).Error)
 }
 
@@ -128,18 +128,18 @@ func NewGroup(db *gorm.DB, name string, existence []int, read []int, post []int,
 	}
 	subscriptions := make([]Subscription, 0)
 	o := Group{
-		ID:            name,
-	        ReadPublic: read[0],
-	        ReadConfirmed: read[1],
-	        ExistencePublic: existence[0],
-	        ExistenceConfirmed: existence[1],
-	        PostPublic: post[0],
-	        PostConfirmed: post[1],
-	        PostMember: post[2],
-	        JoinPublic: join[0],
-	        JoinConfirmed: join[1],
-	        JoinMember: join[2],
-		Subscriptions: subscriptions,
+		ID:                 name,
+		ReadPublic:         read[0],
+		ReadConfirmed:      read[1],
+		ExistencePublic:    existence[0],
+		ExistenceConfirmed: existence[1],
+		PostPublic:         post[0],
+		PostConfirmed:      post[1],
+		PostMember:         post[2],
+		JoinPublic:         join[0],
+		JoinConfirmed:      join[1],
+		JoinMember:         join[2],
+		Subscriptions:      subscriptions,
 	}
 	if err := db.Create(&o).Error; err != nil {
 		dbError(err)

@@ -5,6 +5,7 @@ import (
 	"log"
 	"periwinkle"
 	"periwinkle/backend"
+
 	"github.com/jinzhu/gorm"
 )
 
@@ -50,22 +51,22 @@ func Test(cfg *periwinkle.Cfg, db *gorm.DB) {
 	if err != nil {
 		log.Println(err)
 	}
-        existence := [2]int{2, 2}
-        read := [2]int{2, 2}
-        post := [3]int{1, 1, 1}
-        join := [3]int{1, 1, 1}
+	existence := [2]int{2, 2}
+	read := [2]int{2, 2}
+	post := [3]int{1, 1, 1}
+	join := [3]int{1, 1, 1}
 	err = db.Create(&backend.Group{
-                ID:            "Purdue",
-                ReadPublic: read[0],
-                ReadConfirmed: read[1],
-                ExistencePublic: existence[0],
-                ExistenceConfirmed: existence[1],
-                PostPublic: post[0],
-                PostConfirmed: post[1],
-                PostMember: post[2],
-                JoinPublic: join[0],
-                JoinConfirmed: join[1],
-                JoinMember: join[2],
+		ID:                 "Purdue",
+		ReadPublic:         read[0],
+		ReadConfirmed:      read[1],
+		ExistencePublic:    existence[0],
+		ExistenceConfirmed: existence[1],
+		PostPublic:         post[0],
+		PostConfirmed:      post[1],
+		PostMember:         post[2],
+		JoinPublic:         join[0],
+		JoinConfirmed:      join[1],
+		JoinMember:         join[2],
 		Subscriptions: []backend.Subscription{{
 			Address:   user1.Addresses[0],
 			Confirmed: true,
@@ -88,9 +89,10 @@ func Test(cfg *periwinkle.Cfg, db *gorm.DB) {
 		log.Println(err)
 	}
 
-	backend.AssignTwilioNumber(db, "guntas", "Purdue", "+13346038139")	
-	gr := backend.GetGroupByUserAndTwilioNumber(db, "guntas", "+13346038139") 
+	backend.AssignTwilioNumber(db, "guntas", "Purdue", "+13346038139")
+	gr := backend.GetGroupByUserAndTwilioNumber(db, "guntas", "+13346038139")
 	fmt.Println(gr.ID)
 }
+
 //SUCCESSFULL SMS TEST
 // ORIGINAL_RECIPIENT=+16166342620@sms.gateway bin/receive-email < <(printf '%s\r\n' 'To: +16166342620@sms.gateway' 'From: Purdue@periwinkle.lol' "Subject: email testing" "Message-Id: $RANDOM@bar" '' 'body')

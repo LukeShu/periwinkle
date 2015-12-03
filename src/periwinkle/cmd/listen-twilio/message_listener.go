@@ -6,6 +6,7 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -15,7 +16,6 @@ import (
 	"periwinkle/twilio"
 	"strings"
 	"time"
-	"fmt"	
 )
 
 const usage = `
@@ -105,11 +105,11 @@ func main() {
 								user := backend.GetUserByAddress(config.DB, "sms", message.Messages[i].From)
 								group := backend.GetGroupByUserAndTwilioNumber(config.DB, user.ID, message.Messages[i].To)
 								//Not yet set: cfg.GroupDomain="periwinkle.lol"
-								fmt.Println("GroupName:", group.ID)	
+								fmt.Println("GroupName:", group.ID)
 								putil.MessageBuilder{
 									Maildir: config.Mailstore,
 									Headers: map[string]string{
-										"To":      group.ID + "@" + "periwinkle.lol",//config.GroupDomain,
+										"To":      group.ID + "@" + "periwinkle.lol", //config.GroupDomain,
 										"From":    backend.GetAddressByIDAndMedium(config.DB, user.ID, "sms").AsEmailAddress(),
 										"Subject": user.ID + "--> " + message.Messages[i].Body,
 									},

@@ -13,12 +13,12 @@ const (
 )
 
 var reverse = map[string]int{
-	"bounce":   1,
-	"moderate": 2,
-	"accept":   3,
-	"no":       1,
-	"yes":      2,
-	"public":   1,
+	"bounce":    1,
+	"moderate":  2,
+	"accept":    3,
+	"no":        1,
+	"yes":       2,
+	"public":    1,
 	"confirmed": 2,
 	"member":    3,
 	"moderator": 4,
@@ -32,7 +32,7 @@ func Reverse(m map[string]string) []int {
 	return a
 }
 
-var postjoin = map[int]string {
+var postjoin = map[int]string{
 	1: "bounce",
 	2: "moderate",
 	3: "accept",
@@ -46,20 +46,17 @@ func PostJoin(m [3]int) map[string]string {
 	return a
 }
 
-var readexist = map[int]string {
+var readexist = map[int]string{
 	1: "yes",
 	2: "no",
 }
 
 func ReadExist(m [2]int) map[string]string {
 	var a map[string]string
-        a["public"] = readexist[m[0]]
-        a["confirmed"] = readexist[m[1]]
+	a["public"] = readexist[m[0]]
+	a["confirmed"] = readexist[m[1]]
 	return a
 }
-
-
-
 
 /*
 var postjoin = [...]string{
