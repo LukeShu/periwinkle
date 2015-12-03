@@ -1,11 +1,10 @@
 package test
 
 import (
-	//"fmt"
+	"fmt"
 	"log"
 	"periwinkle"
 	"periwinkle/backend"
-
 	"github.com/jinzhu/gorm"
 )
 
@@ -20,7 +19,7 @@ func Test(cfg *periwinkle.Cfg, db *gorm.DB) {
 	}
 
 	user1 := backend.User{
-		ID:        "Alex",
+		ID:        "alex",
 		FullName:  "",
 		Addresses: []backend.UserAddress{{Medium: "email", Address: "zsuleime@purdue.edu", Confirmed: true}},
 	}
@@ -31,7 +30,7 @@ func Test(cfg *periwinkle.Cfg, db *gorm.DB) {
 	}
 
 	user2 := backend.User{
-		ID:        "John",
+		ID:        "john",
 		FullName:  "",
 		Addresses: []backend.UserAddress{{Medium: "sms", Address: "+17656027006", Confirmed: true}, {Medium: "email", Address: "s.jandos91@gmail.com", Confirmed: true}},
 	}
@@ -42,9 +41,9 @@ func Test(cfg *periwinkle.Cfg, db *gorm.DB) {
 	}
 
 	user3 := backend.User{
-		ID:        "Ben",
+		ID:        "guntas",
 		FullName:  "",
-		Addresses: []backend.UserAddress{{Medium: "email", Address: "s_jandos@mail.ru", Confirmed: true}},
+		Addresses: []backend.UserAddress{{Medium: "sms", Address: "+16166342620", Confirmed: true}},
 	}
 
 	err = db.Create(&user3).Error
@@ -81,4 +80,9 @@ func Test(cfg *periwinkle.Cfg, db *gorm.DB) {
 		log.Println(err)
 	}
 
+	backend.AssignTwilioNumber(db, "guntas", "Purdue", "+13346038139")	
+	gr := backend.GetGroupByUserAndTwilioNumber(db, "guntas", "+13346038139") 
+	fmt.Println(gr.ID)
 }
+//SUCCESSFULL SMS TEST
+// ORIGINAL_RECIPIENT=+16166342620@sms.gateway bin/receive-email < <(printf '%s\r\n' 'To: +16166342620@sms.gateway' 'From: Purdue@periwinkle.lol' "Subject: email testing" "Message-Id: $RANDOM@bar" '' 'body')

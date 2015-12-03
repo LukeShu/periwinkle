@@ -94,7 +94,7 @@ func (md Maildir) NewMail() Writer {
 	}
 	ret := &mailWriter{
 		md:     md,
-		unique: newUnique(),
+		unique: unique,
 		file:   file,
 	}
 	go func() {

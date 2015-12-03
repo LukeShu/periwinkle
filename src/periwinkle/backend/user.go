@@ -112,7 +112,7 @@ func (u *User) GetUserSubscriptions(db *gorm.DB) []Subscription {
 func GetAddressByIDAndMedium(db *gorm.DB, id string, medium string) *UserAddress {
 	id = strings.ToLower(id)
 	var o UserAddress
-	if result := db.Where(&UserAddress{UserID: id, Medium: medium}).First(&o); result.Error != nil {
+	if result := db.Where("user_id=? and medium=?", id, medium).First(&o); result.Error != nil {
 		if result.RecordNotFound() {
 			return nil
 		}

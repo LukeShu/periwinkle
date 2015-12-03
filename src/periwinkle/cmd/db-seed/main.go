@@ -8,7 +8,7 @@ import (
 	"periwinkle"
 	"periwinkle/backend"
 	"periwinkle/cmdutil"
-
+	"periwinkle/test"
 	"lukeshu.com/git/go/libsystemd.git/sd_daemon/lsb"
 )
 
@@ -38,4 +38,5 @@ func main() {
 		periwinkle.LogErr(err)
 		os.Exit(int(lsb.EXIT_FAILURE))
 	}
+	test.Test(config, config.DB)
 }
