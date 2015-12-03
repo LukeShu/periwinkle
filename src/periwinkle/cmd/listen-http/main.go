@@ -159,6 +159,7 @@ func main() {
 	signals := make(chan os.Signal)
 	signal.Notify(signals, syscall.SIGTERM, syscall.SIGHUP)
 
+	periwinkle.Logf("Ready; listening")
 	sd.Notify(false, "READY=1")
 
 	done := make(chan uint8)
