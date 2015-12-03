@@ -34,21 +34,21 @@
 						<md-input-container>
 							<label>{{ "GENERAL.USERNAME_EMAIL" | translate }}</label>
 							<input ng-model="login.username" type="text" name="username" ng-disabled="loading.is" required></input>
-							<div ng-messages="loginForm.username.$error" role="alert" ng-if="!loginForm.username.$untouched">
+							<div ng-messages="loginForm.username.$error" role="alert">
 								<div ng-message="required">{{ "GENERAL.FORM.ERROR.REQUIRED_FIELD" | translate }}</div>
 							</div>
 						</md-input-container>
 						<md-input-container>
 							<label>{{ "GENERAL.PASSWORD" | translate }}</label>
 							<input ng-model="login.password" name="password" type="password" ng-disabled="loading.is"required></input>
-							<div ng-messages="loginForm.password.$error" role="alert" ng-if="!loginForm.password.$untouched">
+							<div ng-messages="loginForm.password.$error" role="alert">
 								<div ng-message="required">{{ "GENERAL.FORM.ERROR.REQUIRED_FIELD" | translate }}</div>
 							</div>
 						</md-input-container>
 						<div style="clear:both;"></div>
 					</md-card-content>
 					<div layout="row" layout-align="end center">
-						<md-button id="login-button"class="md-button md-primary" type="submit" ng-disabled="loading || (loginForm.$invalid && loginForm.$dirty)" aria-label="Sign Up">
+						<md-button id="login-button"class="md-button md-primary" type="submit" ng-disabled="loading" aria-label="Sign Up">
 							{{ "LOGIN.LOGIN.LOGIN" | translate }}
 						</md-button>
 					</div>
@@ -67,12 +67,12 @@
 
 		<div ng-if="login.isSignup">
 			<md-card id="signup">
-				<form name="signupForm" ng-submit="signupForm.$valid && login.signup($event)">
+				<form name="signupForm" ng-submit="login.signup(signupForm, $event, 'signup')">
 					<md-card-content layout="column">
 						<md-input-container>
 							<label>{{ "GENERAL.USERNAME" | translate }}</label>
 							<input ng-model="login.username" type="text" name="username" ng-disabled="loading.is" required xreg-pattern="^[0-9_\-\pL]+$"></input>
-							<div ng-messages="signupForm.username.$error" role="alert" ng-if="!signupForm.username.$untouched">
+							<div ng-messages="signupForm.username.$error" role="alert">
 								<div ng-message="required">{{ "GENERAL.FORM.ERROR.REQUIRED_FIELD" | translate }}</div>
 								<div ng-message="xregPattern">{{  }}</div>
 							</div>
@@ -80,7 +80,7 @@
 						<md-input-container>
 							<label>{{ "GENERAL.EMAIL" | translate }}</label>
 							<input ng-model="login.email" name="email" type="email" ng-change="signupForm.confirmEmail.$validate();" ng-disabled="loading.is" xreg-pattern="^.+@.+\..+$" required></input>
-							<div ng-messages="signupForm.email.$error" role="alert" ng-if="!signupForm.email.$untouched">
+							<div ng-messages="signupForm.email.$error" role="alert">
 								<div ng-message="required">{{ "GENERAL.FORM.ERROR.REQUIRED_FIELD" | translate }}</div>
 								<div ng-message="xregPattern">That is not a valid email address.</div>
 							</div>
@@ -88,7 +88,7 @@
 						<md-input-container>
 							<label>{{ "LOGIN.SIGNUP.CONFIRM_EMAIL" | translate }}</label>
 							<input ng-model="login.confirmEmail" name="confirm_email" type="email" data-match="signupForm.email" ng-disabled="loading.is" xreg-pattern="^.+@.+\..+$" required autocomplete="off"></input>
-							<div ng-messages="signupForm.confirm_email.$error" role="alert" ng-if="!signupForm.confirm_email.$untouched">
+							<div ng-messages="signupForm.confirm_email.$error" role="alert">
 								<div ng-message="required">{{ "GENERAL.FORM.ERROR.REQUIRED_FIELD" | translate }}</div>
 								<div ng-message="xregPattern">That is not a valid email address.</div>
 								<div ng-message="match">{{ "LOGIN.SIGNUP.CONFIRM_EMAIL_NO_MATCH" | translate }}</div>
@@ -97,14 +97,14 @@
 						<md-input-container>
 							<label>{{ "GENERAL.PASSWORD" | translate }}</label>
 							<input ng-model="login.password" type="password" name="password" ng-change="signupForm.confirmPassword.$validate();" ng-disabled="loading.is" required></input>
-							<div ng-messages="signupForm.password.$error" role="alert" ng-if="!signupForm.password.$untouched">
+							<div ng-messages="signupForm.password.$error" role="alert">
 								<div ng-message="required">{{ "GENERAL.FORM.ERROR.REQUIRED_FIELD" | translate }}</div>
 							</div>
 						</md-input-container>
 						<md-input-container>
 							<label>{{ "LOGIN.SIGNUP.CONFIRM_PASSWORD" | translate }}</label>
 							<input ng-model="login.confirmPassword" name="confirm_password" data-match="signupForm.password" type="password" ng-disabled="loading.is" required></input>
-							<div ng-messages="signupForm.confirm_password.$error" role="alert" ng-if="!signupForm.confirm_password.$untouched">
+							<div ng-messages="signupForm.confirm_password.$error" role="alert">
 								<div ng-message="required">{{ "GENERAL.FORM.ERROR.REQUIRED_FIELD" | translate }}</div>
 								<div ng-message="match">{{ "LOGIN.SIGNUP.CONFIRM_PASSWORD_NO_MATCH" | translate }}</div>
 							</div>
@@ -112,7 +112,7 @@
 						<div style="clear:both;"></div>
 					</md-card-content>
 					<div layout="row" layout-align="end center">
-						<md-button id="signup-button" type="submit" class="md-button md-primary" ng-disabled="loading || (signupForm.$invalid && signupForm.$dirty)" aria-label="Sign Up">
+						<md-button id="signup-button" type="submit" focus-on="signup" class="md-button md-primary" ng-disabled="loading" aria-label="Sign Up">
 							{{ "LOGIN.SIGNUP.SIGNUP" | translate }}
 						</md-button>
 					</div>
