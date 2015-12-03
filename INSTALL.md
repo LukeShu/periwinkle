@@ -3,7 +3,8 @@ Installing Periwinkle
 
 # Compilation
 
-First up, you have to compile the software.  There is no
+First up, you have to compile the software.  This will require a Go
+language compiler; 1.5 or greater; 1.4 will not work.  There is no
 pre-compilation configuration; simply run
 
     $ make
