@@ -82,8 +82,8 @@ func (server *SmsCallbackServer) ServeHTTP(w http.ResponseWriter, req *http.Requ
 	defer conn.Close()
 	_, err = conn.Write(statusJSON)
 	if err != nil {
-		periwinkle.Logf("Couldnt write to the socket")	
-		}
+		periwinkle.Logf("Couldnt write to the socket")
+	}
 	delete(server.conns, status.MessageSid)
 	server.connsLock.Unlock()
 }
