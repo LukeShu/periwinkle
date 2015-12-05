@@ -237,10 +237,11 @@ func DeleteUnusedTwilioNumber(db *gorm.DB, num string) error {
 	var twilioNum TwilioNumber
 	if result := db.Where("number = ?", num).First(&twilioNum); result.Error != nil {
 		if result.RecordNotFound() {
-			periwinkle.Logf("RecordNotFound")
-			return result.Error
+			periwinkle.Logf("The number is already deleted!!!")
+			return nil
 		}
 		dbError(result.Error)
+		return locale.UntranslatedError(result.Error)
 	}
 
 	var twilioPool TwilioPool
@@ -248,15 +249,17 @@ func DeleteUnusedTwilioNumber(db *gorm.DB, num string) error {
 	if result.Error != nil {
 		if result.RecordNotFound() {
 
-			if result := db.Where("number = ?", num).Delete(&TwilioNumber{}); result.Error != nil {
-				dbError(result.Error)
+			o := db.Where("number = ?", num).Delete(&TwilioNumber{})
+			if o.Error != nil {
+				dbError(o.Error)
+				return locale.UntranslatedError(o.Error)
 			}
-
-			periwinkle.Logf("RecordNotFound")
-			return locale.UntranslatedError(result.Error)
+			periwinkle.Logf("The number is deleted")
+			return nil
 		}
 		dbError(result.Error)
+		return locale.UntranslatedError(result.Error)
 	}
-
+	periwinkle.Logf("The number is used for a twilio pool")
 	return nil
 }

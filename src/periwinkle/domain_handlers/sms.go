@@ -19,8 +19,6 @@ import (
 	"periwinkle/twilio"
 	"postfixpipe"
 	"strings"
-	"time"
-
 	"github.com/jinzhu/gorm"
 )
 
@@ -97,7 +95,6 @@ func sender(message mail.Message, smsTo string, db *gorm.DB, cfg *periwinkle.Cfg
 			return smsStatus.MessageStatus, fmt.Errorf("%s", smsStatus.ErrorCode)
 		}
 		if smsStatus.MessageStatus == "queued" || smsStatus.MessageStatus == "sending" || smsStatus.MessageStatus == "sent" {
-			time.Sleep(time.Second)
 			smsStatus, err = SmsWaitForCallback(message.Sid)
 
 			if err != nil {

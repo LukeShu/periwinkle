@@ -13,6 +13,7 @@ import (
 	"net"
 	"net/http"
 	"net/url"
+	"periwinkle"
 	"sync"
 )
 
@@ -80,11 +81,11 @@ func (server *SmsCallbackServer) ServeHTTP(w http.ResponseWriter, req *http.Requ
 	}
 	defer conn.Close()
 	_, err = conn.Write(statusJSON)
-	// TODO: check err
+	if err != nil {
+		periwinkle.Logf("Couldnt write to the socket")	
+		}
 	delete(server.conns, status.MessageSid)
 	server.connsLock.Unlock()
-
-	// TODO: respond to the HTTP request (empty body or whatever)
 }
 
 // client
