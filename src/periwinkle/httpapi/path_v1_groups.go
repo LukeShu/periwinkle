@@ -199,12 +199,14 @@ func (d dirGroups) Methods() map[string]func(he.Request) he.Response {
 func (d dirGroups) Subentity(name string, req he.Request) he.Entity {
 	name = strings.ToLower(name)
 	db := req.Things["db"].(*gorm.DB)
-	// TODO: permissions check
-	//sess := req.Things["session"].(*backend.Session)
+	sess := req.Things["session"].(*backend.Session)
 	grp := backend.GetGroupByID(db, name)
-	/*if grp.Read != 1 && !backend.IsSubscribed(db, sess.UserID, *grp) {
-		return nil
-	}*/
+	if grp.ReadPublic == 1 {
+		subscribed := backend.IsSubscribed(db, sess.UserID, *grp)
+		if (grp.ReadConfirmed == 1 && subscribed == 1) || subscribed == 0 {
+			return nil
+		}
+	}
 	return (*group)(grp)
 }
 

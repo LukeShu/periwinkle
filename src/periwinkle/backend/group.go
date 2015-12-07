@@ -65,26 +65,15 @@ func GetGroupByID(db *gorm.DB, id string) *Group {
 
 func GetGroupsByMember(db *gorm.DB, user User) []Group {
 	subscribed := user.GetUserSubscriptions(db)
-	var subscriptions map[string]int
-	subscriptions = make(map[string]int)
-	for _, sub := range subscribed {
-		subscriptions[sub.GroupID] = 1
-	}
-	groupids := make([]string, 0, len(subscriptions))
-	for key := range subscriptions {
-		groupids = append(groupids, key)
-	}
-	// use the list of group IDs to get the groups
 	var groups []Group
-	if len(groupids) > 0 {
-		if result := db.Where(groupids).Find(&groups); result.Error != nil {
-			if result.RecordNotFound() {
-				return nil
-			}
-			dbError(result.Error)
+	for _, sub := range subscribed {
+		// only add group if user is confirmed member or
+		// if group allows non confirmed members to see that it exists
+		if sub.Confirmed || sub.Group.ExistenceConfirmed == 2 {
+			groups = append(groups, sub.Group)
 		}
 	}
-	// return them
+
 	return groups
 }
 

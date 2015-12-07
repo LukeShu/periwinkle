@@ -91,6 +91,9 @@ func (u *User) GetUserSubscriptions(db *gorm.DB) []Subscription {
 	} else {
 		subscriptions = make([]Subscription, 0)
 	}
+	for _, subscription := range subscriptions {
+		db.Model(subscription).Related(&subscription.Group)
+	}
 	return subscriptions
 }
 

@@ -33,7 +33,7 @@ func GetSubscriptionsGroupByID(db *gorm.DB, groupID string) []Subscription {
 	return o
 }
 
-func IsSubscribed(db *gorm.DB, userID string, group Group) bool {
+func IsSubscribed(db *gorm.DB, userID string, group Group) int {
 	subscriptions := GetSubscriptionsGroupByID(db, group.ID)
 	addressIDs := make([]int64, len(subscriptions))
 	for i, subscription := range subscriptions {
@@ -48,15 +48,22 @@ func IsSubscribed(db *gorm.DB, userID string, group Group) bool {
 		}
 	} else {
 		// no subscriptions so user cannot possibly be subscribed
-		return false
+		return 0 // not subscribed
 	}
 	for _, address := range addresses {
 		if address.UserID == userID {
-			return true
+			for _, subscription := range subscriptions {
+				if address.ID == subscription.AddressID {
+					if subscription.Confirmed {
+						return 2
+					}
+					return 1
+				}
+			}
 		}
 	}
 	// could not find user in subscribed user addresses, therefore, he/she isn't subscribed
-	return false
+	return 0
 }
 
 func IsAdmin(db *gorm.DB, userID string, group Group) bool {
