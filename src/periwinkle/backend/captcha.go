@@ -26,10 +26,10 @@ const (
 )
 
 type Captcha struct {
-	ID         string
-	Value      string
-	Token      string
-	Expiration time.Time
+	ID         string    `json:"-"`
+	Value      string    `json:"value"`
+	Token      string    `json:"-"`
+	Expiration time.Time `json:"expiration_time"`
 }
 
 func (o Captcha) dbSchema(db *gorm.DB) locale.Error {
