@@ -111,18 +111,31 @@
 			if(!form.$valid)
 				return;
 			$scope.loading = true;
-			if(false){ //captcha_id == '') {
+			if(false){ //captcha_key == '') {
 				$http({
 					method:	'POST',
 					url:	'/v1/captcha'
 				}).then(
 					function success(response) {
 						//store token
-						captcha_id = response.data.id;
+						captcha_id = response.data.value;
 						//show dialog
+						//dialog return captcha key or nothing (or error)
 					},
 					function fail(response) {
-
+						//show error to user
+						var status_code = response.status;
+						var reason = response.data;
+						$scope.loading = false;
+						//show alert
+						switch(status_code){
+							case 500:
+								$scope.showError('GENERAL.ERRORS.500.TITLE', 'GENERAL.ERRORS.500.CONTENT', '', '#signup-button', '#signup-button');
+								break;
+							default:
+								$scope.showError('GENERAL.ERRORS.DEFAULT.TITLE', 'GENERAL.ERRORS.DEFAULT.CONTENT', '', '#signup-button', '#signup-button');
+						}
+						$mdDialog.show(dialog);
 					}
 				);
 			} else {
@@ -143,12 +156,9 @@
 						self.login();
 					},
 					function fail(response) {
-						//do work with response
 						//show error to user
 						var status_code = response.status;
 						var reason = response.data;
-						var $translate = $filter('translate');
-						var $escape = $filter('escapeHTML');
 						$scope.loading = false;
 						//show alert
 						switch(status_code){

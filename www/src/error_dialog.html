@@ -1,23 +1,28 @@
 <!-- // Copyright 2015 Richard Wisniewski -->
 <md-dialog aria-label="Error"  ng-cloak>
-	<div class="md-padding">
-		<h1>{{ title |translate }}</h1>
+	<form ng-submit="finish()">
+		<md-toolbar style="background: white; color: black;">
+			<div class="md-toolbar-tools">
+				<h1>{{ title |translate }}</h1>
+			</div>
+		</md-toolbar>
 
 		<md-dialog-content>
-			{{ body | translate }}
-			<pre ng-show="showMore" ng-if="more != ''">
-				{{ more }}
-			</pre>
+			<div class="md-dialog-content" layout="column">
+				{{ body | translate }}
+				<pre ng-show="showMore" ng-if="more != ''">
+					{{ more }}
+				</pre>
+			</div>
 		</md-dialog-content>
-	</div>
-
-	<div class="md-actions" layout="row">
-		<md-button ng-if="more != ''" ng-click="details()">
-			Details
-		</md-button>
-		<span flex=""></span>
-		<md-button ng-click="finish()">
-			OK
-		</md-button>
-	</div>
+		<md-dialog-actions layout="row">
+			<md-button type="button" ng-if="more != ''" ng-click="details()">
+				Details
+			</md-button>
+			<span flex=""></span>
+			<md-button type="submit">
+				OK
+			</md-button>
+		</md-dialog-actions>
+	</form>
 </md-dialog>
