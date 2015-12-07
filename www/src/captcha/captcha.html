@@ -9,7 +9,7 @@
 		<md-dialog-content>
 			<div class="md-dialog-content" layout="column">
 				<img ng-src="/v1/captcha/{{id}}.png" />
-				<p style="color: red;" ng-if="error != ''">{{ error | translate }}</p>
+				<p class="md-warn" ng-if="error != ''">{{ error | translate }}</p>
 				<md-input-container>
 					<label>{{ "CAPTCHA.INPUT" | translate }}</label>
 					<input ng-model="text" name="text" required></input>

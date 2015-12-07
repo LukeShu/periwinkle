@@ -105,6 +105,46 @@
 			);
 		}
 
+		this.testCaptcha() {
+			$http({
+				method:	'POST',
+				url:	'/v1/captcha'
+			}).then(
+				function success(response) {
+					//store token
+					captcha_id = response.data.value;
+					//show dialog
+					$mdDialog.show({
+						controller:				'ChangePasswordController',
+						templateUrl:			'src/user/change_password.html',
+						parent:					angular.element(document.body),
+						targetEvent:			ev,
+						clickOutsideToClose:	true
+					}).then(
+						function hide (response) {
+						},
+						function cancel() {
+
+						}
+					);
+					//dialog return captcha key or nothing (or error)
+				},
+				function fail(response) {
+					//show error to user
+					var status_code = response.status;
+					var reason = response.data;
+					$scope.loading = false;
+					//show alert
+					switch(status_code){
+						case 500:
+							$scope.showError('GENERAL.ERRORS.500.TITLE', 'GENERAL.ERRORS.500.CONTENT', '', '#signup-button', '#signup-button');
+							break;
+						default:
+							$scope.showError('GENERAL.ERRORS.DEFAULT.TITLE', 'GENERAL.ERRORS.DEFAULT.CONTENT', '', '#signup-button', '#signup-button');
+					}
+				}
+		}
+
 		this.signup = function(form, ev, foc) {
 			//http signup api call
 			focus(foc);
@@ -112,31 +152,7 @@
 				return;
 			$scope.loading = true;
 			if(false){ //captcha_key == '') {
-				$http({
-					method:	'POST',
-					url:	'/v1/captcha'
-				}).then(
-					function success(response) {
-						//store token
-						captcha_id = response.data.value;
-						//show dialog
-						//dialog return captcha key or nothing (or error)
-					},
-					function fail(response) {
-						//show error to user
-						var status_code = response.status;
-						var reason = response.data;
-						$scope.loading = false;
-						//show alert
-						switch(status_code){
-							case 500:
-								$scope.showError('GENERAL.ERRORS.500.TITLE', 'GENERAL.ERRORS.500.CONTENT', '', '#signup-button', '#signup-button');
-								break;
-							default:
-								$scope.showError('GENERAL.ERRORS.DEFAULT.TITLE', 'GENERAL.ERRORS.DEFAULT.CONTENT', '', '#signup-button', '#signup-button');
-						}
-						$mdDialog.show(dialog);
-					}
+
 				);
 			} else {
 				$http({
@@ -171,7 +187,6 @@
 							default:
 								$scope.showError('GENERAL.ERRORS.DEFAULT.TITLE', 'GENERAL.ERRORS.DEFAULT.CONTENT', '', '#signup-button', '#signup-button');
 						}
-						$mdDialog.show(dialog);
 					}
 				);
 			}
