@@ -28,7 +28,6 @@ func (o *message) Subentity(name string, req he.Request) he.Entity {
 func (o *message) Methods() map[string]func(he.Request) he.Response {
 	return map[string]func(he.Request) he.Response{
 		"GET": func(req he.Request) he.Response {
-			// TODO: permission check
 			return rfc7231.StatusOK(o)
 		},
 	}
@@ -62,7 +61,16 @@ func (d dirMessages) Methods() map[string]func(he.Request) he.Response {
 
 func (d dirMessages) Subentity(name string, req he.Request) he.Entity {
 	db := req.Things["db"].(*gorm.DB)
-	return (*message)(backend.GetMessageByID(db, name))
+	message := (*message)(backend.GetMessageByID(db, name))
+	sess := req.Things["session"].(*backend.Session)
+	grp := backend.GetGroupByID(db, message.GroupID)
+	if grp.ReadPublic == 1 {
+		subscribed := backend.IsSubscribed(db, sess.UserID, *grp)
+		if (grp.ReadConfirmed == 1 && subscribed == 1) || subscribed == 0 {
+			return nil
+		}
+	}
+	return message
 }
 
 func (d dirMessages) SubentityNotFound(name string, req he.Request) he.Response {
