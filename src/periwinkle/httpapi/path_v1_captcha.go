@@ -10,6 +10,7 @@ import (
 	"io"
 	"locale"
 	"periwinkle/backend"
+	"time"
 
 	"github.com/jinzhu/gorm"
 )
@@ -29,6 +30,29 @@ func (o *captcha) Methods() map[string]func(he.Request) he.Response {
 		"GET": func(req he.Request) he.Response {
 			return rfc7231.StatusOK(o)
 		},
+
+		"POST": func(req he.Request) he.Response {
+			db := req.Things["db"].(*gorm.DB)
+			type postfmt struct {
+				Value      string    `json:"value"`
+				Expiration time.Time `json:"password"`
+			}
+			var entity postfmt
+			httperr := safeDecodeJSON(req.Entity, &entity)
+			if httperr != nil {
+				return *httperr
+			}
+
+			o := (*captcha)(backend.NewCaptcha(db))
+
+			if o == nil {
+				return rfc7231.StatusForbidden(he.NetPrintf("Captcha generation failed"))
+			} else {
+				ret := rfc7231.StatusOK(o)
+				return ret
+			}
+		},
+
 		"PUT": func(req he.Request) he.Response {
 			db := req.Things["db"].(*gorm.DB)
 			var newCaptcha captcha
