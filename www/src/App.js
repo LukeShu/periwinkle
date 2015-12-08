@@ -70,10 +70,6 @@
 				templateUrl:	'src/login/login.html',
 				controller:		'LoginController as login'
 			}).
-			when('/dash', {
-				templateUrl:	'src/dashboard/dashboard.html',
-				controller:		'DashboardController as dash'
-			}).
 			when('/user', {
 				templateUrl:	'src/user/user.html',
 				controller:		'UserController as user'

@@ -103,9 +103,9 @@
 					}
 				}
 			);
-		}
+		};
 
-		this.testCaptcha() {
+		this.testCaptcha = function() {
 			$http({
 				method:	'POST',
 				url:	'/v1/captcha'
@@ -115,19 +115,22 @@
 					captcha_id = response.data.value;
 					//show dialog
 					$mdDialog.show({
-						controller:				'ChangePasswordController',
-						templateUrl:			'src/user/change_password.html',
+						controller:				'CaptchaController',
+						templateUrl:			'src/login/captcha.html',
 						parent:					angular.element(document.body),
 						targetEvent:			ev,
-						clickOutsideToClose:	true
+						clickOutsideToClose:	true,
+						locals:	{
+							'captcha_id': captcha_id
+						}
 					}).then(
 						function hide (response) {
+							//dialog return captcha key or nothing (or error)
 						},
 						function cancel() {
 
 						}
 					);
-					//dialog return captcha key or nothing (or error)
 				},
 				function fail(response) {
 					//show error to user
@@ -143,7 +146,8 @@
 							$scope.showError('GENERAL.ERRORS.DEFAULT.TITLE', 'GENERAL.ERRORS.DEFAULT.CONTENT', '', '#signup-button', '#signup-button');
 					}
 				}
-		}
+			);
+		};
 
 		this.signup = function(form, ev, foc) {
 			//http signup api call
@@ -152,8 +156,6 @@
 				return;
 			$scope.loading = true;
 			if(false){ //captcha_key == '') {
-
-				);
 			} else {
 				$http({
 					method: 'POST',
@@ -190,7 +192,7 @@
 					}
 				);
 			}
-		}
+		};
 
 		this.togleSignup = function () {
 			self.isSignup = !self.isSignup;
@@ -202,6 +204,6 @@
 			} else {
 				$scope.title = 'LOGIN.LOGIN.LOGIN';
 			}
-		}
+		};
 	}
 })();
