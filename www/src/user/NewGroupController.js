@@ -19,12 +19,12 @@
 			post : {
 				public: 'bounce',
 				confirmed: 'moderate',
-				member: 'allow'
+				member: 'accept'
 			},
 			join : {
 				public: 'bounce',
 				confirmed: 'moderate',
-				member: 'allow'
+				member: 'accept'
 			},
 			read: {
 				public: 'no',
