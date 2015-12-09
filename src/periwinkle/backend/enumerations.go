@@ -18,10 +18,9 @@ var reverse = map[string]int{
 	"accept":    3,
 	"no":        1,
 	"yes":       2,
-	"public":    1,
-	"confirmed": 2,
-	"member":    3,
-	"moderator": 4,
+	"public":    0,
+	"confirmed": 1,
+	"member":    2,
 }
 
 func Reverse(m map[string]string) []int {
@@ -39,7 +38,7 @@ var postjoin = map[int]string{
 }
 
 func PostJoin(m [3]int) map[string]string {
-	var a map[string]string
+	a := make(map[string]string)
 	a["public"] = postjoin[m[0]]
 	a["confirmed"] = postjoin[m[1]]
 	a["member"] = postjoin[m[2]]
@@ -52,7 +51,7 @@ var readexist = map[int]string{
 }
 
 func ReadExist(m [2]int) map[string]string {
-	var a map[string]string
+	a := make(map[string]string)
 	a["public"] = readexist[m[0]]
 	a["confirmed"] = readexist[m[1]]
 	return a
