@@ -136,16 +136,31 @@ func NewGroup(db *gorm.DB, name string, existence []int, read []int, post []int,
 	return &o
 }
 
-// TODO: we should have the database do this.
-func checkInput(input int, min int, max int, defaultt int) int {
-	if input < min || input > max {
-		return defaultt
-	}
-	return input
-}
+func (o *Group) Save(db *gorm.DB, moderate bool) {
+	if o.Subscriptions != nil {
+		var oldSubscriptions []Subscription
+		db.Model(o).Related(&oldSubscriptions)
 
-func (o *Group) Save(db *gorm.DB) {
+		for _, oldsub := range oldSubscriptions {
+			match := false
+
+			for _, newsub := range o.Subscriptions {
+				if newsub.AddressID == oldsub.AddressID {
+					match = true
+					break
+				}
+			}
+			if !match {
+				if err := db.Where("addressid = ? AND groupid = ?", oldsub.AddressID, oldsub.GroupID).Delete(Subscription{}).Error; err != nil {
+					dbError(err)
+				}
+			}
+		}
+
+	}
+
 	if err := db.Save(o).Error; err != nil {
 		dbError(err)
 	}
+
 }
