@@ -108,7 +108,8 @@
 		this.testCaptcha = function() {
 			$http({
 				method:	'POST',
-				url:	'/v1/captcha'
+				url:	'/v1/captcha',
+				data: ["Something needs to be here so there!"]
 			}).then(
 				function success(response) {
 					//store token
