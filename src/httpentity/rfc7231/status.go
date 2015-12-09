@@ -39,7 +39,7 @@ func StatusCreated(parent he.EntityGroup, childName string, req he.Request) he.R
 	return he.Response{
 		Status:  201,
 		Headers: response.Headers,
-		Entity: mimetypes2net(req.URL, mimetypes),
+		Entity:  mimetypes2net(req.URL, mimetypes),
 	}
 }
 
