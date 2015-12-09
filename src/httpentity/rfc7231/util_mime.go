@@ -26,7 +26,11 @@ func mimetypes2net(u *url.URL, mimetypes []string) he.NetEntity {
 	for i, mimetype := range mimetypes {
 		u2, _ := u.Parse("") // dup
 		exts, _ := mime.ExtensionsByType(mimetype)
-		u2.Path += exts[0]
+		if exts == nil || len(exts) == 0 {
+			u2.Path += "rfc7231_mimetypes2net_no_extension_should_never_happen?" + mimetype
+		} else {
+			u2.Path += exts[0]
+		}
 		locations[i] = u2
 	}
 	return he.NetLocations(locations)
