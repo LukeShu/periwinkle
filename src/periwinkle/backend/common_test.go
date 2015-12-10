@@ -16,7 +16,7 @@ func CreateTempDB() *periwinkle.Cfg {
 		Debug:          true,
 		TrustForwarded: true,
 		GroupDomain:    "localhost",
-		WebRoot:        "locahost:8080",
+		WebRoot:        "http://locahost:8080",
 		DB:             nil, // the default DB is set later
 	}
 

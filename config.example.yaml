@@ -6,7 +6,7 @@ TrustForwarded:       true
 #TwilioAccountID:      $TWILIO_ACCOUNTID
 #TwilioAuthToken:      $TWILIO_TOKEN
 GroupDomain:          "periwinkle.lol"
-WebRoot:              "periwinkle.lol"
+WebRoot:              "http://periwinkle.lol"
 # DB:
 #   driver: mysql
 #   source: "username:password@hostname/database?charset=utf8&parseTime=True"

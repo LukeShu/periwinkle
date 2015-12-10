@@ -59,7 +59,7 @@ func sender(message mail.Message, smsTo string, db *gorm.DB, cfg *periwinkle.Cfg
 	v.Set("From", smsFrom)
 	v.Set("To", smsTo)
 	v.Set("Body", string(smsBody))
-	v.Set("StatusCallback", "http://"+cfg.WebRoot+"/callbacks/twilio-sms")
+	v.Set("StatusCallback", cfg.WebRoot+"/callbacks/twilio-sms")
 
 	client := &http.Client{}
 

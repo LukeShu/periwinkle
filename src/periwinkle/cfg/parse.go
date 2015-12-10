@@ -47,7 +47,7 @@ func Parse(in io.Reader) (cfgptr *periwinkle.Cfg, e locale.Error) {
 		TwilioAccountID:      os.Getenv("TWILIO_ACCOUNTID"),
 		TwilioAuthToken:      os.Getenv("TWILIO_TOKEN"),
 		GroupDomain:          "localhost",
-		WebRoot:              "locahost:8080",
+		WebRoot:              "http://locahost:8080",
 		DB:                   nil, // the default DB is set later
 		DefaultDomainHandler: bounceNoHost,
 	}
