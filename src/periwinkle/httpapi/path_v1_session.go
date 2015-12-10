@@ -52,6 +52,7 @@ func newFileSession() fileSession {
 			}
 
 			var user *backend.User
+			// TODO: also detect things like phone numbers
 			if strings.Contains(entity.Username, "@") {
 				user = backend.GetUserByAddress(db, "email", entity.Username)
 			} else {
