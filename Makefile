@@ -65,14 +65,14 @@ gofmt: generate
 	{ gofmt -s -d $(addprefix $(topdir)/src/,$(toppackages)) 2>&1 | tee /dev/stderr | test -z "$$(cat)"; } 2>&1
 goimports: generate $(GOIMPORTS)
 	{ goimports -d $(addprefix $(topdir)/src/,$(toppackages)) 2>&1 | tee /dev/stderr | test -z "$$(cat)"; } 2>&1
-.PHONY: gofmt goimports
+govet: generate
+	GOPATH='$(abspath $(topdir))' go tool vet -composites=false $(addprefix $(topdir)/src/,$(toppackages))
+.PHONY: gofmt goimports govet
 
 # package-oriented
 gotest: build
 	GOPATH='$(abspath $(topdir))' go test -cover -v $(packages)
-govet: generate
-	GOPATH='$(abspath $(topdir))' go vet $(packages)
-.PHONY: gotest govet
+.PHONY: gotest
 
 golint: generate $(GOLINT)
 	export GOPATH='$(abspath $(topdir))'; { { $(foreach p,$(packages),golint $p; )} $(golint-filter) | tee /dev/stderr | test -z "$$(cat)"; } 2>&1
