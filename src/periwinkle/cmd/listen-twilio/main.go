@@ -12,7 +12,6 @@ import (
 	"net/http"
 	"periwinkle/backend"
 	"periwinkle/cmdutil"
-	"periwinkle/putil"
 	"periwinkle/twilio"
 	"strings"
 	"time"
@@ -106,7 +105,7 @@ func main() {
 								group := backend.GetGroupByUserAndTwilioNumber(config.DB, user.ID, message.Messages[i].To)
 								//Not yet set: cfg.GroupDomain="periwinkle.lol"
 								fmt.Println("GroupName:", group.ID)
-								putil.MessageBuilder{
+								MessageBuilder{
 									Maildir: config.Mailstore,
 									Headers: map[string]string{
 										"To":      group.ID + "@" + "periwinkle.lol", //config.GroupDomain,
