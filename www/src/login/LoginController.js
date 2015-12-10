@@ -114,12 +114,12 @@
 				function success(response) {
 					//store token
 					captcha_id = response.data.value;
+					debugger;
 					//show dialog
 					$mdDialog.show({
 						controller:				'CaptchaController',
-						templateUrl:			'src/login/captcha.html',
+						templateUrl:			'src/captcha/captcha.html',
 						parent:					angular.element(document.body),
-						targetEvent:			ev,
 						clickOutsideToClose:	true,
 						locals:	{
 							'captcha_id': captcha_id
