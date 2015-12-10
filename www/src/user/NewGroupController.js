@@ -6,7 +6,7 @@
 	.module('user')
 	.controller('NewGroupController', NewGroupController);
 
-	function NewGroupController($scope, $mdDialog, $http) {
+	function NewGroupController($scope, $mdDialog, $http, original) {
 		var self = $scope.group = this;
 
 		$scope.loading = false;

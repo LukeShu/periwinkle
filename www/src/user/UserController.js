@@ -420,7 +420,10 @@
 					templateUrl:			'src/user/new_group.html',
 					parent:					angular.element(document.body),
 					targetEvent:			ev,
-					clickOutsideToClose:	true
+					clickOutsideToClose:	true,
+                                        locals: {
+                                                original: null
+                                        }
 				}).then(
 					function (response) {
 						//the dialog responded before closing
