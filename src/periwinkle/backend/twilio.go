@@ -262,3 +262,14 @@ func DeleteUnusedTwilioNumber(db *gorm.DB, num string) error {
 	periwinkle.Logf("The number is used for a twilio pool")
 	return nil
 }
+
+func DeleteUnusedTwilioNumbers(db *gorm.DB, cfg *periwinkle.Cfg) {
+
+	twilio_num := GetAllExistingTwilioNumbers(cfg) 
+	if twilio_num == nil {
+		return
+	}
+	for _, v := range twilio_num {
+		DeleteUnusedTwilioNumber(db, v)
+	}
+}
