@@ -265,7 +265,7 @@ func DeleteUnusedTwilioNumber(db *gorm.DB, num string) error {
 
 func DeleteUnusedTwilioNumbers(db *gorm.DB, cfg *periwinkle.Cfg) {
 
-	twilio_num := GetAllExistingTwilioNumbers(cfg) 
+	twilio_num := GetAllExistingTwilioNumbers(cfg)
 	if twilio_num == nil {
 		return
 	}

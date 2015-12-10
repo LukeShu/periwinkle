@@ -6,6 +6,7 @@ package backend
 
 import (
 	"locale"
+	"strings"
 
 	"github.com/jinzhu/gorm"
 )
@@ -52,6 +53,7 @@ func (o Group) dbSeed(db *gorm.DB) locale.Error {
 }
 
 func GetGroupByID(db *gorm.DB, id string) *Group {
+	id = strings.ToLower(id)
 	var o Group
 	if result := db.First(&o, "id = ?", id); result.Error != nil {
 		if result.RecordNotFound() {
@@ -115,6 +117,7 @@ func NewGroup(db *gorm.DB, name string, existence []int, read []int, post []int,
 	if name == "" {
 		programmerError("Group name can't be empty")
 	}
+	name = strings.ToLower(name)
 	subscriptions := make([]Subscription, 0)
 	o := Group{
 		ID:                 name,

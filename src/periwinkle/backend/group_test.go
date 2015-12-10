@@ -5,6 +5,7 @@ package backend_test
 
 import (
 	. "periwinkle/backend"
+	"strings"
 	"testing"
 )
 
@@ -31,7 +32,7 @@ func TestNewGroup(t *testing.T) {
 	group.Subscriptions = sub
 
 	switch {
-	case "The Doe" != group.ID:
+	case !strings.EqualFold("The Doe", group.ID):
 		t.Error("ID's do not match")
 	}
 }
@@ -43,7 +44,7 @@ func TestGetGroupByID(t *testing.T) {
 	switch {
 	case o == nil:
 		t.Error("GetGroupByID: returned nil")
-	case o.ID != group.ID:
+	case !strings.EqualFold(o.ID, group.ID):
 		t.Error("ID does not match requested group")
 	}
 }
@@ -55,7 +56,7 @@ func TestGetGroupsByMember(t *testing.T) {
 	switch {
 	case o == nil:
 		t.Error("GetGroupsByMember: returned nil")
-	case o[0].ID != group.ID:
+	case !strings.EqualFold(o[0].ID, group.ID):
 		t.Error("Did not grab correct group")
 	}
 }
@@ -77,16 +78,17 @@ func TestGetAllGroups(t *testing.T) {
 
 	o := GetAllGroups(conf.DB)
 
+	// TODO: not guaranteed to be in this order
 	switch {
 	case o == nil:
 		t.Error("GetAllGroups(returned nil)")
-	case o[0].ID != group.ID:
+	case !strings.EqualFold(o[0].ID, group.ID):
 		t.Error(o[0].ID + " != " + group.ID)
-	case o[1].ID != "g2":
+	case !strings.EqualFold(o[1].ID, "g2"):
 		t.Error(o[1].ID + " != " + "g2")
-	case o[2].ID != "g3":
+	case !strings.EqualFold(o[2].ID, "g3"):
 		t.Error(o[2].ID + " != " + "g3")
-	case o[3].ID != "g4":
+	case !strings.EqualFold(o[3].ID, "g4"):
 		t.Error(o[3].ID + " != " + "g4")
 	}
 }
