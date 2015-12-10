@@ -26,7 +26,7 @@ func mimetypes2net(u *url.URL, mimetypes []string) NetEntity {
 		u2, _ := u.Parse("")
 		exts, _ := mime.ExtensionsByType(mimetype)
 		if exts == nil || len(exts) == 0 {
-			u2.Path += "httpentity_mimetypes2net_no_extension_should_never_happen?" + mimetype
+			u2.Path += ".httpentity_mimetypes2net_no_extension_should_never_happen?" + mimetype
 		} else {
 			u2.Path += exts[0]
 		}

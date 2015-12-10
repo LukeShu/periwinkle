@@ -22,6 +22,7 @@ func StatusCreated(parent he.EntityGroup, childName string, req he.Request) he.R
 	if childName == "" {
 		panic("can't call StatusCreated with an empty child name")
 	}
+	// find the child
 	child := parent.Subentity(childName, req)
 	if child == nil {
 		panic("called StatusCreated, but the subentity doesn't exist")
@@ -31,7 +32,9 @@ func StatusCreated(parent he.EntityGroup, childName string, req he.Request) he.R
 		panic("called StatusCreated, but can't GET the subentity")
 	}
 	response := handler(req)
-	response.Headers.Set("Location", url.QueryEscape(childName))
+	// mess with the response
+	u, _ := req.URL.Parse(url.QueryEscape(childName))
+	response.Headers.Set("Location", u.String())
 	if response.Entity == nil {
 		panic("called StatusCreated, but GET on subentity doesn't return an entity")
 	}
@@ -39,7 +42,7 @@ func StatusCreated(parent he.EntityGroup, childName string, req he.Request) he.R
 	return he.Response{
 		Status:  201,
 		Headers: response.Headers,
-		Entity:  mimetypes2net(req.URL, mimetypes),
+		Entity:  mimetypes2net(u, mimetypes),
 	}
 }
 
