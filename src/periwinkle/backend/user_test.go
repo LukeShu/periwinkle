@@ -22,6 +22,8 @@ func TestNewUser(t *testing.T) {
 	case user.Addresses[0].Address != "johndoe@purdue.edu":
 		t.Error("User address was not preperly set.")
 	}
+
+	conf.DB.Close()
 }
 
 func TestGetUserByID(t *testing.T) {
@@ -37,6 +39,8 @@ func TestGetUserByID(t *testing.T) {
 	case !strings.EqualFold(user.ID, o.ID):
 		t.Error("GetUserByID() returned a user with a different ID")
 	}
+
+	conf.DB.Close()
 }
 
 func TestNewUserAddress(t *testing.T) {
@@ -61,6 +65,8 @@ func TestNewUserAddress(t *testing.T) {
 	case newAddr.Medium != "sms":
 		t.Error("Error assigning medium type in NewUserAddress()")
 	}
+
+	conf.DB.Close()
 }
 
 func TestGetUserByAddress(t *testing.T) {
@@ -72,6 +78,8 @@ func TestGetUserByAddress(t *testing.T) {
 	if strings.Compare(user.ID, o.ID) != 0 {
 		t.Error("Error in GetUserByAdress()")
 	}
+
+	conf.DB.Close()
 }
 
 // func TestSetPassword(t *testing.T) {
