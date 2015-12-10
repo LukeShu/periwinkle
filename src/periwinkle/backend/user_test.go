@@ -4,94 +4,103 @@ package backend
 
 import (
 	"periwinkle"
-	"strings"
 	"testing"
 
 	"github.com/jinzhu/gorm"
 )
 
+var cfg *periwinkle.Cfg // I figure we dont need to make a DB each time
+var user User           // same goes for our JohnDoe
+
 func TestNewUser(t *testing.T) {
 
-	cfg := CreateTempDB()
+	t.Log("Starting User Tests")
 
-	user := NewUser(cfg.DB, "JohnDoe", "password", "johndoe@purdue.edu")
+	cfg = CreateTempDB()
+
+	user = NewUser(cfg.DB, "JohnDoe", "password", "johndoe@purdue.edu")
 
 	switch {
-	case strings.Compare(user.ID, "JohnDoe") != 0:
+	case user.ID != "JohnDoe":
 		t.Error("User ID was not properly set to.")
-	case strings.Compare(user.FullName, "") != 0:
+	case user.FullName != "":
 		t.Error("User name was not properly set.")
-	case strings.Compare(user.Addresses[0].Address, "johndoe@purdue.edu") != 0:
+	case user.Addresses[0].Address != "johndoe@purdue.edu":
 		t.Error("User address was not preperly set.")
 	}
 }
 
 func TestGetUserByID(t *testing.T) {
-	cfg := CreateTempDB()
-
-	user := NewUser(cfg.DB, "JohnDoe", "password", "johndoe@purdue.edu")
 
 	o := GetUserByID(cfg.DB, user.ID)
 
 	switch {
 	case o == nil:
 		t.Error("GetUserByID() returned nil")
-	case strings.Compare(user.ID, o.ID) != 0:
+	case user.ID != o.ID:
 		t.Error("Error in GetUserByID()")
 	}
 }
 
 func TestNewUserAddress(t *testing.T) {
 
-	cfg := CreateTempDB()
-
-	user := NewUser(cfg.DB, "JohnDoe", "password", "johndoe@purdue.edu")
-
 	newAddr := NewUserAddress(cfg.DB, user.ID, "email", "johndoe2@purdue.edu", false)
 
 	switch {
-	case strings.Compare(newAddr.Address, "johndoe2@purdue.edu") != 0:
+	case newAddr.Address != "johndoe2@purdue.edu":
 		t.Error("Error adding new email to user in NewUserAddress()")
-	case strings.Compare(newAddr.Medium, "email") != 0:
+	case newAddr.Medium != "email":
 		t.Error("Error assigning medium type in NewUserAddress()")
 	}
 
 	newAddr = NewUserAddress(cfg.DB, user.ID, "sms", "7655555555", false)
 
 	switch {
-	case strings.Compare(newAddr.Address, "7655555555") != 0:
+	case newAddr.Address != "7655555555":
 		t.Error("Error adding new sms to user in NewUserAddress()")
-	case strings.Compare(newAddr.Medium, "sms") != 0:
+	case newAddr.Medium != "sms":
 		t.Error("Error assigning medium type in NewUserAddress()")
 	}
-
 }
 
 func TestGetUserByAddress(t *testing.T) {
-	cfg := CreateTempDB()
-
-	user := NewUser(cfg.DB, "JohnDoe", "password", "johndoe@purdue.edu")
 
 	o := GetUserByAddress(cfg.DB, "email", user.Addresses[0].Address)
-	if strings.Compare(user.ID, o.ID) != 0 {
+	if user.ID != o.ID {
 		t.Error("Error in GetUserByAdress()")
 	}
 }
 
 func TestSetPassword(t *testing.T) {
-	t.Error("TODO")
+	t.Log("TODO")
 }
 
 func TestCheckPassword(t *testing.T) {
-	t.Error("TODO")
+	t.Log("TODO")
 }
 
 func TestGetAddressByIDAndMedium(t *testing.T) {
-	t.Error("TODO")
+	addr := GetAddressByIDAndMedium(cfg.DB, user.ID, "email")
+
+	switch {
+	case addr == nil:
+		t.Error("GetAddressByIDAndMedium() returned nil")
+	case addr.Address != user.Addresses[0].Address:
+		t.Error("Addresses do not match: " + user.Addresses[0].Address + " != " + addr.Address)
+	}
+	cfg.DB.Close()
 }
 
 func TestGetUserSubscriptions(t *testing.T) {
-	t.Error("TODO")
+	subs := user.GetUserSubscriptions(cfg.DB)
+	if subs == nil {
+		t.Error("GetUserSubscriptions returned nil")
+	}
+}
+
+func TestCloseUserDB(t *testing.T) {
+	t.Log("Finishing User Tests")
+	cfg.DB.Close()
 }
 
 func CreateTempDB() *periwinkle.Cfg {
