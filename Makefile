@@ -6,6 +6,9 @@ Q ?= @
 # Set NET=FORCE to update network-downloaded things
 #NET ?= FORCE
 
+# What mode should gofmt run in? (another good option is `-w`)
+GOFMT_MODE ?= -d
+
 # Configuration of the C compiler for C code called from Go
 CFLAGS = -std=c99 -Wall -Wextra -Werror -Wno-old-style-declaration
 CGO_CFLAGS = $(CFLAGS) -Wno-unused-parameter
@@ -62,7 +65,7 @@ check: gofmt goimports govet gotest
 
 # directory-oriented
 gofmt: generate
-	{ gofmt -s -d $(addprefix $(topdir)/src/,$(toppackages)) 2>&1 | tee /dev/stderr | test -z "$$(cat)"; } 2>&1
+	{ gofmt -s $(GOFMT_MODE) $(addprefix $(topdir)/src/,$(toppackages)) 2>&1 | tee /dev/stderr | test -z "$$(cat)"; } 2>&1
 goimports: generate $(GOIMPORTS)
 	{ goimports -d $(addprefix $(topdir)/src/,$(toppackages)) 2>&1 | tee /dev/stderr | test -z "$$(cat)"; } 2>&1
 govet: generate
