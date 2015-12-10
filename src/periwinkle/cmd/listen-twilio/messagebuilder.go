@@ -1,6 +1,6 @@
 // Copyright 2015 Luke Shumaker
 
-package putil
+package main
 
 import (
 	"bytes"
@@ -9,18 +9,7 @@ import (
 	"maildir"
 	"net/mail"
 	"net/smtp"
-	"strings"
 )
-
-type RecipientBuilder []mail.Address
-
-func (b RecipientBuilder) String() string {
-	s := make([]string, len(b))
-	for i, a := range b {
-		s[i] = a.String()
-	}
-	return strings.Join(s, ", ")
-}
 
 type MessageBuilder struct {
 	Maildir maildir.Maildir
