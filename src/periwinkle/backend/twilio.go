@@ -124,11 +124,10 @@ func GetTwilioNumberByUserAndGroup(db *gorm.DB, userid string, groupid string) s
 
 func AssignTwilioNumber(db *gorm.DB, userid string, groupid string, twilioNum string) *TwilioPool {
 
-	num := TwilioNumber{
-		Number: twilioNum,
-	}
+	num := TwilioNumber{}
+	err := db.Where(TwilioNumber{Number: twilioNum}).FirstOrCreate(&num).Error
 
-	if err := db.FirstOrCreate(&num).Error; err != nil {
+	if err != nil {
 		dbError(err)
 	}
 

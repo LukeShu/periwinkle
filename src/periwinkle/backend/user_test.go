@@ -1,17 +1,15 @@
 // Copyright 2015 Davis Webb
+// Copyright 2015 Luke Shumaker
 
 package backend_test
 
 import (
-	"periwinkle"
 	. "periwinkle/backend"
-	"periwinkle/cfg"
 	"strings"
 	"testing"
 )
 
 func TestNewUser(t *testing.T) {
-
 	conf := CreateTempDB()
 
 	user := NewUser(conf.DB, "JohnDoe", "password", "johndoe@purdue.edu")
@@ -42,7 +40,6 @@ func TestGetUserByID(t *testing.T) {
 }
 
 func TestNewUserAddress(t *testing.T) {
-
 	conf := CreateTempDB()
 
 	user := NewUser(conf.DB, "JohnDoe", "password", "johndoe@purdue.edu")
@@ -50,21 +47,20 @@ func TestNewUserAddress(t *testing.T) {
 	newAddr := NewUserAddress(conf.DB, user.ID, "email", "johndoe2@purdue.edu", false)
 
 	switch {
-	case strings.Compare(newAddr.Address, "johndoe2@purdue.edu") != 0:
+	case newAddr.Address != "johndoe2@purdue.edu":
 		t.Error("Error adding new email to user in NewUserAddress()")
-	case strings.Compare(newAddr.Medium, "email") != 0:
+	case newAddr.Medium != "email":
 		t.Error("Error assigning medium type in NewUserAddress()")
 	}
 
 	newAddr = NewUserAddress(conf.DB, user.ID, "sms", "7655555555", false)
 
 	switch {
-	case strings.Compare(newAddr.Address, "7655555555") != 0:
+	case newAddr.Address != "7655555555":
 		t.Error("Error adding new sms to user in NewUserAddress()")
-	case strings.Compare(newAddr.Medium, "sms") != 0:
+	case newAddr.Medium != "sms":
 		t.Error("Error assigning medium type in NewUserAddress()")
 	}
-
 }
 
 func TestGetUserByAddress(t *testing.T) {
@@ -86,32 +82,21 @@ func TestGetUserByAddress(t *testing.T) {
 // 	t.Error("TODO")
 // }
 
-// func TestGetAddressByIDAndMedium(t *testing.T) {
-// 	t.Error("TODO")
+// func TestGetAddressByUserAndMedium(t *testing.T) {
+// 	addr := GetAddressByUserAndMedium(conf.DB, user.ID, "email")
+
+// 	switch {
+// 	case addr == nil:
+// 		t.Error("GetAddressByUserAndMedium() returned nil")
+// 	case addr.Address != user.Addresses[0].Address:
+// 		t.Error("Addresses do not match: " + user.Addresses[0].Address + " != " + addr.Address)
+// 	}
+// 	conf.DB.Close()
 // }
 
 // func TestGetUserSubscriptions(t *testing.T) {
-// 	t.Error("TODO")
+// 	subs := user.GetUserSubscriptions(conf.DB)
+// 	if subs == nil {
+// 		t.Error("GetUserSubscriptions returned nil")
+// 	}
 // }
-
-func CreateTempDB() *periwinkle.Cfg {
-	conf := periwinkle.Cfg{
-		Mailstore:      "./Maildir",
-		WebUIDir:       "./www",
-		Debug:          true,
-		TrustForwarded: true,
-		GroupDomain:    "localhost",
-		WebRoot:        "locahost:8080",
-		DB:             nil, // the default DB is set later
-	}
-
-	db, err := cfg.OpenDB("sqlite3", "file:temp.sqlite?mode=memory&_txlock=exclusive")
-	if err != nil {
-		periwinkle.Logf("Error loading sqlite3 database")
-	}
-	conf.DB = db
-
-	DbSchema(conf.DB)
-
-	return &conf
-}
