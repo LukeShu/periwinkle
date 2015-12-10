@@ -54,8 +54,8 @@
 									<p ng-if="user.info.fullName.text == ''" style="margin-top: 4px; color: #a0a0a0">{{ "USER.INFO.NO_FULL_NAME" | translate }}</p>
 								</div>
 							</div>
-							<form ng-if="user.info.fullName.editing" name="editAddressForm" ng-submit="user.info.set_fullName()">
-								<md-input-container style="padding-bottom: 16px;">
+							<form ng-if="user.info.fullName.editing" name="editAddressForm" style="padding-bottom:0px;" ng-submit="user.info.set_fullName()">
+								<md-input-container style="margin-bottom: 8px;">
 									<label>{{ "USER.INFO.FULL_NAME" | translate }}</label>
 									<input name="address" ng-model="user.info.fullName.new_text" type="text" focus-on="edit_fullName" ng-blur="user.info.set_fullName()" require ></input>
 								</md-input-container>
@@ -169,13 +169,13 @@
 						</md-fab-trigger>
 						<md-fab-actions>
 							<md-button aria-label="Join" class="md-fab md-raised md-mini">
-								<md-tooltip md-direction="bottom">
+								<md-tooltip md-direction="bottom" ng-if="fabOpen">
 									{{ "USER.GROUPS.JOIN" | translate }}
 								</md-tooltip>
 								<md-icon md-svg-src="assets/svg/reply.svg">u</md-icon>
 							</md-button>
 							<md-button aria-label="New" ng-click="user.groups.new($event)" class="md-fab md-raised md-mini">
-								<md-tooltip md-direction="bottom">
+								<md-tooltip md-direction="bottom" ng-if="fabOpen">
 									{{ "USER.GROUPS.NEW" | translate }}
 								</md-tooltip>
 								<md-icon md-svg-src="assets/svg/add.svg">u</md-icon>
