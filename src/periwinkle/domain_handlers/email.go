@@ -11,7 +11,6 @@ import (
 	"net/smtp"
 	"periwinkle"
 	"periwinkle/backend"
-	"periwinkle/putil"
 	"postfixpipe"
 
 	"github.com/jinzhu/gorm"
@@ -39,29 +38,11 @@ func HandleEmail(r io.Reader, name string, db *gorm.DB, cfg *periwinkle.Cfg) pos
 		return postfixpipe.EX_NOUSER
 	}
 
-	// try/catch looks awefully funny in Go
-	silentbounce := false
-	func() {
-		defer func() {
-			if obj := recover(); obj != nil {
-				if err, ok := obj.(error); ok {
-					perror := putil.ErrorToError(err)
-					if perror.HTTPCode() == 409 {
-						silentbounce = true
-					}
-				}
-				panic(obj)
-			}
-		}()
-		backend.NewMessage(
-			db,
-			msg.Header.Get("Message-Id"),
-			*group,
-			mdWriter.Unique())
-	}()
-	if silentbounce {
-		return postfixpipe.EX_OK
-	}
+	backend.NewMessage(
+		db,
+		msg.Header.Get("Message-Id"),
+		*group,
+		mdWriter.Unique())
 	mdWriter.Close()
 	mdWriter = nil
 

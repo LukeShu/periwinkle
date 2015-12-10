@@ -4,42 +4,25 @@ package httpapi
 
 import (
 	he "httpentity"
+	"httpentity/rfc7231"
 	"periwinkle"
-	"periwinkle/putil"
+	"periwinkle/backend"
+
+	"github.com/jinzhu/gorm"
 )
 
 func MiddlewareDatabase(config *periwinkle.Cfg) he.Middleware {
 	return he.Middleware{
-		Outside: func(req he.Request, handle func(he.Request) he.Response) (res he.Response) {
-			transaction := config.DB.Begin()
-			req.Things["db"] = transaction
-			rollback := true
-			defer func() {
-				if obj := recover(); obj != nil {
-					if rollback {
-						transaction.Rollback()
-					}
-					if err, ok := obj.(error); ok {
-						perror := putil.ErrorToError(err)
-						if perror.HTTPCode() != 500 {
-							res = putil.ErrorToHTTP(perror)
-							return
-						}
-					}
-					// we didn't intercept the error, so pass it along
-					panic(obj)
-				}
-			}()
-
-			res = handle(req)
-
-			err := transaction.Commit().Error
-			rollback = false
-			if err != nil {
-				panic(err)
+		Outside: func(req he.Request, handle func(he.Request) he.Response) he.Response {
+			var res he.Response
+			conflict := backend.WithTransaction(config.DB, func(transaction *gorm.DB) {
+				req.Things["db"] = transaction
+				res = handle(req)
+			})
+			if conflict != nil {
+				res = rfc7231.StatusConflict(he.NetStringer{conflict})
 			}
-
-			return
+			return res
 		},
 	}
 }
