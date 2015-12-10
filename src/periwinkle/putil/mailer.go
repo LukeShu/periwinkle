@@ -3,10 +3,12 @@
 package putil
 
 import (
+	"bytes"
 	"encoding/base64"
 	"fmt"
 	"maildir"
 	"net/mail"
+	"net/smtp"
 	"strings"
 )
 
@@ -31,15 +33,36 @@ func (b MessageBuilder) Done() {
 	b.Headers["Content-Type"] = "text/plain; charset=\"utf-8\""
 	b.Headers["Content-Transfer-Encoding"] = "base64"
 
-	writer := b.Maildir.NewMail()
-	for k, v := range b.Headers {
-		fmt.Fprintf(writer, "%s: %s\r\n", k, v)
+	msg822 := []byte{}
+	for k := range b.Headers {
+		msg822 = append(msg822, []byte(fmt.Sprintf("%s: %s\r\n", k, b.Headers[k]))...)
 	}
-	writer.Write([]byte("\r\n"))
-	encoder := base64.NewEncoder(base64.StdEncoding, writer)
+	msg822 = append(msg822, []byte("\r\n")...)
+
+	var body bytes.Buffer
+	encoder := base64.NewEncoder(base64.StdEncoding, &body)
 	encoder.Write([]byte(b.Body))
 	encoder.Close()
-	writer.Close()
-	// TODO: Acknowledge, add to the database and such; probably
-	// share code with periwinkle/email_handlers/email
+	msg822 = append(msg822, body.Bytes()...)
+
+	to_addrs, err := mail.ParseAddressList(b.Headers["To"])
+	if err != nil {
+		panic(err) // FIXME
+	}
+	to_strs := make([]string, len(to_addrs))
+	for i, addr := range to_addrs {
+		to_strs[i] = addr.Address
+	}
+
+	if len(to_strs) > 0 {
+		// send the message out
+		err = smtp.SendMail("localhost:25",
+			smtp.PlainAuth("", "", "", ""),
+			b.Headers["From"],
+			to_strs,
+			msg822)
+		if err != nil {
+			panic(err) // FIXME
+		}
+	}
 }
