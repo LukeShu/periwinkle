@@ -97,10 +97,10 @@ func (u *User) GetUserSubscriptions(db *gorm.DB) []Subscription {
 	return subscriptions
 }
 
-func GetAddressByIDAndMedium(db *gorm.DB, id string, medium string) *UserAddress {
-	id = strings.ToLower(id)
+func GetAddressByUserAndMedium(db *gorm.DB, userID string, medium string) *UserAddress {
+	userID = strings.ToLower(userID)
 	var o UserAddress
-	if result := db.Where("user_id=? and medium=?", id, medium).First(&o); result.Error != nil {
+	if result := db.Where("user_id=? and medium=?", userID, medium).First(&o); result.Error != nil {
 		if result.RecordNotFound() {
 			return nil
 		}
@@ -152,6 +152,7 @@ func NewUser(db *gorm.DB, name string, password string, email string) User {
 	if name == "" {
 		programmerError("User name can't be empty")
 	}
+	name = strings.ToLower(name)
 	o := User{
 		ID:        name,
 		FullName:  "",
@@ -165,6 +166,7 @@ func NewUser(db *gorm.DB, name string, password string, email string) User {
 }
 
 func NewUserAddress(db *gorm.DB, userID string, medium string, address string, confirmed bool) UserAddress {
+	userID = strings.ToLower(userID)
 	o := UserAddress{
 		UserID:        userID,
 		Medium:        medium,
@@ -179,6 +181,7 @@ func NewUserAddress(db *gorm.DB, userID string, medium string, address string, c
 }
 
 func (usr *User) Save(db *gorm.DB) {
+	usr.ID = strings.ToLower(usr.ID)
 	if usr.Addresses != nil {
 		var oldAddresses []UserAddress
 		db.Model(usr).Related(&oldAddresses)

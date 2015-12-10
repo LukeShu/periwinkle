@@ -110,7 +110,7 @@ func main() {
 									Maildir: config.Mailstore,
 									Headers: map[string]string{
 										"To":      group.ID + "@" + "periwinkle.lol", //config.GroupDomain,
-										"From":    backend.GetAddressByIDAndMedium(config.DB, user.ID, "sms").AsEmailAddress(),
+										"From":    backend.GetAddressByUserAndMedium(config.DB, user.ID, "sms").AsEmailAddress(),
 										"Subject": user.ID + "--> " + message.Messages[i].Body,
 									},
 									Body: "",

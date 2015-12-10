@@ -9,7 +9,6 @@ import (
 	"httpentity/rfc7231"
 	"jsonpatch"
 	"periwinkle/backend"
-	"strings"
 
 	"github.com/jinzhu/gorm"
 )
@@ -192,7 +191,6 @@ func newDirGroups() dirGroups {
 				return rfc7231.StatusUnsupportedMediaType(he.NetPrintf("groupname can't be emtpy"))
 			}
 
-			entity.Groupname = strings.ToLower(entity.Groupname)
 			grp := backend.NewGroup(
 				db,
 				entity.Groupname,
@@ -202,7 +200,7 @@ func newDirGroups() dirGroups {
 				backend.Reverse(entity.Join),
 			)
 			sess := req.Things["session"].(*backend.Session)
-			address := backend.GetAddressByIDAndMedium(db, sess.UserID, "noop")
+			address := backend.GetAddressByUserAndMedium(db, sess.UserID, "noop")
 			if address != nil {
 				subscription := backend.Subscription{
 					AddressID: address.ID,
@@ -226,7 +224,6 @@ func (d dirGroups) Methods() map[string]func(he.Request) he.Response {
 }
 
 func (d dirGroups) Subentity(name string, req he.Request) he.Entity {
-	name = strings.ToLower(name)
 	db := req.Things["db"].(*gorm.DB)
 	sess := req.Things["session"].(*backend.Session)
 	grp := backend.GetGroupByID(db, name)

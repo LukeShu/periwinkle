@@ -192,8 +192,6 @@ func newDirUsers() dirUsers {
 				}
 			}
 
-			entity.Username = strings.ToLower(entity.Username)
-
 			usr := backend.NewUser(db, entity.Username, entity.Password, entity.Email)
 			backend.NewUserAddress(db, usr.ID, "noop", "", true)
 			backend.NewUserAddress(db, usr.ID, "admin", "", true)
@@ -209,12 +207,11 @@ func (d dirUsers) Methods() map[string]func(he.Request) he.Response {
 }
 
 func (d dirUsers) Subentity(name string, req he.Request) he.Entity {
-	name = strings.ToLower(name)
 	sess := req.Things["session"].(*backend.Session)
 	if sess == nil {
 		if req.Method == "POST" {
 			usr, ok := req.Things["user"].(backend.User)
-			if ok && usr.ID == name {
+			if ok && strings.EqualFold(usr.ID, name) {
 				return (*user)(&usr)
 			}
 		}
