@@ -102,9 +102,17 @@ func TestGetUserByAddress(t *testing.T) {
 // 	conf.DB.Close()
 // }
 
-// func TestGetUserSubscriptions(t *testing.T) {
-// 	subs := user.GetUserSubscriptions(conf.DB)
-// 	if subs == nil {
-// 		t.Error("GetUserSubscriptions returned nil")
-// 	}
-// }
+func TestGetUserSubscriptions(t *testing.T) {
+
+	conf := CreateTempDB()
+
+	waste := NewUser(conf.DB, "JohnDoe", "password", "johndoe@purdue.edu")
+
+	user := GetUserByID(conf.DB, waste.ID)
+
+	subs := user.GetUserSubscriptions(conf.DB)
+
+	if subs == nil {
+		t.Error("GetUserSubscriptions returned nil")
+	}
+}
