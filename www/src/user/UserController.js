@@ -21,7 +21,11 @@
 			},
 			title:		'USER.INFO.USER',
 			username:	'',
-			addresses:	{},
+			addresses:	{
+				email:	[],
+				sms:	[],
+				mms:	[]
+			},
 			fullName:	{
 				editing:	false,
 				loading:	false,
@@ -187,9 +191,10 @@
 				var i; var n;
 				var so_index = 0;
 				var list = [];
+				debugger;
 				for (n in self.info.addresses) {
 					for(i in self.info.addresses[n]) {
-						if(i != index && n != name) {
+						if(i != index || n != name) {
 							var item = {
 								medium:	n,
 								address: self.info.addresses[n][i].address,
@@ -200,6 +205,7 @@
 						}
 					}
 				}
+				debugger;
 				$http({
 					method: 'PATCH',
 					url: '/v1/users/' + userService.user_id,
@@ -366,12 +372,10 @@
 						self.info.fullName.editing = false;
 						self.info.fullName.loading = false;
 						var i;
-						self.info.addresses = {
-							email: [],
-							sms: [],
-							mms: []
-						};
-						if(response.data.addresses != null) {
+						self.info.addresses.email = [];
+						self.info.addresses.sms = [];
+						self.info.addresses.mms = [];
+						if(response.data.addresses != null && response.data.addresses.length > 0) {
 							response.data.addresses.sort(function(a, b) {
 								return a.sort_order - b.sort_order;
 							});

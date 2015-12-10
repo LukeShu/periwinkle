@@ -194,7 +194,7 @@ func (usr *User) Save(db *gorm.DB) {
 					match = true
 				}
 			}
-			if !match {
+			if !match && oldAddr.Medium != "noop" && oldAddr.Medium != "admin" {
 				deleteAddressIDs = append(deleteAddressIDs, oldAddr.ID)
 			}
 		}

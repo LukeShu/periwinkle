@@ -49,12 +49,40 @@ func (o *group) Methods() map[string]func(he.Request) he.Response {
 				return rfc7231.StatusConflict(he.NetPrintf("Cannot change group id"))
 			}
 			*o = newGroup
-			o.backend().Save(db)
+			o.backend().Save(db, true)
 			return rfc7231.StatusOK(o)
 		},
 		"PATCH": func(req he.Request) he.Response {
 			db := req.Things["db"].(*gorm.DB)
-
+			sess := req.Things["session"].(*backend.Session)
+			subscribed := backend.IsSubscribed(db, sess.UserID, *o.backend())
+			moderate := false
+			if !backend.IsAdmin(db, sess.UserID, *o.backend()) {
+				if o.JoinPublic == 1 {
+					if subscribed == 0 {
+						return rfc7231.StatusForbidden(he.NetPrintf("Unauthorized user"))
+					}
+					if o.JoinConfirmed == 1 && subscribed == 1 {
+						return rfc7231.StatusForbidden(he.NetPrintf("Unauthorized user"))
+					}
+					if o.JoinMember == 1 {
+						return rfc7231.StatusForbidden(he.NetPrintf("Unauthorized user"))
+					}
+					if o.JoinConfirmed == 2 && subscribed == 1 {
+						moderate = true
+					} else if o.JoinMember == 2 && subscribed == 2 {
+						moderate = true
+					}
+				} else if o.JoinPublic == 2 {
+					if subscribed == 0 {
+						moderate = true
+					} else if o.JoinConfirmed == 2 && subscribed == 1 {
+						moderate = true
+					} else if o.JoinMember == 2 && subscribed == 2 {
+						moderate = true
+					}
+				}
+			}
 			patch, ok := req.Entity.(jsonpatch.Patch)
 			if !ok {
 				return rfc7231.StatusUnsupportedMediaType(he.NetPrintf("PATCH request must have a patch media type"))
@@ -65,10 +93,11 @@ func (o *group) Methods() map[string]func(he.Request) he.Response {
 				return rfc7231.StatusConflict(he.NetPrintf("%v", err))
 			}
 			if o.ID != newGroup.ID {
-				return rfc7231.StatusConflict(he.NetPrintf("Cannot change user id"))
+				return rfc7231.StatusConflict(he.NetPrintf("Cannot change group id"))
 			}
+
 			*o = newGroup
-			o.backend().Save(db)
+			o.backend().Save(db, moderate)
 			return rfc7231.StatusOK(o)
 		},
 		"DELETE": func(req he.Request) he.Response {
