@@ -448,8 +448,39 @@
 					}
 				);
 			},
-			'join':	function() {
-
+			'join':	function(ev) {
+				$mdDialog.show({
+					controller:				'JoinGroupController',
+					templateUrl:			'src/user/join.html',
+					parent:					angular.element(document.body),
+					targetEvent:			ev,
+					clickOutsideToClose:	true,
+                    locals: {
+                            username:	userService.user_id
+                    }
+				}).then(
+					function (response) {
+						//the dialog responded before closing
+						if(response !== "success") {
+							//errors
+							var status_code = response.status;
+							var reason = response.data;
+							//show alert
+							switch(status_code){
+								case 500:
+									$scope.showError('GENERAL.ERRORS.500.TITLE', 'GENERAL.ERRORS.500.CONTENT', reason, '#new-address-fab', '#new-address-fab');
+									break;
+								default:
+									$scope.showError('GENERAL.ERRORS.DEFAULT.TITLE', 'GENERAL.ERRORS.DEFAULT.CONTENT', reason, '#new-address-fab', '#new-address-fab');
+							}
+						} else {
+							//succeeded
+							self.groups.load();
+						}
+					}, function () {
+						//the dialog was cancelled
+					}
+				);
 			},
 			edit_subs:	function(index) {
 				$mdDialog.show({

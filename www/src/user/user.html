@@ -154,7 +154,7 @@
 			</md-card>
 		</div>
 
-		<div flex="100">
+		<div flex="100" ng-init="fabOpen = false;">
 			<md-card id="groups" style="position: relative;">
 				<md-toolbar class="md-toolbar-tools" style="background-color: white; color: black;">
 					<h1>{{ "USER.GROUPS.GROUPS" | translate }}</h1>
@@ -175,9 +175,28 @@
 					<p ng-if="!user.groups.list.length && !user.groups.status.loading">{{ "USER.GROUPS.NO_GROUPS" | translate }}</p>
 				</md-card-content>
 				<div style="position: absolute; bottom: 8px; right: 8px;">
-					<md-button class="md-fab md-accent" aria-label="new" ng-click="user.groups.new($event)">
-						<md-icon md-svg-src="assets/svg/add.svg"></md-icon>
-					</md-button>
+					<md-fab-speed-dial md-open="fabOpen" md-direction="left" class="md-scale">
+						<md-fab-trigger>
+							<md-button aria-label="menu" class="md-fab md-accent" >
+								<md-icon ng-if="!fabOpen" md-svg-src="assets/svg/add.svg"></md-icon>
+								<md-icon ng-if="fabOpen" md-svg-src="assets/svg/forward.svg"></md-icon>
+							</md-button>
+						</md-fab-trigger>
+						<md-fab-actions>
+							<md-button aria-label="Join" class="md-fab md-raised md-mini" ng-click="user.groups.join($event)">
+								<md-tooltip md-direction="bottom">
+									{{ "USER.GROUPS.JOIN" | translate }}
+								</md-tooltip>
+								<md-icon md-svg-src="assets/svg/reply.svg">u</md-icon>
+							</md-button>
+							<md-button aria-label="New" ng-click="user.groups.new($event)" class="md-fab md-raised md-mini">
+								<md-tooltip md-direction="bottom">
+									{{ "USER.GROUPS.NEW" | translate }}
+								</md-tooltip>
+								<md-icon md-svg-src="assets/svg/add.svg">u</md-icon>
+							</md-button>
+						</md-fab-actions>
+					</md-fab-speed-dial>
 				</div>
 			</md-card>
 		</div>
