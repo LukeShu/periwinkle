@@ -16,7 +16,8 @@ var _ he.EntityGroup = &userSubscriptions{}
 
 type userSubscriptions struct {
 	user
-	values []backend.Subscription
+	groupID string
+	values  []backend.Subscription
 }
 
 func (usr *userSubscriptions) Subentity(name string, req he.Request) he.Entity {
@@ -47,6 +48,7 @@ func (usr *userSubscriptions) Methods() map[string]func(he.Request) he.Response 
 	return map[string]func(he.Request) he.Response{
 		"GET": func(req he.Request) he.Response {
 			db := req.Things["db"].(*periwinkle.Tx)
+			usr.groupID = req.URL.Query().Get("group_id")
 			usr.values = usr.backend().GetSubscriptions(db)
 			return rfc7231.StatusOK(usr)
 		},
@@ -89,14 +91,12 @@ func (usr *userSubscriptions) MarshalJSON() ([]byte, error) {
 		addressByID[addr.ID] = addr
 	}
 	type subscriptionfmt struct {
-		GroupID string `json:"group_id"`
 		Medium  string `json:"medium"`
 		Address string `json:"address"`
 	}
 	ret := map[string][]subscriptionfmt{}
 	for _, subscription := range usr.values {
 		out := subscriptionfmt{
-			GroupID: subscription.GroupID,
 			Medium:  addressByID[subscription.AddressID].Medium,
 			Address: addressByID[subscription.AddressID].Address,
 		}
@@ -106,7 +106,11 @@ func (usr *userSubscriptions) MarshalJSON() ([]byte, error) {
 			ret[subscription.GroupID] = []subscriptionfmt{out}
 		}
 	}
-	return json.Marshal(ret)
+	if usr.groupID == "" {
+		return json.Marshal(ret)
+	} else {
+		return json.Marshal(ret[usr.groupID])
+	}
 }
 
 ////////////////////////////////////////////////////////////////////////////////////

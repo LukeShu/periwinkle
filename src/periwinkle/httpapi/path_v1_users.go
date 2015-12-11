@@ -26,7 +26,7 @@ func (o *user) backend() *backend.User { return (*backend.User)(o) }
 
 func (o *user) Subentity(name string, req he.Request) he.Entity {
 	if name == "subscriptions" {
-		return &userSubscriptions{*o, nil}
+		return &userSubscriptions{*o, "", nil}
 	}
 	return nil
 }
