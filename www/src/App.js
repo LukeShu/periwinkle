@@ -1,6 +1,6 @@
 // Copyright 2015 Richard Wisniewski
 // Copyright 2015 Luke Shumaker
-(function(){
+;(function(){
 	'use strict';
 
 	angular.module('periwinkle', [
@@ -24,7 +24,8 @@
 		'user',
 		'messages',
 		'messages.message',
-		'messages.thread'
+		'messages.thread',
+		'group'
 	])
 
 	.config(function($mdThemingProvider){
@@ -73,6 +74,10 @@
 			when('/user', {
 				templateUrl:	'src/user/user.html',
 				controller:		'UserController as user'
+			}).
+			when('/group/:group', {
+				templateUrl:	'src/group/group.html',
+				controller:		'GroupController as group'
 			}).
 			when('/messages', {
 				templateUrl:	'src/messages/messages.html',

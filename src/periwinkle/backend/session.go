@@ -24,7 +24,7 @@ func NewSession(db *periwinkle.Tx, user *User, password string) *Session {
 		return nil
 	}
 	o := Session{
-		ID:       randomString(24),
+		ID:       RandomString(24),
 		UserID:   user.ID,
 		LastUsed: time.Now(),
 	}

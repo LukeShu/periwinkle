@@ -141,8 +141,8 @@
 										</form>
 									</div>
 								<li>
-							</div>
-						</ul>
+							</ul>
+						</div>
 					</div>
 					<div style="position: absolute; bottom: 8px; right: 8px;">
 						<md-button id="new-address-fab" class="md-fab md-accent" aria-label="change" ng-click="user.info.newAddress($event)">
@@ -168,7 +168,7 @@
 					<ul ng-if="user.groups.list.length" style="list-style: none; padding: 0; margin: 0;">
 						<li ng-repeat="group in user.groups.list">
 							<div layout="row" layout-align="space-between center">
-								<p style="font-weight: bold" ng-click="user.groups.edit_subs($index)">{{ group.groupname }}</p>
+								<p style="font-weight: bold"><a ng-href="#!/group/{{group.groupname}}">{{ group.groupname }}</a></p>
 							</div>
 						</li>
 					</ul>

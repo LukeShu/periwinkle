@@ -103,25 +103,24 @@ func TestGetAllGroups(t *testing.T) {
 		post := []int{1, 1, 1}
 		join := []int{1, 1, 1}
 
-		group := NewGroup(tx, "The Doe", existence, read, post, join)
+		NewGroup(tx, "g1", existence, read, post, join)
 		NewGroup(tx, "g2", existence, read, post, join)
 		NewGroup(tx, "g3", existence, read, post, join)
 		NewGroup(tx, "g4", existence, read, post, join)
 
 		o := GetAllGroups(tx)
 
-		// TODO: not guaranteed to be in this order
 		switch {
 		case o == nil:
 			t.Error("GetAllGroups(returned nil)")
-		case !strings.EqualFold(o[0].ID, group.ID):
-			t.Error(o[0].ID + " != " + group.ID)
-		case !strings.EqualFold(o[1].ID, "g2"):
-			t.Error(o[1].ID + " != " + "g2")
-		case !strings.EqualFold(o[2].ID, "g3"):
-			t.Error(o[2].ID + " != " + "g3")
-		case !strings.EqualFold(o[3].ID, "g4"):
-			t.Error(o[3].ID + " != " + "g4")
+		case o[0].ID == "":
+			t.Error("GetAllGroups(did not get all groups)")
+		case o[1].ID == "":
+			t.Error("GetAllGroups(did not get all groups)")
+		case o[2].ID == "":
+			t.Error("GetAllGroups(did not get all groups)")
+		case o[3].ID == "":
+			t.Error("GetAllGroups(did not get all groups)")
 		}
 	})
 }
