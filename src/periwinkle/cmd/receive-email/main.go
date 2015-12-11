@@ -4,12 +4,15 @@
 package main
 
 import (
+	"fmt"
 	"periwinkle"
+	"periwinkle/backend"
 	"periwinkle/cmdutil"
-	"periwinkle/putil"
 	pp "postfixpipe"
 	"runtime"
 	"strings"
+
+	"github.com/jinzhu/gorm"
 )
 
 const usage = `
@@ -27,54 +30,48 @@ func main() {
 
 	var ret pp.ExitStatus = pp.EX_OK
 	defer func() {
-		if obj := recover(); obj != nil {
-			if err, ok := obj.(error); ok {
-				perror := putil.ErrorToError(err)
-				ret = perror.PostfixCode()
-			} else {
-				ret = pp.EX_UNAVAILABLE
-			}
+		if reason := recover(); reason != nil {
 			const size = 64 << 10
 			buf := make([]byte, size)
 			buf = buf[:runtime.Stack(buf, false)]
-			periwinkle.Logf("%T(%#v) => %v\n\n%s", obj, obj, obj, string(buf))
+			st := fmt.Sprintf("%[1]T(%#[1]v) => %[1]v\n\n%[2]s", reason, string(buf))
+			periwinkle.Logf("%s", st)
+			ret = pp.EX_UNAVAILABLE
 		}
 		pp.Exit(ret)
 	}()
 
-	msg := pp.Get()
+	conflict := backend.WithTransaction(config.DB, func(transaction *gorm.DB) {
+		msg := pp.Get()
 
-	recipient := msg.ORIGINAL_RECIPIENT()
-	if recipient == "" {
-		periwinkle.Logf("ORIGINAL_RECIPIENT must be set")
-		ret = pp.EX_USAGE
-		return
-	}
-	parts := strings.SplitN(recipient, "@", 2)
-	user := parts[0]
-	domain := "localhost"
-	if len(parts) == 2 {
-		domain = parts[1]
-	}
-	domain = strings.ToLower(domain)
-
-	transaction := config.DB.Begin()
-	defer func() {
-		if err := transaction.Commit().Error; err != nil {
-			panic(err)
+		recipient := msg.ORIGINAL_RECIPIENT()
+		if recipient == "" {
+			periwinkle.Logf("ORIGINAL_RECIPIENT must be set")
+			ret = pp.EX_USAGE
+			return
 		}
-	}()
+		parts := strings.SplitN(recipient, "@", 2)
+		user := parts[0]
+		domain := "localhost"
+		if len(parts) == 2 {
+			domain = parts[1]
+		}
+		domain = strings.ToLower(domain)
 
-	reader, err := msg.Reader()
-	if err != nil {
-		periwinkle.LogErr(err)
-		ret = pp.EX_NOINPUT
-		return
-	}
+		reader, err := msg.Reader()
+		if err != nil {
+			periwinkle.LogErr(err)
+			ret = pp.EX_NOINPUT
+			return
+		}
 
-	if handler, ok := config.DomainHandlers[domain]; ok {
-		ret = handler(reader, user, transaction, config)
-	} else {
-		ret = config.DefaultDomainHandler(reader, recipient, transaction, config)
+		if handler, ok := config.DomainHandlers[domain]; ok {
+			ret = handler(reader, user, transaction, config)
+		} else {
+			ret = config.DefaultDomainHandler(reader, recipient, transaction, config)
+		}
+	})
+	if conflict != nil {
+		ret = pp.EX_DATAERR
 	}
 }
