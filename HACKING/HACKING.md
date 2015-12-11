@@ -43,3 +43,6 @@ To add a table to the database in `periwinkle/backend`, define the
 struct like the existing tables, write a `dbSchema` method, and add it
 to the list in `src/periwinkle/backend/tables.go`.  Optionally, you
 may define a `dbSeed` method that sets up initial data into the table.
+
+DO NOT make any `periwinkle/backend` `Save()` methods take any
+arguments beside a `*periwinkle.Tx`!
