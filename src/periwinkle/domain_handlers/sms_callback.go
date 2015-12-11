@@ -90,7 +90,7 @@ func (server *SmsCallbackServer) ServeHTTP(w http.ResponseWriter, req *http.Requ
 
 // client
 func SmsWaitForCallback(MessageSid string) (status SmsStatus, err error) {
-	conn, err := net.Dial("tcp", "localhost:42586")
+	conn, err := net.Dial("tcp", "cfg.WebRoot:42586")
 	defer conn.Close()
 	if err != nil {
 		return
