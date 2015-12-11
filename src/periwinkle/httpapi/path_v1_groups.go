@@ -19,27 +19,27 @@ var _ he.EntityGroup = &dirGroups{}
 type group backend.Group
 
 type Enumerategroup struct {
-        Groupname     string                 `json:"groupname"`
-        Post          map[string]string      `json:"post"`
-        Join          map[string]string      `json:"join"`
-        Read          map[string]string      `json:"read"`
-        Existence     map[string]string      `json:"existence"`
-        Subscriptions []backend.Subscription         `json:"subscriptions"`
+	Groupname     string                 `json:"groupname"`
+	Post          map[string]string      `json:"post"`
+	Join          map[string]string      `json:"join"`
+	Read          map[string]string      `json:"read"`
+	Existence     map[string]string      `json:"existence"`
+	Subscriptions []backend.Subscription `json:"subscriptions"`
 }
 
 func EnumerateGroup(o *group) Enumerategroup {
-        var enum Enumerategroup
-        enum.Groupname = o.ID
-        exist := [...]int{o.ExistencePublic, o.ExistenceConfirmed}
-        enum.Existence = backend.ReadExist(exist)
-        read := [...]int{o.ReadPublic, o.ReadConfirmed}
-        enum.Read = backend.ReadExist(read)
-        post := [...]int{o.PostPublic, o.PostConfirmed, o.PostMember}
-        enum.Post = backend.PostJoin(post)
-        join := [...]int{o.JoinPublic, o.JoinConfirmed, o.JoinMember}
-        enum.Join = backend.PostJoin(join)
-        enum.Subscriptions = o.Subscriptions
-        return enum
+	var enum Enumerategroup
+	enum.Groupname = o.ID
+	exist := [...]int{o.ExistencePublic, o.ExistenceConfirmed}
+	enum.Existence = backend.ReadExist(exist)
+	read := [...]int{o.ReadPublic, o.ReadConfirmed}
+	enum.Read = backend.ReadExist(read)
+	post := [...]int{o.PostPublic, o.PostConfirmed, o.PostMember}
+	enum.Post = backend.PostJoin(post)
+	join := [...]int{o.JoinPublic, o.JoinConfirmed, o.JoinMember}
+	enum.Join = backend.PostJoin(join)
+	enum.Subscriptions = o.Subscriptions
+	return enum
 }
 
 func RenumerateGroup(entity Enumerategroup) group {
@@ -54,22 +54,21 @@ func RenumerateGroup(entity Enumerategroup) group {
 	join = backend.Reverse(entity.Join)
 
 	o := group{
-                ID:                 entity.Groupname,
-                ReadPublic:         read[0],
-                ReadConfirmed:      read[1],
-                ExistencePublic:    existence[0],
-                ExistenceConfirmed: existence[1],
-                PostPublic:         post[0],
-                PostConfirmed:      post[1],
-                PostMember:         post[2],
-                JoinPublic:         join[0],
-                JoinConfirmed:      join[1],
-                JoinMember:         join[2],
-                Subscriptions:      entity.Subscriptions,
-        }
+		ID:                 entity.Groupname,
+		ReadPublic:         read[0],
+		ReadConfirmed:      read[1],
+		ExistencePublic:    existence[0],
+		ExistenceConfirmed: existence[1],
+		PostPublic:         post[0],
+		PostConfirmed:      post[1],
+		PostMember:         post[2],
+		JoinPublic:         join[0],
+		JoinConfirmed:      join[1],
+		JoinMember:         join[2],
+		Subscriptions:      entity.Subscriptions,
+	}
 	return o
 }
-
 
 func (o *group) backend() *backend.Group { return (*backend.Group)(o) }
 
@@ -268,15 +267,15 @@ func newDirGroups() dirGroups {
 				}
 				db.Create(&subscription)
 			}
-                        address2 := backend.GetAddressByUserAndMedium(db, sess.UserID, "admin")
-                        if address2 != nil {
-                                subscription := backend.Subscription{
-                                        AddressID: address2.ID,
-                                        GroupID:   grp.ID,
-                                        Confirmed: true,
-                                }
-                                db.Create(&subscription)
-                        }
+			address2 := backend.GetAddressByUserAndMedium(db, sess.UserID, "admin")
+			if address2 != nil {
+				subscription := backend.Subscription{
+					AddressID: address2.ID,
+					GroupID:   grp.ID,
+					Confirmed: true,
+				}
+				db.Create(&subscription)
+			}
 
 			if grp == nil {
 				return rfc7231.StatusConflict(he.NetPrintf("a group with that name already exists"))
