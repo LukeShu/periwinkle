@@ -7,7 +7,7 @@ package main
 import (
 	"os"
 	"periwinkle"
-	"periwinkle/backend"
+	//"periwinkle/backend"
 	"periwinkle/cmdutil"
 	"periwinkle/test"
 
@@ -28,6 +28,7 @@ func main() {
 	config := cmdutil.GetConfig(options["-c"].(string))
 
 	conflict := config.DB.Do(func(tx *periwinkle.Tx) {
+		/*		
 		err := backend.DbSchema(tx)
 		if err != nil {
 			periwinkle.Logf("Encountered an error while setting up the database schema, not attempting to seed data:")
@@ -41,6 +42,7 @@ func main() {
 			periwinkle.LogErr(err)
 			os.Exit(int(lsb.EXIT_FAILURE))
 		}
+		*/
 		test.Test(config, tx)
 	})
 	if conflict != nil {
