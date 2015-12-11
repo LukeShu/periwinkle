@@ -67,12 +67,12 @@ func Test(cfg *periwinkle.Cfg, db *periwinkle.Tx) {
 		JoinPublic:         join[0],
 		JoinConfirmed:      join[1],
 		JoinMember:         join[2],
-		// Subscriptions: []backend.Subscription{
-		// 	{Address: user1.Addresses[0], Confirmed: true},
-		// 	{Address: user2.Addresses[0], Confirmed: true},
-		// 	{Address: user2.Addresses[1], Confirmed: true},
-		// 	{Address: user3.Addresses[0], Confirmed: true},
-		// },
+		 Subscriptions: []backend.Subscription{
+		 	{AddressID: user1.Addresses[0].ID, Confirmed: true},
+		 	{AddressID: user2.Addresses[0].ID, Confirmed: true},
+		 	{AddressID: user2.Addresses[1].ID, Confirmed: true},
+		 	{AddressID: user3.Addresses[0].ID, Confirmed: true},
+		 },
 	}).Error
 	if err != nil {
 		log.Println(err)
