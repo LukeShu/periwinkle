@@ -84,12 +84,26 @@ func (usr *userSubscriptions) Encoders() map[string]he.Encoder {
 }
 
 func (usr *userSubscriptions) MarshalJSON() ([]byte, error) {
-	ret := map[string][]backend.Subscription{}
+	addressByID := map[int64]backend.UserAddress{}
+	for _, addr := range usr.Addresses {
+		addressByID[addr.ID] = addr
+	}
+	type subscriptionfmt struct {
+		GroupID string `json:"group_id"`
+		Medium  string `json:"medium"`
+		Address string `json:"address"`
+	}
+	ret := map[string][]subscriptionfmt{}
 	for _, subscription := range usr.values {
+		out := subscriptionfmt{
+			GroupID: subscription.GroupID,
+			Medium:  addressByID[subscription.AddressID].Medium,
+			Address: addressByID[subscription.AddressID].Address,
+		}
 		if list, ok := ret[subscription.GroupID]; ok {
-			ret[subscription.GroupID] = append(list, subscription)
+			ret[subscription.GroupID] = append(list, out)
 		} else {
-			ret[subscription.GroupID] = []backend.Subscription{subscription}
+			ret[subscription.GroupID] = []subscriptionfmt{out}
 		}
 	}
 	return json.Marshal(ret)
