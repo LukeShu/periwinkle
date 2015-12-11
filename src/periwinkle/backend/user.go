@@ -36,7 +36,7 @@ type UserAddress struct {
 
 func (o UserAddress) dbSchema(db *periwinkle.Tx) locale.Error {
 	return locale.UntranslatedError(db.CreateTable(&o).
-		AddUniqueIndex("address_idx", "medium", "address").
+		AddUniqueIndex("address_idx", "user_id", "medium", "address").
 		//AddUniqueIndex("user_idx", "user_id", "sort_order").
 		Error)
 }

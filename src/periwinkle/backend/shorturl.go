@@ -22,7 +22,7 @@ func (o ShortURL) dbSchema(db *periwinkle.Tx) locale.Error {
 
 func NewShortURL(db *periwinkle.Tx, u *url.URL) *ShortURL {
 	o := ShortURL{
-		ID:   randomString(5),
+		ID:   RandomString(5),
 		Dest: u.String(), // TODO: automatic marshalling
 	}
 	if err := db.Create(&o).Error; err != nil {
