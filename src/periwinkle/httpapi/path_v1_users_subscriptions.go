@@ -87,7 +87,7 @@ func (usr *userSubscriptions) Methods() map[string]func(he.Request) he.Response 
 				return rfc7231.StatusConflict(he.NetPrintf("You don't have that address"))
 			}
 			backend.NewSubscription(db, address.ID, entity.GroupID, sess != nil && sess.UserID == usr.ID)
-			return rfc7231.StatusCreated(usr, entity.GroupID+":"+entity.Medium+":"+entity.Address, req)
+			return rfc7231.StatusCreated(usr, entity.GroupID+":"+address.Medium+":"+address.Address, req)
 		},
 	}
 }
