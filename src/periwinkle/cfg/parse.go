@@ -39,6 +39,10 @@ func Parse(in io.Reader) (cfgptr *periwinkle.Cfg, e locale.Error) {
 	}()
 
 	// these are the defaults
+	hostname, err := os.Hostname()
+	if err != nil {
+		hostname = "localhost"
+	}
 	cfg := periwinkle.Cfg{
 		Mailstore:            "./Maildir",
 		WebUIDir:             "./www",
@@ -47,7 +51,7 @@ func Parse(in io.Reader) (cfgptr *periwinkle.Cfg, e locale.Error) {
 		TwilioAccountID:      os.Getenv("TWILIO_ACCOUNTID"),
 		TwilioAuthToken:      os.Getenv("TWILIO_TOKEN"),
 		GroupDomain:          "localhost",
-		WebRoot:              "http://locahost:8080",
+		WebRoot:              "http://" + hostname + ":8080",
 		CallbackConnect:      "localhost:42586",
 		CallbackListen:       "localhost:42586",
 		DB:                   nil, // the default DB is set later

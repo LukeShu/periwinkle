@@ -6,7 +6,7 @@ TrustForwarded:       true
 #TwilioAccountID:      $TWILIO_ACCOUNTID
 #TwilioAuthToken:      $TWILIO_TOKEN
 GroupDomain:          "periwinkle.lol"
-WebRoot:              "http://periwinkle.lol"
+#WebRoot:              "http://$HOSTNAME:8080"
 CallbackConnect:      "localhost:42586"
 CallbackListen:       "localhost:42586"
 # DB:
