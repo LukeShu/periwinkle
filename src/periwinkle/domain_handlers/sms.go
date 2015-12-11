@@ -19,6 +19,7 @@ import (
 	"periwinkle/twilio"
 	"postfixpipe"
 	"strings"
+	//"os"
 )
 
 func HandleSMS(r io.Reader, name string, db *periwinkle.Tx, cfg *periwinkle.Cfg) postfixpipe.ExitStatus {
@@ -61,7 +62,7 @@ func sender(message mail.Message, smsTo string, db *periwinkle.Tx, cfg *periwink
 			smsFrom = twilio_num[0]
 		}
 	}
-	log.Println("64")
+
 	smsBody := message.Header.Get("Subject")
 	//smsBody, err := ioutil.ReadAll(message.Body)
 	//if err != nil {
@@ -75,7 +76,8 @@ func sender(message mail.Message, smsTo string, db *periwinkle.Tx, cfg *periwink
 	v.Set("To", smsTo)
 	v.Set("Body", string(smsBody))
 	v.Set("StatusCallback", cfg.WebRoot+"/callbacks/twilio-sms")
-
+	//host,_ := os.Hostname()
+	//v.Set("StatusCallback", "http://" + host + ":8080/callbacks/twilio-sms")
 	client := &http.Client{}
 
 	req, err := http.NewRequest("POST", messagesURL, bytes.NewBuffer([]byte(v.Encode())))
@@ -91,7 +93,7 @@ func sender(message mail.Message, smsTo string, db *periwinkle.Tx, cfg *periwink
 	if err != nil {
 		return "", err
 	}
-	log.Println("94")
+
 	if resp.StatusCode == 200 || resp.StatusCode == 201 {
 
 		body, err := ioutil.ReadAll(resp.Body)
@@ -101,8 +103,9 @@ func sender(message mail.Message, smsTo string, db *periwinkle.Tx, cfg *periwink
 
 		message := twilio.Message{}
 		json.Unmarshal([]byte(body), &message)
+		log.Println("106")
 		smsStatus, err := SmsWaitForCallback(message.Sid)
-
+		log.Println("108")
 		if err != nil {
 			return "", err
 		}
@@ -110,6 +113,7 @@ func sender(message mail.Message, smsTo string, db *periwinkle.Tx, cfg *periwink
 		if smsStatus.MessageStatus == "undelivered" || smsStatus.MessageStatus == "failed" {
 			return smsStatus.MessageStatus, fmt.Errorf("%s", smsStatus.ErrorCode)
 		}
+		log.Println("116")
 		if smsStatus.MessageStatus == "queued" || smsStatus.MessageStatus == "sending" || smsStatus.MessageStatus == "sent" {
 			smsStatus, err = SmsWaitForCallback(message.Sid)
 
