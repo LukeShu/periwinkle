@@ -57,6 +57,7 @@ func ReadExist(m [2]int) map[string]string {
 	return a
 }
 
+
 /*
 var postjoin = [...]string{
 	"bounce",
