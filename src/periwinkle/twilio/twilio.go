@@ -1,6 +1,6 @@
 // Copyright 2015 Zhandos Suleimenov
 
-package main
+package twilio
 
 import (
 	"bytes"
@@ -11,7 +11,6 @@ import (
 	"net/http"
 	"net/url"
 	"periwinkle"
-	"periwinkle/twilio"
 )
 
 // function returns  a phone number and Status
@@ -82,7 +81,7 @@ func NewPhoneNum(cfg *periwinkle.Cfg) (string, error) {
 		return "", err
 	}
 
-	availNumber := twilio.AvailPhNum{}
+	availNumber := AvailPhNum{}
 	json.Unmarshal(body, &availNumber)
 
 	if len(availNumber.PhoneNumberList) != 0 {

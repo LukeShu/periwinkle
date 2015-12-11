@@ -1,0 +1,23 @@
+<!-- // Copyright 2015 Richard Wisniewski -->
+<md-dialogng-cloak>
+	<form  name="subsForm" ng-submit="subsForm.$valid && subs.submit()">
+		<md-toolbar>
+			<div class="md-toolbar-tools">
+				<h1>{{ title | translate }}</h1>
+			</div>
+		</md-toolbar>
+		<md-dialog-content>
+			<div class="md-dialog-content" layout="column">
+				<table>
+					<tr ng-repeat="address in subs.addresses">
+						<td><md-checkbox ng-model="address.is"></md-checkbox></td>
+						<td>{{address.address}}</td>
+						<td>{{address.medium}}</td>
+					</tr>
+				</table>
+			</div>
+		</md-dialog-content>
+		<md-dialog-actions layout="row">
+		</md-dialog-actions>
+	</form>
+</md-dialog>

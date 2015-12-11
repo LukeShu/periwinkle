@@ -76,7 +76,7 @@ func TestGetUserByAddress(t *testing.T) {
 		user := NewUser(tx, "JohnDoe", "password", "johndoe@purdue.edu")
 
 		o := GetUserByAddress(tx, "email", user.Addresses[0].Address)
-		if strings.Compare(user.ID, o.ID) != 0 {
+		if !strings.EqualFold(user.ID, o.ID) {
 			t.Error("Error in GetUserByAdress()")
 		}
 	})
@@ -101,9 +101,17 @@ func TestGetUserByAddress(t *testing.T) {
 // 	}
 // }
 
-// func TestGetUserSubscriptions(t *testing.T) {
-// 	subs := user.GetUserSubscriptions(tx)
-// 	if subs == nil {
-// 		t.Error("GetUserSubscriptions returned nil")
-// 	}
-// }
+func TestGetUserSubscriptions(t *testing.T) {
+	conf := CreateTempDB()
+	conf.DB.Do(func(tx *periwinkle.Tx) {
+		waste := NewUser(tx, "JohnDoe", "password", "johndoe@purdue.edu")
+
+		user := GetUserByID(tx, waste.ID)
+
+		subs := user.GetUserSubscriptions(tx)
+
+		if subs == nil {
+			t.Error("GetUserSubscriptions returned nil")
+		}
+	})
+}

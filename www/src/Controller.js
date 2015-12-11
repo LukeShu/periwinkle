@@ -56,7 +56,7 @@
 			}
 		};
 
-		$scope.showError = function(title, body, more, from, to) {
+		$scope.showError = function(title, body, more, from, to) {``
 			$mdDialog.show({
 				controller:				ErrorDialogController,
 				templateUrl:			'src/error_dialog.html',

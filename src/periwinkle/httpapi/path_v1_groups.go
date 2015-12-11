@@ -47,7 +47,7 @@ func (o *group) Methods() map[string]func(he.Request) he.Response {
 				return rfc7231.StatusConflict(he.NetPrintf("Cannot change group id"))
 			}
 			*o = newGroup
-			o.backend().Save(db, true)
+			o.backend().Save(db)
 			return rfc7231.StatusOK(o)
 		},
 		"PATCH": func(req he.Request) he.Response {
@@ -95,7 +95,8 @@ func (o *group) Methods() map[string]func(he.Request) he.Response {
 			}
 
 			*o = newGroup
-			o.backend().Save(db, moderate)
+			periwinkle.Logf("%v", moderate) // FIXME: do things with moderate
+			o.backend().Save(db)
 			return rfc7231.StatusOK(o)
 		},
 		"DELETE": func(req he.Request) he.Response {

@@ -141,10 +141,10 @@
 					//show alert
 					switch(status_code){
 						case 500:
-							$scope.showError('GENERAL.ERRORS.500.TITLE', 'GENERAL.ERRORS.500.CONTENT', '', '#signup-button', '#signup-button');
+							$scope.showError('GENERAL.ERRORS.500.TITLE', 'GENERAL.ERRORS.500.CONTENT', reason, '#signup-button', '#signup-button');
 							break;
 						default:
-							$scope.showError('GENERAL.ERRORS.DEFAULT.TITLE', 'GENERAL.ERRORS.DEFAULT.CONTENT', '', '#signup-button', '#signup-button');
+							$scope.showError('GENERAL.ERRORS.DEFAULT.TITLE', 'GENERAL.ERRORS.DEFAULT.CONTENT', reason, '#signup-button', '#signup-button');
 					}
 				}
 			);
@@ -185,10 +185,10 @@
 								$scope.showError('LOGIN.SIGNUP.ERRORS.409.TITLE', 'LOGIN.SIGNUP.ERRORS.409.CONTENT', '', '#signup-button', '#signup-button');
 								break;
 							case 500:
-								$scope.showError('GENERAL.ERRORS.500.TITLE', 'GENERAL.ERRORS.500.CONTENT', '', '#signup-button', '#signup-button');
+								$scope.showError('GENERAL.ERRORS.500.TITLE', 'GENERAL.ERRORS.500.CONTENT', reason, '#signup-button', '#signup-button');
 								break;
 							default:
-								$scope.showError('GENERAL.ERRORS.DEFAULT.TITLE', 'GENERAL.ERRORS.DEFAULT.CONTENT', '', '#signup-button', '#signup-button');
+								$scope.showError('GENERAL.ERRORS.DEFAULT.TITLE', 'GENERAL.ERRORS.DEFAULT.CONTENT', reason, '#signup-button', '#signup-button');
 						}
 					}
 				);

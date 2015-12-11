@@ -138,7 +138,7 @@ func NewGroup(db *periwinkle.Tx, name string, existence []int, read []int, post 
 	return &o
 }
 
-func (o *Group) Save(db *periwinkle.Tx, moderate bool) {
+func (o *Group) Save(db *periwinkle.Tx) {
 	if o.Subscriptions != nil {
 		var oldSubscriptions []Subscription
 		db.Model(o).Related(&oldSubscriptions)

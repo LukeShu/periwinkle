@@ -58,36 +58,57 @@ func TestGetGroupByID(t *testing.T) {
 	})
 }
 
-/*
 func TestGetGroupsByMember(t *testing.T) {
-
 	conf := CreateTempDB()
+	conf.DB.Do(func(tx *periwinkle.Tx) {
+		u1 := NewUser(tx, "JohnDoe", "password", "johndoe@purdue.edu")
 
-	u1 := NewUser(conf.DB, "JohnDoe", "password", "johndoe@purdue.edu")
+		u2 := NewUser(tx, "JaneDoe", "password", "janedoe@purdue.edu")
 
-	u2 := NewUser(conf.DB, "JaneDoe", "password", "janedoe@purdue.edu")
+		existence := []int{2, 2}
+		read := []int{2, 2}
+		post := []int{1, 1, 1}
+		join := []int{1, 1, 1}
 
-	sub := []Subscription{{Address: u1.Addresses[0], Confirmed: true}, {Address: u2.Addresses[0], Confirmed: true}}
+		err := tx.Create(&Group{
+			ID:                 "Purdue",
+			ReadPublic:         read[0],
+			ReadConfirmed:      read[1],
+			ExistencePublic:    existence[0],
+			ExistenceConfirmed: existence[1],
+			PostPublic:         post[0],
+			PostConfirmed:      post[1],
+			PostMember:         post[2],
+			JoinPublic:         join[0],
+			JoinConfirmed:      join[1],
+			JoinMember:         join[2],
+			Subscriptions: []Subscription{{
+				Address:   u1.Addresses[0],
+				Confirmed: true,
+			},
 
-	existence := []int{2, 2}
-	read := []int{2, 2}
-	post := []int{1, 1, 1}
-	join := []int{1, 1, 1}
+				{Address: u2.Addresses[0],
+					Confirmed: true,
+				},
+			},
+		}).Error
+		if err != nil {
+			t.Error("Issue creating group")
+		}
 
-	group := NewGroup(conf.DB, "The Doe", existence, read, post, join)
+		u := GetUserByID(tx, u1.ID)
 
-	group.Subscriptions = sub
+		o := GetGroupsByMember(tx, *u)
 
-	o := GetGroupsByMember(conf.DB, u1)
-
-	switch {
-	case o == nil:
-		t.Error("GetGroupsByMember: returned nil")
-	case !strings.EqualFold(o[0].ID, group.ID):
-		t.Error("Did not grab correct group")
-	}
+		switch {
+		case o == nil:
+			t.Error("GetGroupsByMember: returned nil")
+		case !strings.EqualFold(o[0].ID, "purdue"):
+			t.Error("Did not grab correct group")
+		}
+	})
 }
-*/
+
 // func TestGetPublicAndSubscribedGroups(t *testing.T) {
 // 	t.Log("TODO")
 // }
@@ -95,7 +116,6 @@ func TestGetGroupsByMember(t *testing.T) {
 func TestGetAllGroups(t *testing.T) {
 	conf := CreateTempDB()
 	conf.DB.Do(func(tx *periwinkle.Tx) {
-
 		existence := []int{2, 2}
 		read := []int{2, 2}
 		post := []int{1, 1, 1}
