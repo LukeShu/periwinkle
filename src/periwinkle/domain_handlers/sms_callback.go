@@ -60,6 +60,8 @@ func (server *SmsCallbackServer) Serve() (err error) {
 
 // server
 func (server *SmsCallbackServer) ServeHTTP(w http.ResponseWriter, req *http.Request) {
+	log.Println("SMS callback was called")
+	fmt.Fprintf(w, "Hi there, I love %s!", req.URL.Path[1:])
 	status := SmsStatus{}
 	body, err := ioutil.ReadAll(req.Body)
 	if err != nil {
