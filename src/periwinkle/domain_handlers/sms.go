@@ -61,7 +61,7 @@ func sender(message mail.Message, smsTo string, db *periwinkle.Tx, cfg *periwink
 			smsFrom = twilio_num[0]
 		}
 	}
-
+	log.Println("64")
 	smsBody := message.Header.Get("Subject")
 	//smsBody, err := ioutil.ReadAll(message.Body)
 	//if err != nil {
@@ -91,7 +91,7 @@ func sender(message mail.Message, smsTo string, db *periwinkle.Tx, cfg *periwink
 	if err != nil {
 		return "", err
 	}
-
+	log.Println("94")
 	if resp.StatusCode == 200 || resp.StatusCode == 201 {
 
 		body, err := ioutil.ReadAll(resp.Body)
