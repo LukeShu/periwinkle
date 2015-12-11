@@ -15,6 +15,8 @@
 
 		self.groupname = group.groupname;
 		self.addresses = [];
+		if(group.subscriptions == null)
+			group.subscriptions = [];
 		var i,n;
 		for(n in addresses) {
 			for(i in addresses[n]){
