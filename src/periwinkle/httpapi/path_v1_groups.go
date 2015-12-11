@@ -105,7 +105,7 @@ func (o *group) Methods() map[string]func(he.Request) he.Response {
 			if !backend.IsAdmin(db, sess.UserID, *o.backend()) {
 				return rfc7231.StatusForbidden(he.NetPrintf("Unauthorized user"))
 			}
-			db.Delete(o)
+			o.backend().Delete(db)
 			return rfc7231.StatusNoContent()
 		},
 	}
@@ -200,15 +200,8 @@ func newDirGroups() dirGroups {
 				backend.Reverse(entity.Join),
 			)
 			sess := req.Things["session"].(*backend.Session)
-			address := backend.GetAddressByUserAndMedium(db, sess.UserID, "noop")
-			if address != nil {
-				subscription := backend.Subscription{
-					AddressID: address.ID,
-					GroupID:   grp.ID,
-					Confirmed: true,
-				}
-				db.Create(&subscription)
-			}
+			address := backend.GetAddressesByUserAndMedium(db, sess.UserID, "noop")[0]
+			backend.NewSubscription(db, address.ID, grp.ID, true)
 			if grp == nil {
 				return rfc7231.StatusConflict(he.NetPrintf("a group with that name already exists"))
 			} else {

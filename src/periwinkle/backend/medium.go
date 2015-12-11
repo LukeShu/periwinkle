@@ -19,7 +19,8 @@ func (o Medium) dbSchema(db *periwinkle.Tx) locale.Error {
 func (o Medium) dbSeed(db *periwinkle.Tx) locale.Error {
 	errs := errorList{}
 	errHelper(&errs, locale.UntranslatedError(db.Create(&Medium{"email"}).Error))
-	errHelper(&errs, locale.UntranslatedError(db.Create(&Medium{"twilio"}).Error))
+	errHelper(&errs, locale.UntranslatedError(db.Create(&Medium{"sms"}).Error))
+	errHelper(&errs, locale.UntranslatedError(db.Create(&Medium{"mms"}).Error))
 	if len(errs) > 0 {
 		return errs
 	}

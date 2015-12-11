@@ -65,16 +65,32 @@ func GetGroupByID(db *periwinkle.Tx, id string) *Group {
 }
 
 func GetGroupsByMember(db *periwinkle.Tx, user User) []Group {
-	subscribed := user.GetUserSubscriptions(db)
+	subscriptions := user.GetSubscriptions(db)
+	var groupIDs []string
+	for _, sub := range subscriptions {
+		groupIDs = append(groupIDs, sub.GroupID)
+	}
 	var groups []Group
-	for _, sub := range subscribed {
-		// only add group if user is confirmed member or
-		// if group allows non confirmed members to see that it exists
-		if sub.Confirmed || sub.Group.ExistenceConfirmed == 2 {
-			groups = append(groups, sub.Group)
+	if len(groupIDs) > 0 {
+		if err := db.Where("id IN (?)", groupIDs).Find(&groups).Error; err != nil {
+			dbError(err)
 		}
+	} else {
+		groups = make([]Group, 0)
+	}
+	groupsByID := make(map[string]Group)
+	for _, group := range groups {
+		groupsByID[group.ID] = group
 	}
 
+	groups = []Group{}
+	for _, sub := range subscriptions {
+		// only add group if user is confirmed member or
+		// if group allows non confirmed members to see that it exists
+		if sub.Confirmed || groupsByID[sub.GroupID].ExistenceConfirmed == 2 {
+			groups = append(groups, groupsByID[sub.GroupID])
+		}
+	}
 	return groups
 }
 
@@ -165,4 +181,10 @@ func (o *Group) Save(db *periwinkle.Tx) {
 		dbError(err)
 	}
 
+}
+
+func (grp *Group) Delete(db *periwinkle.Tx) {
+	if err := db.Delete(grp).Error; err != nil {
+		dbError(err)
+	}
 }

@@ -88,28 +88,36 @@ func TestGetAddressByUserAndMedium(t *testing.T) {
 
 		user := NewUser(tx, "JohnDoe", "password", "johndoe@purdue.edu")
 
-		addr := GetAddressByUserAndMedium(tx, user.ID, "email")
+		addrs := GetAddressesByUserAndMedium(tx, user.ID, "email")
 
-		switch {
-		case addr == nil:
-			t.Error("GetAddressByUserAndMedium() returned nil")
-		case !strings.EqualFold(addr.Address, user.Addresses[0].Address):
-			t.Error("Addresses do not match: " + user.Addresses[0].Address + " != " + addr.Address)
+		if len(addrs) != len(user.Addresses) {
+			t.Error("Number of addresses does not match")
+		}
+		for _, addr1 := range addrs {
+			match := false
+			for _, addr2 := range user.Addresses {
+				if addr1.Address == addr2.Address {
+					match = true
+				}
+			}
+			if !match {
+				t.Error("Addresses had no match:" + addr1.Address)
+			}
 		}
 	})
 }
 
-func TestGetUserSubscriptions(t *testing.T) {
+func TestUserGetSubscriptions(t *testing.T) {
 	conf := CreateTempDB()
 	conf.DB.Do(func(tx *periwinkle.Tx) {
 		o := NewUser(tx, "JohnDoe", "password", "johndoe@purdue.edu")
 
 		user := GetUserByID(tx, o.ID)
 
-		subs := user.GetUserSubscriptions(tx)
+		subs := user.GetSubscriptions(tx)
 
 		if subs == nil {
-			t.Error("GetUserSubscriptions returned nil")
+			t.Error("(*User).GetSubscriptions returned nil")
 		}
 	})
 }

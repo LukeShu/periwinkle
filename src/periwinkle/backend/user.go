@@ -25,13 +25,12 @@ func (o User) dbSchema(db *periwinkle.Tx) locale.Error {
 
 type UserAddress struct {
 	// TODO: add a "verified" boolean
-	ID            int64          `json:"-"`
-	UserID        string         `json:"-"      sql:"type:varchar(255) REFERENCES users(id) ON DELETE CASCADE  ON UPDATE RESTRICT"`
-	Medium        string         `json:"medium" sql:"type:varchar(255) REFERENCES media(id) ON DELETE RESTRICT ON UPDATE RESTRICT"`
-	Address       string         `json:"address"`
-	SortOrder     uint64         `json:"sort_order"`
-	Confirmed     bool           `json:"confirmed"`
-	Subscriptions []Subscription `json:"subscriptions"`
+	ID        int64  `json:"-"`
+	UserID    string `json:"-"      sql:"type:varchar(255) REFERENCES users(id) ON DELETE CASCADE  ON UPDATE RESTRICT"`
+	Medium    string `json:"medium" sql:"type:varchar(255) REFERENCES media(id) ON DELETE RESTRICT ON UPDATE RESTRICT"`
+	Address   string `json:"address"`
+	SortOrder uint64 `json:"sort_order"`
+	Confirmed bool   `json:"confirmed"`
 }
 
 func (o UserAddress) dbSchema(db *periwinkle.Tx) locale.Error {
@@ -55,27 +54,9 @@ func (u *User) populate(db *periwinkle.Tx) {
 	for i, address := range u.Addresses {
 		addressIDs[i] = address.ID
 	}
-	var subscriptions []Subscription
-	if len(addressIDs) > 0 {
-		if result := db.Where("address_id IN (?)", addressIDs).Find(&subscriptions); result.Error != nil {
-			if !result.RecordNotFound() {
-				dbError(result.Error)
-			}
-		}
-	} else {
-		subscriptions = make([]Subscription, 0)
-	}
-	for i := range u.Addresses {
-		u.Addresses[i].Subscriptions = []Subscription{}
-		for _, subscription := range subscriptions {
-			if u.Addresses[i].ID == subscription.AddressID {
-				u.Addresses[i].Subscriptions = append(u.Addresses[i].Subscriptions, subscription)
-			}
-		}
-	}
 }
 
-func (u *User) GetUserSubscriptions(db *periwinkle.Tx) []Subscription {
+func (u *User) GetSubscriptions(db *periwinkle.Tx) []Subscription {
 	db.Model(u).Related(&u.Addresses)
 	addressIDs := make([]int64, len(u.Addresses))
 	for i, address := range u.Addresses {
@@ -91,22 +72,25 @@ func (u *User) GetUserSubscriptions(db *periwinkle.Tx) []Subscription {
 	} else {
 		subscriptions = make([]Subscription, 0)
 	}
-	for key := range subscriptions {
-		db.Model(subscriptions[key]).Related(&subscriptions[key].Group)
-	}
 	return subscriptions
 }
 
-func GetAddressByUserAndMedium(db *periwinkle.Tx, userID string, medium string) *UserAddress {
+func (addr *UserAddress) GetSubscriptions(db *periwinkle.Tx) []Subscription {
+	var subscriptions []Subscription
+	db.Model(addr).Related(&subscriptions)
+	return subscriptions
+}
+
+func GetAddressesByUserAndMedium(db *periwinkle.Tx, userID string, medium string) []UserAddress {
 	userID = strings.ToLower(userID)
-	var o UserAddress
-	if result := db.Where("user_id=? and medium=?", userID, medium).First(&o); result.Error != nil {
+	var o []UserAddress
+	if result := db.Where("user_id=? AND medium=?", userID, medium).Find(&o); result.Error != nil {
 		if result.RecordNotFound() {
 			return nil
 		}
 		dbError(result.Error)
 	}
-	return &o
+	return o
 }
 
 func GetUserByID(db *periwinkle.Tx, id string) *User {
@@ -168,11 +152,10 @@ func NewUser(db *periwinkle.Tx, name string, password string, email string) User
 func NewUserAddress(db *periwinkle.Tx, userID string, medium string, address string, confirmed bool) UserAddress {
 	userID = strings.ToLower(userID)
 	o := UserAddress{
-		UserID:        userID,
-		Medium:        medium,
-		Address:       address,
-		Subscriptions: make([]Subscription, 0),
-		Confirmed:     confirmed,
+		UserID:    userID,
+		Medium:    medium,
+		Address:   address,
+		Confirmed: confirmed,
 	}
 	if err := db.Create(&o).Error; err != nil {
 		dbError(err)
@@ -214,5 +197,11 @@ func (usr *User) Save(db *periwinkle.Tx) {
 		if err := db.Save(usr).Error; err != nil {
 			dbError(err)
 		}
+	}
+}
+
+func (usr *User) Delete(db *periwinkle.Tx) {
+	if err := db.Delete(usr).Error; err != nil {
+		dbError(err)
 	}
 }
