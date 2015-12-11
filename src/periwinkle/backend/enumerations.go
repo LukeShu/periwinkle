@@ -46,8 +46,8 @@ func PostJoin(m [3]int) map[string]string {
 }
 
 var readexist = map[int]string{
-	1: "yes",
-	2: "no",
+	1: "no",
+	2: "yes",
 }
 
 func ReadExist(m [2]int) map[string]string {

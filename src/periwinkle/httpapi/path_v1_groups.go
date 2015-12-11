@@ -91,26 +91,8 @@ func (o *group) SubentityNotFound(name string, req he.Request) he.Response {
 func (o *group) Methods() map[string]func(he.Request) he.Response {
 	return map[string]func(he.Request) he.Response{
 		"GET": func(req he.Request) he.Response {
-			type EnumerateGroup struct {
-				Groupname     string                 `json:"groupname"`
-				Post          map[string]string      `json:"post"`
-				Join          map[string]string      `json:"join"`
-				Read          map[string]string      `json:"read"`
-				Existence     map[string]string      `json:"existence"`
-				Subscriptions []backend.Subscription `json:"subscriptions"`
-			}
-
-			var enum EnumerateGroup
-			enum.Groupname = o.ID
-			exist := [...]int{o.ExistencePublic, o.ExistenceConfirmed}
-			enum.Existence = backend.ReadExist(exist)
-			read := [...]int{o.ReadPublic, o.ReadConfirmed}
-			enum.Read = backend.ReadExist(read)
-			post := [...]int{o.PostPublic, o.PostConfirmed, o.PostMember}
-			enum.Post = backend.PostJoin(post)
-			join := [...]int{o.JoinPublic, o.JoinConfirmed, o.JoinMember}
-			enum.Join = backend.PostJoin(join)
-			enum.Subscriptions = o.Subscriptions
+			var enum Enumerategroup
+			enum = EnumerateGroup(o)
 			return rfc7231.StatusOK(he.NetJSON{Data: enum})
 		},
 		"PUT": func(req he.Request) he.Response {
