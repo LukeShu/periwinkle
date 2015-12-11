@@ -6,9 +6,8 @@ package backend
 
 import (
 	"locale"
+	"periwinkle"
 	"strings"
-
-	"github.com/jinzhu/gorm"
 )
 
 // A Group or mailing list that users may subscribe to.
@@ -27,11 +26,11 @@ type Group struct {
 	Subscriptions      []Subscription `json:"subscriptions"`
 }
 
-func (o Group) dbSchema(db *gorm.DB) locale.Error {
+func (o Group) dbSchema(db *periwinkle.Tx) locale.Error {
 	return locale.UntranslatedError(db.CreateTable(&o).Error)
 }
 
-func (o Group) dbSeed(db *gorm.DB) locale.Error {
+func (o Group) dbSeed(db *periwinkle.Tx) locale.Error {
 	existence := [2]int{2, 2}
 	read := [2]int{2, 2}
 	post := [3]int{1, 1, 1}
@@ -52,7 +51,7 @@ func (o Group) dbSeed(db *gorm.DB) locale.Error {
 	}).Error)
 }
 
-func GetGroupByID(db *gorm.DB, id string) *Group {
+func GetGroupByID(db *periwinkle.Tx, id string) *Group {
 	id = strings.ToLower(id)
 	var o Group
 	if result := db.First(&o, "id = ?", id); result.Error != nil {
@@ -65,7 +64,7 @@ func GetGroupByID(db *gorm.DB, id string) *Group {
 	return &o
 }
 
-func GetGroupsByMember(db *gorm.DB, user User) []Group {
+func GetGroupsByMember(db *periwinkle.Tx, user User) []Group {
 	subscribed := user.GetUserSubscriptions(db)
 	var groups []Group
 	for _, sub := range subscribed {
@@ -79,7 +78,7 @@ func GetGroupsByMember(db *gorm.DB, user User) []Group {
 	return groups
 }
 
-func GetPublicAndSubscribedGroups(db *gorm.DB, user User) []Group {
+func GetPublicAndSubscribedGroups(db *periwinkle.Tx, user User) []Group {
 	groups := GetGroupsByMember(db, user)
 	// also get public groups
 	var publicgroups []Group
@@ -102,7 +101,7 @@ func GetPublicAndSubscribedGroups(db *gorm.DB, user User) []Group {
 	return groups
 }
 
-func GetAllGroups(db *gorm.DB) []Group {
+func GetAllGroups(db *periwinkle.Tx) []Group {
 	var o []Group
 	if result := db.Find(&o); result.Error != nil {
 		if result.RecordNotFound() {
@@ -113,7 +112,7 @@ func GetAllGroups(db *gorm.DB) []Group {
 	return o
 }
 
-func NewGroup(db *gorm.DB, name string, existence []int, read []int, post []int, join []int) *Group {
+func NewGroup(db *periwinkle.Tx, name string, existence []int, read []int, post []int, join []int) *Group {
 	if name == "" {
 		programmerError("Group name can't be empty")
 	}
@@ -139,7 +138,7 @@ func NewGroup(db *gorm.DB, name string, existence []int, read []int, post []int,
 	return &o
 }
 
-func (o *Group) Save(db *gorm.DB, moderate bool) {
+func (o *Group) Save(db *periwinkle.Tx, moderate bool) {
 	if o.Subscriptions != nil {
 		var oldSubscriptions []Subscription
 		db.Model(o).Related(&oldSubscriptions)

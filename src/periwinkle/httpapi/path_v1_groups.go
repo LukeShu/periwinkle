@@ -8,9 +8,8 @@ import (
 	he "httpentity"
 	"httpentity/rfc7231"
 	"jsonpatch"
+	"periwinkle"
 	"periwinkle/backend"
-
-	"github.com/jinzhu/gorm"
 )
 
 var _ he.EntityGroup = &group{}
@@ -37,7 +36,7 @@ func (o *group) Methods() map[string]func(he.Request) he.Response {
 			return rfc7231.StatusOK(o)
 		},
 		"PUT": func(req he.Request) he.Response {
-			db := req.Things["db"].(*gorm.DB)
+			db := req.Things["db"].(*periwinkle.Tx)
 
 			var newGroup group
 			httperr := safeDecodeJSON(req.Entity, &newGroup)
@@ -52,7 +51,7 @@ func (o *group) Methods() map[string]func(he.Request) he.Response {
 			return rfc7231.StatusOK(o)
 		},
 		"PATCH": func(req he.Request) he.Response {
-			db := req.Things["db"].(*gorm.DB)
+			db := req.Things["db"].(*periwinkle.Tx)
 			sess := req.Things["session"].(*backend.Session)
 			subscribed := backend.IsSubscribed(db, sess.UserID, *o.backend())
 			moderate := false
@@ -100,7 +99,7 @@ func (o *group) Methods() map[string]func(he.Request) he.Response {
 			return rfc7231.StatusOK(o)
 		},
 		"DELETE": func(req he.Request) he.Response {
-			db := req.Things["db"].(*gorm.DB)
+			db := req.Things["db"].(*periwinkle.Tx)
 			sess := req.Things["session"].(*backend.Session)
 			if !backend.IsAdmin(db, sess.UserID, *o.backend()) {
 				return rfc7231.StatusForbidden(he.NetPrintf("Unauthorized user"))
@@ -127,7 +126,7 @@ func newDirGroups() dirGroups {
 	r := dirGroups{}
 	r.methods = map[string]func(he.Request) he.Response{
 		"GET": func(req he.Request) he.Response {
-			db := req.Things["db"].(*gorm.DB)
+			db := req.Things["db"].(*periwinkle.Tx)
 			sess := req.Things["session"].(*backend.Session)
 			var groups []backend.Group
 			type getfmt struct {
@@ -173,7 +172,7 @@ func newDirGroups() dirGroups {
 			return rfc7231.StatusOK(he.NetJSON{Data: data})
 		},
 		"POST": func(req he.Request) he.Response {
-			db := req.Things["db"].(*gorm.DB)
+			db := req.Things["db"].(*periwinkle.Tx)
 			type Response1 struct {
 				Groupname string            `json:"groupname"`
 				Post      map[string]string `json:"post"`
@@ -224,7 +223,7 @@ func (d dirGroups) Methods() map[string]func(he.Request) he.Response {
 }
 
 func (d dirGroups) Subentity(name string, req he.Request) he.Entity {
-	db := req.Things["db"].(*gorm.DB)
+	db := req.Things["db"].(*periwinkle.Tx)
 	sess := req.Things["session"].(*backend.Session)
 	grp := backend.GetGroupByID(db, name)
 	if grp.ReadPublic == 1 {

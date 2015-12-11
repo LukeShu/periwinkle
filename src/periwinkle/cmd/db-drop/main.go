@@ -25,9 +25,15 @@ func main() {
 	options := cmdutil.Docopt(usage)
 	config := cmdutil.GetConfig(options["-c"].(string))
 
-	err := backend.DbDrop(config.DB)
-	if err != nil {
-		periwinkle.LogErr(err)
+	conflict := config.DB.Do(func(tx *periwinkle.Tx) {
+		err := backend.DbDrop(tx)
+		if err != nil {
+			periwinkle.LogErr(err)
+			os.Exit(int(lsb.EXIT_FAILURE))
+		}
+	})
+	if conflict != nil {
+		periwinkle.LogErr(conflict)
 		os.Exit(int(lsb.EXIT_FAILURE))
 	}
 }

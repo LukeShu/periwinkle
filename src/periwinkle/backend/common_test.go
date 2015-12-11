@@ -20,13 +20,15 @@ func CreateTempDB() *periwinkle.Cfg {
 		DB:             nil, // the default DB is set later
 	}
 
-	db, err := cfg.OpenDB("sqlite3", "file:temp.sqlite?mode=memory&_txlock=exclusive")
+	db, err := cfg.OpenDB("sqlite3", "file:temp.sqlite?mode=memory&_txlock=exclusive", false)
 	if err != nil {
 		periwinkle.Logf("Error loading sqlite3 database")
 	}
 	conf.DB = db
 
-	DbSchema(conf.DB)
+	conf.DB.Do(func(tx *periwinkle.Tx) {
+		DbSchema(tx)
+	})
 
 	return &conf
 }

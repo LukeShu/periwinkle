@@ -6,16 +6,13 @@ import (
 	he "httpentity"
 	"httpentity/rfc7231"
 	"periwinkle"
-	"periwinkle/backend"
-
-	"github.com/jinzhu/gorm"
 )
 
 func MiddlewareDatabase(config *periwinkle.Cfg) he.Middleware {
 	return he.Middleware{
 		Outside: func(req he.Request, handle func(he.Request) he.Response) he.Response {
 			var res he.Response
-			conflict := backend.WithTransaction(config.DB, func(transaction *gorm.DB) {
+			conflict := config.DB.Do(func(transaction *periwinkle.Tx) {
 				req.Things["db"] = transaction
 				res = handle(req)
 			})

@@ -7,11 +7,11 @@ package backend
 import (
 	"io"
 	"locale"
+	"periwinkle"
 	"strings"
 	"time"
 
 	"github.com/dchest/captcha"
-	"github.com/jinzhu/gorm"
 )
 
 const (
@@ -32,11 +32,11 @@ type Captcha struct {
 	Expiration time.Time `json:"expiration_time"`
 }
 
-func (o Captcha) dbSchema(db *gorm.DB) locale.Error {
+func (o Captcha) dbSchema(db *periwinkle.Tx) locale.Error {
 	return locale.UntranslatedError(db.CreateTable(&o).Error)
 }
 
-func NewCaptcha(db *gorm.DB) *Captcha {
+func NewCaptcha(db *periwinkle.Tx) *Captcha {
 	o := Captcha{
 		ID:    captcha.New(),
 		Value: string(captcha.RandomDigits(defaultLen)),
@@ -47,7 +47,7 @@ func NewCaptcha(db *gorm.DB) *Captcha {
 	return &o
 }
 
-func UseCaptcha(db *gorm.DB, id, token string) bool {
+func UseCaptcha(db *periwinkle.Tx, id, token string) bool {
 	o := GetCaptchaByID(db, id)
 	if o == nil {
 		panic("Captcha " + id + " does not exist.")
@@ -62,7 +62,7 @@ func UseCaptcha(db *gorm.DB, id, token string) bool {
 	return false
 }
 
-func CheckCaptcha(db *gorm.DB, userInput string, captchaID string) bool {
+func CheckCaptcha(db *periwinkle.Tx, userInput string, captchaID string) bool {
 	o := GetCaptchaByID(db, captchaID)
 	if o == nil {
 		return false
@@ -70,7 +70,7 @@ func CheckCaptcha(db *gorm.DB, userInput string, captchaID string) bool {
 	return userInput == o.Value
 }
 
-func GetCaptchaByID(db *gorm.DB, id string) *Captcha {
+func GetCaptchaByID(db *periwinkle.Tx, id string) *Captcha {
 	var o Captcha
 	if result := db.First(&o, "id = ?", id); result.Error != nil {
 		if result.RecordNotFound() {
@@ -91,7 +91,7 @@ func (o *Captcha) MarshalWAV(w io.Writer) locale.Error {
 	return locale.UntranslatedError(captcha.WriteAudio(w, o.ID, "en"))
 }
 
-func (o *Captcha) Save(db *gorm.DB) {
+func (o *Captcha) Save(db *periwinkle.Tx) {
 	if err := db.Save(o).Error; err != nil {
 		dbError(err)
 	}

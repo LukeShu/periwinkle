@@ -6,8 +6,7 @@ package backend
 import (
 	"locale"
 	"maildir"
-
-	"github.com/jinzhu/gorm"
+	"periwinkle"
 )
 
 type Message struct {
@@ -17,13 +16,13 @@ type Message struct {
 	// cached fields??????
 }
 
-func (o Message) dbSchema(db *gorm.DB) locale.Error {
+func (o Message) dbSchema(db *periwinkle.Tx) locale.Error {
 	return locale.UntranslatedError(db.CreateTable(&o).
 		AddUniqueIndex("filename_idx", "unique").
 		Error)
 }
 
-func NewMessage(db *gorm.DB, id string, group Group, unique maildir.Unique) Message {
+func NewMessage(db *periwinkle.Tx, id string, group Group, unique maildir.Unique) Message {
 	if id == "" {
 		programmerError("Message ID can't be emtpy")
 	}
@@ -38,7 +37,7 @@ func NewMessage(db *gorm.DB, id string, group Group, unique maildir.Unique) Mess
 	return o
 }
 
-func GetMessageByID(db *gorm.DB, id string) *Message {
+func GetMessageByID(db *periwinkle.Tx, id string) *Message {
 	var o Message
 	if result := db.First(&o, "id = ?", id); result.Error != nil {
 		if result.RecordNotFound() {

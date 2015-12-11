@@ -7,10 +7,10 @@ import (
 	"crypto/rand"
 	"locale"
 	"math/big"
+	"periwinkle"
 	"strings"
 
 	"github.com/go-sql-driver/mysql"
-	"github.com/jinzhu/gorm"
 	sqlite3 "github.com/mattn/go-sqlite3"
 )
 
@@ -53,15 +53,15 @@ func errHelper(errs *errorList, err locale.Error) {
 }
 
 type table interface {
-	dbSchema(*gorm.DB) locale.Error
+	dbSchema(*periwinkle.Tx) locale.Error
 }
 
 type tableSeed interface {
 	table
-	dbSeed(*gorm.DB) locale.Error
+	dbSeed(*periwinkle.Tx) locale.Error
 }
 
-func DbSchema(db *gorm.DB) locale.Error {
+func DbSchema(db *periwinkle.Tx) locale.Error {
 	errs := errorList{}
 	for _, table := range tables {
 		errHelper(&errs, table.dbSchema(db))
@@ -72,7 +72,7 @@ func DbSchema(db *gorm.DB) locale.Error {
 	return nil
 }
 
-func DbDrop(db *gorm.DB) locale.Error {
+func DbDrop(db *periwinkle.Tx) locale.Error {
 	errs := errorList{}
 	for i := range tables {
 		table := tables[len(tables)-1-i]
@@ -84,7 +84,7 @@ func DbDrop(db *gorm.DB) locale.Error {
 	return nil
 }
 
-func DbSeed(db *gorm.DB) locale.Error {
+func DbSeed(db *periwinkle.Tx) locale.Error {
 	errs := errorList{}
 	for _, table := range tables {
 		if seeder, ok := table.(tableSeed); ok {
@@ -97,31 +97,13 @@ func DbSeed(db *gorm.DB) locale.Error {
 	return nil
 }
 
-type Conflict struct {
-	Err locale.Error
-}
-
-func (c Conflict) Error() string {
-	return c.Err.Error()
-}
-
-func (c Conflict) Locales() []locale.Spec {
-	return c.Err.Locales()
-}
-
-func (c Conflict) L10NString(s locale.Spec) string {
-	return c.Err.L10NString(s)
-}
-
-var _ locale.Error = Conflict{}
-
 // Panic, but a little nicer
 func dbError(err error) {
 	// TODO: return better messages for Conflict errors.
 	switch e := err.(type) {
 	case sqlite3.Error:
 		if e.Code == sqlite3.ErrConstraint {
-			panic(Conflict{locale.UntranslatedError(e)})
+			panic(periwinkle.Conflict{locale.UntranslatedError(e)})
 		}
 		panic(locale.UntranslatedError(e))
 	case *mysql.MySQLError:
@@ -130,7 +112,7 @@ func dbError(err error) {
 		// https://mariadb.com/kb/en/mariadb/mariadb-error-codes/
 		switch e.Number {
 		case 1022, 1062, 1169, 1216, 1217, 1451, 1452, 1557, 1761, 1762, 1834:
-			panic(Conflict{locale.UntranslatedError(e)})
+			panic(periwinkle.Conflict{locale.UntranslatedError(e)})
 		}
 		panic(locale.UntranslatedError(e))
 	default:

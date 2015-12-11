@@ -7,9 +7,8 @@ import (
 	he "httpentity"
 	"httpentity/rfc7231"
 	"net/url"
+	"periwinkle"
 	"periwinkle/backend"
-
-	"github.com/jinzhu/gorm"
 )
 
 var _ he.Entity = &shortURL{}
@@ -46,7 +45,7 @@ func (d dirShortURLs) Methods() map[string]func(he.Request) he.Response {
 }
 
 func (d dirShortURLs) Subentity(name string, req he.Request) he.Entity {
-	db := req.Things["db"].(*gorm.DB)
+	db := req.Things["db"].(*periwinkle.Tx)
 	return (*shortURL)(backend.GetShortURLByID(db, name))
 }
 

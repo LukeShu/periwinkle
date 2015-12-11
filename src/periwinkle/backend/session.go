@@ -5,9 +5,8 @@ package backend
 
 import (
 	"locale"
+	"periwinkle"
 	"time"
-
-	"github.com/jinzhu/gorm"
 )
 
 type Session struct {
@@ -16,11 +15,11 @@ type Session struct {
 	LastUsed time.Time `json:"-"`
 }
 
-func (o Session) dbSchema(db *gorm.DB) locale.Error {
+func (o Session) dbSchema(db *periwinkle.Tx) locale.Error {
 	return locale.UntranslatedError(db.CreateTable(&o).Error)
 }
 
-func NewSession(db *gorm.DB, user *User, password string) *Session {
+func NewSession(db *periwinkle.Tx, user *User, password string) *Session {
 	if user == nil || !user.CheckPassword(password) {
 		return nil
 	}
@@ -35,7 +34,7 @@ func NewSession(db *gorm.DB, user *User, password string) *Session {
 	return &o
 }
 
-func GetSessionByID(db *gorm.DB, id string) *Session {
+func GetSessionByID(db *periwinkle.Tx, id string) *Session {
 	var o Session
 	if result := db.First(&o, "id = ?", id); result.Error != nil {
 		if result.RecordNotFound() {
@@ -46,11 +45,11 @@ func GetSessionByID(db *gorm.DB, id string) *Session {
 	return &o
 }
 
-func (o *Session) Delete(db *gorm.DB) {
+func (o *Session) Delete(db *periwinkle.Tx) {
 	db.Delete(o)
 }
 
-func (o *Session) Save(db *gorm.DB) {
+func (o *Session) Save(db *periwinkle.Tx) {
 	if err := db.Save(o).Error; err != nil {
 		dbError(err)
 	}

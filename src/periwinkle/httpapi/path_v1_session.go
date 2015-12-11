@@ -7,10 +7,9 @@ import (
 	he "httpentity"
 	"httpentity/rfc7231"
 	"net/http"
+	"periwinkle"
 	"periwinkle/backend"
 	"strings"
-
-	"github.com/jinzhu/gorm"
 )
 
 var _ he.NetEntity = &session{}
@@ -40,7 +39,7 @@ func newFileSession() fileSession {
 			return rfc7231.StatusOK((*session)(sess))
 		},
 		"POST": func(req he.Request) he.Response {
-			db := req.Things["db"].(*gorm.DB)
+			db := req.Things["db"].(*periwinkle.Tx)
 			type postfmt struct {
 				Username string `json:"username"`
 				Password string `json:"password"`
@@ -75,7 +74,7 @@ func newFileSession() fileSession {
 			}
 		},
 		"DELETE": func(req he.Request) he.Response {
-			db := req.Things["db"].(*gorm.DB)
+			db := req.Things["db"].(*periwinkle.Tx)
 			sess := req.Things["session"].(*backend.Session)
 			if sess != nil {
 				sess.Delete(db)

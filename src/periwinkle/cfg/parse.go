@@ -68,6 +68,9 @@ func Parse(in io.Reader) (cfgptr *periwinkle.Cfg, e locale.Error) {
 		gotoError(locale.Errorf("root element is not a map"))
 	}
 
+	var dbdriver string
+	var dbsource string
+
 	for key, val := range datmap {
 		switch key {
 		case "Mailstore":
@@ -91,36 +94,37 @@ func Parse(in io.Reader) (cfgptr *periwinkle.Cfg, e locale.Error) {
 			if !ok {
 				gotoError(locale.Errorf("value for %q is not a map", key.(string)))
 			}
-			var driver string
-			var source string
 			for key, val := range m {
 				switch key {
 				case "driver":
-					driver = getString("DB."+key.(string), val)
+					dbdriver = getString("DB."+key.(string), val)
 				case "source":
-					source = getString("DB."+key.(string), val)
+					dbsource = getString("DB."+key.(string), val)
 				default:
 					gotoError(locale.Errorf("unknown field: %v", "DB."+key.(string)))
 				}
 			}
-			db, err := OpenDB(driver, source)
-			if err != nil {
-				gotoError(err)
-			}
-			cfg.DB = db
 		default:
 			gotoError(locale.Errorf("unknown field: %v", key))
 		}
 	}
 
+	if dbdriver != "" && dbsource != "" {
+		db, err := OpenDB(dbdriver, dbsource, cfg.Debug)
+		if err != nil {
+			gotoError(err)
+		}
+		cfg.DB = db
+	}
+
 	// Set the default database
 	if cfg.DB == nil {
 		periwinkle.Logf("DB not configured, trying MySQL periwinkle:periwinkle@localhost/periwinkle ...")
-		db, err := OpenDB("mysql", "periwinkle:periwinkle@/periwinkle?charset=utf8&parseTime=True")
+		db, err := OpenDB("mysql", "periwinkle:periwinkle@/periwinkle?charset=utf8&parseTime=True", cfg.Debug)
 		if err != nil {
 			periwinkle.Logf("Could not connect to MySQL: %v", locale.UntranslatedError(err))
 			periwinkle.Logf("No MySQL, trying SQLite3 file:periwinkle.sqlite ...")
-			db, err = OpenDB("sqlite3", "file:periwinkle.sqlite?mode=rwc&_txlock=exclusive")
+			db, err = OpenDB("sqlite3", "file:periwinkle.sqlite?mode=rwc&_txlock=exclusive", cfg.Debug)
 			if err != nil {
 				periwinkle.Logf("Could not open SQLite3 DB: %v", locale.UntranslatedError(err))
 				gotoError(locale.Errorf("Could not connect to database"))
@@ -128,8 +132,6 @@ func Parse(in io.Reader) (cfgptr *periwinkle.Cfg, e locale.Error) {
 		}
 		cfg.DB = db
 	}
-
-	cfg.DB.LogMode(cfg.Debug)
 
 	domain_handlers.GetHandlers(&cfg)
 
@@ -152,15 +154,19 @@ func getBool(key string, val interface{}) bool {
 	return b
 }
 
-func OpenDB(driver, source string) (*gorm.DB, locale.Error) {
+func OpenDB(driver, source string, debug bool) (*periwinkle.DB, locale.Error) {
 	db, err := gorm.Open(driver, source)
 	if err != nil && driver == "sqlite3" {
 		err = db.Exec("PRAGMA foreign_keys = ON").Error
 		db.DB().SetMaxOpenConns(1)
 	}
-	return &db, locale.UntranslatedError(err)
+	db.LogMode(debug)
+	if err != nil {
+		return nil, locale.UntranslatedError(err)
+	}
+	return periwinkle.NewDB(db), nil
 }
 
-func bounceNoHost(io.Reader, string, *gorm.DB, *periwinkle.Cfg) postfixpipe.ExitStatus {
+func bounceNoHost(io.Reader, string, *periwinkle.Tx, *periwinkle.Cfg) postfixpipe.ExitStatus {
 	return postfixpipe.EX_NOHOST
 }

@@ -5,14 +5,13 @@ package backend
 
 import (
 	"locale"
-
-	"github.com/jinzhu/gorm"
+	"periwinkle"
 )
 
 type Admin struct {
 	UserID string `json:"user_id"`
 }
 
-func (o Admin) dbSchema(db *gorm.DB) locale.Error {
+func (o Admin) dbSchema(db *periwinkle.Tx) locale.Error {
 	return locale.UntranslatedError(db.CreateTable(&o).Error)
 }

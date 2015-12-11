@@ -6,9 +6,9 @@ package backend
 
 import (
 	"locale"
+	"periwinkle"
 	"strings"
 
-	"github.com/jinzhu/gorm"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -19,7 +19,7 @@ type User struct {
 	Addresses []UserAddress `json:"addresses"`
 }
 
-func (o User) dbSchema(db *gorm.DB) locale.Error {
+func (o User) dbSchema(db *periwinkle.Tx) locale.Error {
 	return locale.UntranslatedError(db.CreateTable(&o).Error)
 }
 
@@ -34,7 +34,7 @@ type UserAddress struct {
 	Subscriptions []Subscription `json:"subscriptions"`
 }
 
-func (o UserAddress) dbSchema(db *gorm.DB) locale.Error {
+func (o UserAddress) dbSchema(db *periwinkle.Tx) locale.Error {
 	return locale.UntranslatedError(db.CreateTable(&o).
 		AddUniqueIndex("address_idx", "medium", "address").
 		//AddUniqueIndex("user_idx", "user_id", "sort_order").
@@ -49,7 +49,7 @@ func (addr UserAddress) AsEmailAddress() string {
 	}
 }
 
-func (u *User) populate(db *gorm.DB) {
+func (u *User) populate(db *periwinkle.Tx) {
 	db.Where(`user_id = ? AND medium != "noop" AND medium != "admin"`, u.ID).Model(UserAddress{}).Find(&u.Addresses)
 	addressIDs := make([]int64, len(u.Addresses))
 	for i, address := range u.Addresses {
@@ -75,7 +75,7 @@ func (u *User) populate(db *gorm.DB) {
 	}
 }
 
-func (u *User) GetUserSubscriptions(db *gorm.DB) []Subscription {
+func (u *User) GetUserSubscriptions(db *periwinkle.Tx) []Subscription {
 	db.Model(u).Related(&u.Addresses)
 	addressIDs := make([]int64, len(u.Addresses))
 	for i, address := range u.Addresses {
@@ -97,7 +97,7 @@ func (u *User) GetUserSubscriptions(db *gorm.DB) []Subscription {
 	return subscriptions
 }
 
-func GetAddressByUserAndMedium(db *gorm.DB, userID string, medium string) *UserAddress {
+func GetAddressByUserAndMedium(db *periwinkle.Tx, userID string, medium string) *UserAddress {
 	userID = strings.ToLower(userID)
 	var o UserAddress
 	if result := db.Where("user_id=? and medium=?", userID, medium).First(&o); result.Error != nil {
@@ -109,7 +109,7 @@ func GetAddressByUserAndMedium(db *gorm.DB, userID string, medium string) *UserA
 	return &o
 }
 
-func GetUserByID(db *gorm.DB, id string) *User {
+func GetUserByID(db *periwinkle.Tx, id string) *User {
 	id = strings.ToLower(id)
 	var o User
 	if result := db.First(&o, "id = ?", id); result.Error != nil {
@@ -122,7 +122,7 @@ func GetUserByID(db *gorm.DB, id string) *User {
 	return &o
 }
 
-func GetUserByAddress(db *gorm.DB, medium string, address string) *User {
+func GetUserByAddress(db *periwinkle.Tx, medium string, address string) *User {
 	var o User
 	result := db.Joins("INNER JOIN user_addresses ON user_addresses.user_id=users.id").Where("user_addresses.medium=? and user_addresses.address=?", medium, address).Find(&o)
 	if result.Error != nil {
@@ -148,7 +148,7 @@ func (u *User) CheckPassword(password string) bool {
 	return err == nil
 }
 
-func NewUser(db *gorm.DB, name string, password string, email string) User {
+func NewUser(db *periwinkle.Tx, name string, password string, email string) User {
 	if name == "" {
 		programmerError("User name can't be empty")
 	}
@@ -165,7 +165,7 @@ func NewUser(db *gorm.DB, name string, password string, email string) User {
 	return o
 }
 
-func NewUserAddress(db *gorm.DB, userID string, medium string, address string, confirmed bool) UserAddress {
+func NewUserAddress(db *periwinkle.Tx, userID string, medium string, address string, confirmed bool) UserAddress {
 	userID = strings.ToLower(userID)
 	o := UserAddress{
 		UserID:        userID,
@@ -180,7 +180,7 @@ func NewUserAddress(db *gorm.DB, userID string, medium string, address string, c
 	return o
 }
 
-func (usr *User) Save(db *gorm.DB) {
+func (usr *User) Save(db *periwinkle.Tx) {
 	usr.ID = strings.ToLower(usr.ID)
 	if usr.Addresses != nil {
 		var oldAddresses []UserAddress

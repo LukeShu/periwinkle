@@ -6,13 +6,10 @@ package main
 import (
 	"fmt"
 	"periwinkle"
-	"periwinkle/backend"
 	"periwinkle/cmdutil"
 	pp "postfixpipe"
 	"runtime"
 	"strings"
-
-	"github.com/jinzhu/gorm"
 )
 
 const usage = `
@@ -41,7 +38,7 @@ func main() {
 		pp.Exit(ret)
 	}()
 
-	conflict := backend.WithTransaction(config.DB, func(transaction *gorm.DB) {
+	conflict := config.DB.Do(func(transaction *periwinkle.Tx) {
 		msg := pp.Get()
 
 		recipient := msg.ORIGINAL_RECIPIENT()

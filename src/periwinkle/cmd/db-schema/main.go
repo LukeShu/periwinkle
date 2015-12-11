@@ -25,10 +25,16 @@ func main() {
 	options := cmdutil.Docopt(usage)
 	config := cmdutil.GetConfig(options["-c"].(string))
 
-	err := backend.DbSchema(config.DB)
-	if err != nil {
-		periwinkle.Logf("Encountered an error while setting up the database schema:")
-		periwinkle.LogErr(err)
+	conflict := config.DB.Do(func(tx *periwinkle.Tx) {
+		err := backend.DbSchema(tx)
+		if err != nil {
+			periwinkle.Logf("Encountered an error while setting up the database schema:")
+			periwinkle.LogErr(err)
+			os.Exit(int(lsb.EXIT_FAILURE))
+		}
+	})
+	if conflict != nil {
+		periwinkle.LogErr(conflict)
 		os.Exit(int(lsb.EXIT_FAILURE))
 	}
 }

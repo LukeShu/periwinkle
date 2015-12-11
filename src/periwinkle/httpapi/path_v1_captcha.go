@@ -9,10 +9,9 @@ import (
 	"httpentity/rfc7231"
 	"io"
 	"locale"
+	"periwinkle"
 	"periwinkle/backend"
 	"time"
-
-	"github.com/jinzhu/gorm"
 )
 
 var _ he.Entity = &captcha{}
@@ -32,7 +31,7 @@ func (o *captcha) Methods() map[string]func(he.Request) he.Response {
 		},
 
 		"POST": func(req he.Request) he.Response {
-			db := req.Things["db"].(*gorm.DB)
+			db := req.Things["db"].(*periwinkle.Tx)
 			type postfmt struct {
 				Value      string    `json:"value"`
 				Expiration time.Time `json:"password"`
@@ -54,7 +53,7 @@ func (o *captcha) Methods() map[string]func(he.Request) he.Response {
 		},
 
 		"PUT": func(req he.Request) he.Response {
-			db := req.Things["db"].(*gorm.DB)
+			db := req.Things["db"].(*periwinkle.Tx)
 			var newCaptcha captcha
 			httperr := safeDecodeJSON(req.Entity, &newCaptcha)
 			if httperr != nil {
@@ -111,7 +110,7 @@ func newDirCaptchas() dirCaptchas {
 	r := dirCaptchas{}
 	r.methods = map[string]func(he.Request) he.Response{
 		"POST": func(req he.Request) he.Response {
-			db := req.Things["db"].(*gorm.DB)
+			db := req.Things["db"].(*periwinkle.Tx)
 			return rfc7231.StatusCreated(r, backend.NewCaptcha(db).ID, req)
 		},
 	}
@@ -123,7 +122,7 @@ func (d dirCaptchas) Methods() map[string]func(he.Request) he.Response {
 }
 
 func (d dirCaptchas) Subentity(name string, req he.Request) he.Entity {
-	db := req.Things["db"].(*gorm.DB)
+	db := req.Things["db"].(*periwinkle.Tx)
 	return (*captcha)(backend.GetCaptchaByID(db, name))
 }
 

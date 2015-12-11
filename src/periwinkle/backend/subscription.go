@@ -6,8 +6,7 @@ package backend
 
 import (
 	"locale"
-
-	"github.com/jinzhu/gorm"
+	"periwinkle"
 )
 
 type Subscription struct {
@@ -18,11 +17,11 @@ type Subscription struct {
 	Confirmed bool        `json:"confirmed"`
 }
 
-func (o Subscription) dbSchema(db *gorm.DB) locale.Error {
+func (o Subscription) dbSchema(db *periwinkle.Tx) locale.Error {
 	return locale.UntranslatedError(db.CreateTable(&o).Error)
 }
 
-func GetSubscriptionsGroupByID(db *gorm.DB, groupID string) []Subscription {
+func GetSubscriptionsGroupByID(db *periwinkle.Tx, groupID string) []Subscription {
 	var o []Subscription
 	if result := db.Where("group_id = ?", groupID).Find(&o); result.Error != nil {
 		if result.RecordNotFound() {
@@ -33,7 +32,7 @@ func GetSubscriptionsGroupByID(db *gorm.DB, groupID string) []Subscription {
 	return o
 }
 
-func IsSubscribed(db *gorm.DB, userID string, group Group) int {
+func IsSubscribed(db *periwinkle.Tx, userID string, group Group) int {
 	subscriptions := GetSubscriptionsGroupByID(db, group.ID)
 	addressIDs := make([]int64, len(subscriptions))
 	for i, subscription := range subscriptions {
@@ -66,7 +65,7 @@ func IsSubscribed(db *gorm.DB, userID string, group Group) int {
 	return 0
 }
 
-func IsAdmin(db *gorm.DB, userID string, group Group) bool {
+func IsAdmin(db *periwinkle.Tx, userID string, group Group) bool {
 	subscriptions := GetSubscriptionsGroupByID(db, group.ID)
 	addressIDs := make([]int64, len(subscriptions))
 	for i, subscription := range subscriptions {

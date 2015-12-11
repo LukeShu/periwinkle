@@ -6,10 +6,8 @@ import (
 	"io"
 	"periwinkle"
 	"postfixpipe"
-
-	"github.com/jinzhu/gorm"
 )
 
-func HandleMMS(r io.Reader, name string, db *gorm.DB, cfg *periwinkle.Cfg) postfixpipe.ExitStatus {
+func HandleMMS(r io.Reader, name string, db *periwinkle.Tx, cfg *periwinkle.Cfg) postfixpipe.ExitStatus {
 	panic("TODO")
 }

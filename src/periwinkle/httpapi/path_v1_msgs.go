@@ -6,9 +6,8 @@ package httpapi
 import (
 	he "httpentity"
 	"httpentity/rfc7231"
+	"periwinkle"
 	"periwinkle/backend"
-
-	"github.com/jinzhu/gorm"
 )
 
 var _ he.Entity = &message{}
@@ -60,7 +59,7 @@ func (d dirMessages) Methods() map[string]func(he.Request) he.Response {
 }
 
 func (d dirMessages) Subentity(name string, req he.Request) he.Entity {
-	db := req.Things["db"].(*gorm.DB)
+	db := req.Things["db"].(*periwinkle.Tx)
 	message := (*message)(backend.GetMessageByID(db, name))
 	sess := req.Things["session"].(*backend.Session)
 	grp := backend.GetGroupByID(db, message.GroupID)

@@ -4,10 +4,9 @@ package httpapi
 
 import (
 	he "httpentity"
+	"periwinkle"
 	"periwinkle/backend"
 	"time"
-
-	"github.com/jinzhu/gorm"
 )
 
 func getsession(req he.Request) *backend.Session {
@@ -28,7 +27,7 @@ func getsession(req he.Request) *backend.Session {
 	}
 
 	// It's not worth panicing if we have database errors here.
-	db, ok := req.Things["db"].(*gorm.DB)
+	db, ok := req.Things["db"].(*periwinkle.Tx)
 	if !ok {
 		return nil
 	}

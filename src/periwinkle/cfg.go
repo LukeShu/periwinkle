@@ -9,11 +9,9 @@ import (
 	"maildir"
 	"net/http"
 	"postfixpipe"
-
-	"github.com/jinzhu/gorm"
 )
 
-type DomainHandler func(io.Reader, string, *gorm.DB, *Cfg) postfixpipe.ExitStatus
+type DomainHandler func(io.Reader, string, *Tx, *Cfg) postfixpipe.ExitStatus
 
 type Cfg struct {
 	Mailstore            maildir.Maildir
@@ -24,7 +22,7 @@ type Cfg struct {
 	TwilioAuthToken      string
 	GroupDomain          string
 	WebRoot              string
-	DB                   *gorm.DB
+	DB                   *DB
 	DomainHandlers       map[string]DomainHandler
 	DefaultDomainHandler DomainHandler
 }

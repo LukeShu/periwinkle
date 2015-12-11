@@ -6,8 +6,7 @@ package backend
 import (
 	"locale"
 	"net/url"
-
-	"github.com/jinzhu/gorm"
+	"periwinkle"
 )
 
 type ShortURL struct {
@@ -15,13 +14,13 @@ type ShortURL struct {
 	Dest string //*url.URL // TODO: figure out how to have (un)marshalling happen automatically
 }
 
-func (o ShortURL) dbSchema(db *gorm.DB) locale.Error {
+func (o ShortURL) dbSchema(db *periwinkle.Tx) locale.Error {
 	return locale.UntranslatedError(db.CreateTable(&o).
 		AddUniqueIndex("dest_idx", "dest").
 		Error)
 }
 
-func NewShortURL(db *gorm.DB, u *url.URL) *ShortURL {
+func NewShortURL(db *periwinkle.Tx, u *url.URL) *ShortURL {
 	o := ShortURL{
 		ID:   randomString(5),
 		Dest: u.String(), // TODO: automatic marshalling
@@ -32,13 +31,13 @@ func NewShortURL(db *gorm.DB, u *url.URL) *ShortURL {
 	return &o
 }
 
-func (o *ShortURL) Save(db *gorm.DB) {
+func (o *ShortURL) Save(db *periwinkle.Tx) {
 	if err := db.Save(o).Error; err != nil {
 		dbError(err)
 	}
 }
 
-func GetShortURLByID(db *gorm.DB, id string) *ShortURL {
+func GetShortURLByID(db *periwinkle.Tx, id string) *ShortURL {
 	var o ShortURL
 	if result := db.First(&o, "id = ?", id); result.Error != nil {
 		if result.RecordNotFound() {

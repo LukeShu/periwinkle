@@ -19,11 +19,9 @@ import (
 	"periwinkle/twilio"
 	"postfixpipe"
 	"strings"
-
-	"github.com/jinzhu/gorm"
 )
 
-func HandleSMS(r io.Reader, name string, db *gorm.DB, cfg *periwinkle.Cfg) postfixpipe.ExitStatus {
+func HandleSMS(r io.Reader, name string, db *periwinkle.Tx, cfg *periwinkle.Cfg) postfixpipe.ExitStatus {
 	message, err := mail.ReadMessage(r)
 	if err != nil {
 		log.Println(err)
@@ -41,7 +39,7 @@ func HandleSMS(r io.Reader, name string, db *gorm.DB, cfg *periwinkle.Cfg) postf
 // Returns the status of the message: queued, sending, sent,
 // delivered, undelivered, failed.  If an error occurs, it returns
 // Error.
-func sender(message mail.Message, smsTo string, db *gorm.DB, cfg *periwinkle.Cfg) (status string, err error) {
+func sender(message mail.Message, smsTo string, db *periwinkle.Tx, cfg *periwinkle.Cfg) (status string, err error) {
 
 	group := message.Header.Get("From")
 	user := backend.GetUserByAddress(db, "sms", smsTo)

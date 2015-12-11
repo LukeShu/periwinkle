@@ -12,11 +12,9 @@ import (
 	"periwinkle"
 	"periwinkle/backend"
 	"postfixpipe"
-
-	"github.com/jinzhu/gorm"
 )
 
-func HandleEmail(r io.Reader, name string, db *gorm.DB, cfg *periwinkle.Cfg) postfixpipe.ExitStatus {
+func HandleEmail(r io.Reader, name string, db *periwinkle.Tx, cfg *periwinkle.Cfg) postfixpipe.ExitStatus {
 	mdWriter := cfg.Mailstore.NewMail()
 	if mdWriter == nil {
 		periwinkle.Logf("Could not open maildir for writing: %q\n", cfg.Mailstore)

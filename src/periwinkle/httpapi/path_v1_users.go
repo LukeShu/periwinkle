@@ -9,10 +9,9 @@ import (
 	he "httpentity"
 	"httpentity/rfc7231"
 	"jsonpatch"
+	"periwinkle"
 	"periwinkle/backend"
 	"strings"
-
-	"github.com/jinzhu/gorm"
 )
 
 var _ he.Entity = &user{}
@@ -94,7 +93,7 @@ func (usr *user) Methods() map[string]func(he.Request) he.Response {
 			return rfc7231.StatusOK(usr)
 		},
 		"PUT": func(req he.Request) he.Response {
-			db := req.Things["db"].(*gorm.DB)
+			db := req.Things["db"].(*periwinkle.Tx)
 			sess := req.Things["session"].(*backend.Session)
 			if sess.UserID != usr.ID {
 				return rfc7231.StatusForbidden(he.NetPrintf("Unauthorized user"))
@@ -116,7 +115,7 @@ func (usr *user) Methods() map[string]func(he.Request) he.Response {
 			return rfc7231.StatusOK(usr)
 		},
 		"PATCH": func(req he.Request) he.Response {
-			db := req.Things["db"].(*gorm.DB)
+			db := req.Things["db"].(*periwinkle.Tx)
 			sess := req.Things["session"].(*backend.Session)
 			if sess.UserID != usr.ID {
 				return rfc7231.StatusForbidden(he.NetPrintf("Unauthorized user"))
@@ -145,7 +144,7 @@ func (usr *user) Methods() map[string]func(he.Request) he.Response {
 			return rfc7231.StatusOK(usr)
 		},
 		"DELETE": func(req he.Request) he.Response {
-			db := req.Things["db"].(*gorm.DB)
+			db := req.Things["db"].(*periwinkle.Tx)
 			db.Delete(usr)
 			return rfc7231.StatusNoContent()
 		},
@@ -168,7 +167,7 @@ func newDirUsers() dirUsers {
 	r := dirUsers{}
 	r.methods = map[string]func(he.Request) he.Response{
 		"POST": func(req he.Request) he.Response {
-			db := req.Things["db"].(*gorm.DB)
+			db := req.Things["db"].(*periwinkle.Tx)
 			type postfmt struct {
 				Username             string `json:"username"`
 				Email                string `json:"email"`
@@ -219,7 +218,7 @@ func (d dirUsers) Subentity(name string, req he.Request) he.Entity {
 	} else if sess.UserID != name {
 		return nil
 	}
-	db := req.Things["db"].(*gorm.DB)
+	db := req.Things["db"].(*periwinkle.Tx)
 	return (*user)(backend.GetUserByID(db, name))
 }
 
