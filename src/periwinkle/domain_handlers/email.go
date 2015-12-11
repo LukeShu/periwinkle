@@ -20,28 +20,35 @@ func HandleEmail(r io.Reader, name string, db *periwinkle.Tx, cfg *periwinkle.Cf
 		periwinkle.Logf("Could not open maildir for writing: %q\n", cfg.Mailstore)
 		return postfixpipe.EX_IOERR
 	}
+
+	// As we read the message, also write it to the maildir
 	defer func() {
 		if mdWriter != nil {
 			mdWriter.Cancel()
 		}
 	}()
 	r = io.TeeReader(r, mdWriter)
+
+	// Read the message
 	msg, err := mail.ReadMessage(r)
 	if err != nil {
 		return postfixpipe.EX_NOINPUT
 	}
 
+	// Figure out which group it was to
 	group := backend.GetGroupByID(db, name)
 	if group == nil {
 		return postfixpipe.EX_NOUSER
 	}
+
+	// Figure out who sent it
 	//user_email := msg.Header.Get("From")
 	//user := backend.GetUserByAddress(db, "email", user_email)
 	// check permissions
 	//if user == nil || !CanPost(db, group, user.ID) {
 	//	return postfixpipe.EX_NOPERM
 	//}
-
+	// Add it to the database
 	backend.NewMessage(
 		db,
 		msg.Header.Get("Message-Id"),
@@ -50,46 +57,53 @@ func HandleEmail(r io.Reader, name string, db *periwinkle.Tx, cfg *periwinkle.Cf
 	mdWriter.Close()
 	mdWriter = nil
 
-	// collect IDs of addresses subscribed to the group
-	addressIDs := make([]int64, len(group.Subscriptions))
-	for i := range group.Subscriptions {
-		addressIDs[i] = group.Subscriptions[i].AddressID
-	}
+	// Generate the list of who we're sending it to
+	var forwardAry []string
+	{
+		// collect IDs of addresses subscribed to the group
+		addressIDs := make([]int64, len(group.Subscriptions))
+		for i := range group.Subscriptions {
+			addressIDs[i] = group.Subscriptions[i].AddressID
+		}
 
-	// fetch all of those addresses
-	var addressList []backend.UserAddress
-	if len(addressIDs) > 0 {
-		db.Where("id IN (?)", addressIDs).Find(&addressList)
-	} else {
-		addressList = make([]backend.UserAddress, 0)
-	}
+		// fetch all of those addresses
+		var addressList []backend.UserAddress
+		if len(addressIDs) > 0 {
+			db.Where("id IN (?)", addressIDs).Find(&addressList)
+		} else {
+			addressList = make([]backend.UserAddress, 0)
+		}
 
-	// convert that list into a set
-	forwardSet := make(map[string]bool, len(addressList))
-	for _, addr := range addressList {
-		if addr.Medium != "noop" && addr.Medium != "admin" {
-			forwardSet[addr.AsEmailAddress()] = true
+		// convert that list into a set
+		forwardSet := make(map[string]bool, len(addressList))
+		for _, addr := range addressList {
+			if addr.Medium != "noop" && addr.Medium != "admin" {
+				forwardSet[addr.AsEmailAddress()] = true
+			}
+		}
+
+		// prune addresses that (should) already have the message
+		for _, header := range []string{"To", "From", "Cc"} {
+			addresses, err := msg.Header.AddressList(header)
+			if err != nil {
+				periwinkle.Logf("Parsing %q Header: %v\n", header, err)
+			}
+			for _, addr := range addresses {
+				delete(forwardSet, addr.Address)
+			}
+		}
+		// TODO: also prune addresses that belong to user.
+
+		// convert the set into an array
+		forwardAry = make([]string, len(forwardSet))
+		i := uint(0)
+		for addr := range forwardSet {
+			forwardAry[i] = addr
+			i++
 		}
 	}
 
-	// prune addresses that (should) already have the message
-	for _, header := range []string{"To", "From", "Cc"} {
-		addresses, err := msg.Header.AddressList(header)
-		if err != nil {
-			periwinkle.Logf("Parsing %q Header: %v\n", header, err)
-		}
-		for _, addr := range addresses {
-			delete(forwardSet, addr.Address)
-		}
-	}
-
-	// convert the set into an array
-	forwardAry := make([]string, len(forwardSet))
-	i := uint(0)
-	for addr := range forwardSet {
-		forwardAry[i] = addr
-		i++
-	}
+	periwinkle.Logf("Forwarding message to group %q to user addresses %#v", group.ID, forwardAry)
 
 	// format the message
 	msg822 := []byte{}
