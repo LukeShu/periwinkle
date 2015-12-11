@@ -145,9 +145,44 @@
 									is:			 	false
 								});
 							}
-							//TODO: get subscription list
+							$http({
+								method: 'GET',
+								url: '/v1/users/' + userService.user_id + '/subscriptions',
+								headers: {
+									'Content-Type': 'application/json'
+								},
+								data: {
+									groupid:	self.groupname
+								}
+							}).then(
+								function success(response) {
+									var i,j;
+									for(j in response.data) {
+										for(i in self.addresses[response.data[j]]) {
+											if(response.data[j].address === self.addresses[response.data[j]][i]) {
+												self.addresses[response.data[j]][i].is = true;
+											}
+										}
+									}
+									self.addresses_status.loading = false;
+								},
+								function fail(response) {
+									self.addresses_status.loading = false;
+									//show error to user
+									self.info.status.loading = false;
+									var status_code = response.status;
+									var reason = response.data;
+									//show alert
+									switch(status_code){
+										case 500:
+											$scope.showError('GENERAL.ERRORS.500.TITLE', 'GENERAL.ERRORS.500.CONTENT', reason, 'body', 'body');
+											break;
+										default:
+											$scope.showError('GENERAL.ERRORS.DEFAULT.TITLE', 'GENERAL.ERRORS.DEFAULT.CONTENT', reason, 'body', 'body');
+									}
+								}
+							);
 						}
-						self.addresses_status.loading = false;
 					},
 					function fail(response) {
 						//show error to user
@@ -165,8 +200,61 @@
 					}
 				);
 			},
-			submit:	function() {
-
+			submit:	function(name, index) {
+				debugger;
+				self.addresses_status.loading = true;
+				if(self.addresses[name][index].is) {
+					$http({
+						method:	'POST',
+						url: '/v1/users/' + userService.user_id + '/subscriptions',
+						data:	{
+							group_id:	self.groupname,
+							medium:		name,
+							address:	self.addresses[name][index].address
+						}
+					}).then(
+						function success(response) {
+							self.addresses_status.loading = false;
+						},
+						function fail(response) {
+							//show error to user
+							self.addresses_status.loading = false;
+							var status_code = response.status;
+							var reason = response.data;
+							//show alert
+							switch(status_code){
+								case 500:
+									$scope.showError('GENERAL.ERRORS.500.TITLE', 'GENERAL.ERRORS.500.CONTENT', reason, 'body', 'body');
+									break;
+								default:
+									$scope.showError('GENERAL.ERRORS.DEFAULT.TITLE', 'GENERAL.ERRORS.DEFAULT.CONTENT', reason, 'body', 'body');
+							}
+						}
+					)
+				} else {
+					$http({
+						method:	'DELETE',
+						url: '/v1/users/' + userService.user_id + '/subscriptions/' + self.groupname + ':' + self.addresses[name][index].medium + ':' + self.addresses[name][index].address
+					}).then(
+						function success(response) {
+							self.addresses_status.loading = false;
+						},
+						function fail(response) {
+							//show error to user
+							self.addresses_status.loading = false;
+							var status_code = response.status;
+							var reason = response.data;
+							//show alert
+							switch(status_code){
+								case 500:
+									$scope.showError('GENERAL.ERRORS.500.TITLE', 'GENERAL.ERRORS.500.CONTENT', reason, 'body', 'body');
+									break;
+								default:
+									$scope.showError('GENERAL.ERRORS.DEFAULT.TITLE', 'GENERAL.ERRORS.DEFAULT.CONTENT', reason, 'body', 'body');
+							}
+						}
+					)
+				}
 			}
 		};
 
