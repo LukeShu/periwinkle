@@ -7,13 +7,13 @@ package main
 import (
 	"encoding/json"
 	"io/ioutil"
+	"locale"
 	"net/http"
 	"periwinkle"
 	"periwinkle/backend"
 	"periwinkle/cmdutil"
 	"periwinkle/twilio"
 	"strings"
-	"locale"
 	"time"
 )
 
@@ -25,7 +25,6 @@ Repeatedly poll Twilio for new messages.
 Options:
   -h, --help      Display this message.
   -c CONFIG_FILE  Specify the configuration file [default: ./config.yaml].`
-
 
 var timeZero time.Time
 var lastPoll time.Time
@@ -55,7 +54,7 @@ func checkNumber(config *periwinkle.Cfg, tx *periwinkle.Tx, number backend.Twili
 	if lastPoll != timeZero {
 		url += "&DateSent>=" + strings.Split(lastPoll.UTC().String(), " ")[0]
 	}
-				
+
 	req, _ := http.NewRequest("GET", url, nil)
 	req.SetBasicAuth(config.TwilioAccountID, config.TwilioAuthToken)
 	resp, uerr := (&http.Client{}).Do(req)

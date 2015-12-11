@@ -1,9 +1,9 @@
 package test
 
 import (
+	"locale"
 	"periwinkle"
 	"periwinkle/backend"
-	"locale"
 )
 
 func Test(cfg *periwinkle.Cfg, db *periwinkle.Tx) {
