@@ -6,15 +6,14 @@ package main
 
 import (
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
-	"log"
 	"net/http"
 	"periwinkle"
 	"periwinkle/backend"
 	"periwinkle/cmdutil"
 	"periwinkle/twilio"
 	"strings"
+	"locale"
 	"time"
 )
 
@@ -27,13 +26,13 @@ Options:
   -h, --help      Display this message.
   -c CONFIG_FILE  Specify the configuration file [default: ./config.yaml].`
 
+
+var timeZero time.Time
+var lastPoll time.Time
+
 func main() {
 	options := cmdutil.Docopt(usage)
 	config := cmdutil.GetConfig(options["-c"].(string))
-
-	var arrTemp [1000]string
-	var curTimeSec int64
-	curTimeSec = 0
 
 	for {
 		time.Sleep(time.Second)
@@ -41,93 +40,68 @@ func main() {
 			numbers := backend.GetAllUsedTwilioNumbers(tx)
 
 			for _, number := range numbers {
-				// clear the array
-				if curTimeSec != time.Now().UTC().Unix() {
-					for j := 0; j != len(arrTemp); j++ {
-						arrTemp[j] = ""
-					}
-				}
-
-				curTime := time.Now().UTC()
-				curTimeSec = curTime.Unix()
-
-				// gets url for received  Twilio messages for a given date
-				url := "https://api.twilio.com/2010-04-01/Accounts/" + config.TwilioAccountID + "/Messages.json?To=" + number.Number + "&DateSent>=" + strings.Split(curTime.String(), " ")[0]
-
-				client := &http.Client{}
-
-				req, _ := http.NewRequest("GET", url, nil)
-				req.SetBasicAuth(config.TwilioAccountID, config.TwilioAuthToken)
-
-				resp, err := client.Do(req)
-
-				if err != nil {
-					log.Println(err)
-				}
-
-				defer resp.Body.Close()
-				body, err := ioutil.ReadAll(resp.Body)
-				if err != nil {
-					log.Println(err)
-				}
-
-				// converts JSON messages
-				message := twilio.Paging{}
-				json.Unmarshal([]byte(body), &message)
-
-				mesLen := len(message.Messages)
-
-				if mesLen != 0 {
-					for i := 0; i < mesLen; i++ {
-						timeSend, _ := time.Parse(time.RFC1123Z, message.Messages[i].DateSent)
-
-						if err != nil {
-							log.Println(err)
-						}
-
-						if timeSend.Unix() >= curTime.Unix() {
-							mSID := message.Messages[i].Sid
-
-							// Since we only can get
-							// recived Twilio messages for
-							// a specific date, we need to
-							// store messages received in
-							// a second and clear them
-							// once a second elapsed.
-							//
-							// In a second, one message
-							// may appear multiple
-							// times. So we want to avoid
-							// duplicates.
-							for j := 0; j != len(arrTemp); j++ {
-								if arrTemp[j] == "" {
-									arrTemp[j] = mSID
-
-									user := backend.GetUserByAddress(tx, "sms", message.Messages[i].From)
-									group := backend.GetGroupByUserAndTwilioNumber(tx, user.ID, message.Messages[i].To)
-									//Not yet set: cfg.GroupDomain="periwinkle.lol"
-									fmt.Println("GroupName:", group.ID)
-									MessageBuilder{
-										Maildir: config.Mailstore,
-										Headers: map[string]string{
-											"To":      group.ID + "@" + "periwinkle.lol", //config.GroupDomain,
-											"From":    backend.UserAddress{Medium: "sms", Address: message.Messages[i].From}.AsEmailAddress(),
-											"Subject": user.ID + ": " + message.Messages[i].Body,
-										},
-										Body: "",
-									}.Done()
-									break
-								} else if arrTemp[j] == mSID {
-									break
-								}
-							}
-						}
-					}
-				}
+				checkNumber(config, tx, number)
 			}
 		})
 		if conflict != nil {
 			periwinkle.LogErr(conflict)
 		}
+		lastPoll = time.Now().UTC()
+	}
+}
+
+func checkNumber(config *periwinkle.Cfg, tx *periwinkle.Tx, number backend.TwilioNumber) {
+	url := "https://api.twilio.com/2010-04-01/Accounts/" + config.TwilioAccountID + "/Messages.json?To=" + number.Number
+	if lastPoll != timeZero {
+		url += "&DateSent>=" + strings.Split(lastPoll.UTC().String(), " ")[0]
+	}
+				
+	req, _ := http.NewRequest("GET", url, nil)
+	req.SetBasicAuth(config.TwilioAccountID, config.TwilioAuthToken)
+	resp, uerr := (&http.Client{}).Do(req)
+	if uerr != nil {
+		periwinkle.LogErr(locale.UntranslatedError(uerr))
+	}
+
+	defer resp.Body.Close()
+	body, uerr := ioutil.ReadAll(resp.Body)
+	if uerr != nil {
+		periwinkle.LogErr(locale.UntranslatedError(uerr))
+	}
+
+	// converts JSON messages
+	var page twilio.Paging
+	json.Unmarshal([]byte(body), &page)
+
+	for _, message := range page.Messages {
+		timeSend, uerr := time.Parse(time.RFC1123Z, message.DateSent)
+		if uerr != nil {
+			periwinkle.LogErr(locale.UntranslatedError(uerr))
+			continue
+		}
+		if timeSend.Unix() < lastPoll.Unix() {
+			periwinkle.Logf("message %q older than our last poll; ignoring", message.Sid)
+			continue
+		}
+		user := backend.GetUserByAddress(tx, "sms", message.From)
+		if user == nil {
+			periwinkle.Logf("could not figure out which user has number %q", message.From)
+			continue
+		}
+		group := backend.GetGroupByUserAndTwilioNumber(tx, user.ID, message.To)
+		if group == nil {
+			periwinkle.Logf("could not figure out which group this is meant for: user: %q, number: %q", user.ID, message.To)
+			continue
+		}
+		periwinkle.Logf("received message for group %q", group.ID)
+		MessageBuilder{
+			Maildir: config.Mailstore,
+			Headers: map[string]string{
+				"To":      group.ID + "@" + config.GroupDomain,
+				"From":    backend.UserAddress{Medium: "sms", Address: message.From}.AsEmailAddress(),
+				"Subject": user.ID + ": " + message.Body,
+			},
+			Body: "",
+		}.Done()
 	}
 }

@@ -35,12 +35,12 @@ func HandleEmail(r io.Reader, name string, db *periwinkle.Tx, cfg *periwinkle.Cf
 	if group == nil {
 		return postfixpipe.EX_NOUSER
 	}
-	user_email := msg.Header.Get("From")
-	user := backend.GetUserByAddress(db, "email", user_email)
+	//user_email := msg.Header.Get("From")
+	//user := backend.GetUserByAddress(db, "email", user_email)
 	// check permissions
-	if user == nil || !CanPost(db, group, user.ID) {
-		return postfixpipe.EX_NOPERM
-	}
+	//if user == nil || !CanPost(db, group, user.ID) {
+	//	return postfixpipe.EX_NOPERM
+	//}
 
 	backend.NewMessage(
 		db,
@@ -67,7 +67,9 @@ func HandleEmail(r io.Reader, name string, db *periwinkle.Tx, cfg *periwinkle.Cf
 	// convert that list into a set
 	forwardSet := make(map[string]bool, len(addressList))
 	for _, addr := range addressList {
-		forwardSet[addr.AsEmailAddress()] = true
+		if addr.Medium != "noop" && addr.Medium != "admin" {
+			forwardSet[addr.AsEmailAddress()] = true
+		}
 	}
 
 	// prune addresses that (should) already have the message
