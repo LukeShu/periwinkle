@@ -9,7 +9,6 @@ import (
 	"httpentity/rfc7231"
 	"io"
 	"locale"
-	"log"
 	"net"
 	"net/http"
 	"periwinkle"
@@ -57,16 +56,8 @@ func MakeServer(socket net.Listener, cfg *periwinkle.Cfg) *stoppable.HTTPServer 
 	// The static web UI
 	mux.Handle("/webui/", http.StripPrefix("/webui/", http.FileServer(cfg.WebUIDir)))
 
-	smsCallbackServer := domain_handlers.SmsCallbackServer{Conf: cfg}
-	go func() {
-		err := smsCallbackServer.Serve()
-		if err != nil {
-			log.Printf("Could not serve SmsCallbackServer: %v\n", err)
-		}
-	}()
-
 	// External API callbacks
-	mux.Handle("/callbacks/twilio-sms", http.HandlerFunc(smsCallbackServer.ServeHTTP))
+	mux.Handle("/callbacks/twilio-sms", http.HandlerFunc(domain_handlers.TwilioSMSCallbackServer{DB: cfg.DB}.ServeHTTP))
 
 	// Make the server
 	return &stoppable.HTTPServer{

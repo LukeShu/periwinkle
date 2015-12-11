@@ -15,5 +15,6 @@ var tables = []table{
 	Subscription{}, // must come after Group and UserAddress
 	TwilioNumber{},
 	TwilioPool{}, // must come after TwilioNumber, User, and Group
+	TwilioSMSMessage{},
 	Admin{},
 }

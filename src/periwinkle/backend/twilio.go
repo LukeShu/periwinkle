@@ -28,6 +28,39 @@ func (o TwilioPool) dbSchema(db *periwinkle.Tx) locale.Error {
 	return locale.UntranslatedError(db.CreateTable(&o).Error)
 }
 
+type TwilioSMSMessage struct {
+	MessageSID    string `json:"MessageSid" sql:"type:varchar(34)"`
+	MessageStatus string
+	ErrorCode     string
+}
+
+func (o TwilioSMSMessage) dbSchema(db *periwinkle.Tx) locale.Error {
+	return locale.UntranslatedError(db.CreateTable(&o).Error)
+}
+
+func (o *TwilioSMSMessage) Save(db *periwinkle.Tx) {
+	if err := db.Save(o).Error; err != nil {
+		dbError(err)
+	}
+}
+
+func (o *TwilioSMSMessage) Delete(db *periwinkle.Tx) {
+	if err := db.Where("message_sid = ?", o.MessageSID).Delete(TwilioSMSMessage{}).Error; err != nil {
+		dbError(err)
+	}
+}
+
+func GetTwilioSMSMessageBySID(db *periwinkle.Tx, sid string) *TwilioSMSMessage {
+	var o TwilioSMSMessage
+	if result := db.First(&o, "message_sid = ?", sid); result.Error != nil {
+		if result.RecordNotFound() {
+			return nil
+		}
+		dbError(result.Error)
+	}
+	return &o
+}
+
 func GetAllUsedTwilioNumbers(db *periwinkle.Tx) (ret []TwilioNumber) {
 	var twilioNum []TwilioNumber
 	if result := db.Find(&twilioNum); result.Error != nil {
@@ -142,8 +175,7 @@ func GetTwilioNumberByID(db *periwinkle.Tx, id int64) *TwilioNumber {
 	return &twilio_num
 }
 
-func DeleteUnusedTwilioNumber(db *periwinkle.Tx, num string) error {
-
+func DeleteUnusedTwilioNumber(db *periwinkle.Tx, num string) locale.Error {
 	var twilioNum TwilioNumber
 	if result := db.Where("number = ?", num).First(&twilioNum); result.Error != nil {
 		if result.RecordNotFound() {

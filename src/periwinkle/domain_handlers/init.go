@@ -3,11 +3,12 @@
 package domain_handlers
 
 import (
+	"locale"
 	"periwinkle"
 	"periwinkle/backend"
 )
 
-func GetHandlers(cfg *periwinkle.Cfg) error {
+func GetHandlers(cfg *periwinkle.Cfg) locale.Error {
 	cfg.DomainHandlers = map[string]periwinkle.DomainHandler{
 		"sms.gateway":   HandleSMS,
 		"mms.gateway":   HandleMMS,

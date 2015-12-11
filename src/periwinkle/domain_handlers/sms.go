@@ -7,10 +7,9 @@ package domain_handlers
 import (
 	"bytes"
 	"encoding/json"
-	"fmt"
 	"io"
 	"io/ioutil"
-	"log"
+	"locale"
 	"net/http"
 	"net/mail"
 	"net/url"
@@ -19,41 +18,27 @@ import (
 	"periwinkle/twilio"
 	"postfixpipe"
 	"strings"
-	//"os"
 )
 
 func HandleSMS(r io.Reader, name string, db *periwinkle.Tx, cfg *periwinkle.Cfg) postfixpipe.ExitStatus {
-	message, err := mail.ReadMessage(r)
-	if err != nil {
-		log.Println(err)
+	message, uerr := mail.ReadMessage(r)
+	if uerr != nil {
+		periwinkle.LogErr(locale.UntranslatedError(uerr))
 		return postfixpipe.EX_NOINPUT
 	}
-	status, err := sender(*message, name, db, cfg)
-	if err != nil {
-		log.Println(err)
-		return postfixpipe.EX_NOINPUT
-	}
-	log.Println(status)
-	return postfixpipe.EX_OK
-}
-
-// Returns the status of the message: queued, sending, sent,
-// delivered, undelivered, failed.  If an error occurs, it returns
-// Error.
-func sender(message mail.Message, smsTo string, db *periwinkle.Tx, cfg *periwinkle.Cfg) (status string, err error) {
 
 	group := message.Header.Get("From")
-	user := backend.GetUserByAddress(db, "sms", smsTo)
+	user := backend.GetUserByAddress(db, "sms", name)
 
 	smsFrom := backend.GetTwilioNumberByUserAndGroup(db, user.ID, strings.Split(group, "@")[0])
 
 	if smsFrom == "" {
-
 		twilio_num := twilio.GetUnusedTwilioNumbersByUser(cfg, db, user.ID)
 		if twilio_num == nil {
 			new_num, err := twilio.NewPhoneNum(cfg)
 			if err != nil {
-				return "", err
+				periwinkle.LogErr(err)
+				return postfixpipe.EX_UNAVAILABLE
 			}
 			backend.AssignTwilioNumber(db, user.ID, strings.Split(group, "@")[0], new_num)
 			smsFrom = new_num
@@ -73,64 +58,45 @@ func sender(message mail.Message, smsTo string, db *periwinkle.Tx, cfg *periwink
 
 	v := url.Values{}
 	v.Set("From", smsFrom)
-	v.Set("To", smsTo)
+	v.Set("To", name)
 	v.Set("Body", string(smsBody))
 	v.Set("StatusCallback", cfg.WebRoot+"/callbacks/twilio-sms")
 	//host,_ := os.Hostname()
 	//v.Set("StatusCallback", "http://" + host + ":8080/callbacks/twilio-sms")
 	client := &http.Client{}
 
-	req, err := http.NewRequest("POST", messagesURL, bytes.NewBuffer([]byte(v.Encode())))
-	if err != nil {
-		return
+	req, uerr := http.NewRequest("POST", messagesURL, bytes.NewBuffer([]byte(v.Encode())))
+	if uerr != nil {
+		periwinkle.LogErr(locale.UntranslatedError(uerr))
+		return postfixpipe.EX_UNAVAILABLE
 	}
 	req.SetBasicAuth(cfg.TwilioAccountID, cfg.TwilioAuthToken)
 	req.Header.Add("Accept", "application/json")
 	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
 
-	resp, err := client.Do(req)
+	resp, uerr := client.Do(req)
 	defer resp.Body.Close()
+	if uerr != nil {
+		periwinkle.LogErr(locale.UntranslatedError(uerr))
+		return postfixpipe.EX_UNAVAILABLE
+	}
+
+	if resp.StatusCode != 200 && resp.StatusCode != 201 {
+		return postfixpipe.EX_UNAVAILABLE
+	}
+
+	body, uerr := ioutil.ReadAll(resp.Body)
+	if uerr != nil {
+		periwinkle.LogErr(locale.UntranslatedError(uerr))
+		return postfixpipe.EX_UNAVAILABLE
+	}
+
+	tmessage := twilio.Message{}
+	json.Unmarshal([]byte(body), &tmessage)
+	_, err := TwilioSMSWaitForCallback(cfg, tmessage.Sid)
 	if err != nil {
-		return "", err
+		periwinkle.LogErr(err)
+		return postfixpipe.EX_UNAVAILABLE
 	}
-
-	if resp.StatusCode == 200 || resp.StatusCode == 201 {
-
-		body, err := ioutil.ReadAll(resp.Body)
-		if err != nil {
-			return "", err
-		}
-
-		message := twilio.Message{}
-		json.Unmarshal([]byte(body), &message)
-		log.Println("106")
-		smsStatus, err := SmsWaitForCallback(cfg, message.Sid)
-		log.Println("108")
-		if err != nil {
-			return "", err
-		}
-
-		if smsStatus.MessageStatus == "undelivered" || smsStatus.MessageStatus == "failed" {
-			return smsStatus.MessageStatus, fmt.Errorf("%s", smsStatus.ErrorCode)
-		}
-		log.Println("116")
-		if smsStatus.MessageStatus == "queued" || smsStatus.MessageStatus == "sending" || smsStatus.MessageStatus == "sent" {
-			smsStatus, err = SmsWaitForCallback(cfg, message.Sid)
-
-			if err != nil {
-				return "", err
-			}
-		}
-
-		if smsStatus.MessageStatus == "undelivered" || smsStatus.MessageStatus == "failed" {
-			return smsStatus.MessageStatus, fmt.Errorf("%s", smsStatus.ErrorCode)
-		}
-
-		status = smsStatus.MessageStatus
-		err = nil
-		return status, err
-	} else {
-		err = fmt.Errorf("%s", resp.Status)
-		return
-	}
+	return postfixpipe.EX_OK
 }

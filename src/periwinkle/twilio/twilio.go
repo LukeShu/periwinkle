@@ -5,9 +5,8 @@ package twilio
 import (
 	"bytes"
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
-	"log"
+	"locale"
 	"net/http"
 	"net/url"
 	"periwinkle"
@@ -15,7 +14,7 @@ import (
 
 // function returns  a phone number and Status
 // if successful, returns a new phone number and OK
-func NewPhoneNum(cfg *periwinkle.Cfg) (string, error) {
+func NewPhoneNum(cfg *periwinkle.Cfg) (string, locale.Error) {
 	// gets url for available numbers
 	availNumURL := "https://api.twilio.com/2010-04-01/Accounts/" + cfg.TwilioAccountID + "/AvailablePhoneNumbers/US/Local.json?SmsEnabled=true&MmsEnabled=true"
 
@@ -25,10 +24,8 @@ func NewPhoneNum(cfg *periwinkle.Cfg) (string, error) {
 	client := &http.Client{}
 
 	req, err := http.NewRequest("GET", availNumURL, nil)
-
 	if err != nil {
-		log.Println(err)
-		return "", err
+		return "", locale.UntranslatedError(err)
 	}
 
 	req.SetBasicAuth(cfg.TwilioAccountID, cfg.TwilioAuthToken)
@@ -36,35 +33,29 @@ func NewPhoneNum(cfg *periwinkle.Cfg) (string, error) {
 	resp, err := client.Do(req)
 	defer resp.Body.Close()
 	if err != nil {
-		log.Println(err)
-		return "", err
+		return "", locale.UntranslatedError(err)
 	}
 
 	if resp.StatusCode == 302 {
-
 		url, err := resp.Location()
 		if err != nil {
-			log.Println(err)
-			return "", err
+			return "", locale.UntranslatedError(err)
 		}
 
 		req, err = http.NewRequest("GET", url.String(), nil)
 		if err != nil {
-			log.Println(err)
-			return "", err
+			return "", locale.UntranslatedError(err)
 		}
 
 		req.SetBasicAuth(cfg.TwilioAccountID, cfg.TwilioAuthToken)
 		resp, err = client.Do(req)
 		defer resp.Body.Close()
 		if err != nil {
-			log.Println(err)
-			return "", err
+			return "", locale.UntranslatedError(err)
 		}
 
 		if resp.StatusCode != 200 {
-
-			return "", fmt.Errorf("%s", resp.Status)
+			return "", locale.Errorf("%s", resp.Status)
 		}
 
 	} else if resp.StatusCode == 200 {
@@ -72,13 +63,12 @@ func NewPhoneNum(cfg *periwinkle.Cfg) (string, error) {
 		//continue
 
 	} else {
-		return "", fmt.Errorf("%s", resp.Status)
+		return "", locale.Errorf("%s", resp.Status)
 	}
 
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		log.Println(err)
-		return "", err
+		return "", locale.UntranslatedError(err)
 	}
 
 	availNumber := AvailPhNum{}
@@ -94,8 +84,7 @@ func NewPhoneNum(cfg *periwinkle.Cfg) (string, error) {
 
 		req, err = http.NewRequest("POST", newPhoneNumURL, bytes.NewBuffer([]byte(val.Encode())))
 		if err != nil {
-			log.Println(err)
-			return "", err
+			return "", locale.UntranslatedError(err)
 		}
 
 		req.SetBasicAuth(cfg.TwilioAccountID, cfg.TwilioAuthToken)
@@ -105,25 +94,20 @@ func NewPhoneNum(cfg *periwinkle.Cfg) (string, error) {
 		resp, err = client.Do(req)
 		defer resp.Body.Close()
 		if err != nil {
-			log.Println(err)
-			return "", err
+			return "", locale.UntranslatedError(err)
 		}
 
 		if resp.StatusCode != 200 && resp.StatusCode != 201 {
-			return "", fmt.Errorf("%s", resp.Status)
+			return "", locale.Errorf("%s", resp.Status)
 		}
 
 		body, err = ioutil.ReadAll(resp.Body)
 		if err != nil {
-			log.Println(err)
-			return "", err
+			return "", locale.UntranslatedError(err)
 		}
-		log.Println(string(body))
 		return number, nil
 
 	}
 
-	log.Println("There are no available phone numbers!!!")
-	return "", fmt.Errorf("There are no available phone numbers!!!")
-
+	return "", locale.Errorf("There are no available phone numbers!!!")
 }
