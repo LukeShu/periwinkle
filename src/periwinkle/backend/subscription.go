@@ -31,19 +31,8 @@ func NewSubscription(db *periwinkle.Tx, addressID int64, groupID string, confirm
 	return subscription
 }
 
-func GetSubscriptionsByGroup(db *periwinkle.Tx, groupID string) []Subscription {
-	var o []Subscription
-	if result := db.Where("group_id = ?", groupID).Find(&o); result.Error != nil {
-		if result.RecordNotFound() {
-			return nil
-		}
-		dbError(result.Error)
-	}
-	return o
-}
-
 func IsSubscribed(db *periwinkle.Tx, userID string, group Group) int {
-	subscriptions := GetSubscriptionsByGroup(db, group.ID)
+	subscriptions := group.GetSubscriptions(db)
 	addressIDs := make([]int64, len(subscriptions))
 	for i, subscription := range subscriptions {
 		addressIDs[i] = subscription.AddressID
@@ -76,7 +65,7 @@ func IsSubscribed(db *periwinkle.Tx, userID string, group Group) int {
 }
 
 func IsAdmin(db *periwinkle.Tx, userID string, group Group) bool {
-	subscriptions := GetSubscriptionsByGroup(db, group.ID)
+	subscriptions := group.GetSubscriptions(db)
 	addressIDs := make([]int64, len(subscriptions))
 	for i, subscription := range subscriptions {
 		addressIDs[i] = subscription.AddressID

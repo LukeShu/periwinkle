@@ -1,6 +1,7 @@
 // Copyright 2015 Davis Webb
 // Copyright 2015 Luke Shumaker
 // Copyright 2015 Guntas Grewal
+// Copyright 2015 Mark Pundmann
 
 package backend
 
@@ -152,6 +153,17 @@ func NewGroup(db *periwinkle.Tx, name string, existence []int, read []int, post 
 		dbError(err)
 	}
 	return &o
+}
+
+func (grp *Group) GetSubscriptions(db *periwinkle.Tx) []Subscription {
+	var subscriptions []Subscription
+	if result := db.Where("group_id = ?", grp.ID).Find(&subscriptions); result.Error != nil {
+		if result.RecordNotFound() {
+			return []Subscription{}
+		}
+		dbError(result.Error)
+	}
+	return subscriptions
 }
 
 func (o *Group) Save(db *periwinkle.Tx) {
