@@ -27,22 +27,16 @@ func StatusCreated(parent he.EntityGroup, childName string, req he.Request) he.R
 	if child == nil {
 		panic("called StatusCreated, but the subentity doesn't exist")
 	}
-	handler, ok := child.Methods()["GET"]
-	if !ok {
-		panic("called StatusCreated, but can't GET the subentity")
-	}
-	response := handler(req)
-	// mess with the response
+	// prepare the response
 	u, _ := req.URL.Parse(url.QueryEscape(childName))
-	response.Headers.Set("Location", u.String())
-	if response.Entity == nil {
-		panic("called StatusCreated, but GET on subentity doesn't return an entity")
-	}
-	mimetypes := encoders2contenttypes(response.Entity.Encoders())
 	return he.Response{
-		Status:  201,
-		Headers: response.Headers,
-		Entity:  mimetypes2net(u, mimetypes),
+		Status: 201,
+		Headers: http.Header{
+			"Location": {u.String()},
+		},
+		Entity:                 he.NetPrintf("%s", u.String()),
+		InhibitNotAcceptable:   true,
+		InhibitMultipleChoices: true,
 	}
 }
 
@@ -164,27 +158,32 @@ func StatusNotFound(e he.NetEntity) he.Response {
 		e = he.NetPrintf("404 Not Found")
 	}
 	return he.Response{
-		Status:  404,
-		Headers: http.Header{},
-		Entity:  e,
+		Status:                 404,
+		Headers:                http.Header{},
+		Entity:                 e,
+		InhibitNotAcceptable:   true,
+		InhibitMultipleChoices: true,
 	}
 }
 
-func StatusMethodNotAllowed(methods string) he.Response {
+func StatusMethodNotAllowed(entity he.Entity, request he.Request) he.Response {
 	return he.Response{
 		Status: 405,
 		Headers: http.Header{
-			"Allow": {methods},
+			"Allow": {methods2string(entity.Methods())},
 		},
-		Entity: he.NetPrintf("405 Method Not Allowed"),
+		Entity:                 he.NetPrintf("405 Method Not Allowed"),
+		InhibitNotAcceptable:   true,
+		InhibitMultipleChoices: true,
 	}
 }
 
 func StatusNotAcceptable(u *url.URL, mimetypes []string) he.Response {
 	return he.Response{
-		Status:  406,
-		Headers: http.Header{},
-		Entity:  mimetypes2net(u, mimetypes),
+		Status:               406,
+		Headers:              http.Header{},
+		Entity:               mimetypes2net(u, mimetypes),
+		InhibitNotAcceptable: true,
 	}
 }
 

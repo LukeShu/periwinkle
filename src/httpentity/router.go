@@ -4,6 +4,8 @@ package httpentity
 
 import (
 	"httpentity/negotiate"
+	"io"
+	"locale"
 	"mime"
 	"net/http"
 	"net/url"
@@ -34,12 +36,24 @@ func normalizeURL(u1 *url.URL) (u *url.URL, mimetype string) {
 
 // Init initializes the hidden fields; should be called before any other
 // method.
-func (r Router) Init() *Router {
-	if r.Log == nil {
-		r.Log = nilLog{}
+func (router Router) Init() *Router {
+	if router.Root == nil {
+		panic("httpentity.Router: Root cannot be nil")
 	}
-	r.initHandlers()
-	return &r
+	if router.Decoders == nil {
+		router.Decoders = map[string]func(io.Reader, map[string]string) (interface{}, locale.Error){}
+	}
+	if router.Middlewares == nil {
+		router.Middlewares = []Middleware{}
+	}
+	if router.Log == nil {
+		router.Log = nilLog{}
+	}
+	if router.MethodNotAllowed == nil {
+		panic("httpentity.Router: MethodNotAllowed cannot be nil")
+	}
+	router.initHandlers()
+	return &router
 }
 
 func (router *Router) finish(req Request, res *Response) {

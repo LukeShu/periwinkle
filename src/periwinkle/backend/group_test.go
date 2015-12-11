@@ -14,20 +14,12 @@ func TestNewGroup(t *testing.T) {
 	conf := CreateTempDB()
 	conf.DB.Do(func(tx *periwinkle.Tx) {
 
-		u1 := NewUser(tx, "JohnDoe", "password", "johndoe@purdue.edu")
-
-		u2 := NewUser(tx, "JaneDoe", "password", "janedoe@purdue.edu")
-
-		sub := []Subscription{{Address: u1.Addresses[0], Confirmed: true}, {Address: u2.Addresses[0], Confirmed: true}}
-
 		existence := []int{2, 2}
 		read := []int{2, 2}
 		post := []int{1, 1, 1}
 		join := []int{1, 1, 1}
 
 		group := NewGroup(tx, "The Doe", existence, read, post, join)
-
-		group.Subscriptions = sub
 
 		switch {
 		case !strings.EqualFold("The Doe", group.ID):
@@ -63,8 +55,6 @@ func TestGetGroupsByMember(t *testing.T) {
 	conf.DB.Do(func(tx *periwinkle.Tx) {
 		u1 := NewUser(tx, "JohnDoe", "password", "johndoe@purdue.edu")
 
-		u2 := NewUser(tx, "JaneDoe", "password", "janedoe@purdue.edu")
-
 		existence := []int{2, 2}
 		read := []int{2, 2}
 		post := []int{1, 1, 1}
@@ -82,19 +72,11 @@ func TestGetGroupsByMember(t *testing.T) {
 			JoinPublic:         join[0],
 			JoinConfirmed:      join[1],
 			JoinMember:         join[2],
-			Subscriptions: []Subscription{{
-				Address:   u1.Addresses[0],
-				Confirmed: true,
-			},
-
-				{Address: u2.Addresses[0],
-					Confirmed: true,
-				},
-			},
 		}).Error
 		if err != nil {
 			t.Error("Issue creating group")
 		}
+		NewSubscription(tx, u1.Addresses[0].ID, "Purdue", true)
 
 		u := GetUserByID(tx, u1.ID)
 

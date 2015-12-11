@@ -56,7 +56,7 @@
 							</tr>
 							<tr ng-repeat="address in addresses">
 								<td>
-									<md-checkbox ng-model="address.is" aria-label="subscribe with this address" style="margin-bottom: 0px;">
+									<md-checkbox ng-model="address.is" aria-label="subscribe with this address" style="margin-bottom: 0px;" ng-change="group.addresses_status.submit(name, $index)">
 										{{address.address}}
 									</md-checkbox>
 								</td>

@@ -1,6 +1,7 @@
 // Copyright 2015 Davis Webb
 // Copyright 2015 Luke Shumaker
 // Copyright 2015 Guntas Grewal
+// Copyright 2015 Mark Pundmann
 
 package backend
 
@@ -65,16 +66,32 @@ func GetGroupByID(db *periwinkle.Tx, id string) *Group {
 }
 
 func GetGroupsByMember(db *periwinkle.Tx, user User) []Group {
-	subscribed := user.GetUserSubscriptions(db)
+	subscriptions := user.GetSubscriptions(db)
+	var groupIDs []string
+	for _, sub := range subscriptions {
+		groupIDs = append(groupIDs, sub.GroupID)
+	}
 	var groups []Group
-	for _, sub := range subscribed {
-		// only add group if user is confirmed member or
-		// if group allows non confirmed members to see that it exists
-		if sub.Confirmed || sub.Group.ExistenceConfirmed == 2 {
-			groups = append(groups, sub.Group)
+	if len(groupIDs) > 0 {
+		if err := db.Where("id IN (?)", groupIDs).Find(&groups).Error; err != nil {
+			dbError(err)
 		}
+	} else {
+		groups = make([]Group, 0)
+	}
+	groupsByID := make(map[string]Group)
+	for _, group := range groups {
+		groupsByID[group.ID] = group
 	}
 
+	groups = []Group{}
+	for _, sub := range subscriptions {
+		// only add group if user is confirmed member or
+		// if group allows non confirmed members to see that it exists
+		if sub.Confirmed || groupsByID[sub.GroupID].ExistenceConfirmed == 2 {
+			groups = append(groups, groupsByID[sub.GroupID])
+		}
+	}
 	return groups
 }
 
@@ -138,6 +155,17 @@ func NewGroup(db *periwinkle.Tx, name string, existence []int, read []int, post 
 	return &o
 }
 
+func (grp *Group) GetSubscriptions(db *periwinkle.Tx) []Subscription {
+	var subscriptions []Subscription
+	if result := db.Where("group_id = ?", grp.ID).Find(&subscriptions); result.Error != nil {
+		if result.RecordNotFound() {
+			return []Subscription{}
+		}
+		dbError(result.Error)
+	}
+	return subscriptions
+}
+
 func (o *Group) Save(db *periwinkle.Tx) {
 	if o.Subscriptions != nil {
 		var oldSubscriptions []Subscription
@@ -169,4 +197,10 @@ func (o *Group) Save(db *periwinkle.Tx) {
 		dbError(err)
 	}
 
+}
+
+func (grp *Group) Delete(db *periwinkle.Tx) {
+	if err := db.Delete(grp).Error; err != nil {
+		dbError(err)
+	}
 }

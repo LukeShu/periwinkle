@@ -10,30 +10,29 @@ import (
 )
 
 type Subscription struct {
-	Address   UserAddress `json:"addresses"`
-	AddressID int64       `json:"-"        sql:"type:bigint       REFERENCES user_addresses(id) ON DELETE CASCADE  ON UPDATE RESTRICT"`
-	Group     Group       `json:"group"`
-	GroupID   string      `json:"group_id" sql:"type:varchar(255) REFERENCES groups(id)         ON DELETE CASCADE  ON UPDATE RESTRICT"`
-	Confirmed bool        `json:"confirmed"`
+	AddressID int64  `sql:"type:bigint       REFERENCES user_addresses(id) ON DELETE CASCADE  ON UPDATE RESTRICT"`
+	GroupID   string `sql:"type:varchar(255) REFERENCES groups(id)         ON DELETE CASCADE  ON UPDATE RESTRICT"`
+	Confirmed bool
 }
 
 func (o Subscription) dbSchema(db *periwinkle.Tx) locale.Error {
 	return locale.UntranslatedError(db.CreateTable(&o).Error)
 }
 
-func GetSubscriptionsGroupByID(db *periwinkle.Tx, groupID string) []Subscription {
-	var o []Subscription
-	if result := db.Where("group_id = ?", groupID).Find(&o); result.Error != nil {
-		if result.RecordNotFound() {
-			return nil
-		}
-		dbError(result.Error)
+func NewSubscription(db *periwinkle.Tx, addressID int64, groupID string, confirmed bool) Subscription {
+	subscription := Subscription{
+		AddressID: addressID,
+		GroupID:   groupID,
+		Confirmed: confirmed,
 	}
-	return o
+	if err := db.Create(&subscription).Error; err != nil {
+		dbError(err)
+	}
+	return subscription
 }
 
 func IsSubscribed(db *periwinkle.Tx, userID string, group Group) int {
-	subscriptions := GetSubscriptionsGroupByID(db, group.ID)
+	subscriptions := group.GetSubscriptions(db)
 	addressIDs := make([]int64, len(subscriptions))
 	for i, subscription := range subscriptions {
 		addressIDs[i] = subscription.AddressID
@@ -66,7 +65,7 @@ func IsSubscribed(db *periwinkle.Tx, userID string, group Group) int {
 }
 
 func IsAdmin(db *periwinkle.Tx, userID string, group Group) bool {
-	subscriptions := GetSubscriptionsGroupByID(db, group.ID)
+	subscriptions := group.GetSubscriptions(db)
 	addressIDs := make([]int64, len(subscriptions))
 	for i, subscription := range subscriptions {
 		addressIDs[i] = subscription.AddressID
@@ -89,4 +88,10 @@ func IsAdmin(db *periwinkle.Tx, userID string, group Group) bool {
 	}
 	// could not find user in subscribed user addresses, therefore, he/she isn't subscribed
 	return false
+}
+
+func (sub *Subscription) Delete(db *periwinkle.Tx) {
+	if err := db.Where("address_id = ? AND group_id = ?", sub.AddressID, sub.GroupID).Delete(Subscription{}).Error; err != nil {
+		dbError(err)
+	}
 }

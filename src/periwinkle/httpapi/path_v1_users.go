@@ -14,8 +14,8 @@ import (
 	"strings"
 )
 
-var _ he.Entity = &user{}
 var _ he.NetEntity = &user{}
+var _ he.EntityGroup = &user{}
 var _ he.EntityGroup = &dirUsers{}
 
 type user backend.User
@@ -25,7 +25,14 @@ func (o *user) backend() *backend.User { return (*backend.User)(o) }
 // Model /////////////////////////////////////////////////////////////
 
 func (o *user) Subentity(name string, req he.Request) he.Entity {
+	if name == "subscriptions" {
+		return &userSubscriptions{*o, "", nil}
+	}
 	return nil
+}
+
+func (d *user) SubentityNotFound(name string, req he.Request) he.Response {
+	return rfc7231.StatusNotFound(nil)
 }
 
 func (o *user) patchPassword(patch *jsonpatch.Patch) *he.Response {
@@ -145,7 +152,7 @@ func (usr *user) Methods() map[string]func(he.Request) he.Response {
 		},
 		"DELETE": func(req he.Request) he.Response {
 			db := req.Things["db"].(*periwinkle.Tx)
-			db.Delete(usr)
+			usr.backend().Delete(db)
 			return rfc7231.StatusNoContent()
 		},
 	}
