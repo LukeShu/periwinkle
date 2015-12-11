@@ -9,6 +9,8 @@ Q ?= @
 # What mode should gofmt run in? (another good option is `-w`)
 GOFMT_MODE ?= -d
 
+#POSTBUILD = systemctl --user restart listen-http.service listen-twilio.service
+
 # Configuration of the C compiler for C code called from Go
 CFLAGS = -std=c99 -Wall -Wextra -Werror -Wno-old-style-declaration
 CGO_CFLAGS = $(CFLAGS) -Wno-unused-parameter
@@ -59,6 +61,7 @@ $(call goget,$(topdir),$(deps))
 # `pkg/`
 $(addprefix %/bin/,$(notdir $(cmds))): $(generate) $(configure) %/src $(call gosrc,$(topdir))
 	$(call goinstall,$*,$(cmds))
+	$(POSTBUILD)
 
 check: gofmt goimports govet gotest
 .PHONY: check
