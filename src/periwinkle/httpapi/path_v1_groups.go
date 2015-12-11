@@ -9,6 +9,7 @@ import (
 	"httpentity/rfc7231"
 	"jsonpatch"
 	"periwinkle/backend"
+	"periwinkle/cmdutil"
 
 	"github.com/jinzhu/gorm"
 )
@@ -48,11 +49,12 @@ func (o *group) Methods() map[string]func(he.Request) he.Response {
 				return rfc7231.StatusConflict(he.NetPrintf("Cannot change group id"))
 			}
 			*o = newGroup
-			o.backend().Save(db, true)
+			o.backend().Save(db, nil, true, "")
 			return rfc7231.StatusOK(o)
 		},
 		"PATCH": func(req he.Request) he.Response {
 			db := req.Things["db"].(*gorm.DB)
+			cfg := cmdutil.GetConfig("./periwinkle.yaml")
 			sess := req.Things["session"].(*backend.Session)
 			subscribed := backend.IsSubscribed(db, sess.UserID, *o.backend())
 			moderate := false
@@ -96,7 +98,7 @@ func (o *group) Methods() map[string]func(he.Request) he.Response {
 			}
 
 			*o = newGroup
-			o.backend().Save(db, moderate)
+			o.backend().Save(db, cfg, moderate, sess.UserID)
 			return rfc7231.StatusOK(o)
 		},
 		"DELETE": func(req he.Request) he.Response {

@@ -6,6 +6,9 @@ package backend
 
 import (
 	"locale"
+	//"periwinkle/cfg"
+	"periwinkle"
+	"periwinkle/twilio"
 	"strings"
 
 	"github.com/jinzhu/gorm"
@@ -139,7 +142,7 @@ func NewGroup(db *gorm.DB, name string, existence []int, read []int, post []int,
 	return &o
 }
 
-func (o *Group) Save(db *gorm.DB, moderate bool) {
+func (o *Group) Save(db *gorm.DB, cfg *periwinkle.Cfg, moderate bool, userid string) {
 	if o.Subscriptions != nil {
 		var oldSubscriptions []Subscription
 		db.Model(o).Related(&oldSubscriptions)
@@ -157,6 +160,32 @@ func (o *Group) Save(db *gorm.DB, moderate bool) {
 				if err := db.Where("addressid = ? AND groupid = ?", oldsub.AddressID, oldsub.GroupID).Delete(Subscription{}).Error; err != nil {
 					dbError(err)
 				}
+			}
+		}
+
+		if cfg != nil {
+			for _, newsub := range o.Subscriptions {
+				match := false
+
+				for _, oldsub := range oldSubscriptions {
+					if newsub.AddressID == oldsub.AddressID {
+						match = true
+						break
+					}
+				}
+				if !match {
+					twilio_num := GetUnusedTwilioNumbersByUser(cfg, db, userid)
+					if twilio_num == nil {
+						new_num, err := twilio.NewPhoneNum(cfg)
+						if err != nil {
+							return
+						}
+						AssignTwilioNumber(db, userid, o.ID, new_num)
+					}
+					AssignTwilioNumber(db, userid, o.ID, twilio_num[0])
+
+				}
+
 			}
 		}
 
