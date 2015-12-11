@@ -30,11 +30,11 @@ func StatusCreated(parent he.EntityGroup, childName string, req he.Request) he.R
 	// prepare the response
 	u, _ := req.URL.Parse(url.QueryEscape(childName))
 	return he.Response{
-		Status:  201,
+		Status: 201,
 		Headers: http.Header{
 			"Location": {u.String()},
 		},
-		Entity: he.NetPrintf("%s", u.String()),
+		Entity:                 he.NetPrintf("%s", u.String()),
 		InhibitNotAcceptable:   true,
 		InhibitMultipleChoices: true,
 	}
