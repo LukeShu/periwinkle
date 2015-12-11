@@ -43,7 +43,10 @@
 						</md-menu-content>
 					</md-menu>
 				</md-toolbar>
-				<md-card-content style="padding-top: 0px;">
+				<md-card-content style="padding-top: 0px; postition: relative;">
+					<div ng-if="user.info.status.loading" style="position: absolute; z-index: 12; width: 40px; height: 40px; top: 3em; left: 50%; margin-left: -20px; border-color: #f0f0f0; border-style: solid; border-width: 1px; border-radius: 20px; background-color: white;">
+						<md-progress-circular md-diameter="40px" md-mode="indeterminate"></md-progress-circular>
+					</div>
 					<div>
 						<p ng-if="user.info.fullName.loading">{{ "USER.INFO.SAVING" | translate }}</p>
 						<div ng-if="!user.info.fullName.loading">
@@ -92,14 +95,17 @@
 						</md-menu-content>
 					</md-menu>
 				</md-toolbar>
-				<md-card-content style="padding-top: 0px; min-height: 72px;">
+				<md-card-content style="padding-top: 0px; min-height: 72px; postion: relative;">
+					<div ng-if="user.info.status.loading" style="position: absolute; z-index: 12; width: 40px; height: 40px; top: 3em; left: 50%; margin-left: -20px; border-color: #f0f0f0; border-style: solid; border-width: 1px; border-radius: 20px; background-color: white;">
+						<md-progress-circular md-diameter="40px" md-mode="indeterminate"></md-progress-circular>
+					</div>
 					<div ng-if="!user.info.status.loading" ng-repeat="(name, addresses) in user.info.addresses">
 						<div  sv-root sv-on-sort="user.info.address_orderChanged()">
 							<p ng-if="addresses.length" style="font-weight: bold">{{ "GENERAL.MEDIUMS." + name.toUpperCase() | translate }}:</p>
 							<ul style="list-style: none; padding: 0; margin: 0;">
 								<li ng-repeat="address in addresses" sv-part="addresses">
 									<div layout="row" layout-align="start center" class="address" style="" sv-element>
-										<md-menu ng-if="!address.loading && !addres.editing && user.info.status.editing" style="margin-left: -16px; margin-right: -8px;">
+										<!--<md-menu ng-if="!address.loading && !addres.editing && user.info.status.editing" style="margin-left: -16px; margin-right: -8px;">
 											<md-button aria-label="menu" class="md-icon-button" ng-click="openMenu($mdOpenMenu, $event)" >
 												<md-icon md-svg-src="assets/svg/more_horiz.svg"></md-icon>
 											</md-button>
@@ -115,7 +121,13 @@
 													</md-button>
 												</md-menu-item>
 											</md-menu-container>
-										</md-menu>
+										</md-menu>-->
+										<md-button ng-if="!address.loading && !address.editing && user.info.status.editing" ng-click="user.info.delete_address(name, $index)" style="margin-left: -16px; margin-right: -8px" class="md-icon-button">
+											<i class="material-icons">remove_circle_outline</i>
+											<!--[if lte IE 9]>
+												<i class="material-icons">&#xE15D;</i>
+											<![endif]-->
+										</md-button>
 										<p ng-if="address.loading">{{ "USER.INFO.SAVING" | translate }}</p>
 										<p ng-if="!address.loading && !address.editing">{{address.address}}</p>
 										<form name="editAddressForm" ng-submit="user.info.save_edit_address(name, $index)" ng-if="address.editing">
@@ -149,15 +161,18 @@
 					<!-- central gap -->
 					<span flex=""></span>
 				</md-toolbar>
-				<md-card-content style="padding-top: 0px;">
+				<md-card-content style="padding-top: 0px; min-height: 64px;">
+					<div ng-if="user.groups.status.loading" style="position: absolute; z-index: 12; width: 40px; height: 40px; top: 3em; left: 50%; margin-left: -20px; border-color: #f0f0f0; border-style: solid; border-width: 1px; border-radius: 20px; background-color: white;">
+						<md-progress-circular md-diameter="40px" md-mode="indeterminate"></md-progress-circular>
+					</div>
 					<ul ng-if="user.groups.list.length" style="list-style: none; padding: 0; margin: 0;">
 						<li ng-repeat="group in user.groups.list">
 							<div layout="row" layout-align="space-between center">
-								<p style="font-weight: bold" ng-click="user.groups.edit($index)">{{ group.groupname }}</p>
+								<p style="font-weight: bold" ng-click="user.groups.edit_subs($index)">{{ group.groupname }}</p>
 							</div>
 						</li>
 					</ul>
-					<p ng-if="!user.groups.list.length">{{ "USER.GROUPS.NO_GROUPS" | translate }}</p>
+					<p ng-if="!user.groups.list.length && !user.groups.status.loading">{{ "USER.GROUPS.NO_GROUPS" | translate }}</p>
 				</md-card-content>
 				<div layout="row" layout-align="end center" style="position: absolute; bottom: 8px; right: 8px;">
 					<md-fab-speed-dial md-open="fabOpen" md-direction="left" class="md-scale">
