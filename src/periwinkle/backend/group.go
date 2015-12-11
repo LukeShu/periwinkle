@@ -84,15 +84,20 @@ func GetGroupsByMember(db *periwinkle.Tx, user User) []Group {
 		groupsByID[group.ID] = group
 	}
 
-	groups = []Group{}
+	groupset := map[string]Group{}
 	for _, sub := range subscriptions {
 		// only add group if user is confirmed member or
 		// if group allows non confirmed members to see that it exists
 		if sub.Confirmed || groupsByID[sub.GroupID].ExistenceConfirmed == 2 {
-			groups = append(groups, groupsByID[sub.GroupID])
+			groupset[sub.GroupID] = groupsByID[sub.GroupID]
 		}
 	}
-	return groups
+	var finalgroups []Group
+	for _, group := range groupset {
+		finalgroups = append(finalgroups, group)
+	}
+
+	return finalgroups
 }
 
 func GetPublicAndSubscribedGroups(db *periwinkle.Tx, user User) []Group {
