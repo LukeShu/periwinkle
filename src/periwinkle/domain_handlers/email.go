@@ -38,7 +38,7 @@ func HandleEmail(r io.Reader, name string, db *periwinkle.Tx, cfg *periwinkle.Cf
 	user_email := msg.Header.Get("From")
 	user := backend.GetUserByAddress(db, "email", user_email)
 	// check permissions
-	if(!CanPost(db, group, user.ID)) {
+	if !CanPost(db, group, user.ID) {
 		return postfixpipe.EX_NOPERM
 	}
 
