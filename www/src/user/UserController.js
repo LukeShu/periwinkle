@@ -61,7 +61,7 @@
 							self.info.load();
 						},
 						function fail (response) {
-							debugger;
+							 ;
 							var status_code = response.status;
 							var reason = response.data;
 							self.info.fullName.loading = false;
@@ -123,7 +123,7 @@
 							self.info.load();
 						},
 						function fail (response) {
-							debugger;
+							 ;
 							var status_code = response.status;
 							var reason = response.data;
 							//show alert
@@ -172,7 +172,7 @@
 					},
 					function fail (response) {
 						self.info.status.loading = false;
-						debugger;
+						 ;
 						var status_code = response.status;
 						var reason = response.data;
 						//show alert
@@ -191,7 +191,7 @@
 				var i; var n;
 				var so_index = 0;
 				var list = [];
-				debugger;
+				 ;
 				for (n in self.info.addresses) {
 					for(i in self.info.addresses[n]) {
 						if(i != index || n != name) {
@@ -205,7 +205,7 @@
 						}
 					}
 				}
-				debugger;
+				 ;
 				$http({
 					method: 'PATCH',
 					url: '/v1/users/' + userService.user_id,
@@ -228,7 +228,7 @@
 						self.info.load();
 					},
 					function fail (response) {
-						debugger;
+						 ;
 						var status_code = response.status;
 						var reason = response.data;
 						//show alert
@@ -525,7 +525,7 @@
 					self.groups.load();
 				},
 				function fail(status) {
-					debugger;
+					 ;
 					var status_code = response.status;
 					var reason = response.data;
 					//show alert

@@ -65,7 +65,7 @@
 				)
 			},
 			submit:	function() {
-				debugger;
+				 ;
 				self.permissions_status.loading = true;
 				$http({
 					method: 'PATCH',
@@ -129,7 +129,7 @@
 				}).then(
 					function success(response) {
 						self.members = response.data;
-						debugger;
+						 ;
 						self.members_status.loading = false;
 					},
 					function fail(response) {
@@ -368,7 +368,7 @@
 					self.addresses_status.load();
 				},
 				function fail(status) {
-					debugger;
+					 ;
 					var status_code = response.status;
 					var reason = response.data;
 					//show alert

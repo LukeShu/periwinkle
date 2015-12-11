@@ -29,7 +29,7 @@
 		}
 
 		self.submit = function() {
-			debugger;
+			 ;
 			$scope.loading = true;
 			var list = [];
 			var i;

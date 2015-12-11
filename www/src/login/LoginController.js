@@ -36,7 +36,7 @@
 			self.warn.message = userService.loginRedir.message;
 		} else {
 			var cookie = userService.getSession();
-			debugger;
+			 ;
 			if(cookie != null && cookie != "") {
 				//the user may have a session
 				$scope.loading = true;
@@ -114,7 +114,7 @@
 				function success(response) {
 					//store token
 					captcha_id = response.data.value;
-					debugger;
+					 ;
 					//show dialog
 					$mdDialog.show({
 						controller:				'CaptchaController',

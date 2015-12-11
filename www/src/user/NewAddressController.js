@@ -53,7 +53,7 @@
 			var i; var n;
 			var so_index = 0;
 			var list = [];
-			debugger;
+			 ;
 			for (n in addresses) {
 				for(i in addresses[n]) {
 					var item = {
