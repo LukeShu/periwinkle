@@ -11,7 +11,6 @@ import (
 	"jsonpatch"
 	"periwinkle"
 	"periwinkle/backend"
-	"strings"
 )
 
 var _ he.NetEntity = &user{}
