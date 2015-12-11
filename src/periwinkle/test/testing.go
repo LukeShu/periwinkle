@@ -1,12 +1,9 @@
 package test
 
 import (
-	"fmt"
-	"log"
 	"periwinkle"
 	"periwinkle/backend"
-	//"periwinkle/twilio"
-	//"github.com/jinzhu/gorm"
+	"locale"
 )
 
 func Test(cfg *periwinkle.Cfg, db *periwinkle.Tx) {
@@ -25,9 +22,9 @@ func Test(cfg *periwinkle.Cfg, db *periwinkle.Tx) {
 		Addresses: []backend.UserAddress{{Medium: "email", Address: "zsuleime@purdue.edu", Confirmed: true}},
 	}
 
-	err := db.Create(&user1).Error
-	if err != nil {
-		log.Println(err)
+	uerr := db.Create(&user1).Error
+	if uerr != nil {
+		periwinkle.LogErr(locale.UntranslatedError(uerr))
 	}
 
 	user2 := backend.User{
@@ -36,9 +33,9 @@ func Test(cfg *periwinkle.Cfg, db *periwinkle.Tx) {
 		Addresses: []backend.UserAddress{{Medium: "sms", Address: "+17656027006", Confirmed: true}, {Medium: "email", Address: "s.jandos91@gmail.com", Confirmed: true}},
 	}
 
-	err = db.Create(&user2).Error
-	if err != nil {
-		log.Println(err)
+	uerr = db.Create(&user2).Error
+	if uerr != nil {
+		periwinkle.LogErr(locale.UntranslatedError(uerr))
 	}
 
 	user3 := backend.User{
@@ -47,15 +44,15 @@ func Test(cfg *periwinkle.Cfg, db *periwinkle.Tx) {
 		Addresses: []backend.UserAddress{{Medium: "sms", Address: "+16166342620", Confirmed: true}},
 	}
 
-	err = db.Create(&user3).Error
-	if err != nil {
-		log.Println(err)
+	uerr = db.Create(&user3).Error
+	if uerr != nil {
+		periwinkle.LogErr(locale.UntranslatedError(uerr))
 	}
 	existence := [2]int{2, 2}
 	read := [2]int{2, 2}
 	post := [3]int{1, 1, 1}
 	join := [3]int{1, 1, 1}
-	err = db.Create(&backend.Group{
+	uerr = db.Create(&backend.Group{
 		ID:                 "Purdue",
 		ReadPublic:         read[0],
 		ReadConfirmed:      read[1],
@@ -74,11 +71,9 @@ func Test(cfg *periwinkle.Cfg, db *periwinkle.Tx) {
 			{AddressID: user3.Addresses[0].ID, Confirmed: true},
 		},
 	}).Error
-	if err != nil {
-		log.Println(err)
+	if uerr != nil {
+		periwinkle.LogErr(locale.UntranslatedError(uerr))
 	}
-
-	fmt.Println()
 }
 
 //SUCCESSFULL SMS TEST
