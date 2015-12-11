@@ -9,7 +9,7 @@ Q ?= @
 # What mode should gofmt run in? (another good option is `-w`)
 GOFMT_MODE ?= -d
 
-#POSTBUILD = systemctl --user restart listen-http.service listen-twilio.service
+#POSTBUILD = systemctl --user restart listen-http.service listen-twilio.service || true
 
 # Configuration of the C compiler for C code called from Go
 CFLAGS = -std=c99 -Wall -Wextra -Werror -Wno-old-style-declaration
