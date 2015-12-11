@@ -104,7 +104,7 @@ func sender(message mail.Message, smsTo string, db *periwinkle.Tx, cfg *periwink
 		message := twilio.Message{}
 		json.Unmarshal([]byte(body), &message)
 		log.Println("106")
-		smsStatus, err := SmsWaitForCallback(message.Sid)
+		smsStatus, err := SmsWaitForCallback(cfg, message.Sid)
 		log.Println("108")
 		if err != nil {
 			return "", err
@@ -115,7 +115,7 @@ func sender(message mail.Message, smsTo string, db *periwinkle.Tx, cfg *periwink
 		}
 		log.Println("116")
 		if smsStatus.MessageStatus == "queued" || smsStatus.MessageStatus == "sending" || smsStatus.MessageStatus == "sent" {
-			smsStatus, err = SmsWaitForCallback(message.Sid)
+			smsStatus, err = SmsWaitForCallback(cfg, message.Sid)
 
 			if err != nil {
 				return "", err

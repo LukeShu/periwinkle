@@ -48,6 +48,8 @@ func Parse(in io.Reader) (cfgptr *periwinkle.Cfg, e locale.Error) {
 		TwilioAuthToken:      os.Getenv("TWILIO_TOKEN"),
 		GroupDomain:          "localhost",
 		WebRoot:              "http://locahost:8080",
+		CallbackConnect:      "localhost:42586",
+		CallbackListen:       "localhost:42586",
 		DB:                   nil, // the default DB is set later
 		DefaultDomainHandler: bounceNoHost,
 	}
@@ -89,6 +91,10 @@ func Parse(in io.Reader) (cfgptr *periwinkle.Cfg, e locale.Error) {
 			cfg.GroupDomain = getString(key.(string), val)
 		case "WebRoot":
 			cfg.WebRoot = getString(key.(string), val)
+		case "CallbackConnect":
+			cfg.CallbackConnect = getString(key.(string), val)
+		case "CallbackListen":
+			cfg.CallbackListen = getString(key.(string), val)
 		case "DB":
 			m, ok := val.(map[interface{}]interface{})
 			if !ok {

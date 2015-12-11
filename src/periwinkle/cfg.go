@@ -25,4 +25,6 @@ type Cfg struct {
 	DB                   *DB
 	DomainHandlers       map[string]DomainHandler
 	DefaultDomainHandler DomainHandler
+	CallbackConnect      string
+	CallbackListen       string
 }

@@ -57,7 +57,7 @@ func MakeServer(socket net.Listener, cfg *periwinkle.Cfg) *stoppable.HTTPServer 
 	// The static web UI
 	mux.Handle("/webui/", http.StripPrefix("/webui/", http.FileServer(cfg.WebUIDir)))
 
-	smsCallbackServer := domain_handlers.SmsCallbackServer{}
+	smsCallbackServer := domain_handlers.SmsCallbackServer{Conf: cfg}
 	go func() {
 		err := smsCallbackServer.Serve()
 		if err != nil {

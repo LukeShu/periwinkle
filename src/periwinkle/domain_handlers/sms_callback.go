@@ -24,6 +24,7 @@ type SmsStatus struct {
 }
 
 type SmsCallbackServer struct {
+	Conf      *periwinkle.Cfg
 	connsLock sync.Mutex
 	conns     map[string]net.Conn
 }
@@ -33,7 +34,7 @@ func (server *SmsCallbackServer) Serve() (err error) {
 	if server.conns == nil {
 		server.conns = make(map[string]net.Conn)
 	}
-	listener, err := net.Listen("tcp", ":42586")
+	listener, err := net.Listen("tcp", server.Conf.CallbackListen)
 	if err != nil {
 		return
 	}
@@ -89,12 +90,12 @@ func (server *SmsCallbackServer) ServeHTTP(w http.ResponseWriter, req *http.Requ
 }
 
 // client
-func SmsWaitForCallback(MessageSid string) (status SmsStatus, err error) {
-	conn, err := net.Dial("tcp", "cfg.WebRoot:42586")
-	defer conn.Close()
+func SmsWaitForCallback(conf *periwinkle.Cfg, MessageSid string) (status SmsStatus, err error) {
+	conn, err := net.Dial("tcp", conf.CallbackConnect)
 	if err != nil {
 		return
 	}
+	defer conn.Close()
 	_, err = fmt.Fprintln(conn, MessageSid)
 	if err != nil {
 		return
