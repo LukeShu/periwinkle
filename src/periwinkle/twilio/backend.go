@@ -91,3 +91,32 @@ func DeleteUnusedTwilioNumbers(cfg *periwinkle.Cfg) {
 		panic(conflict) // FIXME
 	}
 }
+
+func GetUnusedTwilioNumbersByUser(cfg *periwinkle.Cfg, db *periwinkle.Tx, userid string) []string {
+
+	str := []string{}
+	allTwilioNum := GetAllExistingTwilioNumbers(cfg)
+	twilioPools := backend.GetTwilioPoolByUserID(db, userid)
+
+	var isNumberUsed bool
+
+	for _, allNum := range allTwilioNum {
+		isNumberUsed = false
+		for i := range twilioPools {
+
+			usedNum := backend.GetTwilioNumberByID(db, twilioPools[i].NumberID)
+
+			if allNum == usedNum.Number {
+				isNumberUsed = true
+				break
+			}
+		}
+
+		if isNumberUsed == false {
+			str = append(str, allNum)
+		}
+	}
+
+	return str
+
+}
