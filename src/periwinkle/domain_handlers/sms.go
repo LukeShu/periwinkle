@@ -95,7 +95,7 @@ func sender(message mail.Message, smsTo string, db *periwinkle.Tx, cfg *periwink
 	}
 
 	if resp.StatusCode == 200 || resp.StatusCode == 201 {
-
+		return "delivered", nil
 		body, err := ioutil.ReadAll(resp.Body)
 		if err != nil {
 			return "", err
