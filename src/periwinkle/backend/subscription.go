@@ -102,7 +102,7 @@ func IsAdmin(db *periwinkle.Tx, userID string, group Group) bool {
 }
 
 func (sub *Subscription) Delete(db *periwinkle.Tx) {
-	if err := db.Delete(sub).Error; err != nil {
+	if err := db.Where("address_id = ? AND group_id = ?", sub.AddressID, sub.GroupID).Delete(Subscription{}).Error; err != nil {
 		dbError(err)
 	}
 }

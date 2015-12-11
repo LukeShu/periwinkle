@@ -49,7 +49,7 @@ func (addr UserAddress) AsEmailAddress() string {
 }
 
 func (u *User) populate(db *periwinkle.Tx) {
-	db.Where(`user_id = ? AND medium != "noop" AND medium != "admin"`, u.ID).Model(UserAddress{}).Find(&u.Addresses)
+	db.Where(`user_id = ?`, u.ID).Model(UserAddress{}).Find(&u.Addresses)
 	addressIDs := make([]int64, len(u.Addresses))
 	for i, address := range u.Addresses {
 		addressIDs[i] = address.ID
@@ -77,7 +77,9 @@ func (u *User) GetSubscriptions(db *periwinkle.Tx) []Subscription {
 
 func (addr *UserAddress) GetSubscriptions(db *periwinkle.Tx) []Subscription {
 	var subscriptions []Subscription
-	db.Model(addr).Related(&subscriptions)
+	if err := db.Where("address_id = ?", addr.ID).Find(&subscriptions).Error; err != nil {
+		dbError(err)
+	}
 	return subscriptions
 }
 
