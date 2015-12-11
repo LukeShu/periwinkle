@@ -82,31 +82,29 @@ func TestGetUserByAddress(t *testing.T) {
 	})
 }
 
-// func TestSetPassword(t *testing.T) {
-// 	t.Error("TODO")
-// }
+func TestGetAddressByUserAndMedium(t *testing.T) {
+	conf := CreateTempDB()
+	conf.DB.Do(func(tx *periwinkle.Tx) {
 
-// func TestCheckPassword(t *testing.T) {
-// 	t.Error("TODO")
-// }
+		user := NewUser(tx, "JohnDoe", "password", "johndoe@purdue.edu")
 
-// func TestGetAddressByUserAndMedium(t *testing.T) {
-// 	addr := GetAddressByUserAndMedium(tx, user.ID, "email")
+		addr := GetAddressByUserAndMedium(tx, user.ID, "email")
 
-// 	switch {
-// 	case addr == nil:
-// 		t.Error("GetAddressByUserAndMedium() returned nil")
-// 	case addr.Address != user.Addresses[0].Address:
-// 		t.Error("Addresses do not match: " + user.Addresses[0].Address + " != " + addr.Address)
-// 	}
-// }
+		switch {
+		case addr == nil:
+			t.Error("GetAddressByUserAndMedium() returned nil")
+		case !strings.EqualFold(addr.Address, user.Addresses[0].Address):
+			t.Error("Addresses do not match: " + user.Addresses[0].Address + " != " + addr.Address)
+		}
+	})
+}
 
 func TestGetUserSubscriptions(t *testing.T) {
 	conf := CreateTempDB()
 	conf.DB.Do(func(tx *periwinkle.Tx) {
-		waste := NewUser(tx, "JohnDoe", "password", "johndoe@purdue.edu")
+		o := NewUser(tx, "JohnDoe", "password", "johndoe@purdue.edu")
 
-		user := GetUserByID(tx, waste.ID)
+		user := GetUserByID(tx, o.ID)
 
 		subs := user.GetUserSubscriptions(tx)
 
