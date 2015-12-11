@@ -45,6 +45,23 @@ func sender(message mail.Message, smsTo string, db *periwinkle.Tx, cfg *periwink
 	user := backend.GetUserByAddress(db, "sms", smsTo)
 
 	smsFrom := backend.GetTwilioNumberByUserAndGroup(db, user.ID, strings.Split(group, "@")[0])
+
+	if smsFrom == "" {
+
+		twilio_num := twilio.GetUnusedTwilioNumbersByUser(cfg, db, user.ID)
+		if twilio_num == nil {
+			new_num, err := twilio.NewPhoneNum(cfg)
+			if err != nil {
+				return "", err
+			}
+			backend.AssignTwilioNumber(db, user.ID, strings.Split(group, "@")[0], new_num)
+			smsFrom = new_num
+		} else {
+			backend.AssignTwilioNumber(db, user.ID, strings.Split(group, "@")[0], twilio_num[0])
+			smsFrom = twilio_num[0]
+		}
+	}
+
 	smsBody := message.Header.Get("Subject")
 	//smsBody, err := ioutil.ReadAll(message.Body)
 	//if err != nil {

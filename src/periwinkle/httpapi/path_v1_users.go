@@ -192,8 +192,8 @@ func newDirUsers() dirUsers {
 			}
 
 			usr := backend.NewUser(db, entity.Username, entity.Password, entity.Email)
-			backend.NewUserAddress(db, usr.ID, "noop", "", true)
-			backend.NewUserAddress(db, usr.ID, "admin", "", true)
+			backend.NewUserAddress(db, usr.ID, "noop", backend.RandomString(20), true)
+			backend.NewUserAddress(db, usr.ID, "admin", backend.RandomString(20), true)
 			req.Things["user"] = usr
 			return rfc7231.StatusCreated(r, usr.ID, req)
 		},

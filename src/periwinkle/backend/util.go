@@ -129,7 +129,7 @@ const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789
 
 var alphabetLen = big.NewInt(int64(len(alphabet)))
 
-func randomString(size int) string {
+func RandomString(size int) string {
 	bytes := make([]byte, size)
 	for i := 0; i < size; i++ {
 		bigint, err := rand.Int(rand.Reader, alphabetLen)

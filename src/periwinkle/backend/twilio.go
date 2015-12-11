@@ -128,6 +128,20 @@ func GetGroupByUserAndTwilioNumber(db *periwinkle.Tx, userid string, twilioNum s
 	return &group
 }
 
+func GetTwilioNumberByID(db *periwinkle.Tx, id int64) *TwilioNumber {
+
+	var twilio_num TwilioNumber
+
+	if result := db.Where("id = ?", id).First(&twilio_num); result.Error != nil {
+		if result.RecordNotFound() {
+			return nil
+		}
+		dbError(result.Error)
+	}
+
+	return &twilio_num
+}
+
 func DeleteUnusedTwilioNumber(db *periwinkle.Tx, num string) error {
 
 	var twilioNum TwilioNumber
