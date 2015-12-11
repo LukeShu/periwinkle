@@ -220,18 +220,18 @@ func (d dirUsers) Methods() map[string]func(he.Request) he.Response {
 }
 
 func (d dirUsers) Subentity(name string, req he.Request) he.Entity {
-	sess := req.Things["session"].(*backend.Session)
-	if sess == nil {
-		if req.Method == "POST" {
-			usr, ok := req.Things["user"].(backend.User)
-			if ok && strings.EqualFold(usr.ID, name) {
-				return (*user)(&usr)
-			}
-		}
-		return nil
-	} else if sess.UserID != name {
-		return nil
-	}
+	// sess := req.Things["session"].(*backend.Session)
+	// if sess == nil {
+	// 	if req.Method == "POST" {
+	// 		usr, ok := req.Things["user"].(backend.User)
+	// 		if ok && strings.EqualFold(usr.ID, name) {
+	// 			return (*user)(&usr)
+	// 		}
+	// 	}
+	// 	return nil
+	// } else if sess.UserID != name {
+	// 	return nil
+	// }
 	db := req.Things["db"].(*periwinkle.Tx)
 	return (*user)(backend.GetUserByID(db, name))
 }
