@@ -28,20 +28,20 @@ func main() {
 	config := cmdutil.GetConfig(options["-c"].(string))
 
 	conflict := config.DB.Do(func(tx *periwinkle.Tx) {
-		/*		
-		err := backend.DbSchema(tx)
-		if err != nil {
-			periwinkle.Logf("Encountered an error while setting up the database schema, not attempting to seed data:")
-			periwinkle.LogErr(err)
-			os.Exit(int(lsb.EXIT_FAILURE))
-		}
+		/*
+			err := backend.DbSchema(tx)
+			if err != nil {
+				periwinkle.Logf("Encountered an error while setting up the database schema, not attempting to seed data:")
+				periwinkle.LogErr(err)
+				os.Exit(int(lsb.EXIT_FAILURE))
+			}
 
-		err = backend.DbSeed(tx)
-		if err != nil {
-			periwinkle.Logf("Encountered an error while seeding the database:")
-			periwinkle.LogErr(err)
-			os.Exit(int(lsb.EXIT_FAILURE))
-		}
+			err = backend.DbSeed(tx)
+			if err != nil {
+				periwinkle.Logf("Encountered an error while seeding the database:")
+				periwinkle.LogErr(err)
+				os.Exit(int(lsb.EXIT_FAILURE))
+			}
 		*/
 		test.Test(config, tx)
 	})
