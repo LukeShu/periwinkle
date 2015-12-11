@@ -27,22 +27,16 @@ func StatusCreated(parent he.EntityGroup, childName string, req he.Request) he.R
 	if child == nil {
 		panic("called StatusCreated, but the subentity doesn't exist")
 	}
-	handler, ok := child.Methods()["GET"]
-	if !ok {
-		panic("called StatusCreated, but can't GET the subentity")
-	}
-	response := handler(req)
-	// mess with the response
+	// prepare the response
 	u, _ := req.URL.Parse(url.QueryEscape(childName))
-	response.Headers.Set("Location", u.String())
-	if response.Entity == nil {
-		panic("called StatusCreated, but GET on subentity doesn't return an entity")
-	}
-	mimetypes := encoders2contenttypes(response.Entity.Encoders())
 	return he.Response{
-		Status:  201,
-		Headers: response.Headers,
-		Entity:  mimetypes2net(u, mimetypes),
+		Status: 201,
+		Headers: http.Header{
+			"Location": {u.String()},
+		},
+		Entity:                 he.NetPrintf("%s", u.String()),
+		InhibitNotAcceptable:   true,
+		InhibitMultipleChoices: true,
 	}
 }
 

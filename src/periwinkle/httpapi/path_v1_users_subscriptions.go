@@ -65,9 +65,6 @@ func (usr *userSubscriptions) Methods() map[string]func(he.Request) he.Response 
 			if httperr != nil {
 				return *httperr
 			}
-			if entity.GroupID == "" || entity.Medium == "" || entity.Address == "" {
-				return rfc7231.StatusUnsupportedMediaType(he.NetPrintf("group_id, medium, and address can't be emtpy"))
-			}
 			entity.GroupID = strings.ToLower(entity.GroupID)
 
 			for _, addr := range usr.Addresses {

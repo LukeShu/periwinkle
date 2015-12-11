@@ -18,6 +18,58 @@ var _ he.EntityGroup = &dirGroups{}
 
 type group backend.Group
 
+type Enumerategroup struct {
+	Groupname     string                 `json:"groupname"`
+	Post          map[string]string      `json:"post"`
+	Join          map[string]string      `json:"join"`
+	Read          map[string]string      `json:"read"`
+	Existence     map[string]string      `json:"existence"`
+	Subscriptions []backend.Subscription `json:"subscriptions"`
+}
+
+func EnumerateGroup(o *group) Enumerategroup {
+	var enum Enumerategroup
+	enum.Groupname = o.ID
+	exist := [...]int{o.ExistencePublic, o.ExistenceConfirmed}
+	enum.Existence = backend.ReadExist(exist)
+	read := [...]int{o.ReadPublic, o.ReadConfirmed}
+	enum.Read = backend.ReadExist(read)
+	post := [...]int{o.PostPublic, o.PostConfirmed, o.PostMember}
+	enum.Post = backend.PostJoin(post)
+	join := [...]int{o.JoinPublic, o.JoinConfirmed, o.JoinMember}
+	enum.Join = backend.PostJoin(join)
+	enum.Subscriptions = o.Subscriptions
+	return enum
+}
+
+func RenumerateGroup(entity Enumerategroup) group {
+	read := make([]int, 2)
+	existence := make([]int, 2)
+	post := make([]int, 3)
+	join := make([]int, 3)
+
+	existence = backend.Reverse(entity.Existence)
+	read = backend.Reverse(entity.Read)
+	post = backend.Reverse(entity.Post)
+	join = backend.Reverse(entity.Join)
+
+	o := group{
+		ID:                 entity.Groupname,
+		ReadPublic:         read[0],
+		ReadConfirmed:      read[1],
+		ExistencePublic:    existence[0],
+		ExistenceConfirmed: existence[1],
+		PostPublic:         post[0],
+		PostConfirmed:      post[1],
+		PostMember:         post[2],
+		JoinPublic:         join[0],
+		JoinConfirmed:      join[1],
+		JoinMember:         join[2],
+		Subscriptions:      entity.Subscriptions,
+	}
+	return o
+}
+
 func (o *group) backend() *backend.Group { return (*backend.Group)(o) }
 
 // Model /////////////////////////////////////////////////////////////
@@ -74,7 +126,6 @@ func (o *group) Methods() map[string]func(he.Request) he.Response {
 			db := req.Things["db"].(*periwinkle.Tx)
 			sess := req.Things["session"].(*backend.Session)
 			subscribed := backend.IsSubscribed(db, sess.UserID, *o.backend())
-			moderate := false
 			if !backend.IsAdmin(db, sess.UserID, *o.backend()) {
 				if o.JoinPublic == 1 {
 					if subscribed == 0 {
@@ -86,36 +137,23 @@ func (o *group) Methods() map[string]func(he.Request) he.Response {
 					if o.JoinMember == 1 {
 						return rfc7231.StatusForbidden(he.NetPrintf("Unauthorized user"))
 					}
-					if o.JoinConfirmed == 2 && subscribed == 1 {
-						moderate = true
-					} else if o.JoinMember == 2 && subscribed == 2 {
-						moderate = true
-					}
-				} else if o.JoinPublic == 2 {
-					if subscribed == 0 {
-						moderate = true
-					} else if o.JoinConfirmed == 2 && subscribed == 1 {
-						moderate = true
-					} else if o.JoinMember == 2 && subscribed == 2 {
-						moderate = true
-					}
 				}
 			}
+			enum := EnumerateGroup(o)
+			var newGroup Enumerategroup
 			patch, ok := req.Entity.(jsonpatch.Patch)
 			if !ok {
 				return rfc7231.StatusUnsupportedMediaType(he.NetPrintf("PATCH request must have a patch media type"))
 			}
-			var newGroup group
-			err := patch.Apply(o, &newGroup)
+			err := patch.Apply(enum, &newGroup)
 			if err != nil {
 				return rfc7231.StatusConflict(he.NetPrintf("%v", err))
 			}
-			if o.ID != newGroup.ID {
+			if o.ID != newGroup.Groupname {
 				return rfc7231.StatusConflict(he.NetPrintf("Cannot change group id"))
 			}
 
-			*o = newGroup
-			periwinkle.Logf("%v", moderate) // FIXME: do things with moderate
+			*o = RenumerateGroup(newGroup)
 			o.backend().Save(db)
 			return rfc7231.StatusOK(o)
 		},
@@ -214,7 +252,7 @@ func newDirGroups() dirGroups {
 			grp := backend.NewGroup(
 				db,
 				entity.Groupname,
-				backend.Reverse(entity.Post),
+				backend.Reverse(entity.Existence),
 				backend.Reverse(entity.Read),
 				backend.Reverse(entity.Post),
 				backend.Reverse(entity.Join),
