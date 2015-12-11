@@ -45,14 +45,14 @@ func (o *TwilioSMSMessage) Save(db *periwinkle.Tx) {
 }
 
 func (o *TwilioSMSMessage) Delete(db *periwinkle.Tx) {
-	if err := db.Where("message_sid = ?", o.MessageSID).Delete(TwilioSMSMessage{}).Error; err != nil {
+	if err := db.Where("message_s_id = ?", o.MessageSID).Delete(TwilioSMSMessage{}).Error; err != nil {
 		dbError(err)
 	}
 }
 
 func GetTwilioSMSMessageBySID(db *periwinkle.Tx, sid string) *TwilioSMSMessage {
 	var o TwilioSMSMessage
-	if result := db.First(&o, "message_sid = ?", sid); result.Error != nil {
+	if result := db.First(&o, "message_s_id = ?", sid); result.Error != nil {
 		if result.RecordNotFound() {
 			return nil
 		}
