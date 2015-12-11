@@ -23,7 +23,13 @@ func (o *group) backend() *backend.Group { return (*backend.Group)(o) }
 // Model /////////////////////////////////////////////////////////////
 
 func (o *group) Subentity(name string, req he.Request) he.Entity {
-	panic("TODO: API: (*group).Subentity()")
+	switch name {
+	case "log":
+		panic("TODO")
+	case "subscriptions":
+		return &groupSubscriptions{*o, nil}
+	}
+	return nil
 }
 
 func (o *group) SubentityNotFound(name string, req he.Request) he.Response {

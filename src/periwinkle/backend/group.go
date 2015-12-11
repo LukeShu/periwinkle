@@ -166,6 +166,33 @@ func (grp *Group) GetSubscriptions(db *periwinkle.Tx) []Subscription {
 	return subscriptions
 }
 
+func (grp *Group) GetSubscriberIDs(db *periwinkle.Tx) []string {
+	subscriptions := grp.GetSubscriptions(db)
+	addressIDs := make([]int64, len(subscriptions))
+	for i, sub := range subscriptions {
+		addressIDs[i] = sub.AddressID
+	}
+	var addresses []UserAddress
+	if len(addressIDs) > 0 {
+		if err := db.Where("id IN (?)", addressIDs).Find(&addresses).Error; err != nil {
+			dbError(err)
+		}
+	} else {
+		addresses = []UserAddress{}
+	}
+	userIDSet := map[string]bool{}
+	for _, address := range addresses {
+		userIDSet[address.UserID] = true
+	}
+	userIDs := make([]string, len(userIDSet))
+	i := 0
+	for userID := range userIDSet {
+		userIDs[i] = userID
+		i++
+	}
+	return userIDs
+}
+
 func (o *Group) Save(db *periwinkle.Tx) {
 	if o.Subscriptions != nil {
 		var oldSubscriptions []Subscription
