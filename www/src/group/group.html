@@ -29,7 +29,7 @@
 					<div ng-if="group.permissions_status.loading" style="position: absolute; z-index: 12; width: 40px; height: 40px; top: 3em; left: 50%; margin-left: -20px; border-color: #f0f0f0; border-style: solid; border-width: 1px; border-radius: 20px; background-color: white;">
 						<md-progress-circular md-diameter="40px" md-mode="indeterminate"></md-progress-circular>
 					</div>
-					<div ng-include="'src/group/permissions.html'"></div>
+					<div ng-include="'src/group/permissions.html'" style="position: relative;"></div>
 				</md-card-content>
 				<div layout="row" layout-align="end center">
 					<md-button type="submit">
