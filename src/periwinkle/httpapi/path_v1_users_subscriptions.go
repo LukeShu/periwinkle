@@ -49,7 +49,7 @@ func (usr *userSubscriptions) Methods() map[string]func(he.Request) he.Response 
 		"GET": func(req he.Request) he.Response {
 			db := req.Things["db"].(*periwinkle.Tx)
 			usr.groupID = req.URL.Query().Get("group_id")
-			usr.values = usr.backend().GetSubscriptions(db)
+			usr.values = usr.backend().GetFrontEndSubscriptions(db)
 			return rfc7231.StatusOK(usr)
 		},
 		"POST": func(req he.Request) he.Response {
