@@ -49,7 +49,7 @@ type Router struct {
 	// `Forwarded: proto=`
 	TrustForwarded bool
 
-	MethodNotAllowed func(request Request, u *url.URL) Response
+	MethodNotAllowed func(entity Entity, request Request) Response
 
 	outsideHandler func(Request) Response
 	insideHandler  func(Request, Entity) Response

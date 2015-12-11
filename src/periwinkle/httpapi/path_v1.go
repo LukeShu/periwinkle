@@ -2,7 +2,10 @@
 
 package httpapi
 
-import he "httpentity"
+import (
+	he "httpentity"
+	"httpentity/rfc7231"
+)
 
 type dirRoot struct {
 	methods     map[string]func(he.Request) he.Response
@@ -49,5 +52,5 @@ func (d dirRoot) SubentityNotFound(name string, request he.Request) he.Response 
 }
 
 func (d dirRoot) MethodNotAllowed(request he.Request) he.Response {
-	panic("TODO")
+	return rfc7231.StatusMethodNotAllowed(d, request)
 }

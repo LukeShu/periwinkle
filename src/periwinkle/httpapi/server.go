@@ -6,6 +6,7 @@ package httpapi
 import (
 	he "httpentity"
 	"httpentity/heutil"
+	"httpentity/rfc7231"
 	"io"
 	"locale"
 	"log"
@@ -32,23 +33,25 @@ func MakeServer(socket net.Listener, cfg *periwinkle.Cfg) *stoppable.HTTPServer 
 	mux := http.NewServeMux()
 	// The main REST API
 	mux.Handle("/v1/", he.Router{
-		Prefix:         "/v1/",
-		Root:           NewDirRoot(),
-		Decoders:       stdDecoders,
-		Middlewares:    stdMiddlewares,
-		Stacktrace:     cfg.Debug,
-		Log:            heutil.StderrLog,
-		TrustForwarded: cfg.TrustForwarded,
+		Prefix:           "/v1/",
+		Root:             NewDirRoot(),
+		Decoders:         stdDecoders,
+		Middlewares:      stdMiddlewares,
+		Stacktrace:       cfg.Debug,
+		Log:              heutil.StderrLog,
+		TrustForwarded:   cfg.TrustForwarded,
+		MethodNotAllowed: rfc7231.StatusMethodNotAllowed,
 	}.Init())
 	// URL shortener service
 	mux.Handle("/s/", he.Router{
-		Prefix:         "/s/",
-		Root:           NewDirShortURLs(),
-		Decoders:       stdDecoders,
-		Middlewares:    stdMiddlewares,
-		Stacktrace:     cfg.Debug,
-		Log:            heutil.StderrLog,
-		TrustForwarded: cfg.TrustForwarded,
+		Prefix:           "/s/",
+		Root:             NewDirShortURLs(),
+		Decoders:         stdDecoders,
+		Middlewares:      stdMiddlewares,
+		Stacktrace:       cfg.Debug,
+		Log:              heutil.StderrLog,
+		TrustForwarded:   cfg.TrustForwarded,
+		MethodNotAllowed: rfc7231.StatusMethodNotAllowed,
 	}.Init())
 
 	// The static web UI

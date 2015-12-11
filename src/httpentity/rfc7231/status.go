@@ -164,27 +164,32 @@ func StatusNotFound(e he.NetEntity) he.Response {
 		e = he.NetPrintf("404 Not Found")
 	}
 	return he.Response{
-		Status:  404,
-		Headers: http.Header{},
-		Entity:  e,
+		Status:                 404,
+		Headers:                http.Header{},
+		Entity:                 e,
+		InhibitNotAcceptable:   true,
+		InhibitMultipleChoices: true,
 	}
 }
 
-func StatusMethodNotAllowed(methods string) he.Response {
+func StatusMethodNotAllowed(entity he.Entity, request he.Request) he.Response {
 	return he.Response{
 		Status: 405,
 		Headers: http.Header{
-			"Allow": {methods},
+			"Allow": {methods2string(entity.Methods())},
 		},
-		Entity: he.NetPrintf("405 Method Not Allowed"),
+		Entity:                 he.NetPrintf("405 Method Not Allowed"),
+		InhibitNotAcceptable:   true,
+		InhibitMultipleChoices: true,
 	}
 }
 
 func StatusNotAcceptable(u *url.URL, mimetypes []string) he.Response {
 	return he.Response{
-		Status:  406,
-		Headers: http.Header{},
-		Entity:  mimetypes2net(u, mimetypes),
+		Status:               406,
+		Headers:              http.Header{},
+		Entity:               mimetypes2net(u, mimetypes),
+		InhibitNotAcceptable: true,
 	}
 }
 

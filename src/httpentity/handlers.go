@@ -38,7 +38,7 @@ func (router *Router) defaultInsideHandler(request Request, entity Entity) Respo
 		if extra, ok := entity.(EntityExtra); ok {
 			response = extra.MethodNotAllowed(request)
 		} else {
-			response = router.MethodNotAllowed(request, request.URL)
+			response = router.MethodNotAllowed(entity, request)
 		}
 		return response
 	}
