@@ -46,3 +46,19 @@ may define a `dbSeed` method that sets up initial data into the table.
 
 DO NOT make any `periwinkle/backend` `Save()` methods take any
 arguments beside a `*periwinkle.Tx`!
+
+DO NOT use `periwinkle.Cfg` in `periwinkle/backend`.
+
+In `periwinkle/backend`, if you want to do database things, accept a
+`*periwinkle.Tx` as an argument; it should behave exactly like a
+`*gorm.DB`.
+
+If you are given a `conf *periwinkle.Cfg` as an argument, and want to do
+database things, do:
+
+	conflict := conf.DB.Do(func(tx *periwinkle.Tx) {
+		// your code here
+	})
+	if conflict != nil {
+		// handle error
+	}
