@@ -90,7 +90,7 @@ func HandleSMS(r io.Reader, name string, db *periwinkle.Tx, cfg *periwinkle.Cfg)
 		periwinkle.LogErr(locale.UntranslatedError(uerr))
 		return postfixpipe.EX_UNAVAILABLE
 	}
-
+	return postfixpipe.EX_OK
 	tmessage := twilio.Message{}
 	json.Unmarshal([]byte(body), &tmessage)
 	_, err := TwilioSMSWaitForCallback(cfg, tmessage.Sid)
