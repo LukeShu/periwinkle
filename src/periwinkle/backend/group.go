@@ -181,8 +181,9 @@ func (o *Group) Save(db *gorm.DB, cfg *periwinkle.Cfg, moderate bool, userid str
 							return
 						}
 						AssignTwilioNumber(db, userid, o.ID, new_num)
+					} else {
+						AssignTwilioNumber(db, userid, o.ID, twilio_num[0])
 					}
-					AssignTwilioNumber(db, userid, o.ID, twilio_num[0])
 
 				}
 
