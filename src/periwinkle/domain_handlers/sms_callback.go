@@ -38,6 +38,7 @@ func (server *SmsCallbackServer) Serve() (err error) {
 	if err != nil {
 		return
 	}
+	log.Println("41")
 	for {
 		conn, err := listener.Accept()
 		if err != nil {
@@ -74,7 +75,7 @@ func (server *SmsCallbackServer) ServeHTTP(w http.ResponseWriter, req *http.Requ
 	status.ErrorCode = values.Get("ErrorCode")
 	status.MessageSid = values.Get("MessageSid")
 	statusJSON, err := json.Marshal(status)
-
+	log.Println("77", status.MessageStatus)
 	server.connsLock.Lock()
 	conn, ok := server.conns[status.MessageSid]
 	if !ok {
@@ -100,11 +101,13 @@ func SmsWaitForCallback(conf *periwinkle.Cfg, MessageSid string) (status SmsStat
 	if err != nil {
 		return
 	}
+	log.Println("104")
 	reader := bufio.NewReader(conn)
 	statusJSON, _, err := reader.ReadLine()
 	if err != nil {
 		return
 	}
+	log.Println("110")
 	err = json.Unmarshal([]byte(statusJSON), &status)
 	return
 }
