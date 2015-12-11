@@ -75,7 +75,7 @@ func TestGetUserByAddress(t *testing.T) {
 	user := NewUser(conf.DB, "JohnDoe", "password", "johndoe@purdue.edu")
 
 	o := GetUserByAddress(conf.DB, "email", user.Addresses[0].Address)
-	if strings.Compare(user.ID, o.ID) != 0 {
+	if !strings.EqualFold(user.ID, o.ID) {
 		t.Error("Error in GetUserByAdress()")
 	}
 
