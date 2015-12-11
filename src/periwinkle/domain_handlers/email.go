@@ -35,6 +35,12 @@ func HandleEmail(r io.Reader, name string, db *periwinkle.Tx, cfg *periwinkle.Cf
 	if group == nil {
 		return postfixpipe.EX_NOUSER
 	}
+	user_email := msg.Header.Get("From")
+	user := backend.GetUserByAddress(db, "email", user_email)
+	// check permissions
+	if(!CanPost(db, group, user.ID)) {
+		return postfixpipe.EX_NOPERM
+	}
 
 	backend.NewMessage(
 		db,
