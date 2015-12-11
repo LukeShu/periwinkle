@@ -97,6 +97,13 @@ func (o *user) patchPassword(patch *jsonpatch.Patch) *he.Response {
 func (usr *user) Methods() map[string]func(he.Request) he.Response {
 	return map[string]func(he.Request) he.Response{
 		"GET": func(req he.Request) he.Response {
+			var addresses []backend.UserAddress
+			for _, addr := range usr.Addresses {
+				if addr.Medium != "noop" && addr.Medium != "admin" {
+					addresses = append(addresses, addr)
+				}
+			}
+			usr.Addresses = addresses
 			return rfc7231.StatusOK(usr)
 		},
 		"PUT": func(req he.Request) he.Response {

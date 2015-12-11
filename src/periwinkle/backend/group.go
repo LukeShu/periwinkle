@@ -208,8 +208,12 @@ func (o *Group) Save(db *periwinkle.Tx) {
 				}
 			}
 			if !match {
-				if err := db.Where("address_id = ? AND group_id = ?", oldsub.AddressID, oldsub.GroupID).Delete(Subscription{}).Error; err != nil {
-					dbError(err)
+				var o UserAddress
+				db.First(&o, "id = ?", oldsub.AddressID)
+				if o.Medium != "noop" && o.Medium != "admin" {
+					if err := db.Where("address_id = ? AND group_id = ?", oldsub.AddressID, oldsub.GroupID).Delete(Subscription{}).Error; err != nil {
+						dbError(err)
+					}
 				}
 			}
 		}
