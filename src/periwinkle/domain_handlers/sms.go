@@ -75,7 +75,7 @@ func sender(message mail.Message, smsTo string, db *periwinkle.Tx, cfg *periwink
 	v.Set("From", smsFrom)
 	v.Set("To", smsTo)
 	v.Set("Body", string(smsBody))
-	v.Set("StatusCallback", cfg.WebRoot+"/callbacks/twilio-sms")
+	v.Set("StatusCallback", "http://" + cfg.WebRoot+":8080/callbacks/twilio-sms")
 	//host,_ := os.Hostname()
 	//v.Set("StatusCallback", "http://" + host + ":8080/callbacks/twilio-sms")
 	client := &http.Client{}
