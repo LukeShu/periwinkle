@@ -57,8 +57,8 @@ func (usr *userSubscriptions) Methods() map[string]func(he.Request) he.Response 
 			sess := req.Things["session"].(*backend.Session)
 			type postfmt struct {
 				GroupID string `json:"group_id"`
-				Medium  string `json:"medium"`
-				Address string `json:"address"`
+				Medium  string `json:"medium,omitempty"`
+				Address string `json:"address,omitempty"`
 			}
 			var entity postfmt
 			httperr := safeDecodeJSON(req.Entity, &entity)
@@ -67,13 +67,27 @@ func (usr *userSubscriptions) Methods() map[string]func(he.Request) he.Response 
 			}
 			entity.GroupID = strings.ToLower(entity.GroupID)
 
-			for _, addr := range usr.Addresses {
-				if addr.Medium == entity.Medium && addr.Address == entity.Address {
-					backend.NewSubscription(db, addr.ID, entity.GroupID, sess != nil && sess.UserID == usr.ID)
-					return rfc7231.StatusCreated(usr, entity.GroupID+":"+entity.Medium+":"+entity.Address, req)
+			var address *backend.UserAddress
+			if entity.Medium == "" && entity.Address == "" {
+				address = &usr.Addresses[0]
+				for _, addr := range usr.Addresses {
+					if addr.SortOrder < address.SortOrder {
+						address = &addr
+					}
+				}
+			} else {
+				for _, addr := range usr.Addresses {
+					if addr.Medium == entity.Medium && addr.Address == entity.Address {
+						address = &addr
+						break
+					}
 				}
 			}
-			return rfc7231.StatusConflict(he.NetPrintf("You don't have that address"))
+			if address == nil {
+				return rfc7231.StatusConflict(he.NetPrintf("You don't have that address"))
+			}
+			backend.NewSubscription(db, address.ID, entity.GroupID, sess != nil && sess.UserID == usr.ID)
+			return rfc7231.StatusCreated(usr, entity.GroupID+":"+entity.Medium+":"+entity.Address, req)
 		},
 	}
 }
