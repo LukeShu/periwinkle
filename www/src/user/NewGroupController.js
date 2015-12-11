@@ -35,7 +35,6 @@
 				confirmed: 'yes'
 			}
 		};
-
 		self.cancel = function() {
 			$mdDialog.cancel();
 		};

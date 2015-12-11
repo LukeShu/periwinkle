@@ -1,0 +1,156 @@
+<div layout="column">
+	<div layout="row" layout-sm="column">
+		<div layout="column">
+			<div layout="row">
+				<span flex></span>
+				<p style="font-weight: bold">Post</p>
+				<span flex></span>
+			</div>
+			<div layout="row">
+				<span flex></span>
+				<p>Public</p>
+				<span flex></span>
+			</div>
+			<md-radio-group ng-model="group.permissions.post.public" layout="row">
+				<span flex></span>
+				<md-radio-button value="accept">Accept</md-radio-button>
+				<md-radio-button value="moderate">Moderate</md-radio-button>
+				<md-radio-button value="bounce">Bounce</md-radio-button>
+				<span flex></span>
+			</md-radio-group>
+			<div layout="row">
+				<span flex></span>
+				<p>Confirmed</p>
+				<span flex></span>
+			</div>
+			<md-radio-group ng-model="group.permissions.post.confirmed" layout="row">
+				<span flex></span>
+				<md-radio-button value="accept">Accept</md-radio-button>
+				<md-radio-button value="moderate">Moderate</md-radio-button>
+				<md-radio-button value="bounce">Bounce</md-radio-button>
+				<span flex></span>
+			</md-radio-group>
+			<div layout="row">
+				<span flex></span>
+				<p>Member</p>
+				<span flex></span>
+			</div>
+			<md-radio-group ng-model="group.permissions.post.member" layout="row">
+				<span flex></span>
+				<md-radio-button value="accept">Accept</md-radio-button>
+				<md-radio-button value="moderate">Moderate</md-radio-button>
+				<md-radio-button value="bounce">Bounce</md-radio-button>
+				<span flex></span>
+			</md-radio-group>
+		</div>
+		<div style="padding: 16px;"></div>
+		<div layout="column">
+			<div layout="row">
+				<span flex></span>
+				<p style="font-weight: bold">Join</p>
+				<span flex></span>
+			</div>
+			<div layout="row">
+				<span flex></span>
+				<p>Public</p>
+				<span flex></span>
+			</div>
+			<md-radio-group ng-model="group.permissions.join.public" layout="row">
+				<span flex></span>
+				<md-radio-button value="accept">Accept</md-radio-button>
+				<md-radio-button value="moderate">Moderate</md-radio-button>
+				<md-radio-button value="bounce">Bounce</md-radio-button>
+				<span flex></span>
+			</md-radio-group>
+			<div layout="row">
+				<span flex></span>
+				<p>Confirmed</p>
+				<span flex></span>
+			</div>
+			<md-radio-group ng-model="group.permissions.join.confirmed" layout="row">
+				<span flex></span>
+				<md-radio-button value="accept">Accept</md-radio-button>
+				<md-radio-button value="moderate">Moderate</md-radio-button>
+				<md-radio-button value="bounce">Bounce</md-radio-button>
+				<span flex></span>
+			</md-radio-group>
+			<div layout="row">
+				<span flex></span>
+				<p>Member</p>
+				<span flex></span>
+			</div>
+			<md-radio-group ng-model="group.permissions.join.member" layout="row">
+				<span flex></span>
+				<md-radio-button value="accept">Accept</md-radio-button>
+				<md-radio-button value="moderate">Moderate</md-radio-button>
+				<md-radio-button value="bounce">Bounce</md-radio-button>
+				<span flex></span>
+			</md-radio-group>
+		</div>
+	</div>
+	<div style="margin: 16px;"></div>
+	<div layout="row" layout-sm="column">
+		<span flex></span>
+		<div layout="column">
+			<div layout="row">
+				<span flex></span>
+				<p style="font-weight: bold">Read</p>
+				<span flex></span>
+			</div>
+			<div layout="row">
+				<span flex></span>
+				<p>Public</p>
+				<span flex></span>
+			</div>
+			<md-radio-group ng-model="group.permissions.read.public" layout="row">
+				<span flex></span>
+				<md-radio-button value="yes">Yes</md-radio-button>
+				<md-radio-button value="no">No</md-radio-button>
+				<span flex></span>
+			</md-radio-group>
+			<div layout="row">
+				<span flex></span>
+				<p>Confirmed</p>
+				<span flex></span>
+			</div>
+			<md-radio-group ng-model="group.permissions.read.confirmed" layout="row">
+				<span flex></span>
+				<md-radio-button value="yes">Yes</md-radio-button>
+				<md-radio-button value="no">No</md-radio-button>
+				<span flex></span>
+			</md-radio-group>
+		</div>
+		<span flex></span>
+		<div layout="column">
+			<div layout="row">
+				<span flex></span>
+				<p style="font-weight: bold">Exists</p>
+				<span flex></span>
+			</div>
+			<div layout="row">
+				<span flex></span>
+				<p>Public</p>
+				<span flex></span>
+			</div>
+			<md-radio-group ng-model="group.permissions.exists.public" layout="row">
+				<span flex></span>
+				<md-radio-button value="yes">Yes</md-radio-button>
+				<md-radio-button value="no">No</md-radio-button>
+				<span flex></span>
+			</md-radio-group>
+			<div layout="row">
+				<span flex></span>
+				<p>Confirmed</p>
+				<span flex></span>
+			</div>
+			<md-radio-group ng-model="group.permissions.exists.confirmed" layout="row">
+				<span flex></span>
+				<md-radio-button value="yes">Yes</md-radio-button>
+				<md-radio-button value="no">No</md-radio-button>
+				<span flex></span>
+			</md-radio-group>
+		</div>
+		<span flex></span>
+	</div>
+</div>
+<div style="clear: both;"></div>

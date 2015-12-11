@@ -21,12 +21,52 @@
 		for(n in addresses) {
 			for(i in addresses[n]){
 				self.addresses.push({
-					media: n,
+					medium: n,
 					address: addresses[n][i].address,
 					is:	group.subscriptions.indexOf(addresses[n][i].address) !== -1
 				});
 			}
 		}
+
+		self.submit = function() {
+			debugger;
+			$scope.loading = true;
+			var list = [];
+			var i;
+			for(i in self.addresses) {
+				if(self.addresses[i].is){
+					list.push({
+						medium: self.addresses[i].medium,
+						address: self.addresses[i].address
+					});
+				}
+			}
+			$http({
+				method:	'PATCH',
+				url:	'/v1/groups/' + group.groupname,
+				headers: {
+					'Content-Type': 'application/json-patch+json'
+				},
+				data: [
+					{
+						'op':		'replace',
+						'path':		'/subscriptions',
+						'value':	list
+					}
+				]
+			}).then(
+				function success (response) {
+					$mdDialog.hide("success");
+				},
+				function fail (response) {
+					$mdDialog.hide(response);
+				}
+			)
+		};
+
+		$scope.cancel = function() {
+			$mdDialog.cancel();
+		};
 	}
 
 })();

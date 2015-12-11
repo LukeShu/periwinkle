@@ -1,0 +1,83 @@
+<!-- // Copyright 2015 Richard Wisniewski -->
+<md-toolbar class="md-tall">
+	<div class="md-toolbar-tools">
+		<h1 id="title">
+			<span>{{ title  | translate}}</span>
+		</h1>
+		<!-- central gap -->
+		<span flex=""></span>
+		<md-button class="md-button"  aria-label="Sign Out" ng-click="logout()">
+			{{ 'GENERAL.SIGNOUT' | translate }}
+		</md-button>
+	</div>
+</md-toolbar>
+
+<md-content class="tall-bar-content md-padding" style="position: relative;">
+
+	<div ng-if="loading" style="position: fixed; z-index: 12; width: 40px; height: 40px; top: 128px; left: 50%; margin-left: -20px; border-color: #f0f0f0; border-style: solid; border-width: 1px; border-radius: 20px; background-color: white;">
+		<md-progress-circular md-diameter="40px" md-mode="indeterminate"></md-progress-circular>
+	</div>
+	<div layout="column" style="max-width: 600px; margin-left: auto; margin-right: auto;">
+		<md-card flex="100" style="position: relative;">
+			<form name="permissions" ng-disabled="group.permissions_status.loading" ng-submit="group.permissions_status.submit()">
+				<md-toolbar class="md-toolbar-tools" style="background-color: white; color: black;">
+					<h1>Permissions</h1>
+					<!-- central gap -->
+					<span flex=""></span>
+				</md-toolbar>
+				<md-card-content style="padding-top: 0px; min-height: 64px;">
+					<div ng-if="group.permissions_status.loading" style="position: absolute; z-index: 12; width: 40px; height: 40px; top: 3em; left: 50%; margin-left: -20px; border-color: #f0f0f0; border-style: solid; border-width: 1px; border-radius: 20px; background-color: white;">
+						<md-progress-circular md-diameter="40px" md-mode="indeterminate"></md-progress-circular>
+					</div>
+					<div ng-include="'src/group/permissions.html'"></div>
+				</md-card-content>
+				<div layout="row" layout-align="end center">
+					<md-button type="submit">
+						Submit
+					</md-button>
+				</div>
+			</form>
+		</md-card>
+		<md-card flex="100" style="position: relative;">
+			<form name="subscriptions" ng-disabled="group.addresses_status.loading">
+				<md-toolbar class="md-toolbar-tools" style="background-color: white; color: black;">
+					<h1>Subscriptions</h1>
+					<!-- central gap -->
+					<span flex=""></span>
+				</md-toolbar>
+				<md-card-content style="padding-top: 0px; min-height: 64px;">
+					<div ng-if="group.addresses_status.loading" style="position: absolute; z-index: 12; width: 40px; height: 40px; top: 3em; left: 50%; margin-left: -20px; border-color: #f0f0f0; border-style: solid; border-width: 1px; border-radius: 20px; background-color: white;">
+						<md-progress-circular md-diameter="40px" md-mode="indeterminate"></md-progress-circular>
+					</div>
+					<table>
+						<tbody ng-repeat="(name, addresses) in group.addresses">
+							<tr ng-if="addresses.length">
+								<th colspan="2">{{ "GENERAL.MEDIUMS." + name.toUpperCase() | translate }}<th>
+							</tr>
+							<tr ng-repeat="address in addresses">
+								<td>
+									<md-checkbox ng-model="address.is" aria-label="subscribe with this address" style="margin-bottom: 0px;">
+										{{address.address}}
+									</md-checkbox>
+								</td>
+								<td style="font-weight:bold; transform: uppercase;">{{address.medium}}</td>
+							</tr>
+						</tbody>
+					</table>
+				</md-card-content>
+			</form>
+		</md-card>
+		<md-card flex="100" style="position: relative;">
+			<form name="members">
+				<md-toolbar class="md-toolbar-tools" style="background-color: white; color: black;">
+					<h1>Members</h1>
+					<!-- central gap -->
+					<span flex=""></span>
+				</md-toolbar>
+				<md-card-content style="padding-top: 0px; min-height: 64px;">
+					<h1>Comming Soon</h1>
+				</md-card-content>
+			</form>
+		</md-card>
+	</div>
+</md-content>
