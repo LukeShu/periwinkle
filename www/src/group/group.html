@@ -65,6 +65,11 @@
 						</tbody>
 					</table>
 				</md-card-content>
+				<div style="position: absolute; bottom: 8px; right: 8px;">
+					<md-button class="md-fab md-accent" aria-label="change" ng-click="group.addresses_status.new()">
+						<md-icon md-svg-src="assets/svg/add.svg"></md-icon>
+					</md-button>
+				</div>
 			</form>
 		</md-card>
 		<md-card flex="100" style="position: relative;">
@@ -75,8 +80,13 @@
 					<span flex=""></span>
 				</md-toolbar>
 				<md-card-content style="padding-top: 0px; min-height: 64px;">
-					<h1>Comming Soon</h1>
+					<p ng-repeat="member in group.members">{{member}}</p>
 				</md-card-content>
+				<div style="position: absolute; bottom: 8px; right: 8px;">
+					<md-button class="md-fab md-accent" aria-label="change" ng-click="group.members_status.new()">
+						<md-icon md-svg-src="assets/svg/add.svg"></md-icon>
+					</md-button>
+				</div>
 			</form>
 		</md-card>
 	</div>

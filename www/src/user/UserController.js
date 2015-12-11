@@ -421,9 +421,9 @@
 					parent:					angular.element(document.body),
 					targetEvent:			ev,
 					clickOutsideToClose:	true,
-                                        locals: {
-                                                original: null
-                                        }
+                    locals: {
+                            original: null
+                    }
 				}).then(
 					function (response) {
 						//the dialog responded before closing

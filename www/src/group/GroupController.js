@@ -4,9 +4,9 @@
 
 	angular
 	.module('group')
-	.controller('GroupController', ['$scope', '$http', '$routeParams', 'UserService', GroupController]);
+	.controller('GroupController', ['$scope', '$http', '$routeParams', '$mdDialog', 'UserService', GroupController]);
 
-	function GroupController($scope, $http, $routeParams, userService) {
+	function GroupController($scope, $http, $routeParams, $mdDialog, userService) {
 		var self = $scope.subs = this;
 
 		$scope.permissions = self.groupname = $routeParams.group;
@@ -99,6 +99,18 @@
 					function success (response) {
 					},
 					function fail (response) {
+						//show error to user
+						self.members_status.loading = false;
+						var status_code = response.status;
+						var reason = response.data;
+						//show alert
+						switch(status_code){
+							case 500:
+								$scope.showError('GENERAL.ERRORS.500.TITLE', 'GENERAL.ERRORS.500.CONTENT', reason, 'body', 'body');
+								break;
+							default:
+								$scope.showError('GENERAL.ERRORS.DEFAULT.TITLE', 'GENERAL.ERRORS.DEFAULT.CONTENT', reason, 'body', 'body');
+						}
 					}
 				);
 			}
@@ -107,10 +119,67 @@
 		self.members_status = {
 			loading: false,
 			load: function() {
-
+				self.members_status.loading = true;
+				$http({
+					method: 'GET',
+					url: '/v1/groups/' + self.groupname + '/subscriptions',
+					headers: {
+						'Content-Type': 'application/json'
+					}
+				}).then(
+					function success(response) {
+						self.members = response.data;
+						debugger;
+						self.members_status.loading = false;
+					},
+					function fail(response) {
+						//show error to user
+						self.members_status.loading = false;
+						var status_code = response.status;
+						var reason = response.data;
+						//show alert
+						switch(status_code){
+							case 500:
+								$scope.showError('GENERAL.ERRORS.500.TITLE', 'GENERAL.ERRORS.500.CONTENT', reason, 'body', 'body');
+								break;
+							default:
+								$scope.showError('GENERAL.ERRORS.DEFAULT.TITLE', 'GENERAL.ERRORS.DEFAULT.CONTENT', reason, 'body', 'body');
+						}
+					}
+				);
 			},
 			'new': function() {
-
+				$mdDialog.show({
+					controller:				'JoinController',
+					templateUrl:			'src/group/join.html',
+					parent:					angular.element(document.body),
+					clickOutsideToClose:	true,
+					locals:	{
+						groupname:	self.groupname
+					}
+				}).then(
+					function (response) {
+						//the dialog responded before closing
+						if(response !== "success") {
+							//errors
+							var status_code = response.status;
+							var reason = response.data;
+							//show alert
+							switch(status_code){
+								case 500:
+									$scope.showError('GENERAL.ERRORS.500.TITLE', 'GENERAL.ERRORS.500.CONTENT', reason, '#new-address-fab', '#new-address-fab');
+									break;
+								default:
+									$scope.showError('GENERAL.ERRORS.DEFAULT.TITLE', 'GENERAL.ERRORS.DEFAULT.CONTENT', reason, '#new-address-fab', '#new-address-fab');
+							}
+						} else {
+							//succeeded
+							self.addresses_status.load();
+						}
+					}, function () {
+						//the dialog was cancelled
+					}
+				);
 			}
 		};
 		self.addresses = {
@@ -122,7 +191,6 @@
 			loading: false,
 			load: function() {
 				self.addresses_status.loading = true;
-				debugger;
 				$http({
 					method: 'GET',
 					url: '/v1/users/' + userService.user_id,
@@ -151,16 +219,16 @@
 								headers: {
 									'Content-Type': 'application/json'
 								},
-								data: {
-									groupid:	self.groupname
+								params: {
+									group_id:	self.groupname
 								}
 							}).then(
 								function success(response) {
 									var i,j;
 									for(j in response.data) {
-										for(i in self.addresses[response.data[j]]) {
-											if(response.data[j].address === self.addresses[response.data[j]][i]) {
-												self.addresses[response.data[j]][i].is = true;
+										for(i in self.addresses[response.data[j].medium]) {
+											if(response.data[j].address === self.addresses[response.data[j].medium][i].address) {
+												self.addresses[response.data[j].medium][i].is = true;
 											}
 										}
 									}
@@ -201,7 +269,6 @@
 				);
 			},
 			submit:	function(name, index) {
-				debugger;
 				self.addresses_status.loading = true;
 				if(self.addresses[name][index].is) {
 					$http({
@@ -234,7 +301,7 @@
 				} else {
 					$http({
 						method:	'DELETE',
-						url: '/v1/users/' + userService.user_id + '/subscriptions/' + self.groupname + ':' + self.addresses[name][index].medium + ':' + self.addresses[name][index].address
+						url: '/v1/users/' + userService.user_id + '/subscriptions/' + self.groupname + ':' + name + ':' + self.addresses[name][index].address + '/'
 					}).then(
 						function success(response) {
 							self.addresses_status.loading = false;
@@ -255,6 +322,39 @@
 						}
 					)
 				}
+			},
+			'new': function() {
+				$mdDialog.show({
+					controller:				'NewAddressController',
+					templateUrl:			'src/user/new_address.html',
+					parent:					angular.element(document.body),
+					clickOutsideToClose:	true,
+					locals:	{
+						addresses: self.addresses
+					}
+				}).then(
+					function (response) {
+						//the dialog responded before closing
+						if(response !== "success") {
+							//errors
+							var status_code = response.status;
+							var reason = response.data;
+							//show alert
+							switch(status_code){
+								case 500:
+									$scope.showError('GENERAL.ERRORS.500.TITLE', 'GENERAL.ERRORS.500.CONTENT', reason, '#new-address-fab', '#new-address-fab');
+									break;
+								default:
+									$scope.showError('GENERAL.ERRORS.DEFAULT.TITLE', 'GENERAL.ERRORS.DEFAULT.CONTENT', reason, '#new-address-fab', '#new-address-fab');
+							}
+						} else {
+							//succeeded
+							self.addresses_status.load();
+						}
+					}, function () {
+						//the dialog was cancelled
+					}
+				);
 			}
 		};
 

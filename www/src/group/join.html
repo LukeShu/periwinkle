@@ -1,0 +1,32 @@
+<!-- // Copyright 2015 Richard Wisniewski -->
+<md-dialog aria-label="Add a user to this group"  ng-cloak>
+	<form  name="joinForm" ng-submit="joinForm.$valid && join.change()">
+		<md-toolbar>
+			<div class="md-toolbar-tools">
+				<h1>{{ title | translate }}</h1>
+			</div>
+		</md-toolbar>
+		<md-dialog-content>
+			<div class="md-dialog-content" layout="column">
+				<p style="color: red;" ng-if="error != ''">{{ error | translate }}</p>
+				<div layout="column" layout-gt-xs="row">
+					<md-input-container>
+						<label>Username</label>
+						<input name="name" ng-model="join.name" type="password" required/>
+						<div ng-messages="joinForm.name.$error" role="alert">
+							<div ng-message="required">{{ "GENERAL.FORM.ERROR.REQUIRED_FIELD" | translate }}</div>
+						</div>
+					</md-input-container>
+				</div>
+			</div>
+		</md-dialog-content>
+		<md-dialog-actions layout="row">
+			<md-button type="button" ng-click="join.cancel()">
+				{{ "GENERAL.FORM.RESPONSE.CANCEL" | translate }}
+			</md-button>
+			<md-button type="submit">
+				{{ "GENERAL.FORM.RESPONSE.CHANGE" | translate }}
+			</md-button>
+		</md-dialog-actions>
+	</form>
+</md-dialog>
